@@ -3,5 +3,6 @@ import XCTest
 import JSONAPITests
 
 var tests = [XCTestCaseEntry]()
-tests += JSONAPITests.allTests()
+tests += JSONAPITests.__allTests()
+
 XCTMain(tests)
