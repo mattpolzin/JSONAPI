@@ -58,8 +58,9 @@ The primary goals of this framework are:
 - [ ] `meta`
 
 ### Misc
-- [ ] `EntityType` validator (using reflection).
-- [ ] Property-based testing (using `SwiftCheck`).
+- [ ] `EntityType` validator (using reflection)
+- [ ] Property-based testing (using `SwiftCheck`)
+- [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 
 ## Usage
 ### Prerequisites
