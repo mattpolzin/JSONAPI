@@ -68,7 +68,7 @@ The primary goals of this framework are:
 
 ### `EntityDescription`
 
-An `EntityDescription` is the `JSONAPI` framework's specification for what the JSON API spec calls a *Resource Objects*. You might create the following `EntityDescription` to represent a person in a network of friends:
+An `EntityDescription` is the `JSONAPI` framework's specification for what the JSON API spec calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
 
 ```
 enum PersonDescription: IdentifiedEntityDescription {
@@ -177,6 +177,8 @@ The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can eith
 #### `IncludeDecoder`
 
 The second generic type of a `JSONAPIDocument` is an `IncludeDecoder`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `IncludeDecoder`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
+
+**IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
 
 To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<PersonDescription>` instead of `NoIncludes`.
 
