@@ -59,6 +59,8 @@ The primary goals of this framework are:
 - [ ] `meta`
 
 ### Misc
+- [ ] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
+- [ ] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
 - [ ] `EntityType` validator (using reflection)
 - [ ] Property-based testing (using `SwiftCheck`)
 - [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
