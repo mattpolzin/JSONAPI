@@ -1,6 +1,6 @@
 //
 //  JSONAPIDocument.swift
-//  ElevatedCore
+//  JSONAPI
 //
 //  Created by Mathew Polzin on 11/5/18.
 //

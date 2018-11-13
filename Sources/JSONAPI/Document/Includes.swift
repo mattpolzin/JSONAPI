@@ -1,5 +1,5 @@
 //
-//  JSONAPI_Includes.swift
+//  Includes.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 11/10/18.

@@ -1,6 +1,6 @@
 //
 //  Relationship.swift
-//  ElevatedCore
+//  JSONAPI
 //
 //  Created by Mathew Polzin on 8/31/18.
 //

@@ -11,7 +11,7 @@ import JSONAPI
 class DocumentTests: XCTestCase {
 
 	func test_singleDocumentNoIncludes() {
-		let document = try? JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<ArticleType>, Include0, TmpError>.self, from: single_document_no_includes)
+		let document = try? JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<ArticleType>, Include0, BasicJSONAPIError>.self, from: single_document_no_includes)
 		
 		XCTAssertNotNil(document)
 
@@ -24,7 +24,7 @@ class DocumentTests: XCTestCase {
 	}
 	
 	func test_singleDocumentSomeIncludes() {
-		let document = try? JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<ArticleType>, Include1<AuthorType>, TmpError>.self, from: single_document_some_includes)
+		let document = try? JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<ArticleType>, Include1<AuthorType>, BasicJSONAPIError>.self, from: single_document_some_includes)
 		
 		XCTAssertNotNil(document)
 
@@ -39,7 +39,7 @@ class DocumentTests: XCTestCase {
 	}
 	
 	func test_manyDocumentNoIncludes() {
-		let document = try? JSONDecoder().decode(JSONAPIDocument<ManyResourceBody<ArticleType>, Include0, TmpError>.self, from: many_document_no_includes)
+		let document = try? JSONDecoder().decode(JSONAPIDocument<ManyResourceBody<ArticleType>, Include0, BasicJSONAPIError>.self, from: many_document_no_includes)
 		
 		XCTAssertNotNil(document)
 		
@@ -55,7 +55,7 @@ class DocumentTests: XCTestCase {
 	}
 	
 	func test_manyDocumentSomeIncludes() {
-		let document = try? JSONDecoder().decode(JSONAPIDocument<ManyResourceBody<ArticleType>, Include1<AuthorType>, TmpError>.self, from: many_document_some_includes)
+		let document = try? JSONDecoder().decode(JSONAPIDocument<ManyResourceBody<ArticleType>, Include1<AuthorType>, BasicJSONAPIError>.self, from: many_document_some_includes)
 		
 		XCTAssertNotNil(document)
 		
@@ -91,7 +91,7 @@ class DocumentTests: XCTestCase {
 		typealias AttributeType = NoAttributes
 		typealias RelatedType = Relationships
 		
-		struct Relationships: Relatives {
+		struct Relationships: JSONAPI.Relationships {
 			let author: ToOneRelationship<AuthorType>
 		}
 	}

@@ -1,6 +1,6 @@
 //
 //  EntityTests.swift
-//  ElevatedCoreTests
+//  JSONAPITests
 //
 //  Created by Mathew Polzin on 7/25/18.
 //
@@ -100,7 +100,7 @@ class EntityTests: XCTestCase {
 		typealias RelatedType = Relationships
 		typealias AttributeType = NoAttributes
 		
-		struct Relationships: Relatives {
+		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntityType1>
 		}
 	}
@@ -114,7 +114,7 @@ class EntityTests: XCTestCase {
 		typealias RelatedType = Relationships
 		typealias AttributeType = NoAttributes
 		
-		struct Relationships: Relatives {
+		struct Relationships: JSONAPI.Relationships {
 			let others: ToManyRelationship<TestEntityType1>
 		}
 	}
@@ -128,7 +128,7 @@ class EntityTests: XCTestCase {
 		typealias RelatedType = Relationships
 		typealias AttributeType = Atts
 		
-		struct Relationships: Relatives {
+		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntityType2>
 		}
 		

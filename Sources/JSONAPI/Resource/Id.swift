@@ -1,6 +1,6 @@
 //
 //  Id.swift
-//  ElevatedCore
+//  JSONAPI
 //
 //  Created by Mathew Polzin on 7/24/18.
 //

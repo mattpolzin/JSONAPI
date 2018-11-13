@@ -1,43 +1,74 @@
 //
 //  Entity.swift
-//  ElevatedCore
+//  JSONAPI
 //
 //  Created by Mathew Polzin on 7/24/18.
 //
 
-public typealias Relatives = Codable & Equatable
+/// A JSON API structure within an Entity that contains
+/// named properties of types `ToOneRelationship` and
+/// `ToManyRelationship`.
+public typealias Relationships = Codable & Equatable
 
+/// A JSON API structure within an Entity that contains
+/// properties of any types that are JSON encodable.
 public typealias Attributes = Codable & Equatable
 
-/// Can be used as Relationships Type for Entities that do not
+/// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
-public struct NoRelatives: Relatives {}
+public struct NoRelatives: Relationships {}
 
-/// Can be used as Attributes Type for Entities that do not
+/// Can be used as `Attributes` Type for Entities that do not
 /// have any Attributes.
 public struct NoAttributes: Attributes {}
 
+/// An `EntityType` describes a JSON API
+/// Resource Object. The Resource Object
+/// itself is encoded and decoded as an
+/// `Entity`, which gets specialized on an
+/// `EntityType`.
 public protocol EntityType {
 	associatedtype Identifier: JSONAPI.Identifier
 	associatedtype AttributeType: Attributes
-	associatedtype RelatedType: Relatives
+	associatedtype RelatedType: Relationships
 	
 	static var type: String { get }
 }
 
+/// Shorthand for an `EntityType` that has an Id.
+/// The only times you would not want an `EntityType`
+/// to not be an `IdentifiedEntityType` are when you
+/// are a client making a request to create a new `Entity`
+/// or you are a server receiving a request to create a
+/// new `Entity`.
 public protocol IdentifiedEntityType: EntityType where Identifier: IdType {}
 
-/// An Entity is a single model type that can be
+/// Shorthand for an `EntityType` that does not have an Id.
+/// The only times you would not want an `EntityType`
+/// to not be an `IdentifiedEntityType` are when you
+/// are a client making a request to create a new `Entity`
+/// or you are a server receiving a request to create a
+/// new `Entity`.
+public protocol UnidentifiedEntityType: EntityType where Identifier == Unidentified {}
+
+/// An `Entity` is a single model type that can be
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-/// Easiest to use with `protocol MyEntity: Entity, Identified, Related, Attributed where ID = UUID`.
 public struct Entity<EntityType: JSONAPI.EntityType>: Codable, Equatable {
+	/// The JSON API compliant "type" of this `Entity`.
 	public static var type: String { return EntityType.type }
 	
+	/// The `Entity`'s Id. This can be of type `Unidentified` if
+	/// the entity is being created clientside and the
+	/// server is being asked to create a unique Id. Otherwise,
+	/// this should be of a type conforming to `IdType`.
 	public let id: EntityType.Identifier
+	
+	/// The JSON API compliant attributes of this `Entity`.
 	public let attributes: EntityType.AttributeType
 	
+	/// The JSON API compliant relationships of this `Entity`.
 	public let relationships: EntityType.RelatedType
 	
 	public init(id: EntityType.Identifier, attributes: EntityType.AttributeType, relationships: EntityType.RelatedType) {

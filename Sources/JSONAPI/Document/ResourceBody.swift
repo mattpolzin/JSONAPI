@@ -1,6 +1,6 @@
 //
-//  JSONAPI_ResourceBody.swift
-//  ElevatedCore
+//  ResourceBody.swift
+//  JSONAPI
 //
 //  Created by Mathew Polzin on 11/10/18.
 //
