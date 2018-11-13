@@ -15,51 +15,51 @@ The primary goals of this framework are:
 
 ### Decoding
 #### Document
-[x] `data`
-[x] `included`
-[x] `errors` (untested)
-[ ] `meta`
-[ ] `jsonapi`
-[ ] `links`
+- [x] `data`
+- [x] `included`
+- [x] `errors` (untested)
+- [ ] `meta`
+- [ ] `jsonapi`
+- [ ] `links`
 
 #### Resource Object
-[x] `id`
-[x] `type`
-[x] `attributes`
-[x] `relationships`
-[ ] `links`
-[ ] `meta`
+- [x] `id`
+- [x] `type`
+- [x] `attributes`
+- [x] `relationships`
+- [ ] `links`
+- [ ] `meta`
 
 #### Relationship Object
-[x] `data`
-[ ] `links`
-[ ] `meta`
+- [x] `data`
+- [ ] `links`
+- [ ] `meta`
 
 ### Encoding
 #### Document
-[ ] `data`
-[ ] `included`
-[ ] `errors`
-[ ] `meta`
-[ ] `jsonapi`
-[ ] `links`
+- [ ] `data`
+- [ ] `included`
+- [ ] `errors`
+- [ ] `meta`
+- [ ] `jsonapi`
+- [ ] `links`
 
 #### Resource Object
-[x] `id` (untested)
-[x] `type` (untested)
-[x] `attributes` (untested)
-[x] `relationships` (untested)
-[ ] `links`
-[ ] `meta`
+- [x] `id` (untested)
+- [x] `type` (untested)
+- [x] `attributes` (untested)
+- [x] `relationships` (untested)
+- [ ] `links`
+- [ ] `meta`
 
 #### Relationship Object
-[x] `data` (untested)
-[ ] `links`
-[ ] `meta`
+- [x] `data` (untested)
+- [ ] `links`
+- [ ] `meta`
 
 ### Misc
-[ ] `EntityType` validator (using reflection).
-[ ] Property-based testing (using `SwiftCheck`).
+- [ ] `EntityType` validator (using reflection).
+- [ ] Property-based testing (using `SwiftCheck`).
 
 ## Usage
 ### Prerequisites
