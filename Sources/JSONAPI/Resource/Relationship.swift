@@ -5,23 +5,21 @@
 //  Created by Mathew Polzin on 8/31/18.
 //
 
-import Foundation
-
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// You should use the `ToOneRelationship` and `ToManyRelationship`
 /// concrete types.
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 public protocol Relationship: Equatable, Encodable {
-	associatedtype EntityType: JSONAPI.EntityType where EntityType.Identifier: IdType
+	associatedtype EntityType: JSONAPI.EntityDescription where EntityType.Identifier: IdType
 	var ids: [EntityType.Identifier] { get }
 }
 
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `One<Entity>`
-public struct ToOneRelationship<EntityType: JSONAPI.EntityType>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
+/// A convenient typealias might make your code much more legible: `One<EntityDescription>`
+public struct ToOneRelationship<EntityType: JSONAPI.EntityDescription>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
 	public let id: EntityType.Identifier
 
 	public init(entity: Entity<EntityType>) {
@@ -36,8 +34,8 @@ public struct ToOneRelationship<EntityType: JSONAPI.EntityType>: Equatable, Rela
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `Many<Entity>`
-public struct ToManyRelationship<EntityType: JSONAPI.EntityType>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
+/// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
+public struct ToManyRelationship<EntityType: JSONAPI.EntityDescription>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
 	public let ids: [EntityType.Identifier]
 	
 	public init(entities: [Entity<EntityType>]) {
@@ -46,6 +44,10 @@ public struct ToManyRelationship<EntityType: JSONAPI.EntityType>: Equatable, Rel
 	
 	public init<T: Relationship>(relationships: [T]) where T.EntityType == EntityType {
 		ids = relationships.flatMap { $0.ids }
+	}
+	
+	public static var none: ToManyRelationship {
+		return .init(entities: [])
 	}
 }
 

@@ -107,16 +107,14 @@ class IncludedTests: XCTestCase {
 }
 
 extension IncludedTests {
-	enum TestEntityType: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType>
+	enum TestEntityType: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType>
 		
-		typealias AttributeType = Atts
-		
-		typealias RelatedType = NoRelatives
+		typealias Relationships = NoRelatives
 		
 		public static var type: String { return "test_entity1" }
 		
-		public struct Atts: Attributes {
+		public struct Attributes: JSONAPI.Attributes {
 			let foo: String
 			let bar: Int
 		}
@@ -124,12 +122,8 @@ extension IncludedTests {
 	
 	typealias TestEntity = Entity<TestEntityType>
 	
-	enum TestEntityType2: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType2>
-		
-		typealias AttributeType = Atts
-		
-		typealias RelatedType = Relationships
+	enum TestEntityType2: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType2>
 		
 		public static var type: String { return "test_entity2" }
 		
@@ -137,7 +131,7 @@ extension IncludedTests {
 			let entity1: ToOneRelationship<TestEntityType>
 		}
 		
-		public struct Atts: Attributes {
+		public struct Attributes: JSONAPI.Attributes {
 			let foo: String
 			let bar: Int
 		}
@@ -145,12 +139,10 @@ extension IncludedTests {
 	
 	typealias TestEntity2 = Entity<TestEntityType2>
 	
-	enum TestEntityType3: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType3>
+	enum TestEntityType3: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType3>
 		
-		typealias AttributeType = NoAttributes
-		
-		typealias RelatedType = Relationships
+		typealias Attributes = NoAttributes
 		
 		public static var type: String { return "test_entity3" }
 		
@@ -162,36 +154,34 @@ extension IncludedTests {
 	
 	typealias TestEntity3 = Entity<TestEntityType3>
 	
-	enum TestEntityType4: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType4>
+	enum TestEntityType4: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType4>
 		
-		typealias AttributeType = NoAttributes
+		typealias Attributes = NoAttributes
 		
-		typealias RelatedType = NoRelatives
+		typealias Relationships = NoRelatives
 		
 		public static var type: String { return "test_entity4" }
 	}
 	
 	typealias TestEntity4 = Entity<TestEntityType4>
 	
-	enum TestEntityType5: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType5>
+	enum TestEntityType5: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType5>
 		
-		typealias AttributeType = NoAttributes
+		typealias Attributes = NoAttributes
 		
-		typealias RelatedType = NoRelatives
+		typealias Relationships = NoRelatives
 		
 		public static var type: String { return "test_entity5" }
 	}
 	
 	typealias TestEntity5 = Entity<TestEntityType5>
 	
-	enum TestEntityType6: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType6>
+	enum TestEntityType6: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType6>
 		
-		typealias AttributeType = NoAttributes
-		
-		typealias RelatedType = Relationships
+		typealias Attributes = NoAttributes
 		
 		public static var type: String { return "test_entity6" }
 		

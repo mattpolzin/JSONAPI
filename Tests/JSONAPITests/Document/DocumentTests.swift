@@ -74,22 +74,21 @@ class DocumentTests: XCTestCase {
 		XCTAssertEqual(d.body.data?.included[Author.self][2].id.rawValue, "11")
 	}
 	
-	enum AuthorType: EntityType {
+	enum AuthorType: EntityDescription {
 		static var type: String { return "authors" }
 		
 		typealias Identifier = Id<String, AuthorType>
-		typealias AttributeType = NoAttributes
-		typealias RelatedType = NoRelatives
+		typealias Attributes = NoAttributes
+		typealias Relationships = NoRelatives
 	}
 
 	typealias Author = Entity<AuthorType>
 	
-	enum ArticleType: EntityType {
+	enum ArticleType: EntityDescription {
 		static var type: String { return "articles" }
 		
 		typealias Identifier = Id<String, ArticleType>
-		typealias AttributeType = NoAttributes
-		typealias RelatedType = Relationships
+		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
 			let author: ToOneRelationship<AuthorType>

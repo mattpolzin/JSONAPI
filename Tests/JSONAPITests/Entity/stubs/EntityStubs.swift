@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/12/18.
 //
 
-import Foundation
-
 let entity_no_relationships_no_attributes = """
 {
 	"id": "A24B3B69-4DF1-467F-B52E-B0C9E44F436A",

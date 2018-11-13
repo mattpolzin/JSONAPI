@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/5/18.
 //
 
-import Foundation
-
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
 /// a JSON API response.

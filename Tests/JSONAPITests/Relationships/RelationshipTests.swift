@@ -37,7 +37,7 @@ class RelationshipTests: XCTestCase {
 		
 		XCTAssertNotNil(relationship)
 		
-		XCTAssertEqual(relationship?.id.rawValue.uuidString, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(relationship?.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 		XCTAssertEqual(relationship?.ids.count, 1)
 	}
 	
@@ -46,15 +46,15 @@ class RelationshipTests: XCTestCase {
 		
 		XCTAssertNotNil(relationship)
 		
-		XCTAssertEqual(relationship?.ids.map { $0.rawValue.uuidString }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship?.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 	}
 	
-	enum TestEntityType1: EntityType {
-		typealias Identifier = Id<UUID, TestEntityType1>
+	enum TestEntityType1: EntityDescription {
+		typealias Identifier = Id<String, TestEntityType1>
 		
-		typealias AttributeType = NoAttributes
+		typealias Attributes = NoAttributes
 		
-		typealias RelatedType = NoRelatives
+		typealias Relationships = NoRelatives
 		
 		public static var type: String { return "test_entity1" }
 	}

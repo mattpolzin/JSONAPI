@@ -35,12 +35,11 @@ class ResourceBodyTests: XCTestCase {
 		])
 	}
 
-	enum ArticleType: EntityType {
+	enum ArticleType: EntityDescription {
 		public static var type: String { return "articles" }
 		
 		typealias Identifier = Id<String, ArticleType>
-		typealias RelatedType = NoRelatives
-		typealias AttributeType = Attributes
+		typealias Relationships = NoRelatives
 		
 		struct Attributes: JSONAPI.Attributes {
 			let title: String

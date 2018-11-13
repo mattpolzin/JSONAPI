@@ -5,46 +5,43 @@
 //  Created by Mathew Polzin on 7/24/18.
 //
 
-import Foundation
-
 /// Any type that you would like to be encoded to and
 /// decoded from JSON API ids should conform to this
-/// protocol. Conformance for `String` and `UUID`
-/// is given by this library.
-public protocol RawIdType: Codable, Equatable {
+/// protocol. Conformance for `String` is given.
+public protocol RawIdType: Codable, Equatable {}
+
+/// If you would like to be able to create new
+/// Entities with Ids backed by a RawIdType then
+/// your Id type should conform to
+/// `CreatableRawIdType`.
+/// Conformances for `String` and `UUID`
+/// are given in the README for this library.
+public protocol CreatableRawIdType: RawIdType {
 	static func unique() -> Self
 }
 
-public protocol Identifier: Codable, Equatable {
-	init()
-}
+extension String: RawIdType {}
+
+public protocol Identifier: Codable, Equatable {}
 
 public struct Unidentified: Identifier {
 	public init() {}
 }
 
 public protocol IdType: Identifier {
-	associatedtype EntityType: JSONAPI.EntityType
+	associatedtype EntityType: JSONAPI.EntityDescription
 	associatedtype RawType: RawIdType
 	
 	var rawValue: RawType { get }
 }
 
-extension UUID: RawIdType {
-	public static func unique() -> UUID {
-		return UUID()
-	}
-}
-
-extension String: RawIdType {
-	public static func unique() -> String {
-		return UUID().uuidString
-	}
+public protocol CreatableIdType: IdType {
+	init()
 }
 
 /// An Entity ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
-public struct Id<RawType: RawIdType, EntityType: JSONAPI.EntityType>: IdType {
+public struct Id<RawType: RawIdType, EntityType: JSONAPI.EntityDescription>: IdType {
 	public let rawValue: RawType
 	
 	public init(rawValue: RawType) {
@@ -60,7 +57,9 @@ public struct Id<RawType: RawIdType, EntityType: JSONAPI.EntityType>: IdType {
 		var container = encoder.singleValueContainer()
 		try container.encode(rawValue)
 	}
-	
+}
+
+extension Id: CreatableIdType where RawType: CreatableRawIdType {
 	public init() {
 		rawValue = .unique()
 	}

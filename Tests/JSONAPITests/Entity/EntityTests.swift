@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import Foundation
 import JSONAPI
 
 class EntityTests: XCTestCase {
@@ -68,7 +67,7 @@ class EntityTests: XCTestCase {
 		
 		guard let e = entity else { return }
 		
-		XCTAssertEqual((e ~> \.others).map { $0.rawValue.uuidString }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+		XCTAssertEqual((e ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
 	}
 	
 	func test_EntitySomeRelationshipsSomeAttributes() {
@@ -80,25 +79,24 @@ class EntityTests: XCTestCase {
 		
 		XCTAssertEqual(e[\.word], "coolio")
 		XCTAssertEqual(e[\.number], 992299)
-		XCTAssertEqual((e ~> \.other).rawValue.uuidString, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual((e ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 	}
 
-	enum TestEntityType1: EntityType {
+	enum TestEntityType1: EntityDescription {
 		static var type: String { return "test_entities"}
 		
-		typealias Identifier = Id<UUID, TestEntityType1>
-		typealias AttributeType = NoAttributes
-		typealias RelatedType = NoRelatives
+		typealias Identifier = Id<String, TestEntityType1>
+		typealias Attributes = NoAttributes
+		typealias Relationships = NoRelatives
 	}
 	
 	typealias TestEntity1 = Entity<TestEntityType1>
 	
-	enum TestEntityType2: EntityType {
+	enum TestEntityType2: EntityDescription {
 		static var type: String { return "second_test_entities"}
 		
-		typealias Identifier = Id<UUID, TestEntityType2>
-		typealias RelatedType = Relationships
-		typealias AttributeType = NoAttributes
+		typealias Identifier = Id<String, TestEntityType2>
+		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntityType1>
@@ -107,12 +105,11 @@ class EntityTests: XCTestCase {
 	
 	typealias TestEntity2 = Entity<TestEntityType2>
 	
-	enum TestEntityType3: EntityType {
+	enum TestEntityType3: EntityDescription {
 		static var type: String { return "third_test_entities"}
 		
-		typealias Identifier = Id<UUID, TestEntityType3>
-		typealias RelatedType = Relationships
-		typealias AttributeType = NoAttributes
+		typealias Identifier = Id<String, TestEntityType3>
+		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
 			let others: ToManyRelationship<TestEntityType1>
@@ -121,18 +118,16 @@ class EntityTests: XCTestCase {
 
 	typealias TestEntity3 = Entity<TestEntityType3>
 	
-	enum TestEntityType4: EntityType {
+	enum TestEntityType4: EntityDescription {
 		static var type: String { return "fourth_test_entities"}
 		
-		typealias Identifier = Id<UUID, TestEntityType4>
-		typealias RelatedType = Relationships
-		typealias AttributeType = Atts
+		typealias Identifier = Id<String, TestEntityType4>
 		
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntityType2>
 		}
 		
-		struct Atts: Attributes {
+		struct Attributes: JSONAPI.Attributes {
 			let word: String
 			let number: Int
 		}
@@ -140,14 +135,13 @@ class EntityTests: XCTestCase {
 	
 	typealias TestEntity4 = Entity<TestEntityType4>
 	
-	enum TestEntityType5: EntityType {
+	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
 		
-		typealias Identifier = Id<UUID, TestEntityType5>
-		typealias RelatedType = NoRelatives
-		typealias AttributeType = Atts
+		typealias Identifier = Id<String, TestEntityType5>
+		typealias Relationships = NoRelatives
 		
-		struct Atts: Attributes {
+		struct Attributes: JSONAPI.Attributes {
 			let floater: Double
 		}
 	}

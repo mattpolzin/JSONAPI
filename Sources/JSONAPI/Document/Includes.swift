@@ -5,7 +5,6 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-import Foundation
 import Result
 
 public protocol IncludeDecoder: Decodable {}
@@ -37,7 +36,7 @@ public struct Includes<I: IncludeDecoder>: Decodable {
 
 // MARK: - Decoding
 
-func decode<EntityType: JSONAPI.EntityType>(_ type: EntityType.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity<EntityType>, EncodingError> {
+func decode<EntityType: JSONAPI.EntityDescription>(_ type: EntityType.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity<EntityType>, EncodingError> {
 	let ret: Result<Entity<EntityType>, EncodingError>
 	do {
 		ret = try .success(container.decode(Entity<EntityType>.self))
@@ -64,10 +63,10 @@ public typealias NoIncludes = Include0
 
 // MARK: - 1 include
 public protocol _Include1: _Include0 {
-	associatedtype A: EntityType
+	associatedtype A: EntityDescription
 	var a: Entity<A>? { get }
 }
-public enum Include1<A: EntityType>: _Include1 {
+public enum Include1<A: EntityDescription>: _Include1 {
 	case a(Entity<A>)
 	
 	public var a: Entity<A>? {
@@ -94,10 +93,10 @@ extension Includes where I: _Include1 {
 
 // MARK: - 2 includes
 public protocol _Include2: _Include1 {
-	associatedtype B: EntityType
+	associatedtype B: EntityDescription
 	var b: Entity<B>? { get }
 }
-public enum Include2<A: EntityType, B: EntityType>: _Include2 {
+public enum Include2<A: EntityDescription, B: EntityDescription>: _Include2 {
 	case a(Entity<A>)
 	case b(Entity<B>)
 	
@@ -142,10 +141,10 @@ extension Includes where I: _Include2 {
 
 // MARK: - 3 includes
 public protocol _Include3: _Include2 {
-	associatedtype C: EntityType
+	associatedtype C: EntityDescription
 	var c: Entity<C>? { get }
 }
-public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
+public enum Include3<A: EntityDescription, B: EntityDescription, C: EntityDescription>: _Include3 {
 	case a(Entity<A>)
 	case b(Entity<B>)
 	case c(Entity<C>)
@@ -197,10 +196,10 @@ extension Includes where I: _Include3 {
 
 // MARK: - 4 includes
 public protocol _Include4: _Include3 {
-	associatedtype D: EntityType
+	associatedtype D: EntityDescription
 	var d: Entity<D>? { get }
 }
-public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>: _Include4 {
+public enum Include4<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription>: _Include4 {
 	case a(Entity<A>)
 	case b(Entity<B>)
 	case c(Entity<C>)
@@ -259,10 +258,10 @@ extension Includes where I: _Include4 {
 
 // MARK: - 5 includes
 public protocol _Include5: _Include4 {
-	associatedtype E: EntityType
+	associatedtype E: EntityDescription
 	var e: Entity<E>? { get }
 }
-public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType>: _Include5 {
+public enum Include5<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription, E: EntityDescription>: _Include5 {
 	case a(Entity<A>)
 	case b(Entity<B>)
 	case c(Entity<C>)
@@ -328,10 +327,10 @@ extension Includes where I: _Include5 {
 
 // MARK: - 6 includes
 public protocol _Include6: _Include5 {
-	associatedtype F: EntityType
+	associatedtype F: EntityDescription
 	var f: Entity<F>? { get }
 }
-public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType>: _Include6 {
+public enum Include6<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription, E: EntityDescription, F: EntityDescription>: _Include6 {
 	case a(Entity<A>)
 	case b(Entity<B>)
 	case c(Entity<C>)

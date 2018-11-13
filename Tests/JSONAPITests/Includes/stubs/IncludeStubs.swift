@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-import Foundation
-
 let one_include = """
 [
 {

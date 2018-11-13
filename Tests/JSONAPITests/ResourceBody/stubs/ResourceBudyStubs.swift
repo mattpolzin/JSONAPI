@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/12/18.
 //
 
-import Foundation
-
 let single_resource_body = """
 {
     "type": "articles",

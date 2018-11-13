@@ -5,18 +5,16 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-import Foundation
-
 public protocol ResourceBody: Decodable {
-	typealias Single<EntityType: JSONAPI.EntityType> = SingleResourceBody<EntityType>
-	typealias Many<EntityType: JSONAPI.EntityType> = ManyResourceBody<EntityType>
+	typealias Single<EntityType: JSONAPI.EntityDescription> = SingleResourceBody<EntityType>
+	typealias Many<EntityType: JSONAPI.EntityDescription> = ManyResourceBody<EntityType>
 }
 
-public struct SingleResourceBody<EntityType: JSONAPI.EntityType>: ResourceBody {
+public struct SingleResourceBody<EntityType: JSONAPI.EntityDescription>: ResourceBody {
 	public let value: Entity<EntityType>?
 }
 
-public struct ManyResourceBody<EntityType: JSONAPI.EntityType>: ResourceBody {
+public struct ManyResourceBody<EntityType: JSONAPI.EntityDescription>: ResourceBody {
 	public let values: [Entity<EntityType>]
 }
 
