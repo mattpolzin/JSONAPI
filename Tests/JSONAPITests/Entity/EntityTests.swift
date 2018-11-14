@@ -140,6 +140,47 @@ extension EntityTests {
 		
 		XCTAssertNil(entity)
 	}
+	
+	func test_NullOptionalNullableAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity7.self, from: entity_null_optional_nullable_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertNil(e[\.maybeHereMaybeNull])
+	}
+	
+	func test_NonNullOptionalNullableAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity7.self, from: entity_non_null_optional_nullable_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertEqual(e[\.maybeHereMaybeNull], "World")
+	}
+}
+
+// MARK: Attribute Transformation
+
+extension EntityTests {
+	func test_IntToString() {
+		let entity = try? JSONDecoder().decode(TestEntity8.self, from: entity_int_to_string_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.string], "22")
+		XCTAssertEqual(e[\.int], 22)
+		XCTAssertEqual(e[\.stringFromInt], "22")
+		XCTAssertEqual(e[\.plus], 122)
+		XCTAssertEqual(e[\.doubleFromInt], 22.0)
+		XCTAssertEqual(e[\.nullToString], "nil")
+	}
 }
 
 // MARK: Test Types
@@ -226,6 +267,63 @@ extension EntityTests {
 	}
 	
 	typealias TestEntity6 = Entity<TestEntityType6>
+	
+	enum TestEntityType7: EntityDescription {
+		static var type: String { return "seventh_test_entities" }
+		
+		typealias Identifier = Id<String, TestEntityType7>
+		typealias Relationships = NoRelatives
+		
+		struct Attributes: JSONAPI.Attributes {
+			let here: Attribute<String>
+			let maybeHereMaybeNull: Attribute<String?>?
+		}
+	}
+	
+	typealias TestEntity7 = Entity<TestEntityType7>
+	
+	enum TestEntityType8: EntityDescription {
+		static var type: String { return "eighth_test_entities" }
+		
+		typealias Identifier = Id<String, TestEntityType8>
+		typealias Relationships = NoRelatives
+		
+		struct Attributes: JSONAPI.Attributes {
+			let string: Attribute<String>
+			let int: Attribute<Int>
+			let stringFromInt: TransformAttribute<Int, IntToString>
+			let plus: TransformAttribute<Int, IntPlusOneHundred>
+			let doubleFromInt: TransformAttribute<Int, IntToDouble>
+			let omitted: TransformAttribute<Int, IntToString>?
+			let nullToString: TransformAttribute<Int?, OptionalToString<Int>>
+		}
+	}
+	
+	typealias TestEntity8 = Entity<TestEntityType8>
+	
+	enum IntToString: Transformer {
+		public static func transform(_ from: Int) -> String {
+			return String(from)
+		}
+	}
+	
+	enum IntPlusOneHundred: Transformer {
+		public static func transform(_ from: Int) -> Int {
+			return from + 100
+		}
+	}
+	
+	enum IntToDouble: Transformer {
+		public static func transform(_ from: Int) -> Double {
+			return Double(from)
+		}
+	}
+	
+	enum OptionalToString<T>: Transformer {
+		public static func transform(_ from: T?) -> String {
+			return String(describing: from)
+		}
+	}
 }
 
 extension Entity where EntityType == EntityTests.TestEntityType2 {

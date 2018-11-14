@@ -18,7 +18,7 @@ class ResourceBodyTests: XCTestCase {
 		guard let b = body else { return }
 
 		XCTAssertEqual(b.value, Article(id: Id<String, ArticleType>(rawValue: "1"),
-										attributes: ArticleType.Attributes(title: "JSON:API paints my bikeshed!")))
+										attributes: ArticleType.Attributes(title: try! .init(rawValue: "JSON:API paints my bikeshed!"))))
 	}
 	
 	func test_manyResourceBody() {
@@ -29,9 +29,9 @@ class ResourceBodyTests: XCTestCase {
 		guard let b = body else { return }
 		
 		XCTAssertEqual(b.values, [
-			Article(id: .init(rawValue: "1"), attributes: .init(title: "JSON:API paints my bikeshed!")),
-			Article(id: .init(rawValue: "2"), attributes: .init(title: "Sick")),
-			Article(id: .init(rawValue: "3"), attributes: .init(title: "Hello World"))
+			Article(id: .init(rawValue: "1"), attributes: try! .init(title: .init(rawValue: "JSON:API paints my bikeshed!"))),
+			Article(id: .init(rawValue: "2"), attributes: try! .init(title: .init(rawValue: "Sick"))),
+			Article(id: .init(rawValue: "3"), attributes: try! .init(title: .init(rawValue: "Hello World")))
 		])
 	}
 
@@ -42,7 +42,7 @@ class ResourceBodyTests: XCTestCase {
 		typealias Relationships = NoRelatives
 		
 		struct Attributes: JSONAPI.Attributes {
-			let title: String
+			let title: Attribute<String>
 		}
 	}
 	

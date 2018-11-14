@@ -59,7 +59,7 @@ The primary goals of this framework are:
 - [ ] `meta`
 
 ### Misc
-- [ ] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
+- [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
 - [ ] `EntityType` validator (using reflection)
 - [ ] Property-based testing (using `SwiftCheck`)
@@ -131,7 +131,6 @@ Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Enti
 The `Entity` and `EntityDescription` together embody the rules and properties of a JSON API *Resource Object*.
 
 It can be nice to create a `typealias` for each type of entity you want to work with:
-
 ```
 typealias Person = Entity<PersonDescription>
 ```
@@ -152,7 +151,7 @@ let friendIds: [Person.Identifier] = person ~> \.friends
 
 ### `Attributes`
 
-The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute` `struct`. This is the place to store all attributes of an entity.
+The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute` or `TransformAttribute` `struct`. This is the place to store all attributes of an entity.
 
 To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
 ```
@@ -173,6 +172,26 @@ typealias Attributes = NoAttributes
 ```
 let favoriteColor: String = person[\.favoriteColor]
 ```
+
+#### `Transformer`
+
+Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. To do this, you create a `Transformer`.
+
+A `Transformer` just provides one static function that transforms one type to another. You might define one for an ISO 8601 compliant `Date` like this:
+```
+enum ISODateTransformer: Transformer {
+	public static func transform(_ from: String) throws -> Date {
+		// parse Date out of input and return
+	}
+}
+```
+
+Then you define the attribute as a `TransformAttribute` instead of an `Attribute`:
+```
+let date: TransformAttribute<String, ISODateTransformer>
+```
+
+Note that the first generic parameter of `TransformAttribute` is the type you expect to decode from JSON, not the type you want to end up with after transformation.
 
 ### `JSONAPIDocument`
 

@@ -139,15 +139,22 @@ public extension Entity {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T>(_ path: KeyPath<EntityType.Attributes, Attribute<T>>) -> T {
+	subscript<T, TFRM: Transformer>(_ path: KeyPath<EntityType.Attributes, TransformAttribute<T, TFRM>>) -> TFRM.To {
 		return attributes[keyPath: path].value
 	}
 	
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T>(_ path: KeyPath<EntityType.Attributes, Attribute<T>?>) -> T? {
+	subscript<T, TFRM: Transformer>(_ path: KeyPath<EntityType.Attributes, TransformAttribute<T, TFRM>?>) -> TFRM.To? {
 		return attributes[keyPath: path]?.value
+	}
+	
+	/// Access the attribute at the given keypath. This just
+	/// allows you to write `entity[\.propertyName]` instead
+	/// of `entity.relationships.propertyName`.
+	subscript<T, TFRM: Transformer, U>(_ path: KeyPath<EntityType.Attributes, TransformAttribute<T, TFRM>?>) -> U? where TFRM.To == U? {
+		return attributes[keyPath: path].flatMap { $0.value }
 	}
 }
 

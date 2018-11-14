@@ -113,3 +113,40 @@ let entity_broken_missing_nullable_attribute = """
 	}
 }
 """.data(using: .utf8)!
+
+let entity_null_optional_nullable_attribute = """
+{
+	"id": "1",
+	"type": "seventh_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeHereMaybeNull": null
+	}
+}
+""".data(using: .utf8)!
+
+let entity_non_null_optional_nullable_attribute = """
+{
+	"id": "1",
+	"type": "seventh_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeHereMaybeNull": "World"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_int_to_string_attribute = """
+{
+	"id": "1",
+	"type": "eighth_test_entities",
+	"attributes": {
+		"string": "22",
+		"int": 22,
+		"stringFromInt": 22,
+		"plus": 22,
+		"doubleFromInt": 22,
+		"nullToString": null
+	}
+}
+""".data(using: .utf8)!

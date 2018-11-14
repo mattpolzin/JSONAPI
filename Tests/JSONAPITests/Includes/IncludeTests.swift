@@ -115,8 +115,8 @@ extension IncludedTests {
 		public static var type: String { return "test_entity1" }
 		
 		public struct Attributes: JSONAPI.Attributes {
-			let foo: String
-			let bar: Int
+			let foo: Attribute<String>
+			let bar: Attribute<Int>
 		}
 	}
 	
@@ -132,8 +132,8 @@ extension IncludedTests {
 		}
 		
 		public struct Attributes: JSONAPI.Attributes {
-			let foo: String
-			let bar: Int
+			let foo: Attribute<String>
+			let bar: Attribute<Int>
 		}
 	}
 	
