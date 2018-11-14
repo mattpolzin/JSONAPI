@@ -60,7 +60,7 @@ The primary goals of this framework are:
 
 ### Misc
 - [ ] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
-- [ ] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
+- [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
 - [ ] `EntityType` validator (using reflection)
 - [ ] Property-based testing (using `SwiftCheck`)
 - [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
@@ -82,8 +82,8 @@ enum PersonDescription: IdentifiedEntityDescription {
 	typealias Identifier = Id<String, PersonDescription>
 
 	struct Attributes: JSONAPI.Attributes {
-		let name: [String]
-		let favoriteColor: String
+		let name: Attribute<[String]>
+		let favoriteColor: Attribute<String>
 	}
 
 	struct Relationships: JSONAPI.Relationships {
@@ -152,7 +152,17 @@ let friendIds: [Person.Identifier] = person ~> \.friends
 
 ### `Attributes`
 
-The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types. This is the place to store all attributes of an entity.
+The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute` `struct`. This is the place to store all attributes of an entity.
+
+To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
+```
+let optionalAttribute: Attribute<String>?
+```
+
+To describe an attribute that is expected to exist but might have a `null` value, you make the value within the `Attribute` optional:
+```
+let nullableAttribute: Attribute<String?>
+```
 
 An entity that does not have attributes can be described by adding the following to an `EntityDescription`:
 ```

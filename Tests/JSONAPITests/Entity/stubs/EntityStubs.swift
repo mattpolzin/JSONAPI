@@ -43,7 +43,8 @@ let entity_some_relationships_some_attributes = """
 "type": "fourth_test_entities",
 "attributes": {
 "word": "coolio",
-"number": 992299
+"number": 992299,
+"array": [12.3, 4, 0.1]
 },
 "relationships": {
 "other": {
@@ -53,5 +54,62 @@ let entity_some_relationships_some_attributes = """
 }
 }
 }
+}
+""".data(using: .utf8)!
+
+let entity_one_omitted_attribute = """
+{
+	"id": "1",
+	"type": "sixth_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeNull": "World"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_one_null_attribute = """
+{
+	"id": "1",
+	"type": "sixth_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeHere": "World",
+		"maybeNull": null
+	}
+}
+""".data(using: .utf8)!
+
+let entity_all_attributes = """
+{
+	"id": "1",
+	"type": "sixth_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeHere": "World",
+		"maybeNull": "!"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_one_null_and_one_missing_attribute = """
+{
+	"id": "1",
+	"type": "sixth_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeNull": null
+	}
+}
+""".data(using: .utf8)!
+
+let entity_broken_missing_nullable_attribute = """
+{
+	"id": "1",
+	"type": "sixth_test_entities",
+	"attributes": {
+		"here": "Hello",
+		"maybeHere": "World"
+	}
 }
 """.data(using: .utf8)!

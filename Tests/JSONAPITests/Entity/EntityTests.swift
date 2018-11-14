@@ -81,6 +81,69 @@ class EntityTests: XCTestCase {
 		XCTAssertEqual(e[\.number], 992299)
 		XCTAssertEqual((e ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 	}
+	
+}
+
+// MARK: Attribute omission and nullification
+extension EntityTests {
+	
+	func test_entityOneOmittedAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_omitted_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertNil(e[\.maybeHere])
+		XCTAssertEqual(e[\.maybeNull], "World")
+	}
+	
+	func test_entityOneNullAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_null_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertEqual(e[\.maybeHere], "World")
+		XCTAssertNil(e[\.maybeNull])
+	}
+	
+	func test_entityAllAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_all_attributes)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertEqual(e[\.maybeHere], "World")
+		XCTAssertEqual(e[\.maybeNull], "!")
+	}
+	
+	func test_entityOneNullAndOneOmittedAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_null_and_one_missing_attribute)
+		
+		XCTAssertNotNil(entity)
+		
+		guard let e = entity else { return }
+		
+		XCTAssertEqual(e[\.here], "Hello")
+		XCTAssertNil(e[\.maybeHere])
+		XCTAssertNil(e[\.maybeNull])
+	}
+	
+	func test_entityBrokenNullableOmittedAttribute() {
+		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_broken_missing_nullable_attribute)
+		
+		XCTAssertNil(entity)
+	}
+}
+
+// MARK: Test Types
+extension EntityTests {
 
 	enum TestEntityType1: EntityDescription {
 		static var type: String { return "test_entities"}
@@ -128,8 +191,9 @@ class EntityTests: XCTestCase {
 		}
 		
 		struct Attributes: JSONAPI.Attributes {
-			let word: String
-			let number: Int
+			let word: Attribute<String>
+			let number: Attribute<Int>
+			let array: Attribute<[Double]>
 		}
 	}
 	
@@ -142,11 +206,26 @@ class EntityTests: XCTestCase {
 		typealias Relationships = NoRelatives
 		
 		struct Attributes: JSONAPI.Attributes {
-			let floater: Double
+			let floater: Attribute<Double>
 		}
 	}
 	
 	typealias TestEntity5 = Entity<TestEntityType5>
+	
+	enum TestEntityType6: EntityDescription {
+		static var type: String { return "sixth_test_entities" }
+		
+		typealias Identifier = Id<String, TestEntityType6>
+		typealias Relationships = NoRelatives
+		
+		struct Attributes: JSONAPI.Attributes {
+			let here: Attribute<String>
+			let maybeHere: Attribute<String>?
+			let maybeNull: Attribute<String?>
+		}
+	}
+	
+	typealias TestEntity6 = Entity<TestEntityType6>
 }
 
 extension Entity where EntityType == EntityTests.TestEntityType2 {

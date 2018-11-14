@@ -11,8 +11,13 @@ extension DocumentTests {
 
 extension EntityTests {
     static let __allTests = [
+        ("test_entityAllAttribute", test_entityAllAttribute),
+        ("test_entityBrokenNullableOmittedAttribute", test_entityBrokenNullableOmittedAttribute),
         ("test_EntityNoRelationshipsNoAttributes", test_EntityNoRelationshipsNoAttributes),
         ("test_EntityNoRelationshipsSomeAttributes", test_EntityNoRelationshipsSomeAttributes),
+        ("test_entityOneNullAndOneOmittedAttribute", test_entityOneNullAndOneOmittedAttribute),
+        ("test_entityOneNullAttribute", test_entityOneNullAttribute),
+        ("test_entityOneOmittedAttribute", test_entityOneOmittedAttribute),
         ("test_EntitySomeRelationshipsNoAttributes", test_EntitySomeRelationshipsNoAttributes),
         ("test_EntitySomeRelationshipsSomeAttributes", test_EntitySomeRelationshipsSomeAttributes),
         ("test_relationship_access", test_relationship_access),

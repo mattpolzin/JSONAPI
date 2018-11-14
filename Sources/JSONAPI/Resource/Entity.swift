@@ -139,8 +139,15 @@ public extension Entity {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T>(_ path: KeyPath<EntityType.Attributes, T>) -> T {
-		return attributes[keyPath: path]
+	subscript<T>(_ path: KeyPath<EntityType.Attributes, Attribute<T>>) -> T {
+		return attributes[keyPath: path].value
+	}
+	
+	/// Access the attribute at the given keypath. This just
+	/// allows you to write `entity[\.propertyName]` instead
+	/// of `entity.relationships.propertyName`.
+	subscript<T>(_ path: KeyPath<EntityType.Attributes, Attribute<T>?>) -> T? {
+		return attributes[keyPath: path]?.value
 	}
 }
 
