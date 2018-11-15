@@ -15,7 +15,7 @@ class RelationshipTests: XCTestCase {
 		let entity2 = TestEntity1()
 		let entity3 = TestEntity1()
 		let entity4 = TestEntity1()
-		let relationship = ToManyRelationship<TestEntityType1>(entities: [entity1, entity2, entity3, entity4])
+		let relationship = ToManyRelationship<TestEntity1>(entities: [entity1, entity2, entity3, entity4])
 		
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
@@ -26,14 +26,14 @@ class RelationshipTests: XCTestCase {
 		let entity2 = TestEntity1()
 		let entity3 = TestEntity1()
 		let entity4 = TestEntity1()
-		let relationship = ToManyRelationship<TestEntityType1>(relationships: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
+		let relationship = ToManyRelationship<TestEntity1>(relationships: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
 		
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
 	}
 	
 	func test_ToOneRelationship() {
-		let relationship = try? JSONDecoder().decode(ToOneRelationship<TestEntityType1>.self, from: to_one_relationship)
+		let relationship = try? JSONDecoder().decode(ToOneRelationship<TestEntity1>.self, from: to_one_relationship)
 		
 		XCTAssertNotNil(relationship)
 		
@@ -42,7 +42,7 @@ class RelationshipTests: XCTestCase {
 	}
 	
 	func test_ToManyRelationship() {
-		let relationship = try? JSONDecoder().decode(ToManyRelationship<TestEntityType1>.self, from: to_many_relationship)
+		let relationship = try? JSONDecoder().decode(ToManyRelationship<TestEntity1>.self, from: to_many_relationship)
 		
 		XCTAssertNotNil(relationship)
 		
@@ -60,4 +60,29 @@ class RelationshipTests: XCTestCase {
 	}
 	
 	typealias TestEntity1 = Entity<TestEntityType1>
+}
+
+// MARK: omission and nullification
+extension RelationshipTests {
+	func test_omittedRelationship() {
+		// TODO: fill out test
+	}
+
+	enum TestEntityType2: EntityDescription {
+		public static var type: String { return "test_entity2" }
+
+		typealias Identifier = Id<String, TestEntityType2>
+
+		typealias Attributes = NoAttributes
+
+		public struct Relationships: JSONAPI.Relationships {
+			let maybeOne: ToOneRelationship<TestEntity1>?
+			let maybeMore: ToManyRelationship<TestEntity1>?
+
+			let nullableOne: ToOneRelationship<TestEntity1?>
+
+			// a nullable many is not allowed. it should
+			// just be an empty array.
+		}
+	}
 }

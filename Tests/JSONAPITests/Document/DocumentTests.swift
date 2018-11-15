@@ -91,7 +91,7 @@ class DocumentTests: XCTestCase {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let author: ToOneRelationship<AuthorType>
+			let author: ToOneRelationship<Author>
 		}
 	}
 	

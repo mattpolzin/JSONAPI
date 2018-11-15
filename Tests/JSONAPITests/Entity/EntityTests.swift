@@ -165,7 +165,6 @@ extension EntityTests {
 }
 
 // MARK: Attribute Transformation
-
 extension EntityTests {
 	func test_IntToString() {
 		let entity = try? JSONDecoder().decode(TestEntity8.self, from: entity_int_to_string_attribute)
@@ -193,9 +192,9 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 		typealias Relationships = NoRelatives
 	}
-	
+
 	typealias TestEntity1 = Entity<TestEntityType1>
-	
+
 	enum TestEntityType2: EntityDescription {
 		static var type: String { return "second_test_entities"}
 		
@@ -203,12 +202,12 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntityType1>
+			let other: ToOneRelationship<TestEntity1>
 		}
 	}
-	
+
 	typealias TestEntity2 = Entity<TestEntityType2>
-	
+
 	enum TestEntityType3: EntityDescription {
 		static var type: String { return "third_test_entities"}
 		
@@ -216,72 +215,72 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let others: ToManyRelationship<TestEntityType1>
+			let others: ToManyRelationship<TestEntity1>
 		}
 	}
 
 	typealias TestEntity3 = Entity<TestEntityType3>
-	
+
 	enum TestEntityType4: EntityDescription {
 		static var type: String { return "fourth_test_entities"}
-		
+
 		typealias Identifier = Id<String, TestEntityType4>
-		
+
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntityType2>
+			let other: ToOneRelationship<TestEntity2>
 		}
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let word: Attribute<String>
 			let number: Attribute<Int>
 			let array: Attribute<[Double]>
 		}
 	}
-	
+
 	typealias TestEntity4 = Entity<TestEntityType4>
-	
+
 	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
-		
+
 		typealias Identifier = Id<String, TestEntityType5>
 		typealias Relationships = NoRelatives
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let floater: Attribute<Double>
 		}
 	}
-	
+
 	typealias TestEntity5 = Entity<TestEntityType5>
-	
+
 	enum TestEntityType6: EntityDescription {
 		static var type: String { return "sixth_test_entities" }
-		
+
 		typealias Identifier = Id<String, TestEntityType6>
 		typealias Relationships = NoRelatives
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let here: Attribute<String>
 			let maybeHere: Attribute<String>?
 			let maybeNull: Attribute<String?>
 		}
 	}
-	
+
 	typealias TestEntity6 = Entity<TestEntityType6>
-	
+
 	enum TestEntityType7: EntityDescription {
 		static var type: String { return "seventh_test_entities" }
-		
+
 		typealias Identifier = Id<String, TestEntityType7>
 		typealias Relationships = NoRelatives
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let here: Attribute<String>
 			let maybeHereMaybeNull: Attribute<String?>?
 		}
 	}
-	
+
 	typealias TestEntity7 = Entity<TestEntityType7>
-	
+
 	enum TestEntityType8: EntityDescription {
 		static var type: String { return "eighth_test_entities" }
 		
@@ -327,13 +326,13 @@ extension EntityTests {
 }
 
 extension Entity where EntityType == EntityTests.TestEntityType2 {
-	init(other: ToOneRelationship<EntityTests.TestEntityType1>) {
+	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(other: other))
 	}
 }
 
 extension Entity where EntityType == EntityTests.TestEntityType3 {
-	init(others: ToManyRelationship<EntityTests.TestEntityType1>) {
+	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(others: others))
 	}
 }

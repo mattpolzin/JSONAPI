@@ -10,7 +10,7 @@
 /// You should use the `ToOneRelationship` and `ToManyRelationship`
 /// concrete types.
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-public protocol Relationship: Equatable, Encodable {
+public protocol Relationship: Equatable, Encodable, CustomStringConvertible {
 	associatedtype EntityType: JSONAPI.EntityDescription where EntityType.Identifier: IdType
 	var ids: [EntityType.Identifier] { get }
 }
@@ -19,7 +19,9 @@ public protocol Relationship: Equatable, Encodable {
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<EntityDescription>`
-public struct ToOneRelationship<EntityType: JSONAPI.EntityDescription>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
+public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Relationship, Decodable {
+	public typealias EntityType = Relatable.Description
+
 	public let id: EntityType.Identifier
 
 	public init(entity: Entity<EntityType>) {
@@ -35,7 +37,9 @@ public struct ToOneRelationship<EntityType: JSONAPI.EntityDescription>: Equatabl
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
-public struct ToManyRelationship<EntityType: JSONAPI.EntityDescription>: Equatable, Relationship, Decodable where EntityType.Identifier: IdType {
+public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Relationship, Decodable {
+	public typealias EntityType = Relatable.Description
+
 	public let ids: [EntityType.Identifier]
 	
 	public init(entities: [Entity<EntityType>]) {
@@ -49,6 +53,24 @@ public struct ToManyRelationship<EntityType: JSONAPI.EntityDescription>: Equatab
 	public static var none: ToManyRelationship {
 		return .init(entities: [])
 	}
+}
+
+/// The OptionalRelatable protocol ONLY describes
+/// Optional<T: Relatable> types.
+public protocol OptionalRelatable {
+	associatedtype Description: EntityDescription where Description.Identifier: IdType
+}
+
+/// The Relatable protocol describes anything that
+/// has an EntityDescription
+public protocol Relatable: OptionalRelatable {}
+
+extension Entity: Relatable, OptionalRelatable where EntityType.Identifier: IdType {
+	public typealias Description = EntityType
+}
+
+extension Optional: OptionalRelatable where Wrapped: Relatable {
+	public typealias Description = Wrapped.Description
 }
 
 // MARK: Codable
@@ -119,4 +141,13 @@ extension ToManyRelationship {
 			try identifier.encode(EntityType.type, forKey: .entityType)
 		}
 	}
+}
+
+// MARK: CustomStringDescribable
+public extension ToOneRelationship {
+	var description: String { return "Relationship(\(String(describing: id)))" }
+}
+
+public extension ToManyRelationship {
+	var description: String { return "Relationship(\(String(describing: ids)))" }
 }

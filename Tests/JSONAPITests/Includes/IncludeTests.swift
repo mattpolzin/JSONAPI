@@ -6,6 +6,18 @@ class IncludedTests: XCTestCase {
 
 	let decoder = JSONDecoder()
 	
+	func test_zeroIncludes() {
+		let maybeIncludes = try? decoder.decode(Includes<NoIncludes>.self, from: two_same_type_includes)
+		
+		XCTAssertNotNil(maybeIncludes)
+		
+		guard let includes = maybeIncludes else {
+			return
+		}
+		
+		XCTAssertEqual(includes.count, 0)
+	}
+	
 	func test_OneInclude() {
 		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntityType>>.self, from: one_include)
 		
@@ -128,7 +140,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity2" }
 		
 		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntityType>
+			let entity1: ToOneRelationship<TestEntity>
 		}
 		
 		public struct Attributes: JSONAPI.Attributes {
@@ -147,8 +159,8 @@ extension IncludedTests {
 		public static var type: String { return "test_entity3" }
 		
 		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntityType>
-			let entity2: ToManyRelationship<TestEntityType2>
+			let entity1: ToOneRelationship<TestEntity>
+			let entity2: ToManyRelationship<TestEntity2>
 		}
 	}
 	
@@ -186,7 +198,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity6" }
 		
 		struct Relationships: JSONAPI.Relationships {
-			let entity4: ToOneRelationship<TestEntityType4>
+			let entity4: ToOneRelationship<TestEntity4>
 		}
 	}
 	

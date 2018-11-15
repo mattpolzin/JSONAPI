@@ -58,10 +58,21 @@ The primary goals of this framework are:
 - [ ] `links`
 - [ ] `meta`
 
+### EntityDescription Validator
+- [ ] Disallow optional array in `Attribute` and `Relationship` (should be empty array, not `null`).
+- [ ] Only allow `Attribute` and `TransformAttribute` within `Attributes` struct.
+- [ ] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
+
+### Strict Decoding/Encoding Settings
+- [ ] Error (potentially while still encoding/decoding successfully) if an included entity is not related to a primary entity (Turned off by default).
+
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
-- [ ] `EntityType` validator (using reflection)
+- [ ] Fix `ToOneRelationship` so that it is possible to specify an optional relationship where the value is `null` rather than the key being omitted.
+- [ ] Conform to `CustomStringConvertible`
+- [x] For `NoIncludes`, do not even loop over the "included" JSON API section if it exists.
+- [ ] `EntityDescription` validator (using reflection)
 - [ ] Property-based testing (using `SwiftCheck`)
 - [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.

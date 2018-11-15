@@ -129,7 +129,7 @@ extension Entity where EntityType.Attributes == NoAttributes, EntityType.Relatio
 public extension Entity where EntityType.Identifier: IdType {
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
-	public var pointer: ToOneRelationship<EntityType> {
+	public var pointer: ToOneRelationship<Entity> {
 		return ToOneRelationship(entity: self)
 	}
 }
@@ -163,14 +163,14 @@ public extension Entity {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntityType: JSONAPI.EntityDescription>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToOneRelationship<OtherEntityType>>) -> OtherEntityType.Identifier {
+	public static func ~><OtherEntity: Relatable>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.Description.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
-	
+
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntityType: JSONAPI.EntityDescription>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToManyRelationship<OtherEntityType>>) -> [OtherEntityType.Identifier] {
+	public static func ~><OtherEntity: Relatable>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Description.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 }

@@ -21,6 +21,12 @@ public struct Includes<I: IncludeDecoder>: Decodable {
 	public init(from decoder: Decoder) throws {
 		var container = try decoder.unkeyedContainer()
 		
+		// If not parsing includes, no need to loop over them.
+		guard I.self != NoIncludes.self else {
+			values = []
+			return
+		}
+		
 		var valueAggregator = [I]()
 		while !container.isAtEnd {
 			valueAggregator.append(try container.decode(I.self))
