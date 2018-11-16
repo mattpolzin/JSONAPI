@@ -39,175 +39,204 @@ class EntityTests: XCTestCase {
 		
 		XCTAssertEqual(entity2.relationships.other.ids, [entity1.id])
 	}
-	
-	func test_EntityNoRelationshipsNoAttributes() {
-		let entity = try? JSONDecoder().decode(TestEntity1.self, from: entity_no_relationships_no_attributes)
-		
-		XCTAssertNotNil(entity)
-		XCTAssert(type(of: entity?.relationships) == NoRelatives?.self)
-		XCTAssert(type(of: entity?.attributes) == NoAttributes?.self)
-	}
-	
-	func test_EntityNoRelationshipsSomeAttributes() {
-		let entity = try? JSONDecoder().decode(TestEntity5.self, from: entity_no_relationships_some_attributes)
-		
-		XCTAssertNotNil(entity)
-		XCTAssert(type(of: entity?.relationships) == NoRelatives?.self)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.floater], 123.321)
-	}
 }
 
 // MARK: - Encode/Decode
 extension EntityTests {
 
+	func test_EntityNoRelationshipsNoAttributes() {
+		let entity = decodedTestType(type: TestEntity1.self,
+								  data: entity_no_relationships_no_attributes)
+
+		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
+		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
+	}
+
+	func test_EntityNoRelationshipsNoAttributes_encode() {
+		test_DecodeEncodeEquality(type: TestEntity1.self,
+								   data: entity_no_relationships_no_attributes)
+	}
+
+	func test_EntityNoRelationshipsSomeAttributes() {
+		let entity = decodedTestType(type: TestEntity5.self,
+								   data: entity_no_relationships_some_attributes)
+
+		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
+
+		XCTAssertEqual(entity[\.floater], 123.321)
+	}
+
+	func test_EntityNoRelationshipsSomeAttributes_encode() {
+		test_DecodeEncodeEquality(type: TestEntity5.self,
+								   data: entity_no_relationships_some_attributes)
+	}
+
 	func test_EntitySomeRelationshipsNoAttributes() {
-		let entity = try? JSONDecoder().decode(TestEntity3.self, from: entity_some_relationships_no_attributes)
+		let entity = decodedTestType(type: TestEntity3.self,
+								   data: entity_some_relationships_no_attributes)
+
+		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
 		
-		XCTAssertNotNil(entity)
-		XCTAssert(type(of: entity?.attributes) == NoAttributes?.self)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual((e ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+	}
+
+	func test_EntitySomeRelationshipsNoAttributes_encode() {
+		test_DecodeEncodeEquality(type: TestEntity3.self,
+								  data: entity_some_relationships_no_attributes)
 	}
 	
 	func test_EntitySomeRelationshipsSomeAttributes() {
-		let entity = try? JSONDecoder().decode(TestEntity4.self, from: entity_some_relationships_some_attributes)
+		let entity = decodedTestType(type: TestEntity4.self,
+								   data: entity_some_relationships_some_attributes)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.word], "coolio")
-		XCTAssertEqual(e[\.number], 992299)
-		XCTAssertEqual((e ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(entity[\.word], "coolio")
+		XCTAssertEqual(entity[\.number], 992299)
+		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 	}
-	
+
+	func test_EntitySomeRelationshipsSomeAttributes_encode() {
+		test_DecodeEncodeEquality(type: TestEntity4.self,
+								   data: entity_some_relationships_some_attributes)
+	}
 }
 
 // MARK: Attribute omission and nullification
 extension EntityTests {
 	
 	func test_entityOneOmittedAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_omitted_attribute)
+		let entity = decodedTestType(type: TestEntity6.self,
+								   data: entity_one_omitted_attribute)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertNil(e[\.maybeHere])
-		XCTAssertEqual(e[\.maybeNull], "World")
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertNil(entity[\.maybeHere])
+		XCTAssertEqual(entity[\.maybeNull], "World")
+	}
+
+	func test_entityOneOmittedAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity6.self,
+								   data: entity_one_omitted_attribute)
 	}
 	
 	func test_entityOneNullAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_null_attribute)
+		let entity = decodedTestType(type: TestEntity6.self,
+								   data: entity_one_null_attribute)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertEqual(e[\.maybeHere], "World")
-		XCTAssertNil(e[\.maybeNull])
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertEqual(entity[\.maybeHere], "World")
+		XCTAssertNil(entity[\.maybeNull])
+	}
+
+	func test_entityOneNullAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity6.self,
+								   data: entity_one_null_attribute)
 	}
 	
 	func test_entityAllAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_all_attributes)
+		let entity = decodedTestType(type: TestEntity6.self,
+								   data: entity_all_attributes)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertEqual(e[\.maybeHere], "World")
-		XCTAssertEqual(e[\.maybeNull], "!")
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertEqual(entity[\.maybeHere], "World")
+		XCTAssertEqual(entity[\.maybeNull], "!")
+	}
+
+	func test_entityAllAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity6.self,
+								   data: entity_all_attributes)
 	}
 	
 	func test_entityOneNullAndOneOmittedAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_one_null_and_one_missing_attribute)
+		let entity = decodedTestType(type: TestEntity6.self,
+								   data: entity_one_null_and_one_missing_attribute)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertNil(e[\.maybeHere])
-		XCTAssertNil(e[\.maybeNull])
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertNil(entity[\.maybeHere])
+		XCTAssertNil(entity[\.maybeNull])
+	}
+
+	func test_entityOneNullAndOneOmittedAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity6.self,
+								   data: entity_one_null_and_one_missing_attribute)
 	}
 	
 	func test_entityBrokenNullableOmittedAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity6.self, from: entity_broken_missing_nullable_attribute)
-		
-		XCTAssertNil(entity)
+		XCTAssertThrowsError(try JSONDecoder().decode(TestEntity6.self,
+								   from: entity_broken_missing_nullable_attribute))
 	}
 	
 	func test_NullOptionalNullableAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity7.self, from: entity_null_optional_nullable_attribute)
+		let entity = decodedTestType(type: TestEntity7.self,
+								   data: entity_null_optional_nullable_attribute)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertNil(e[\.maybeHereMaybeNull])
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertNil(entity[\.maybeHereMaybeNull])
+	}
+
+	func test_NullOptionalNullableAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity7.self,
+								   data: entity_null_optional_nullable_attribute)
 	}
 	
 	func test_NonNullOptionalNullableAttribute() {
-		let entity = try? JSONDecoder().decode(TestEntity7.self, from: entity_non_null_optional_nullable_attribute)
-		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.here], "Hello")
-		XCTAssertEqual(e[\.maybeHereMaybeNull], "World")
+		let entity = decodedTestType(type: TestEntity7.self,
+								   data: entity_non_null_optional_nullable_attribute)
+
+		XCTAssertEqual(entity[\.here], "Hello")
+		XCTAssertEqual(entity[\.maybeHereMaybeNull], "World")
+	}
+
+	func test_NonNullOptionalNullableAttribute_encode() {
+		test_DecodeEncodeEquality(type: TestEntity7.self,
+								   data: entity_non_null_optional_nullable_attribute)
 	}
 }
 
 // MARK: Attribute Transformation
 extension EntityTests {
 	func test_IntToString() {
-		let entity = try? JSONDecoder().decode(TestEntity8.self, from: entity_int_to_string_attribute)
+		let entity = decodedTestType(type: TestEntity8.self,
+								   data: entity_int_to_string_attribute)
 		
-		XCTAssertNotNil(entity)
-		
-		guard let e = entity else { return }
-		
-		XCTAssertEqual(e[\.string], "22")
-		XCTAssertEqual(e[\.int], 22)
-		XCTAssertEqual(e[\.stringFromInt], "22")
-		XCTAssertEqual(e[\.plus], 122)
-		XCTAssertEqual(e[\.doubleFromInt], 22.0)
-		XCTAssertEqual(e[\.nullToString], "nil")
+		XCTAssertEqual(entity[\.string], "22")
+		XCTAssertEqual(entity[\.int], 22)
+		XCTAssertEqual(entity[\.stringFromInt], "22")
+		XCTAssertEqual(entity[\.plus], 122)
+		XCTAssertEqual(entity[\.doubleFromInt], 22.0)
+		XCTAssertEqual(entity[\.nullToString], "nil")
+	}
+
+	func test_IntToString_encode() {
+		test_DecodeEncodeEquality(type: TestEntity8.self,
+								   data: entity_int_to_string_attribute)
 	}
 }
 
 // MARK: Relationship omission and nullification
 extension EntityTests {
 	func test_nullableRelationshipNotNull() {
-		let entity = try? JSONDecoder().decode(TestEntity9.self, from: entity_omitted_relationship)
+		let entity = decodedTestType(type: TestEntity9.self,
+								   data: entity_omitted_relationship)
 
-		XCTAssertNotNil(entity)
+		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
+		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+	}
 
-		guard let e = entity else { return }
-
-		XCTAssertEqual((e ~> \.nullableOne)?.rawValue, "3323")
-		XCTAssertEqual((e ~> \.one).rawValue, "4459")
+	func test_nullableRelationshipNotNull_encode() {
+		test_DecodeEncodeEquality(type: TestEntity9.self,
+								   data: entity_omitted_relationship)
 	}
 
 	func test_nullableRelationshipIsNull() {
-		let entity = try? JSONDecoder().decode(TestEntity9.self, from: entity_nulled_relationship)
+		let entity = decodedTestType(type: TestEntity9.self,
+								   data: entity_nulled_relationship)
 
-		XCTAssertNotNil(entity)
+		XCTAssertNil(entity ~> \.nullableOne)
+		XCTAssertEqual((entity ~> \.one).rawValue, "4452")
+	}
 
-		guard let e = entity else { return }
-
-		XCTAssertNil(e ~> \.nullableOne)
-		XCTAssertEqual((e ~> \.one).rawValue, "4452")
+	func test_nullableRelationshipIsNull_encode() {
+		test_DecodeEncodeEquality(type: TestEntity9.self,
+								   data: entity_nulled_relationship)
 	}
 }
 
@@ -215,13 +244,15 @@ extension EntityTests {
 
 extension EntityTests {
 	func test_RleationshipsOfSameType() {
-		let entity = try? JSONDecoder().decode(TestEntity10.self, from: entity_self_ref_relationship)
+		let entity = decodedTestType(type: TestEntity10.self,
+								   data: entity_self_ref_relationship)
 
-		XCTAssertNotNil(entity)
+		XCTAssertEqual((entity ~> \.selfRef).rawValue, "1")
+	}
 
-		guard let e = entity else { return }
-
-		XCTAssertEqual((e ~> \.selfRef).rawValue, "1")
+	func test_RleationshipsOfSameType_encode() {
+		test_DecodeEncodeEquality(type: TestEntity10.self,
+								   data: entity_self_ref_relationship)
 	}
 }
 
@@ -229,25 +260,29 @@ extension EntityTests {
 
 extension EntityTests {
 	func test_UnidentifiedEntity() {
-		let entity = try? JSONDecoder().decode(UnidentifiedTestEntity.self, from: entity_unidentified)
+		let entity = decodedTestType(type: UnidentifiedTestEntity.self,
+								   data: entity_unidentified)
 
-		XCTAssertNotNil(entity)
+		XCTAssertNil(entity[\.me])
+		XCTAssertEqual(entity.id, Unidentified())
+	}
 
-		guard let e = entity else { return }
-
-		XCTAssertNil(e[\.me])
-		XCTAssertEqual(e.id, Unidentified())
+	func test_UnidentifiedEntity_encode() {
+		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
+								   data: entity_unidentified)
 	}
 
 	func test_UnidentifiedEntityWithAttributes() {
-		let entity = try? JSONDecoder().decode(UnidentifiedTestEntity.self, from: entity_unidentified_with_attributes)
+		let entity = decodedTestType(type: UnidentifiedTestEntity.self,
+								   data: entity_unidentified_with_attributes)
 
-		XCTAssertNotNil(entity)
+		XCTAssertEqual(entity[\.me], "unknown")
+		XCTAssertEqual(entity.id, Unidentified())
+	}
 
-		guard let e = entity else { return }
-
-		XCTAssertEqual(e[\.me], "unknown")
-		XCTAssertEqual(e.id, Unidentified())
+	func test_UnidentifiedEntityWithAttributes_encode() {
+		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
+								   data: entity_unidentified_with_attributes)
 	}
 }
 
