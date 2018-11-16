@@ -48,6 +48,7 @@ public protocol CreatableIdType: IdType {
 /// An Entity ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
 public struct Id<RawType: RawIdType, EntityDescription: JSONAPI.EntityDescription>: IdType {
+
 	public let rawValue: RawType
 	
 	public init(rawValue: RawType) {

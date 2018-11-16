@@ -51,15 +51,23 @@ public protocol IdentifiedEntityDescription: EntityDescription where Identifier:
 /// new `Entity`.
 public protocol UnidentifiedEntityDescription: EntityDescription where Identifier == Unidentified {}
 
+/// EntityType is the protocol that Entity conforms to. This
+/// protocol lets other types accept any Entity as a generic
+/// specialization.
+public protocol EntityType: Codable, Equatable {
+	associatedtype Description: EntityDescription
+	associatedtype Identifier: Equatable & Codable
+}
+
 /// An `Entity` is a single model type that can be
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<EntityDescription: JSONAPI.EntityDescription>: Codable, Equatable {
-	public typealias Identifier = EntityDescription.Identifier
+public struct Entity<Description: JSONAPI.EntityDescription>: EntityType {
+	public typealias Identifier = Description.Identifier
 	
 	/// The JSON API compliant "type" of this `Entity`.
-	public static var type: String { return EntityDescription.type }
+	public static var type: String { return Description.type }
 	
 	/// The `Entity`'s Id. This can be of type `Unidentified` if
 	/// the entity is being created clientside and the
@@ -68,12 +76,12 @@ public struct Entity<EntityDescription: JSONAPI.EntityDescription>: Codable, Equ
 	public let id: Identifier
 	
 	/// The JSON API compliant attributes of this `Entity`.
-	public let attributes: EntityDescription.Attributes
+	public let attributes: Description.Attributes
 	
 	/// The JSON API compliant relationships of this `Entity`.
-	public let relationships: EntityDescription.Relationships
+	public let relationships: Description.Relationships
 	
-	public init(id: EntityDescription.Identifier, attributes: EntityDescription.Attributes, relationships: EntityDescription.Relationships) {
+	public init(id: Description.Identifier, attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.id = id
 		self.attributes = attributes
 		self.relationships = relationships
@@ -81,52 +89,52 @@ public struct Entity<EntityDescription: JSONAPI.EntityDescription>: Codable, Equ
 }
 
 // MARK: Convenience initializers
-extension Entity where EntityDescription.Identifier: CreatableIdType {
-	public init(attributes: EntityDescription.Attributes, relationships: EntityDescription.Relationships) {
-		self.id = EntityDescription.Identifier()
+extension Entity where Description.Identifier: CreatableIdType {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
+		self.id = Description.Identifier()
 		self.attributes = attributes
 		self.relationships = relationships
 	}
 }
 
-extension Entity where EntityDescription.Attributes == NoAttributes {
-	public init(id: EntityDescription.Identifier, relationships: EntityDescription.Relationships) {
+extension Entity where Description.Attributes == NoAttributes {
+	public init(id: Description.Identifier, relationships: Description.Relationships) {
 		self.init(id: id, attributes: NoAttributes(), relationships: relationships)
 	}
 }
 
-extension Entity where EntityDescription.Attributes == NoAttributes, EntityDescription.Identifier: CreatableIdType {
-	public init(relationships: EntityDescription.Relationships) {
+extension Entity where Description.Attributes == NoAttributes, Description.Identifier: CreatableIdType {
+	public init(relationships: Description.Relationships) {
 		self.init(attributes: NoAttributes(), relationships: relationships)
 	}
 }
 
-extension Entity where EntityDescription.Relationships == NoRelatives {
-	public init(id: EntityDescription.Identifier, attributes: EntityDescription.Attributes) {
+extension Entity where Description.Relationships == NoRelatives {
+	public init(id: Description.Identifier, attributes: Description.Attributes) {
 		self.init(id: id, attributes: attributes, relationships: NoRelatives())
 	}
 }
 
-extension Entity where EntityDescription.Relationships == NoRelatives, EntityDescription.Identifier: CreatableIdType {
-	public init(attributes: EntityDescription.Attributes) {
+extension Entity where Description.Relationships == NoRelatives, Description.Identifier: CreatableIdType {
+	public init(attributes: Description.Attributes) {
 		self.init(attributes: attributes, relationships: NoRelatives())
 	}
 }
 
-extension Entity where EntityDescription.Attributes == NoAttributes, EntityDescription.Relationships == NoRelatives {
-	public init(id: EntityDescription.Identifier) {
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelatives {
+	public init(id: Description.Identifier) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelatives())
 	}
 }
 
-extension Entity where EntityDescription.Attributes == NoAttributes, EntityDescription.Relationships == NoRelatives, EntityDescription.Identifier: CreatableIdType {
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelatives, Description.Identifier: CreatableIdType {
 	public init() {
 		self.init(attributes: NoAttributes(), relationships: NoRelatives())
 	}
 }
 
 // MARK: Pointer for Relationships use.
-public extension Entity where EntityDescription.Identifier: IdType {
+public extension Entity where Description.Identifier: IdType {
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
 	public var pointer: ToOneRelationship<Entity> {
@@ -139,21 +147,21 @@ public extension Entity {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer>(_ path: KeyPath<EntityDescription.Attributes, TransformAttribute<T, TFRM>>) -> TFRM.To {
+	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformAttribute<T, TFRM>>) -> TFRM.To {
 		return attributes[keyPath: path].value
 	}
 	
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer>(_ path: KeyPath<EntityDescription.Attributes, TransformAttribute<T, TFRM>?>) -> TFRM.To? {
+	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformAttribute<T, TFRM>?>) -> TFRM.To? {
 		return attributes[keyPath: path]?.value
 	}
 	
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer, U>(_ path: KeyPath<EntityDescription.Attributes, TransformAttribute<T, TFRM>?>) -> U? where TFRM.To == U? {
+	subscript<T, TFRM: Transformer, U>(_ path: KeyPath<Description.Attributes, TransformAttribute<T, TFRM>?>) -> U? where TFRM.To == U? {
 		return attributes[keyPath: path].flatMap { $0.value }
 	}
 }
@@ -163,14 +171,14 @@ public extension Entity {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: OptionalRelatable>(entity: Entity, path: KeyPath<EntityDescription.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.Identifier {
+	public static func ~><OtherEntity: OptionalRelatable>(entity: Entity, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntity: Relatable>(entity: Entity, path: KeyPath<EntityDescription.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
+	public static func ~><OtherEntity: Relatable>(entity: Entity, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 }
@@ -191,15 +199,15 @@ public extension Entity {
 		
 		try container.encode(Entity.type, forKey: .type)
 		
-		if EntityDescription.Identifier.self != Unidentified.self {
+		if Description.Identifier.self != Unidentified.self {
 			try container.encode(id, forKey: .id)
 		}
 		
-		if EntityDescription.Attributes.self != NoAttributes.self {
+		if Description.Attributes.self != NoAttributes.self {
 			try container.encode(attributes, forKey: .attributes)
 		}
 		
-		if EntityDescription.Relationships.self != NoRelatives.self {
+		if Description.Relationships.self != NoRelatives.self {
 			try container.encode(relationships, forKey: .relationships)
 		}
 	}
@@ -211,13 +219,13 @@ public extension Entity {
 		let type = try container.decode(String.self, forKey: .type)
 		
 		guard Entity.type == type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: EntityDescription.type, found: type)
+			throw JSONAPIEncodingError.typeMismatch(expected: Description.type, found: type)
 		}
 		
-		id = try (Unidentified() as? EntityDescription.Identifier) ?? container.decode(EntityDescription.Identifier.self, forKey: .id)
+		id = try (Unidentified() as? Description.Identifier) ?? container.decode(Description.Identifier.self, forKey: .id)
 		
-		attributes = try (NoAttributes() as? EntityDescription.Attributes) ?? container.decode(EntityDescription.Attributes.self, forKey: .attributes)
+		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
 		
-		relationships = try (NoRelatives() as? EntityDescription.Relationships) ?? container.decode(EntityDescription.Relationships.self, forKey: .relationships)
+		relationships = try (NoRelatives() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
 	}
 }

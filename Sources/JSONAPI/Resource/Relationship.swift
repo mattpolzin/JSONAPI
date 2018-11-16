@@ -53,8 +53,8 @@ extension ToManyRelationship where Relatable.Description.Identifier == Relatable
 
 /// The OptionalRelatable protocol ONLY describes
 /// Optional<T: Relatable> types.
-public protocol OptionalRelatable {
-	associatedtype Description: EntityDescription where Description.Identifier: IdType
+public protocol OptionalRelatable: Codable, Equatable where Description.Identifier: IdType {
+	associatedtype Description: EntityDescription
 	associatedtype Identifier: Equatable & Codable
 }
 
@@ -62,9 +62,7 @@ public protocol OptionalRelatable {
 /// has an EntityDescription
 public protocol Relatable: OptionalRelatable {}
 
-extension Entity: Relatable, OptionalRelatable where EntityDescription.Identifier: IdType {
-	public typealias Description = EntityDescription
-}
+extension Entity: Relatable, OptionalRelatable where Description.Identifier: IdType {}
 
 extension Optional: OptionalRelatable where Wrapped: Relatable {
 	public typealias Description = Wrapped.Description

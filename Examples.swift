@@ -7,10 +7,12 @@
 
 import JSONAPI
 
+typealias StringId<E: EntityDescription> = Id<String, E>
+
 enum PersonDescription: IdentifiedEntityDescription {
-	static var type: String { return "people" }
-	
 	typealias Identifier = Id<String, PersonDescription>
+
+	static var type: String { return "people" }
 	
 	struct Attributes: JSONAPI.Attributes {
 		let name: [String]
@@ -18,12 +20,14 @@ enum PersonDescription: IdentifiedEntityDescription {
 	}
 	
 	struct Relationships: JSONAPI.Relationships {
-		let friends: ToManyRelationship<PersonDescription>
+		let friends: ToManyRelationship<Person>
 	}
 }
 
 typealias Person = Entity<PersonDescription>
 
 func tmp() {
-	let x: Person.Identifier
+	let person = Person(id: .init(rawValue: "33"), attributes: PersonDescription.Attributes(name: [], favoriteColor: "Green"), relationships: PersonDescription.Relationships(friends: .none))
+
+	print(person.pointer)
 }

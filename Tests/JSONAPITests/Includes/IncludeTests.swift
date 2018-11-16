@@ -19,7 +19,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_OneInclude() {
-		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntityType>>.self, from: one_include)
+		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntity>>.self, from: one_include)
 		
 		XCTAssertNotNil(maybeIncludes)
 
@@ -31,7 +31,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_TwoSameIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntityType>>.self, from: two_same_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntity>>.self, from: two_same_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 		
@@ -43,7 +43,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_TwoDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include2<TestEntityType, TestEntityType2>>.self, from: two_different_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: two_different_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 
@@ -56,7 +56,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_ThreeDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include3<TestEntityType, TestEntityType2, TestEntityType4>>.self, from: three_different_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self, from: three_different_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 
@@ -70,7 +70,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_FourDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include4<TestEntityType, TestEntityType2, TestEntityType4, TestEntityType6>>.self, from: four_different_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self, from: four_different_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 		
@@ -85,7 +85,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_FiveDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include5<TestEntityType, TestEntityType2, TestEntityType3, TestEntityType4, TestEntityType6>>.self, from: five_different_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self, from: five_different_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 		
@@ -101,7 +101,7 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_SixDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include6<TestEntityType, TestEntityType2, TestEntityType3, TestEntityType4, TestEntityType5, TestEntityType6>>.self, from: six_different_type_includes)
+		let maybeIncludes = try? decoder.decode(Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self, from: six_different_type_includes)
 		
 		XCTAssertNotNil(maybeIncludes)
 		

@@ -189,3 +189,19 @@ let entity_nulled_relationship = """
 	}
 }
 """.data(using: .utf8)!
+
+let entity_self_ref_relationship = """
+{
+	"id": "1",
+	"type": "tenth_test_entities",
+	"relationships": {
+		"selfRefs": { "data": [] },
+		"selfRef": {
+			"data": {
+				"id": "1",
+				"type": "tenth_test_entities"
+			}
+		}
+	}
+}
+""".data(using: .utf8)!

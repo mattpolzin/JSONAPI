@@ -207,6 +207,26 @@ extension EntityTests {
 	}
 }
 
+// MARK: Relationships of same type as root entity
+
+extension EntityTests {
+	func test_RleationshipsOfSameType() {
+		let entity = try? JSONDecoder().decode(TestEntity10.self, from: entity_self_ref_relationship)
+
+		XCTAssertNotNil(entity)
+
+		guard let e = entity else { return }
+
+		XCTAssertEqual((e ~> \.selfRef).rawValue, "1")
+	}
+}
+
+// MARK: Unidentified
+
+extension EntityTests {
+
+}
+
 // MARK: Test Types
 extension EntityTests {
 
@@ -349,6 +369,30 @@ extension EntityTests {
 
 	typealias TestEntity9 = Entity<TestEntityType9>
 
+	enum TestEntityType10: EntityDescription {
+		public static var type: String { return "tenth_test_entities" }
+
+		typealias Identifier = Id<String, TestEntityType10>
+
+		typealias Attributes = NoAttributes
+
+		public struct Relationships: JSONAPI.Relationships {
+			let selfRef: ToOneRelationship<TestEntity10>
+			let selfRefs: ToManyRelationship<TestEntity10>
+		}
+	}
+
+	typealias TestEntity10 = Entity<TestEntityType10>
+
+	enum UnidentifiedTestEntityType: UnidentifiedEntityDescription {
+		public static var type: String { return "unidentified_test_entities" }
+
+		typealias Attributes = NoAttributes
+		typealias Relationships = NoRelatives
+	}
+
+	typealias UnidentifiedTestEntity = Entity<UnidentifiedTestEntityType>
+
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {
 			return String(from)
@@ -374,13 +418,13 @@ extension EntityTests {
 	}
 }
 
-extension Entity where EntityDescription == EntityTests.TestEntityType2 {
+extension Entity where Description == EntityTests.TestEntityType2 {
 	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(other: other))
 	}
 }
 
-extension Entity where EntityDescription == EntityTests.TestEntityType3 {
+extension Entity where Description == EntityTests.TestEntityType3 {
 	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(others: others))
 	}

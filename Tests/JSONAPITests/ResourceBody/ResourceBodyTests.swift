@@ -11,7 +11,7 @@ import JSONAPI
 class ResourceBodyTests: XCTestCase {
 
 	func test_singleResourceBody() {
-		let body = try? JSONDecoder().decode(SingleResourceBody<ArticleType>.self, from: single_resource_body)
+		let body = try? JSONDecoder().decode(SingleResourceBody<Article>.self, from: single_resource_body)
 		
 		XCTAssertNotNil(body)
 
@@ -22,7 +22,7 @@ class ResourceBodyTests: XCTestCase {
 	}
 	
 	func test_manyResourceBody() {
-		let body = try? JSONDecoder().decode(ManyResourceBody<ArticleType>.self, from: many_resource_body)
+		let body = try? JSONDecoder().decode(ManyResourceBody<Article>.self, from: many_resource_body)
 		
 		XCTAssertNotNil(body)
 		

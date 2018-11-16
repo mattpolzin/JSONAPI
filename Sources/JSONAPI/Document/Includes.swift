@@ -42,14 +42,14 @@ public struct Includes<I: IncludeDecoder>: Decodable {
 
 // MARK: - Decoding
 
-func decode<EntityDescription: JSONAPI.EntityDescription>(_ type: EntityDescription.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity<EntityDescription>, EncodingError> {
-	let ret: Result<Entity<EntityDescription>, EncodingError>
+func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, EncodingError> {
+	let ret: Result<Entity, EncodingError>
 	do {
-		ret = try .success(container.decode(Entity<EntityDescription>.self))
+		ret = try .success(container.decode(Entity.self))
 	} catch (let err as EncodingError) {
 		ret = .failure(err)
 	} catch (let err) {
-		ret = .failure(EncodingError.invalidValue(EntityDescription.self,
+		ret = .failure(EncodingError.invalidValue(Entity.Description.self,
 												  .init(codingPath: container.codingPath,
 														debugDescription: err.localizedDescription,
 														underlyingError: err)))
@@ -69,13 +69,13 @@ public typealias NoIncludes = Include0
 
 // MARK: - 1 include
 public protocol _Include1: _Include0 {
-	associatedtype A: EntityDescription
-	var a: Entity<A>? { get }
+	associatedtype A: EntityType
+	var a: A? { get }
 }
-public enum Include1<A: EntityDescription>: _Include1 {
-	case a(Entity<A>)
+public enum Include1<A: EntityType>: _Include1 {
+	case a(A)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
@@ -83,35 +83,31 @@ public enum Include1<A: EntityDescription>: _Include1 {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 		
-		self = .a(try container.decode(Entity<A>.self))
+		self = .a(try container.decode(A.self))
 	}
 }
 
 extension Includes where I: _Include1 {
-	public subscript(_ lookup: I.A.Type) -> [Entity<I.A>] {
+	public subscript(_ lookup: I.A.Type) -> [I.A] {
 		return values.compactMap { $0.a }
-	}
-	
-	public subscript(_ lookup: Entity<I.A>.Type) -> [Entity<I.A>] {
-		return values.compactMap { $0.a}
 	}
 }
 
 // MARK: - 2 includes
 public protocol _Include2: _Include1 {
-	associatedtype B: EntityDescription
-	var b: Entity<B>? { get }
+	associatedtype B: EntityType
+	var b: B? { get }
 }
-public enum Include2<A: EntityDescription, B: EntityDescription>: _Include2 {
-	case a(Entity<A>)
-	case b(Entity<B>)
+public enum Include2<A: EntityType, B: EntityType>: _Include2 {
+	case a(A)
+	case b(B)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var b: Entity<B>? {
+	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
@@ -136,36 +132,32 @@ public enum Include2<A: EntityDescription, B: EntityDescription>: _Include2 {
 }
 
 extension Includes where I: _Include2 {
-	public subscript(_ lookup: I.B.Type) -> [Entity<I.B>] {
+	public subscript(_ lookup: I.B.Type) -> [I.B] {
 		return values.compactMap { $0.b }
-	}
-	
-	public subscript(_ lookup: Entity<I.B>.Type) -> [Entity<I.B>] {
-		return values.compactMap { $0.b}
 	}
 }
 
 // MARK: - 3 includes
 public protocol _Include3: _Include2 {
-	associatedtype C: EntityDescription
-	var c: Entity<C>? { get }
+	associatedtype C: EntityType
+	var c: C? { get }
 }
-public enum Include3<A: EntityDescription, B: EntityDescription, C: EntityDescription>: _Include3 {
-	case a(Entity<A>)
-	case b(Entity<B>)
-	case c(Entity<C>)
+public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
+	case a(A)
+	case b(B)
+	case c(C)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var b: Entity<B>? {
+	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var c: Entity<C>? {
+	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
@@ -191,42 +183,38 @@ public enum Include3<A: EntityDescription, B: EntityDescription, C: EntityDescri
 }
 
 extension Includes where I: _Include3 {
-	public subscript(_ lookup: I.C.Type) -> [Entity<I.C>] {
+	public subscript(_ lookup: I.C.Type) -> [I.C] {
 		return values.compactMap { $0.c }
-	}
-	
-	public subscript(_ lookup: Entity<I.C>.Type) -> [Entity<I.C>] {
-		return values.compactMap { $0.c}
 	}
 }
 
 // MARK: - 4 includes
 public protocol _Include4: _Include3 {
-	associatedtype D: EntityDescription
-	var d: Entity<D>? { get }
+	associatedtype D: EntityType
+	var d: D? { get }
 }
-public enum Include4<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription>: _Include4 {
-	case a(Entity<A>)
-	case b(Entity<B>)
-	case c(Entity<C>)
-	case d(Entity<D>)
+public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>: _Include4 {
+	case a(A)
+	case b(B)
+	case c(C)
+	case d(D)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var b: Entity<B>? {
+	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var c: Entity<C>? {
+	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var d: Entity<D>? {
+	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
 	}
@@ -253,48 +241,44 @@ public enum Include4<A: EntityDescription, B: EntityDescription, C: EntityDescri
 }
 
 extension Includes where I: _Include4 {
-	public subscript(_ lookup: I.D.Type) -> [Entity<I.D>] {
+	public subscript(_ lookup: I.D.Type) -> [I.D] {
 		return values.compactMap { $0.d }
-	}
-	
-	public subscript(_ lookup: Entity<I.D>.Type) -> [Entity<I.D>] {
-		return values.compactMap { $0.d}
 	}
 }
 
 // MARK: - 5 includes
 public protocol _Include5: _Include4 {
-	associatedtype E: EntityDescription
-	var e: Entity<E>? { get }
+	associatedtype E: EntityType
+	var e: E? { get }
 }
-public enum Include5<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription, E: EntityDescription>: _Include5 {
-	case a(Entity<A>)
-	case b(Entity<B>)
-	case c(Entity<C>)
-	case d(Entity<D>)
-	case e(Entity<E>)
+public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType>: _Include5 {
+	case a(A)
+	case b(B)
+	case c(C)
+	case d(D)
+	case e(E)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var b: Entity<B>? {
+	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var c: Entity<C>? {
+	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var d: Entity<D>? {
+	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var e: Entity<E>? {
+	public var e: E? {
 		guard case let .e(ret) = self else { return nil }
 		return ret
 	}
@@ -322,54 +306,50 @@ public enum Include5<A: EntityDescription, B: EntityDescription, C: EntityDescri
 }
 
 extension Includes where I: _Include5 {
-	public subscript(_ lookup: I.E.Type) -> [Entity<I.E>] {
+	public subscript(_ lookup: I.E.Type) -> [I.E] {
 		return values.compactMap { $0.e }
-	}
-	
-	public subscript(_ lookup: Entity<I.E>.Type) -> [Entity<I.E>] {
-		return values.compactMap { $0.e}
 	}
 }
 
 // MARK: - 6 includes
 public protocol _Include6: _Include5 {
-	associatedtype F: EntityDescription
-	var f: Entity<F>? { get }
+	associatedtype F: EntityType
+	var f: F? { get }
 }
-public enum Include6<A: EntityDescription, B: EntityDescription, C: EntityDescription, D: EntityDescription, E: EntityDescription, F: EntityDescription>: _Include6 {
-	case a(Entity<A>)
-	case b(Entity<B>)
-	case c(Entity<C>)
-	case d(Entity<D>)
-	case e(Entity<E>)
-	case f(Entity<F>)
+public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType>: _Include6 {
+	case a(A)
+	case b(B)
+	case c(C)
+	case d(D)
+	case e(E)
+	case f(F)
 	
-	public var a: Entity<A>? {
+	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var b: Entity<B>? {
+	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var c: Entity<C>? {
+	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var d: Entity<D>? {
+	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var e: Entity<E>? {
+	public var e: E? {
 		guard case let .e(ret) = self else { return nil }
 		return ret
 	}
 	
-	public var f: Entity<F>? {
+	public var f: F? {
 		guard case let .f(ret) = self else { return nil }
 		return ret
 	}
@@ -398,11 +378,7 @@ public enum Include6<A: EntityDescription, B: EntityDescription, C: EntityDescri
 }
 
 extension Includes where I: _Include6 {
-	public subscript(_ lookup: I.F.Type) -> [Entity<I.F>] {
+	public subscript(_ lookup: I.F.Type) -> [I.F] {
 		return values.compactMap { $0.f }
-	}
-	
-	public subscript(_ lookup: Entity<I.F>.Type) -> [Entity<I.F>] {
-		return values.compactMap { $0.f}
 	}
 }

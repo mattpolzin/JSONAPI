@@ -137,7 +137,7 @@ This readme doesn't go into detail on the JSON API Spec, but the following JSON 
 
 ### `Entity`
 
-Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entity`s that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entity<PersonDescription>`s, but even without a `CreatableRawIdType` you can decode and work with entities.
+Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entity`s that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entity<PersonDescription>`s, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
 
 The `Entity` and `EntityDescription` together embody the rules and properties of a JSON API *Resource Object*.
 
@@ -215,7 +215,7 @@ The entirety of a JSON API request or response is encoded or decoded from- or to
 ```
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPIDocument<SingleResourceBody<PersonDescription>, NoIncludes, BasicJSONAPIError>.self
+let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoIncludes, BasicJSONAPIError>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```
@@ -230,7 +230,7 @@ The second generic type of a `JSONAPIDocument` is an `IncludeDecoder`. This type
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
 
-To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<PersonDescription>` instead of `NoIncludes`.
+To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<Person>` instead of `NoIncludes`.
 
 #### `Error`
 
