@@ -153,7 +153,7 @@ An `IdType` packages up two pieces of information: A unique identifier of a give
 
 #### Convenient `typealiases`
 
-Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using a `typealias`es like the following:
+Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using `typealias`es like the following:
 ```
 public typealias Entity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Id<String, Description>>
 
