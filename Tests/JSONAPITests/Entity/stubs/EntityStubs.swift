@@ -205,3 +205,19 @@ let entity_self_ref_relationship = """
 	}
 }
 """.data(using: .utf8)!
+
+let entity_unidentified = """
+{
+	"type": "unidentified_test_entities",
+	"attributes": {}
+}
+""".data(using: .utf8)!
+
+let entity_unidentified_with_attributes = """
+{
+	"type": "unidentified_test_entities",
+	"attributes": {
+		"me": "unknown"
+	}
+}
+""".data(using: .utf8)!

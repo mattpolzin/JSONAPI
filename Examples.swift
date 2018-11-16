@@ -11,7 +11,7 @@ import JSONAPI
 
 /*******
 
-Please enjoy these examples, but allow me the lack of error checking and forced casting for the sake of brevity.
+Please enjoy these examples, but allow me the forced casting and the lack of error checking for the sake of brevity.
 
 ********/
 

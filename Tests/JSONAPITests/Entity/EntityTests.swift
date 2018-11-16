@@ -58,7 +58,11 @@ class EntityTests: XCTestCase {
 		
 		XCTAssertEqual(e[\.floater], 123.321)
 	}
-	
+}
+
+// MARK: - Encode/Decode
+extension EntityTests {
+
 	func test_EntitySomeRelationshipsNoAttributes() {
 		let entity = try? JSONDecoder().decode(TestEntity3.self, from: entity_some_relationships_no_attributes)
 		
@@ -224,10 +228,30 @@ extension EntityTests {
 // MARK: Unidentified
 
 extension EntityTests {
+	func test_UnidentifiedEntity() {
+		let entity = try? JSONDecoder().decode(UnidentifiedTestEntity.self, from: entity_unidentified)
 
+		XCTAssertNotNil(entity)
+
+		guard let e = entity else { return }
+
+		XCTAssertNil(e[\.me])
+		XCTAssertEqual(e.id, Unidentified())
+	}
+
+	func test_UnidentifiedEntityWithAttributes() {
+		let entity = try? JSONDecoder().decode(UnidentifiedTestEntity.self, from: entity_unidentified_with_attributes)
+
+		XCTAssertNotNil(entity)
+
+		guard let e = entity else { return }
+
+		XCTAssertEqual(e[\.me], "unknown")
+		XCTAssertEqual(e.id, Unidentified())
+	}
 }
 
-// MARK: Test Types
+// MARK: - Test Types
 extension EntityTests {
 
 	enum TestEntityType1: EntityDescription {
@@ -374,7 +398,10 @@ extension EntityTests {
 	enum UnidentifiedTestEntityType: EntityDescription {
 		public static var type: String { return "unidentified_test_entities" }
 
-		typealias Attributes = NoAttributes
+		struct Attributes: JSONAPI.Attributes {
+			let me: Attribute<String>?
+		}
+
 		typealias Relationships = NoRelatives
 	}
 
