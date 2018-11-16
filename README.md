@@ -11,6 +11,7 @@ The primary goals of this framework are:
 1. Allow creation of Swift types that are easy to use in code but also can be encoded to- or decoded from *JSON API* compliant payloads without lots of boilerplate code.
 2. Leverage `Codable` to avoid additional outside dependencies and get operability with non-JSON encoders/decoders for free.
 3. Do not sacrifice type safety.
+4. Be platform agnostic so that Swift code can be written once and used by both the client and the server.
 
 ## Project Status
 
@@ -90,8 +91,6 @@ An `EntityDescription` is the `JSONAPI` framework's specification for what the J
 enum PersonDescription: IdentifiedEntityDescription {
 	static var type: String { return "people" }
 
-	typealias Identifier = Id<String, PersonDescription>
-
 	struct Attributes: JSONAPI.Attributes {
 		let name: Attribute<[String]>
 		let favoriteColor: Attribute<String>
@@ -103,7 +102,12 @@ enum PersonDescription: IdentifiedEntityDescription {
 }
 ```
 
-Note that an `enum` type is used here; it could have been a `struct`, but `EntityDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
+To enumerate them, the requirements of an `EntityDescription` are
+1. A static `var` "type" that matches the JSON type; The JSON spec requires every *Resource Object* to have a "type".
+2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
+3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelatives`
+
+Note that an `enum` type is used here for the `EntityDescription`; it could have been a `struct`, but `EntityDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
 
 This readme doesn't go into detail on the JSON API Spec, but the following JSON API *Resource Object* would be described by the above `PersonDescription`:
 
@@ -137,14 +141,33 @@ This readme doesn't go into detail on the JSON API Spec, but the following JSON 
 
 ### `Entity`
 
-Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entity`s that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entity<PersonDescription>`s, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
+Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entity`s that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entity`s that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
 
 The `Entity` and `EntityDescription` together embody the rules and properties of a JSON API *Resource Object*.
 
-It can be nice to create a `typealias` for each type of entity you want to work with:
+An `Entity` needs to be specialized on two generic types. The first is the `EntityDescription` described above. The second is the type of Id to use for the `Entity`.
+
+#### `IdType`
+
+An `IdType` packages up two pieces of information: A unique identifier of a given `RawIdType` and the `EntityDescription` of the type of entity the Id identifies. Having the `EntityDescription` type associated with the Id makes it easy to store all of your entities in a local hash broken out by `EntityDescription`; You can pass Ids around and always know where to look for the `Entity` to which the Id refers. `RawIdType`s are documented below.
+
+#### Convenient `typealiases`
+
+Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using a `typealias`es like the following:
+```
+public typealias Entity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Id<String, Description>>
+
+public typealias NewEntity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Unidentified>
+```
+
+It can also be nice to create a `typealias` for each type of entity you want to work with:
 ```
 typealias Person = Entity<PersonDescription>
+
+typealias NewPerson = NewEntity<PersonDescription>
 ```
+
+Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time JSON API spec allows a *Resource Object* to be encoded without an Id is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the Id for that object.
 
 ### `Relationships`
 

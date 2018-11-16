@@ -232,8 +232,7 @@ extension EntityTests {
 
 	enum TestEntityType1: EntityDescription {
 		static var type: String { return "test_entities"}
-		
-		typealias Identifier = Id<String, TestEntityType1>
+
 		typealias Attributes = NoAttributes
 		typealias Relationships = NoRelatives
 	}
@@ -242,8 +241,7 @@ extension EntityTests {
 
 	enum TestEntityType2: EntityDescription {
 		static var type: String { return "second_test_entities"}
-		
-		typealias Identifier = Id<String, TestEntityType2>
+
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
@@ -255,8 +253,7 @@ extension EntityTests {
 
 	enum TestEntityType3: EntityDescription {
 		static var type: String { return "third_test_entities"}
-		
-		typealias Identifier = Id<String, TestEntityType3>
+
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
@@ -268,8 +265,6 @@ extension EntityTests {
 
 	enum TestEntityType4: EntityDescription {
 		static var type: String { return "fourth_test_entities"}
-
-		typealias Identifier = Id<String, TestEntityType4>
 
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntity2>
@@ -287,7 +282,6 @@ extension EntityTests {
 	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
 
-		typealias Identifier = Id<String, TestEntityType5>
 		typealias Relationships = NoRelatives
 
 		struct Attributes: JSONAPI.Attributes {
@@ -300,7 +294,6 @@ extension EntityTests {
 	enum TestEntityType6: EntityDescription {
 		static var type: String { return "sixth_test_entities" }
 
-		typealias Identifier = Id<String, TestEntityType6>
 		typealias Relationships = NoRelatives
 
 		struct Attributes: JSONAPI.Attributes {
@@ -315,7 +308,6 @@ extension EntityTests {
 	enum TestEntityType7: EntityDescription {
 		static var type: String { return "seventh_test_entities" }
 
-		typealias Identifier = Id<String, TestEntityType7>
 		typealias Relationships = NoRelatives
 
 		struct Attributes: JSONAPI.Attributes {
@@ -328,8 +320,7 @@ extension EntityTests {
 
 	enum TestEntityType8: EntityDescription {
 		static var type: String { return "eighth_test_entities" }
-		
-		typealias Identifier = Id<String, TestEntityType8>
+
 		typealias Relationships = NoRelatives
 		
 		struct Attributes: JSONAPI.Attributes {
@@ -347,8 +338,6 @@ extension EntityTests {
 
 	enum TestEntityType9: EntityDescription {
 		public static var type: String { return "ninth_test_entities" }
-
-		typealias Identifier = Id<String, TestEntityType9>
 
 		typealias Attributes = NoAttributes
 
@@ -372,8 +361,6 @@ extension EntityTests {
 	enum TestEntityType10: EntityDescription {
 		public static var type: String { return "tenth_test_entities" }
 
-		typealias Identifier = Id<String, TestEntityType10>
-
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
@@ -384,14 +371,14 @@ extension EntityTests {
 
 	typealias TestEntity10 = Entity<TestEntityType10>
 
-	enum UnidentifiedTestEntityType: UnidentifiedEntityDescription {
+	enum UnidentifiedTestEntityType: EntityDescription {
 		public static var type: String { return "unidentified_test_entities" }
 
 		typealias Attributes = NoAttributes
 		typealias Relationships = NoRelatives
 	}
 
-	typealias UnidentifiedTestEntity = Entity<UnidentifiedTestEntityType>
+	typealias UnidentifiedTestEntity = NewEntity<UnidentifiedTestEntityType>
 
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {
@@ -418,13 +405,13 @@ extension EntityTests {
 	}
 }
 
-extension Entity where Description == EntityTests.TestEntityType2 {
+extension Entity where Description == EntityTests.TestEntityType2, Identifier: CreatableIdType {
 	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(other: other))
 	}
 }
 
-extension Entity where Description == EntityTests.TestEntityType3 {
+extension Entity where Description == EntityTests.TestEntityType3, Identifier: CreatableIdType {
 	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(others: others))
 	}

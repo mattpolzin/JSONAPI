@@ -11,15 +11,21 @@
 /// A convenient typealias might make your code much more legible: `One<EntityDescription>`
 public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Codable {
 
-	public let id: Relatable.Identifier
+	public let id: Relatable.WrappedIdentifier
 	
-	public var ids: [Relatable.Identifier] {
+	public var ids: [Relatable.WrappedIdentifier] {
 		return [id]
 	}
 }
 
-extension ToOneRelationship where Relatable.Description.Identifier == Relatable.Identifier {
-	public init(entity: Entity<Relatable.Description>) {
+extension ToOneRelationship where Relatable.WrappedIdentifier == Relatable.Identifier {
+	public init(entity: Entity<Relatable.Description, Relatable.Identifier>) {
+		id = entity.id
+	}
+}
+
+extension ToOneRelationship where Relatable.WrappedIdentifier == Optional<Relatable.Identifier> {
+	public init(entity: Entity<Relatable.Description, Relatable.Identifier>) {
 		id = entity.id
 	}
 }
@@ -32,7 +38,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Codab
 
 	public let ids: [Relatable.Identifier]
 
-	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T>]) where T.Identifier == Relatable.Identifier {
+	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T>]) where T.WrappedIdentifier == Relatable.Identifier {
 		ids = relationships.map { $0.id }
 	}
 
@@ -45,28 +51,33 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Codab
 	}
 }
 
-extension ToManyRelationship where Relatable.Description.Identifier == Relatable.Identifier {
-	public init(entities: [Entity<Relatable.Description>]) {
+extension ToManyRelationship {
+	public init(entities: [Entity<Relatable.Description, Relatable.Identifier>]) {
 		ids = entities.map { $0.id }
 	}
 }
 
-/// The OptionalRelatable protocol ONLY describes
-/// Optional<T: Relatable> types.
-public protocol OptionalRelatable: Codable, Equatable where Description.Identifier: IdType {
+/// The WrappedRelatable (a.k.a OptionalRelatable) protocol
+/// describes Optional<T: Relatable> and Relatable types.
+public protocol WrappedRelatable: Codable, Equatable {
 	associatedtype Description: EntityDescription
-	associatedtype Identifier: Equatable & Codable
+	associatedtype Identifier: JSONAPI.IdType
+	associatedtype WrappedIdentifier: Codable, Equatable
 }
+public typealias OptionalRelatable = WrappedRelatable
 
 /// The Relatable protocol describes anything that
-/// has an EntityDescription
-public protocol Relatable: OptionalRelatable {}
+/// has an IdType Identifier
+public protocol Relatable: WrappedRelatable {}
 
-extension Entity: Relatable, OptionalRelatable where Description.Identifier: IdType {}
+extension Entity: Relatable, WrappedRelatable where Identifier: JSONAPI.IdType {
+	public typealias WrappedIdentifier = Identifier
+}
 
 extension Optional: OptionalRelatable where Wrapped: Relatable {
 	public typealias Description = Wrapped.Description
-	public typealias Identifier = Wrapped.Description.Identifier?
+	public typealias Identifier = Wrapped.Identifier
+	public typealias WrappedIdentifier = Identifier?
 }
 
 // MARK: Codable
@@ -93,7 +104,7 @@ extension ToOneRelationship {
 		// type at which point we can store nil in `id`.
 		let anyNil: Any? = nil
 		if try container.decodeNil(forKey: .data),
-			let val = anyNil as? Relatable.Identifier {
+			let val = anyNil as? Relatable.WrappedIdentifier {
 			id = val
 			return
 		}
@@ -106,7 +117,7 @@ extension ToOneRelationship {
 			throw JSONAPIEncodingError.typeMismatch(expected: Relatable.Description.type, found: type)
 		}
 		
-		id = try identifier.decode(Relatable.Identifier.self, forKey: .id)
+		id = try identifier.decode(Relatable.WrappedIdentifier.self, forKey: .id)
 	}
 	
 	public func encode(to encoder: Encoder) throws {

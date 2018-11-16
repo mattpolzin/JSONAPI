@@ -76,8 +76,7 @@ class DocumentTests: XCTestCase {
 	
 	enum AuthorType: EntityDescription {
 		static var type: String { return "authors" }
-		
-		typealias Identifier = Id<String, AuthorType>
+
 		typealias Attributes = NoAttributes
 		typealias Relationships = NoRelatives
 	}
@@ -87,7 +86,6 @@ class DocumentTests: XCTestCase {
 	enum ArticleType: EntityDescription {
 		static var type: String { return "articles" }
 		
-		typealias Identifier = Id<String, ArticleType>
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {

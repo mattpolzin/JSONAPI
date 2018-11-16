@@ -7,10 +7,7 @@
 
 import JSONAPI
 
-typealias StringId<E: EntityDescription> = Id<String, E>
-
-enum PersonDescription: IdentifiedEntityDescription {
-	typealias Identifier = Id<String, PersonDescription>
+enum PersonDescription: EntityDescription {
 
 	static var type: String { return "people" }
 	
@@ -24,10 +21,4 @@ enum PersonDescription: IdentifiedEntityDescription {
 	}
 }
 
-typealias Person = Entity<PersonDescription>
-
-func tmp() {
-	let person = Person(id: .init(rawValue: "33"), attributes: PersonDescription.Attributes(name: [], favoriteColor: "Green"), relationships: PersonDescription.Relationships(friends: .none))
-
-	print(person.pointer)
-}
+typealias Person = Entity<PersonDescription, Id<String, PersonDescription>>

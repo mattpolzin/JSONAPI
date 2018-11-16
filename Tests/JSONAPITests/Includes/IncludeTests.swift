@@ -120,40 +120,37 @@ class IncludedTests: XCTestCase {
 
 extension IncludedTests {
 	enum TestEntityType: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType>
-		
+
 		typealias Relationships = NoRelatives
-		
+
 		public static var type: String { return "test_entity1" }
-		
+
 		public struct Attributes: JSONAPI.Attributes {
 			let foo: Attribute<String>
 			let bar: Attribute<Int>
 		}
 	}
-	
+
 	typealias TestEntity = Entity<TestEntityType>
-	
+
 	enum TestEntityType2: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType2>
-		
+
 		public static var type: String { return "test_entity2" }
-		
+
 		public struct Relationships: JSONAPI.Relationships {
 			let entity1: ToOneRelationship<TestEntity>
 		}
-		
+
 		public struct Attributes: JSONAPI.Attributes {
 			let foo: Attribute<String>
 			let bar: Attribute<Int>
 		}
 	}
-	
+
 	typealias TestEntity2 = Entity<TestEntityType2>
-	
+
 	enum TestEntityType3: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType3>
-		
+
 		typealias Attributes = NoAttributes
 		
 		public static var type: String { return "test_entity3" }
@@ -163,44 +160,41 @@ extension IncludedTests {
 			let entity2: ToManyRelationship<TestEntity2>
 		}
 	}
-	
+
 	typealias TestEntity3 = Entity<TestEntityType3>
-	
+
 	enum TestEntityType4: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType4>
-		
+
 		typealias Attributes = NoAttributes
-		
+
 		typealias Relationships = NoRelatives
-		
+
 		public static var type: String { return "test_entity4" }
 	}
-	
+
 	typealias TestEntity4 = Entity<TestEntityType4>
-	
+
 	enum TestEntityType5: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType5>
-		
+
 		typealias Attributes = NoAttributes
-		
+
 		typealias Relationships = NoRelatives
-		
+
 		public static var type: String { return "test_entity5" }
 	}
-	
+
 	typealias TestEntity5 = Entity<TestEntityType5>
-	
+
 	enum TestEntityType6: EntityDescription {
-		typealias Identifier = Id<String, TestEntityType6>
-		
+
 		typealias Attributes = NoAttributes
-		
+
 		public static var type: String { return "test_entity6" }
-		
+
 		struct Relationships: JSONAPI.Relationships {
 			let entity4: ToOneRelationship<TestEntity4>
 		}
 	}
-	
+
 	typealias TestEntity6 = Entity<TestEntityType6>
 }
