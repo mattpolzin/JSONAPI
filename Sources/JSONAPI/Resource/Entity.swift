@@ -163,14 +163,14 @@ public extension Entity {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: Relatable>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.Description.Identifier {
+	public static func ~><OtherEntity: OptionalRelatable>(entity: Entity, path: KeyPath<EntityType.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntity: Relatable>(entity: Entity<EntityType>, path: KeyPath<EntityType.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Description.Identifier] {
+	public static func ~><OtherEntity: Relatable>(entity: Entity, path: KeyPath<EntityType.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 }

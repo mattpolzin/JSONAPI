@@ -10,26 +10,27 @@
 /// You should use the `ToOneRelationship` and `ToManyRelationship`
 /// concrete types.
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-public protocol Relationship: Equatable, Encodable, CustomStringConvertible {
-	associatedtype EntityType: JSONAPI.EntityDescription where EntityType.Identifier: IdType
-	var ids: [EntityType.Identifier] { get }
-}
+//public protocol Relationship: Equatable, Encodable, CustomStringConvertible {
+//	associatedtype EntityType: JSONAPI.EntityDescription where EntityType.Identifier: IdType
+//	var ids: [EntityType.Identifier] { get }
+//}
 
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<EntityDescription>`
-public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Relationship, Decodable {
-	public typealias EntityType = Relatable.Description
+public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Codable {
 
-	public let id: EntityType.Identifier
-
-	public init(entity: Entity<EntityType>) {
-		id = entity.id
-	}
+	public let id: Relatable.Identifier
 	
-	public var ids: [EntityType.Identifier] {
+	public var ids: [Relatable.Identifier] {
 		return [id]
+	}
+}
+
+extension ToOneRelationship where Relatable.Description.Identifier == Relatable.Identifier {
+	public init(entity: Entity<Relatable.Description>) {
+		id = entity.id
 	}
 }
 
@@ -37,21 +38,26 @@ public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
-public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Relationship, Decodable {
-	public typealias EntityType = Relatable.Description
+public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Codable {
 
-	public let ids: [EntityType.Identifier]
-	
-	public init(entities: [Entity<EntityType>]) {
-		ids = entities.map { $0.id }
+	public let ids: [Relatable.Identifier]
+
+	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T>]) where T.Identifier == Relatable.Identifier {
+		ids = relationships.map { $0.id }
 	}
-	
-	public init<T: Relationship>(relationships: [T]) where T.EntityType == EntityType {
-		ids = relationships.flatMap { $0.ids }
+
+	private init() {
+		ids = []
 	}
 	
 	public static var none: ToManyRelationship {
-		return .init(entities: [])
+		return .init()
+	}
+}
+
+extension ToManyRelationship where Relatable.Description.Identifier == Relatable.Identifier {
+	public init(entities: [Entity<Relatable.Description>]) {
+		ids = entities.map { $0.id }
 	}
 }
 
@@ -59,6 +65,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Relat
 /// Optional<T: Relatable> types.
 public protocol OptionalRelatable {
 	associatedtype Description: EntityDescription where Description.Identifier: IdType
+	associatedtype Identifier: Equatable & Codable
 }
 
 /// The Relatable protocol describes anything that
@@ -71,6 +78,7 @@ extension Entity: Relatable, OptionalRelatable where EntityType.Identifier: IdTy
 
 extension Optional: OptionalRelatable where Wrapped: Relatable {
 	public typealias Description = Wrapped.Description
+	public typealias Identifier = Wrapped.Description.Identifier?
 }
 
 // MARK: Codable
@@ -89,23 +97,41 @@ public enum JSONAPIEncodingError: Swift.Error {
 extension ToOneRelationship {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
+
+		// A little trickery follows. If the id is nil, the
+		// container.decode(Identifier.self) will fail even if Identifier
+		// is Optional. However, we can check if decoding nil
+		// succeeds and then attempt to coerce nil to a Identifier
+		// type at which point we can store nil in `id`.
+		let anyNil: Any? = nil
+		if try container.decodeNil(forKey: .data),
+			let val = anyNil as? Relatable.Identifier {
+			id = val
+			return
+		}
+
 		let identifier = try container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
 		
 		let type = try identifier.decode(String.self, forKey: .entityType)
 		
-		guard type == EntityType.type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: EntityType.type, found: type)
+		guard type == Relatable.Description.type else {
+			throw JSONAPIEncodingError.typeMismatch(expected: Relatable.Description.type, found: type)
 		}
 		
-		id = try identifier.decode(EntityType.Identifier.self, forKey: .id)
+		id = try identifier.decode(Relatable.Identifier.self, forKey: .id)
 	}
 	
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: ResourceLinkageCodingKeys.self)
+
+		if (id as Any?) == nil {
+			try container.encodeNil(forKey: .data)
+		}
+
 		var identifier = container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
 		
 		try identifier.encode(id, forKey: .id)
-		try identifier.encode(EntityType.type, forKey: .entityType)
+		try identifier.encode(Relatable.Description.type, forKey: .entityType)
 	}
 }
 
@@ -115,17 +141,17 @@ extension ToManyRelationship {
 		
 		var identifiers = try container.nestedUnkeyedContainer(forKey: .data)
 		
-		var newIds = [EntityType.Identifier]()
+		var newIds = [Relatable.Identifier]()
 		while !identifiers.isAtEnd {
 			let identifier = try identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 			
 			let type = try identifier.decode(String.self, forKey: .entityType)
 			
-			guard type == EntityType.type else {
-				throw JSONAPIEncodingError.typeMismatch(expected: EntityType.type, found: type)
+			guard type == Relatable.Description.type else {
+				throw JSONAPIEncodingError.typeMismatch(expected: Relatable.Description.type, found: type)
 			}
 			
-			newIds.append(try identifier.decode(EntityType.Identifier.self, forKey: .id))
+			newIds.append(try identifier.decode(Relatable.Identifier.self, forKey: .id))
 		}
 		ids = newIds
 	}
@@ -138,7 +164,7 @@ extension ToManyRelationship {
 			var identifier = identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 			
 			try identifier.encode(id, forKey: .id)
-			try identifier.encode(EntityType.type, forKey: .entityType)
+			try identifier.encode(Relatable.Description.type, forKey: .entityType)
 		}
 	}
 }

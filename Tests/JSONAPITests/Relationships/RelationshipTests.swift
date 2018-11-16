@@ -61,28 +61,3 @@ class RelationshipTests: XCTestCase {
 	
 	typealias TestEntity1 = Entity<TestEntityType1>
 }
-
-// MARK: omission and nullification
-extension RelationshipTests {
-	func test_omittedRelationship() {
-		// TODO: fill out test
-	}
-
-	enum TestEntityType2: EntityDescription {
-		public static var type: String { return "test_entity2" }
-
-		typealias Identifier = Id<String, TestEntityType2>
-
-		typealias Attributes = NoAttributes
-
-		public struct Relationships: JSONAPI.Relationships {
-			let maybeOne: ToOneRelationship<TestEntity1>?
-			let maybeMore: ToManyRelationship<TestEntity1>?
-
-			let nullableOne: ToOneRelationship<TestEntity1?>
-
-			// a nullable many is not allowed. it should
-			// just be an empty array.
-		}
-	}
-}

@@ -29,7 +29,7 @@ class EntityTests: XCTestCase {
 		let entity2 = TestEntity1()
 		let entity4 = TestEntity1()
 		let entity3 = TestEntity3(others: .init(relationships: [entity1.pointer, entity2.pointer, entity4.pointer]))
-		
+
 		XCTAssertEqual(entity3 ~> \.others, [entity1.id, entity2.id, entity4.id])
 	}
 	
@@ -182,6 +182,31 @@ extension EntityTests {
 	}
 }
 
+// MARK: Relationship omission and nullification
+extension EntityTests {
+	func test_nullableRelationshipNotNull() {
+		let entity = try? JSONDecoder().decode(TestEntity9.self, from: entity_omitted_relationship)
+
+		XCTAssertNotNil(entity)
+
+		guard let e = entity else { return }
+
+		XCTAssertEqual((e ~> \.nullableOne)?.rawValue, "3323")
+		XCTAssertEqual((e ~> \.one).rawValue, "4459")
+	}
+
+	func test_nullableRelationshipIsNull() {
+		let entity = try? JSONDecoder().decode(TestEntity9.self, from: entity_nulled_relationship)
+
+		XCTAssertNotNil(entity)
+
+		guard let e = entity else { return }
+
+		XCTAssertNil(e ~> \.nullableOne)
+		XCTAssertEqual((e ~> \.one).rawValue, "4452")
+	}
+}
+
 // MARK: Test Types
 extension EntityTests {
 
@@ -299,7 +324,31 @@ extension EntityTests {
 	}
 	
 	typealias TestEntity8 = Entity<TestEntityType8>
-	
+
+	enum TestEntityType9: EntityDescription {
+		public static var type: String { return "ninth_test_entities" }
+
+		typealias Identifier = Id<String, TestEntityType9>
+
+		typealias Attributes = NoAttributes
+
+		public struct Relationships: JSONAPI.Relationships {
+			let one: ToOneRelationship<TestEntity1>
+
+			let nullableOne: ToOneRelationship<TestEntity1?>
+
+			// a nullable many is not allowed. it should
+			// just be an empty array.
+
+			// omitted relationships are not allowed either,
+			// so ToOneRelationship<TestEntity1>? (with the
+			// question on the relationship, not the entity)
+			// is not a thing.
+		}
+	}
+
+	typealias TestEntity9 = Entity<TestEntityType9>
+
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {
 			return String(from)

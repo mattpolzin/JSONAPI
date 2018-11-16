@@ -69,7 +69,7 @@ The primary goals of this framework are:
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
-- [ ] Fix `ToOneRelationship` so that it is possible to specify an optional relationship where the value is `null` rather than the key being omitted.
+- [x] Fix `ToOneRelationship` so that it is possible to specify an optional relationship where the value is `null` rather than the key being omitted.
 - [ ] Conform to `CustomStringConvertible`
 - [x] For `NoIncludes`, do not even loop over the "included" JSON API section if it exists.
 - [ ] `EntityDescription` validator (using reflection)
@@ -98,7 +98,7 @@ enum PersonDescription: IdentifiedEntityDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		let friends: ToManyRelationship<PersonDescription>
+		let friends: ToManyRelationship<Person>
 	}
 }
 ```
@@ -148,7 +148,12 @@ typealias Person = Entity<PersonDescription>
 
 ### `Relationships`
 
-There are two types of `Relationship`s: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship`s of either of these types. Do not store anything other than `Relationship`s in the `Relationships` type of an `EntityDescription`.
+There are two types of `Relationship`s: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship`s of either of these types. Do not store anything other than `Relationship`s in the `Relationships` struct of an `EntityDescription`.
+
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent no related objects exist with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value might be `null` or it might be a resource identifier) like this:
+```
+let nullableRelative: ToOneRelationship<Person?>
+```
 
 An entity that does not have relationships can be described by adding the following to an `EntityDescription`:
 ```
