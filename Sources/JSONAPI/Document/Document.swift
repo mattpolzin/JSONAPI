@@ -12,24 +12,24 @@
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct JSONAPIDocument<Body: ResourceBody, Include: IncludeDecoder, Error: JSONAPIError & Decodable> {
-	public let body: Data
+public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, Include: IncludeDecoder, Error: JSONAPIError & Decodable> {
+	public let body: Body
 //	public let meta: Meta?
 //	public let jsonApi: APIDescription?
 //	public let links: Links?
 	
-	public enum Data {
+	public enum Body {
 		case errors([Error])
-		case data(Body, included: Includes<Include>)
+		case data(primary: ResourceBody, included: Includes<Include>)
 		
 		public var isError: Bool {
 			guard case .errors = self else { return false }
 			return true
 		}
 		
-		public var data: (Body, included: Includes<Include>)? {
-			guard case let .data(body, included: includes) = self else { return nil }
-			return (body, included: includes)
+		public var data: (primary: ResourceBody, included: Includes<Include>)? {
+			guard case let .data(primary: body, included: includes) = self else { return nil }
+			return (primary: body, included: includes)
 		}
 	}
 }
@@ -47,7 +47,7 @@ extension JSONAPIDocument: Decodable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: RootCodingKeys.self)
 		
-		let maybeData = try container.decodeIfPresent(Body.self, forKey: .data)
+		let maybeData = try container.decodeIfPresent(ResourceBody.self, forKey: .data)
 		let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
 		let errors = try container.decodeIfPresent([Error].self, forKey: .errors)
 		
@@ -66,6 +66,6 @@ extension JSONAPIDocument: Decodable {
 			return
 		}
 		
-		body = .data(data, included: maybeIncludes ?? Includes<Include>.none)
+		body = .data(primary: data, included: maybeIncludes ?? Includes<Include>.none)
 	}
 }
