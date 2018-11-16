@@ -31,7 +31,7 @@ public struct Unidentified: Identifier, CustomStringConvertible {
 }
 
 public protocol IdType: Identifier, CustomStringConvertible {
-	associatedtype EntityType: JSONAPI.EntityDescription
+	associatedtype EntityDescription: JSONAPI.EntityDescription
 	associatedtype RawType: RawIdType
 	
 	var rawValue: RawType { get }
@@ -47,7 +47,7 @@ public protocol CreatableIdType: IdType {
 
 /// An Entity ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
-public struct Id<RawType: RawIdType, EntityType: JSONAPI.EntityDescription>: IdType {
+public struct Id<RawType: RawIdType, EntityDescription: JSONAPI.EntityDescription>: IdType {
 	public let rawValue: RawType
 	
 	public init(rawValue: RawType) {

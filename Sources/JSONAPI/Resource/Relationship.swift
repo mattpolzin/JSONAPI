@@ -7,16 +7,6 @@
 
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
-/// You should use the `ToOneRelationship` and `ToManyRelationship`
-/// concrete types.
-/// See https://jsonapi.org/format/#document-resource-object-linkage
-//public protocol Relationship: Equatable, Encodable, CustomStringConvertible {
-//	associatedtype EntityType: JSONAPI.EntityDescription where EntityType.Identifier: IdType
-//	var ids: [EntityType.Identifier] { get }
-//}
-
-/// An Entity relationship that can be encoded to or decoded from
-/// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<EntityDescription>`
 public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Codable {
@@ -72,8 +62,8 @@ public protocol OptionalRelatable {
 /// has an EntityDescription
 public protocol Relatable: OptionalRelatable {}
 
-extension Entity: Relatable, OptionalRelatable where EntityType.Identifier: IdType {
-	public typealias Description = EntityType
+extension Entity: Relatable, OptionalRelatable where EntityDescription.Identifier: IdType {
+	public typealias Description = EntityDescription
 }
 
 extension Optional: OptionalRelatable where Wrapped: Relatable {

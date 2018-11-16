@@ -374,13 +374,13 @@ extension EntityTests {
 	}
 }
 
-extension Entity where EntityType == EntityTests.TestEntityType2 {
+extension Entity where EntityDescription == EntityTests.TestEntityType2 {
 	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(other: other))
 	}
 }
 
-extension Entity where EntityType == EntityTests.TestEntityType3 {
+extension Entity where EntityDescription == EntityTests.TestEntityType3 {
 	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(others: others))
 	}

@@ -42,14 +42,14 @@ public struct Includes<I: IncludeDecoder>: Decodable {
 
 // MARK: - Decoding
 
-func decode<EntityType: JSONAPI.EntityDescription>(_ type: EntityType.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity<EntityType>, EncodingError> {
-	let ret: Result<Entity<EntityType>, EncodingError>
+func decode<EntityDescription: JSONAPI.EntityDescription>(_ type: EntityDescription.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity<EntityDescription>, EncodingError> {
+	let ret: Result<Entity<EntityDescription>, EncodingError>
 	do {
-		ret = try .success(container.decode(Entity<EntityType>.self))
+		ret = try .success(container.decode(Entity<EntityDescription>.self))
 	} catch (let err as EncodingError) {
 		ret = .failure(err)
 	} catch (let err) {
-		ret = .failure(EncodingError.invalidValue(EntityType.self,
+		ret = .failure(EncodingError.invalidValue(EntityDescription.self,
 												  .init(codingPath: container.codingPath,
 														debugDescription: err.localizedDescription,
 														underlyingError: err)))
