@@ -7,9 +7,9 @@
 
 import Result
 
-public protocol IncludeDecoder: Decodable {}
+public protocol IncludeDecoder: Codable, Equatable {}
 
-public struct Includes<I: IncludeDecoder>: Decodable {
+public struct Includes<I: IncludeDecoder>: Codable, Equatable {
 	public static var none: Includes { return .init(values: []) }
 	
 	let values: [I]
@@ -33,6 +33,18 @@ public struct Includes<I: IncludeDecoder>: Decodable {
 		}
 		
 		values = valueAggregator
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.unkeyedContainer()
+
+		guard I.self != NoIncludes.self else {
+			throw JSONAPIEncodingError.illegalEncoding("Attempting to encode Include0, which should be represented by the absense of an 'included' entry altogether.")
+		}
+
+		for value in values {
+			try container.encode(value)
+		}
 	}
 	
 	public var count: Int {
@@ -64,6 +76,10 @@ public struct Include0: _Include0 {
 	
 	public init(from decoder: Decoder) throws {
 	}
+
+	public func encode(to encoder: Encoder) throws {
+		throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Include0, which should be represented by the absence of an 'included' entry altogether.")
+	}
 }
 public typealias NoIncludes = Include0
 
@@ -84,6 +100,15 @@ public enum Include1<A: EntityType>: _Include1 {
 		let container = try decoder.singleValueContainer()
 		
 		self = .a(try container.decode(A.self))
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		}
 	}
 }
 
@@ -128,6 +153,17 @@ public enum Include2<A: EntityType, B: EntityType>: _Include2 {
 		}
 		
 		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		}
 	}
 }
 
@@ -179,6 +215,19 @@ public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
 		}
 		
 		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		}
 	}
 }
 
@@ -237,6 +286,21 @@ public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>
 		}
 		
 		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		case .d(let d):
+			try container.encode(d)
+		}
 	}
 }
 
@@ -302,6 +366,23 @@ public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 		}
 		
 		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		case .d(let d):
+			try container.encode(d)
+		case .e(let e):
+			try container.encode(e)
+		}
 	}
 }
 
@@ -374,6 +455,25 @@ public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 		}
 		
 		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		case .d(let d):
+			try container.encode(d)
+		case .e(let e):
+			try container.encode(e)
+		case .f(let f):
+			try container.encode(f)
+		}
 	}
 }
 

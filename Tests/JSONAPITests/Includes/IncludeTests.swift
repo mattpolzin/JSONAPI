@@ -12,12 +12,22 @@ class IncludedTests: XCTestCase {
 		
 		XCTAssertEqual(includes.count, 0)
 	}
+
+	func test_zeroIncludes_encode() {
+		XCTAssertThrowsError(try JSONEncoder().encode(decoded(type: Includes<NoIncludes>.self,
+														  data: two_same_type_includes)))
+	}
 	
 	func test_OneInclude() {
 		let includes = decoded(type: Includes<Include1<TestEntity>>.self,
 							   data: one_include)
 
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
+	}
+
+	func test_OneInclude_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include1<TestEntity>>.self,
+							   data: one_include)
 	}
 	
 	func test_TwoSameIncludes() {
@@ -26,6 +36,11 @@ class IncludedTests: XCTestCase {
 		
 		XCTAssertEqual(includes[TestEntity.self].count, 2)
 	}
+
+	func test_TwoSameIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include1<TestEntity>>.self,
+							   data: two_same_type_includes)
+	}
 	
 	func test_TwoDifferentIncludes() {
 		let includes = decoded(type: Includes<Include2<TestEntity, TestEntity2>>.self,
@@ -33,6 +48,11 @@ class IncludedTests: XCTestCase {
 
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
+	}
+
+	func test_TwoDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include2<TestEntity, TestEntity2>>.self,
+							   data: two_different_type_includes)
 	}
 	
 	func test_ThreeDifferentIncludes() {
@@ -43,6 +63,11 @@ class IncludedTests: XCTestCase {
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 		XCTAssertEqual(includes[TestEntity4.self].count, 1)
 	}
+
+	func test_ThreeDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
+							   data: three_different_type_includes)
+	}
 	
 	func test_FourDifferentIncludes() {
 		let includes = decoded(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
@@ -52,6 +77,11 @@ class IncludedTests: XCTestCase {
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 		XCTAssertEqual(includes[TestEntity4.self].count, 1)
 		XCTAssertEqual(includes[TestEntity6.self].count, 1)
+	}
+
+	func test_FourDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
+							   data: four_different_type_includes)
 	}
 	
 	func test_FiveDifferentIncludes() {
@@ -64,6 +94,11 @@ class IncludedTests: XCTestCase {
 		XCTAssertEqual(includes[TestEntity4.self].count, 1)
 		XCTAssertEqual(includes[TestEntity6.self].count, 1)
 	}
+
+	func test_FiveDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self,
+							   data: five_different_type_includes)
+	}
 	
 	func test_SixDifferentIncludes() {
 		let includes = decoded(type: Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self,
@@ -75,6 +110,11 @@ class IncludedTests: XCTestCase {
 		XCTAssertEqual(includes[TestEntity4.self].count, 1)
 		XCTAssertEqual(includes[TestEntity5.self].count, 1)
 		XCTAssertEqual(includes[TestEntity6.self].count, 1)
+	}
+
+	func test_SixDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self,
+							   data: six_different_type_includes)
 	}
 }
 

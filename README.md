@@ -40,22 +40,22 @@ The primary goals of this framework are:
 ### Encoding
 #### Document
 - [ ] `data`
-- [ ] `included`
+- [x] `included`
 - [ ] `errors`
 - [ ] `meta`
 - [ ] `jsonapi`
 - [ ] `links`
 
 #### Resource Object
-- [x] `id` (untested)
-- [x] `type` (untested)
-- [x] `attributes` (untested)
-- [x] `relationships` (untested)
+- [x] `id`
+- [x] `type`
+- [x] `attributes`
+- [x] `relationships`
 - [ ] `links`
 - [ ] `meta`
 
 #### Relationship Object
-- [x] `data` (untested)
+- [x] `data`
 - [ ] `links`
 - [ ] `meta`
 

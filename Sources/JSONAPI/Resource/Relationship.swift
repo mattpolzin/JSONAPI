@@ -91,6 +91,7 @@ private enum ResourceIdentifierCodingKeys: String, CodingKey {
 
 public enum JSONAPIEncodingError: Swift.Error {
 	case typeMismatch(expected: String, found: String)
+	case illegalEncoding(String)
 }
 
 extension ToOneRelationship {
