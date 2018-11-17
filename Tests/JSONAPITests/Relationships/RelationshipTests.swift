@@ -31,24 +31,38 @@ class RelationshipTests: XCTestCase {
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
 	}
+}
 
+// MARK: - Encode/Decode
+extension RelationshipTests {
 	func test_ToOneRelationship() {
-		let relationship = try? JSONDecoder().decode(ToOneRelationship<TestEntity1>.self, from: to_one_relationship)
+		let relationship = decoded(type: ToOneRelationship<TestEntity1>.self,
+								   data: to_one_relationship)
 
-		XCTAssertNotNil(relationship)
+		XCTAssertEqual(relationship.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(relationship.ids.count, 1)
+	}
 
-		XCTAssertEqual(relationship?.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
-		XCTAssertEqual(relationship?.ids.count, 1)
+	func test_ToOneRelationship_encode() {
+		test_DecodeEncodeEquality(type: ToOneRelationship<TestEntity1>.self,
+								   data: to_one_relationship)
 	}
 
 	func test_ToManyRelationship() {
-		let relationship = try? JSONDecoder().decode(ToManyRelationship<TestEntity1>.self, from: to_many_relationship)
+		let relationship = decoded(type: ToManyRelationship<TestEntity1>.self,
+								   data: to_many_relationship)
 
-		XCTAssertNotNil(relationship)
-
-		XCTAssertEqual(relationship?.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 	}
 
+	func test_ToManyRelationship_encode() {
+		test_DecodeEncodeEquality(type: ToManyRelationship<TestEntity1>.self,
+								   data: to_many_relationship)
+	}
+}
+
+// MARK: - Test types
+extension RelationshipTests {
 	enum TestEntityType1: EntityDescription {
 		typealias Attributes = NoAttributes
 

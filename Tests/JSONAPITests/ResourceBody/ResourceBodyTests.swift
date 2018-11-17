@@ -11,28 +11,44 @@ import JSONAPI
 class ResourceBodyTests: XCTestCase {
 
 	func test_singleResourceBody() {
-		let body = try? JSONDecoder().decode(SingleResourceBody<Article>.self, from: single_resource_body)
+		let body = decoded(type: SingleResourceBody<Article>.self,
+						   data: single_resource_body)
 
-		XCTAssertNotNil(body)
-
-		guard let b = body else { return }
-
-		XCTAssertEqual(b.value, Article(id: Id<String, ArticleType>(rawValue: "1"),
+		XCTAssertEqual(body.value, Article(id: Id<String, ArticleType>(rawValue: "1"),
 										attributes: ArticleType.Attributes(title: try! .init(rawValue: "JSON:API paints my bikeshed!"))))
 	}
 
+	func test_singleResourceBody_encode() {
+		test_DecodeEncodeEquality(type: SingleResourceBody<Article>.self,
+						   data: single_resource_body)
+	}
+
 	func test_manyResourceBody() {
-		let body = try? JSONDecoder().decode(ManyResourceBody<Article>.self, from: many_resource_body)
+		let body = decoded(type: ManyResourceBody<Article>.self,
+						   data: many_resource_body)
 
-		XCTAssertNotNil(body)
-
-		guard let b = body else { return }
-
-		XCTAssertEqual(b.values, [
+		XCTAssertEqual(body.values, [
 			Article(id: .init(rawValue: "1"), attributes: try! .init(title: .init(rawValue: "JSON:API paints my bikeshed!"))),
 			Article(id: .init(rawValue: "2"), attributes: try! .init(title: .init(rawValue: "Sick"))),
 			Article(id: .init(rawValue: "3"), attributes: try! .init(title: .init(rawValue: "Hello World")))
 		])
+	}
+
+	func test_manyResourceBody_encode() {
+		test_DecodeEncodeEquality(type: ManyResourceBody<Article>.self,
+						   data: many_resource_body)
+	}
+
+	func test_manyResourceBodyEmpty() {
+		let body = decoded(type: ManyResourceBody<Article>.self,
+						   data: many_resource_body_empty)
+
+		XCTAssertEqual(body.values.count, 0)
+	}
+
+	func test_manyResourceBodyEmpty_encode() {
+		test_DecodeEncodeEquality(type: ManyResourceBody<Article>.self,
+						   data: many_resource_body_empty)
 	}
 
 	enum ArticleType: EntityDescription {

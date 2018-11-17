@@ -45,7 +45,7 @@ class EntityTests: XCTestCase {
 extension EntityTests {
 
 	func test_EntityNoRelationshipsNoAttributes() {
-		let entity = decodedTestType(type: TestEntity1.self,
+		let entity = decoded(type: TestEntity1.self,
 								  data: entity_no_relationships_no_attributes)
 
 		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
@@ -58,7 +58,7 @@ extension EntityTests {
 	}
 
 	func test_EntityNoRelationshipsSomeAttributes() {
-		let entity = decodedTestType(type: TestEntity5.self,
+		let entity = decoded(type: TestEntity5.self,
 								   data: entity_no_relationships_some_attributes)
 
 		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
@@ -72,7 +72,7 @@ extension EntityTests {
 	}
 
 	func test_EntitySomeRelationshipsNoAttributes() {
-		let entity = decodedTestType(type: TestEntity3.self,
+		let entity = decoded(type: TestEntity3.self,
 								   data: entity_some_relationships_no_attributes)
 
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
@@ -86,7 +86,7 @@ extension EntityTests {
 	}
 	
 	func test_EntitySomeRelationshipsSomeAttributes() {
-		let entity = decodedTestType(type: TestEntity4.self,
+		let entity = decoded(type: TestEntity4.self,
 								   data: entity_some_relationships_some_attributes)
 		
 		XCTAssertEqual(entity[\.word], "coolio")
@@ -104,7 +104,7 @@ extension EntityTests {
 extension EntityTests {
 	
 	func test_entityOneOmittedAttribute() {
-		let entity = decodedTestType(type: TestEntity6.self,
+		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
 		
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -118,7 +118,7 @@ extension EntityTests {
 	}
 	
 	func test_entityOneNullAttribute() {
-		let entity = decodedTestType(type: TestEntity6.self,
+		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_attribute)
 		
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -132,7 +132,7 @@ extension EntityTests {
 	}
 	
 	func test_entityAllAttribute() {
-		let entity = decodedTestType(type: TestEntity6.self,
+		let entity = decoded(type: TestEntity6.self,
 								   data: entity_all_attributes)
 		
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -146,7 +146,7 @@ extension EntityTests {
 	}
 	
 	func test_entityOneNullAndOneOmittedAttribute() {
-		let entity = decodedTestType(type: TestEntity6.self,
+		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_and_one_missing_attribute)
 		
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -165,7 +165,7 @@ extension EntityTests {
 	}
 	
 	func test_NullOptionalNullableAttribute() {
-		let entity = decodedTestType(type: TestEntity7.self,
+		let entity = decoded(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
 		
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -178,7 +178,7 @@ extension EntityTests {
 	}
 	
 	func test_NonNullOptionalNullableAttribute() {
-		let entity = decodedTestType(type: TestEntity7.self,
+		let entity = decoded(type: TestEntity7.self,
 								   data: entity_non_null_optional_nullable_attribute)
 
 		XCTAssertEqual(entity[\.here], "Hello")
@@ -194,7 +194,7 @@ extension EntityTests {
 // MARK: Attribute Transformation
 extension EntityTests {
 	func test_IntToString() {
-		let entity = decodedTestType(type: TestEntity8.self,
+		let entity = decoded(type: TestEntity8.self,
 								   data: entity_int_to_string_attribute)
 		
 		XCTAssertEqual(entity[\.string], "22")
@@ -214,7 +214,7 @@ extension EntityTests {
 // MARK: Relationship omission and nullification
 extension EntityTests {
 	func test_nullableRelationshipNotNull() {
-		let entity = decodedTestType(type: TestEntity9.self,
+		let entity = decoded(type: TestEntity9.self,
 								   data: entity_omitted_relationship)
 
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
@@ -227,7 +227,7 @@ extension EntityTests {
 	}
 
 	func test_nullableRelationshipIsNull() {
-		let entity = decodedTestType(type: TestEntity9.self,
+		let entity = decoded(type: TestEntity9.self,
 								   data: entity_nulled_relationship)
 
 		XCTAssertNil(entity ~> \.nullableOne)
@@ -244,7 +244,7 @@ extension EntityTests {
 
 extension EntityTests {
 	func test_RleationshipsOfSameType() {
-		let entity = decodedTestType(type: TestEntity10.self,
+		let entity = decoded(type: TestEntity10.self,
 								   data: entity_self_ref_relationship)
 
 		XCTAssertEqual((entity ~> \.selfRef).rawValue, "1")
@@ -260,7 +260,7 @@ extension EntityTests {
 
 extension EntityTests {
 	func test_UnidentifiedEntity() {
-		let entity = decodedTestType(type: UnidentifiedTestEntity.self,
+		let entity = decoded(type: UnidentifiedTestEntity.self,
 								   data: entity_unidentified)
 
 		XCTAssertNil(entity[\.me])
@@ -273,7 +273,7 @@ extension EntityTests {
 	}
 
 	func test_UnidentifiedEntityWithAttributes() {
-		let entity = decodedTestType(type: UnidentifiedTestEntity.self,
+		let entity = decoded(type: UnidentifiedTestEntity.self,
 								   data: entity_unidentified_with_attributes)
 
 		XCTAssertEqual(entity[\.me], "unknown")

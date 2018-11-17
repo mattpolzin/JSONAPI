@@ -8,7 +8,7 @@
 import Foundation
 import XCTest
 
-func decodedTestType<T: Codable & Equatable>(type: T.Type, data: Data) -> T {
+func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
 	return try! JSONDecoder().decode(T.self, from: data)
 }
 

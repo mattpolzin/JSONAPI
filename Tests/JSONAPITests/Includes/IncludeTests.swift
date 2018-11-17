@@ -7,62 +7,37 @@ class IncludedTests: XCTestCase {
 	let decoder = JSONDecoder()
 	
 	func test_zeroIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<NoIncludes>.self, from: two_same_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-		
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<NoIncludes>.self,
+												data: two_same_type_includes)
 		
 		XCTAssertEqual(includes.count, 0)
 	}
 	
 	func test_OneInclude() {
-		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntity>>.self, from: one_include)
-		
-		XCTAssertNotNil(maybeIncludes)
-
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include1<TestEntity>>.self,
+							   data: one_include)
 
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 	}
 	
 	func test_TwoSameIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include1<TestEntity>>.self, from: two_same_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-		
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include1<TestEntity>>.self,
+							   data: two_same_type_includes)
 		
 		XCTAssertEqual(includes[TestEntity.self].count, 2)
 	}
 	
 	func test_TwoDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: two_different_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include2<TestEntity, TestEntity2>>.self,
+									data: two_different_type_includes)
 
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 	}
 	
 	func test_ThreeDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self, from: three_different_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
+							   data: three_different_type_includes)
 
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
@@ -70,13 +45,8 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_FourDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self, from: four_different_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-		
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
+							   data: four_different_type_includes)
 		
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
@@ -85,13 +55,8 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_FiveDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self, from: five_different_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-		
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self,
+							   data: five_different_type_includes)
 		
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
@@ -101,13 +66,8 @@ class IncludedTests: XCTestCase {
 	}
 	
 	func test_SixDifferentIncludes() {
-		let maybeIncludes = try? decoder.decode(Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self, from: six_different_type_includes)
-		
-		XCTAssertNotNil(maybeIncludes)
-		
-		guard let includes = maybeIncludes else {
-			return
-		}
+		let includes = decoded(type: Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self,
+							   data: six_different_type_includes)
 		
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)

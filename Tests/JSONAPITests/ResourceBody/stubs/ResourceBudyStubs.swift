@@ -40,3 +40,8 @@ let many_resource_body = """
 	}
 ]
 """.data(using: .utf8)!
+
+let many_resource_body_empty = """
+[
+]
+""".data(using: .utf8)!

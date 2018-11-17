@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-public protocol ResourceBody: Decodable {
+public protocol ResourceBody: Codable, Equatable {
 }
 
 public struct SingleResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
@@ -20,7 +20,24 @@ public struct ManyResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
 extension SingleResourceBody {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
+
+		if container.decodeNil() {
+			value = nil
+			return
+		}
+
 		value = try container.decode(Entity.self)
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		if value == nil {
+			try container.encodeNil()
+			return
+		}
+
+		try container.encode(value)
 	}
 }
 
@@ -32,5 +49,13 @@ extension ManyResourceBody {
 			valueAggregator.append(try container.decode(Entity.self))
 		}
 		values = valueAggregator
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.unkeyedContainer()
+
+		for value in values {
+			try container.encode(value)
+		}
 	}
 }
