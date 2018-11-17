@@ -3,9 +3,15 @@ import XCTest
 extension DocumentTests {
     static let __allTests = [
         ("test_manyDocumentNoIncludes", test_manyDocumentNoIncludes),
+        ("test_manyDocumentNoIncludes_encode", test_manyDocumentNoIncludes_encode),
         ("test_manyDocumentSomeIncludes", test_manyDocumentSomeIncludes),
+        ("test_manyDocumentSomeIncludes_encode", test_manyDocumentSomeIncludes_encode),
         ("test_singleDocumentNoIncludes", test_singleDocumentNoIncludes),
+        ("test_singleDocumentNoIncludes_encode", test_singleDocumentNoIncludes_encode),
+        ("test_singleDocumentNull", test_singleDocumentNull),
+        ("test_singleDocumentNull_encode", test_singleDocumentNull_encode),
         ("test_singleDocumentSomeIncludes", test_singleDocumentSomeIncludes),
+        ("test_singleDocumentSomeIncludes_encode", test_singleDocumentSomeIncludes_encode),
     ]
 }
 

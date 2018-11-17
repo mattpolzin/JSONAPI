@@ -39,9 +39,9 @@ The primary goals of this framework are:
 
 ### Encoding
 #### Document
-- [ ] `data`
+- [x] `data`
 - [x] `included`
-- [ ] `errors`
+- [x] `errors` (untested)
 - [ ] `meta`
 - [ ] `jsonapi`
 - [ ] `links`
@@ -78,7 +78,6 @@ The primary goals of this framework are:
 - [ ] Property-based testing (using `SwiftCheck`)
 - [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
-- [ ] Add errors that check consistency from one part of a document to another (i.e. includes must be referenced by a relationship in the primary resource object).
 
 ## Usage
 ### Prerequisites

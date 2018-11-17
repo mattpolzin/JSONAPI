@@ -5,6 +5,12 @@
 //  Created by Mathew Polzin on 11/12/18.
 //
 
+let single_document_null = """
+{
+	"data": null
+}
+""".data(using: .utf8)!
+
 let single_document_no_includes = """
 {
 	"data": {
