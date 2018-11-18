@@ -58,16 +58,3 @@ extension TransformAttribute {
 		try container.encode(rawValue)
 	}
 }
-
-// MARK: - Transformers
-
-public protocol Transformer {
-	associatedtype From
-	associatedtype To
-	
-	static func transform(_ from: From) throws -> To
-}
-
-public enum IdentityTransformer<T>: Transformer {
-	public static func transform(_ from: T) throws -> T { return from }
-}

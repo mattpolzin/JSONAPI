@@ -8,13 +8,11 @@
 import Foundation
 import JSONAPI
 
-
 /*******
 
 Please enjoy these examples, but allow me the forced casting and the lack of error checking for the sake of brevity.
 
 ********/
-
 
 typealias ExampleEntity<Description: EntityDescription> = Entity<Description, Id<String, Description>>
 
