@@ -7,14 +7,14 @@
 
 import Result
 
-public protocol IncludeDecoder: Codable, Equatable {}
+public protocol Include: Codable, Equatable {}
 
-public struct Includes<I: IncludeDecoder>: Codable, Equatable {
+public struct Includes<I: Include>: Codable, Equatable {
 	public static var none: Includes { return .init(values: []) }
 	
 	let values: [I]
 	
-	private init(values: [I]) {
+	public init(values: [I]) {
 		self.values = values
 	}
 	
@@ -52,6 +52,12 @@ public struct Includes<I: IncludeDecoder>: Codable, Equatable {
 	}
 }
 
+extension Includes: CustomStringConvertible {
+	public var description: String {
+		return "Includes(\(String(describing: values))"
+	}
+}
+
 extension Includes where I == NoIncludes {
 	public init() {
 		values = []
@@ -77,7 +83,7 @@ func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: Sin
 
 // MARK: - 0 includes
 
-public protocol _Include0: IncludeDecoder { }
+public protocol _Include0: Include { }
 public struct Include0: _Include0 {
 
 	public init() {}
@@ -95,6 +101,8 @@ public typealias NoIncludes = Include0
 public protocol _Include1: _Include0 {
 	associatedtype A: EntityType
 	var a: A? { get }
+
+	init(_ a: A)
 }
 public enum Include1<A: EntityType>: _Include1 {
 	case a(A)
@@ -102,6 +110,10 @@ public enum Include1<A: EntityType>: _Include1 {
 	public var a: A? {
 		guard case let .a(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ a: A) {
+		self = .a(a)
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -130,6 +142,8 @@ extension Includes where I: _Include1 {
 public protocol _Include2: _Include1 {
 	associatedtype B: EntityType
 	var b: B? { get }
+
+	init(_ b: B)
 }
 public enum Include2<A: EntityType, B: EntityType>: _Include2 {
 	case a(A)
@@ -139,10 +153,18 @@ public enum Include2<A: EntityType, B: EntityType>: _Include2 {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
 	
 	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -185,6 +207,8 @@ extension Includes where I: _Include2 {
 public protocol _Include3: _Include2 {
 	associatedtype C: EntityType
 	var c: C? { get }
+
+	init(_ c: C)
 }
 public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
 	case a(A)
@@ -195,15 +219,27 @@ public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
 	
 	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ b: B) {
+		self = .b(b)
+	}
 	
 	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ c: C) {
+		self = .c(c)
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -249,6 +285,8 @@ extension Includes where I: _Include3 {
 public protocol _Include4: _Include3 {
 	associatedtype D: EntityType
 	var d: D? { get }
+
+	init(_ d: D)
 }
 public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>: _Include4 {
 	case a(A)
@@ -260,20 +298,36 @@ public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
 	
 	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
 	}
 	
 	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ c: C) {
+		self = .c(c)
+	}
 	
 	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ d: D) {
+		self = .d(d)
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -322,6 +376,8 @@ extension Includes where I: _Include4 {
 public protocol _Include5: _Include4 {
 	associatedtype E: EntityType
 	var e: E? { get }
+
+	init(_ e: E)
 }
 public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType>: _Include5 {
 	case a(A)
@@ -334,25 +390,45 @@ public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
 	
 	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
 	}
 	
 	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ c: C) {
+		self = .c(c)
+	}
 	
 	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ d: D) {
+		self = .d(d)
+	}
 	
 	public var e: E? {
 		guard case let .e(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ e: E) {
+		self = .e(e)
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -404,6 +480,8 @@ extension Includes where I: _Include5 {
 public protocol _Include6: _Include5 {
 	associatedtype F: EntityType
 	var f: F? { get }
+
+	init(_ f: F)
 }
 public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType>: _Include6 {
 	case a(A)
@@ -417,30 +495,54 @@ public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 		guard case let .a(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
 	
 	public var b: B? {
 		guard case let .b(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
 	}
 	
 	public var c: C? {
 		guard case let .c(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ c: C) {
+		self = .c(c)
+	}
 	
 	public var d: D? {
 		guard case let .d(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ d: D) {
+		self = .d(d)
 	}
 	
 	public var e: E? {
 		guard case let .e(ret) = self else { return nil }
 		return ret
 	}
+
+	public init(_ e: E) {
+		self = .e(e)
+	}
 	
 	public var f: F? {
 		guard case let .f(ret) = self else { return nil }
 		return ret
+	}
+
+	public init(_ f: F) {
+		self = .f(f)
 	}
 	
 	public init(from decoder: Decoder) throws {

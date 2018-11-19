@@ -46,8 +46,8 @@ public enum PersonDescription: EntityDescription {
 public typealias Person = ExampleEntity<PersonDescription>
 
 public extension Entity where Description == PersonDescription, Identifier == Id<String, PersonDescription> {
-	public init(name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
-		self = try Person(attributes: .init(name: .init(rawValue: name), favoriteColor: .init(rawValue: favoriteColor)), relationships: .init(friends: .init(entities: friends), dogs: .init(entities: dogs), home: .init(entity: home)))
+	public init(id: Person.Identifier? = nil,name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
+		self = try Person(id: id ?? Person.Identifier(), attributes: .init(name: .init(rawValue: name), favoriteColor: .init(rawValue: favoriteColor)), relationships: .init(friends: .init(entities: friends), dogs: .init(entities: dogs), home: .init(entity: home)))
 	}
 }
 
@@ -69,6 +69,10 @@ public typealias Dog = ExampleEntity<DogDescription>
 public extension Entity where Description == DogDescription, Identifier == Id<String, DogDescription> {
 	public init(name: String, owner: Person?) throws {
 		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: DogDescription.Relationships(owner: .init(entity: owner)))
+	}
+
+	public init(name: String, owner: Person.Identifier) throws {
+		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: .init(owner: .init(id: owner)))
 	}
 }
 

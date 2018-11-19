@@ -12,7 +12,9 @@
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, Include: IncludeDecoder, Error: JSONAPIError>: Equatable {
+public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include, Error: JSONAPIError>: Equatable {
+	public typealias Include = IncludeType
+
 	public let body: Body
 //	public let meta: Meta?
 //	public let jsonApi: APIDescription?
@@ -42,7 +44,7 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, Include: Inclu
 	}
 }
 
-extension JSONAPIDocument where Include == NoIncludes {
+extension JSONAPIDocument where IncludeType == NoIncludes {
 	public init(body: ResourceBody) {
 		self.body = .data(primary: body, included: .none)
 	}
@@ -94,5 +96,13 @@ extension JSONAPIDocument: Codable {
 				try container.encode(includes, forKey: .included)
 			}
 		}
+	}
+}
+
+// MARK: - CustomStringConvertible
+
+extension JSONAPIDocument: CustomStringConvertible {
+	public var description: String {
+		return "JSONAPIDocument(body: \(String(describing: body))"
 	}
 }

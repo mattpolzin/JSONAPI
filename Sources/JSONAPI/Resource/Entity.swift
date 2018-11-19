@@ -70,6 +70,12 @@ public struct Entity<Description: JSONAPI.EntityDescription, Identifier: JSONAPI
 	}
 }
 
+extension Entity: CustomStringConvertible {
+	public var description: String {
+		return "Entity<\(Entity.type)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
+	}
+}
+
 // MARK: Convenience initializers
 extension Entity where Identifier: CreatableIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships) {

@@ -67,3 +67,17 @@ extension ManyResourceBody {
 		}
 	}
 }
+
+// MARK: CustomStringConvertible
+
+extension SingleResourceBody: CustomStringConvertible {
+	public var description: String {
+		return "ResourceBody(\(String(describing: value)))"
+	}
+}
+
+extension ManyResourceBody: CustomStringConvertible {
+	public var description: String {
+		return "ResourceBody(\(String(describing: values)))"
+	}
+}

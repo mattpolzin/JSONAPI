@@ -16,6 +16,12 @@ public struct TransformAttribute<RawValue: Codable, Transformer: JSONAPI.Transfo
 	}
 }
 
+extension TransformAttribute: CustomStringConvertible {
+	public var description: String {
+		return "Attribute<\(String(describing: Transformer.From.self)) -> \(String(describing: Transformer.To.self))>(\(String(describing: value)))"
+	}
+}
+
 extension TransformAttribute: Equatable where Transformer.From: Equatable, Transformer.To: Equatable {}
 
 public typealias Attribute<T: Codable> = TransformAttribute<T, IdentityTransformer<T>>

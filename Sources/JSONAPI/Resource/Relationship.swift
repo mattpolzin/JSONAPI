@@ -16,6 +16,10 @@ public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable
 	public var ids: [Relatable.WrappedIdentifier] {
 		return [id]
 	}
+
+	public init(id: Relatable.WrappedIdentifier) {
+		self.id = id
+	}
 }
 
 extension ToOneRelationship where Relatable.WrappedIdentifier == Relatable.Identifier {
