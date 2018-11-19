@@ -25,8 +25,8 @@ extension ToOneRelationship where Relatable.WrappedIdentifier == Relatable.Ident
 }
 
 extension ToOneRelationship where Relatable.WrappedIdentifier == Optional<Relatable.Identifier> {
-	public init(entity: Entity<Relatable.Description, Relatable.Identifier>) {
-		id = entity.id
+	public init(entity: Entity<Relatable.Description, Relatable.Identifier>?) {
+		id = entity?.id
 	}
 }
 

@@ -16,9 +16,9 @@ public struct TransformAttribute<RawValue: Codable, Transformer: JSONAPI.Transfo
 	}
 }
 
-public typealias Attribute<T: Codable> = TransformAttribute<T, IdentityTransformer<T>>
-
 extension TransformAttribute: Equatable where Transformer.From: Equatable, Transformer.To: Equatable {}
+
+public typealias Attribute<T: Codable> = TransformAttribute<T, IdentityTransformer<T>>
 
 // MARK: - Codable
 extension TransformAttribute {

@@ -52,6 +52,12 @@ public struct Includes<I: IncludeDecoder>: Codable, Equatable {
 	}
 }
 
+extension Includes where I == NoIncludes {
+	public init() {
+		values = []
+	}
+}
+
 // MARK: - Decoding
 
 func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, EncodingError> {
@@ -73,7 +79,9 @@ func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: Sin
 
 public protocol _Include0: IncludeDecoder { }
 public struct Include0: _Include0 {
-	
+
+	public init() {}
+
 	public init(from decoder: Decoder) throws {
 	}
 

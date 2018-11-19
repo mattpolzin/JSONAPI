@@ -32,6 +32,20 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, Include: Inclu
 			return (primary: body, included: includes)
 		}
 	}
+
+	public init(errors: [Error]) {
+		body = .errors(errors)
+	}
+
+	public init(body: ResourceBody, includes: Includes<Include>) {
+		self.body = .data(primary: body, included: includes)
+	}
+}
+
+extension JSONAPIDocument where Include == NoIncludes {
+	public init(body: ResourceBody) {
+		self.body = .data(primary: body, included: .none)
+	}
 }
 
 extension JSONAPIDocument: Codable {

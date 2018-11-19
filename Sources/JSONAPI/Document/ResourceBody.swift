@@ -10,10 +10,18 @@ public protocol ResourceBody: Codable, Equatable {
 
 public struct SingleResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
 	public let value: Entity?
+
+	public init(entity: Entity?) {
+		self.value = entity
+	}
 }
 
 public struct ManyResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
 	public let values: [Entity]
+
+	public init(entities: [Entity]) {
+		values = entities
+	}
 }
 
 // MARK: Decodable
