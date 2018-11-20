@@ -64,7 +64,7 @@ extension Includes where I == NoIncludes {
 	}
 }
 
-// MARK: - Decoding
+// MARK: - Generic Decoding
 
 func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, EncodingError> {
 	let ret: Result<Entity, EncodingError>
@@ -138,6 +138,17 @@ extension Includes where I: _Include1 {
 	}
 }
 
+extension Include1: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		}
+		return "Include(\(str))"
+	}
+}
+
 // MARK: - 2 includes
 public protocol _Include2: _Include1 {
 	associatedtype B: EntityType
@@ -200,6 +211,19 @@ public enum Include2<A: EntityType, B: EntityType>: _Include2 {
 extension Includes where I: _Include2 {
 	public subscript(_ lookup: I.B.Type) -> [I.B] {
 		return values.compactMap { $0.b }
+	}
+}
+
+extension Include2: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		}
+		return "Include(\(str))"
 	}
 }
 
@@ -278,6 +302,21 @@ public enum Include3<A: EntityType, B: EntityType, C: EntityType>: _Include3 {
 extension Includes where I: _Include3 {
 	public subscript(_ lookup: I.C.Type) -> [I.C] {
 		return values.compactMap { $0.c }
+	}
+}
+
+extension Include3: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		}
+		return "Include(\(str))"
 	}
 }
 
@@ -369,6 +408,23 @@ public enum Include4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>
 extension Includes where I: _Include4 {
 	public subscript(_ lookup: I.D.Type) -> [I.D] {
 		return values.compactMap { $0.d }
+	}
+}
+
+extension Include4: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		case .d(let d):
+			str = String(describing: d)
+		}
+		return "Include(\(str))"
 	}
 }
 
@@ -473,6 +529,25 @@ public enum Include5<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 extension Includes where I: _Include5 {
 	public subscript(_ lookup: I.E.Type) -> [I.E] {
 		return values.compactMap { $0.e }
+	}
+}
+
+extension Include5: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		case .d(let d):
+			str = String(describing: d)
+		case .e(let e):
+			str = String(describing: e)
+		}
+		return "Include(\(str))"
 	}
 }
 
@@ -590,5 +665,26 @@ public enum Include6<A: EntityType, B: EntityType, C: EntityType, D: EntityType,
 extension Includes where I: _Include6 {
 	public subscript(_ lookup: I.F.Type) -> [I.F] {
 		return values.compactMap { $0.f }
+	}
+}
+
+extension Include6: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		case .d(let d):
+			str = String(describing: d)
+		case .e(let e):
+			str = String(describing: e)
+		case .f(let f):
+			str = String(describing: f)
+		}
+		return "Include(\(str))"
 	}
 }

@@ -174,10 +174,10 @@ extension ToManyRelationship {
 }
 
 // MARK: CustomStringDescribable
-public extension ToOneRelationship {
-	var description: String { return "Relationship(\(String(describing: id)))" }
+extension ToOneRelationship: CustomStringConvertible {
+	public var description: String { return "Relationship(\(String(describing: id)))" }
 }
 
-public extension ToManyRelationship {
-	var description: String { return "Relationship(\(String(describing: ids)))" }
+extension ToManyRelationship: CustomStringConvertible {
+	public var description: String { return "Relationship(\(String(describing: ids)))" }
 }
