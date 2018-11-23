@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/17/18.
 //
 
-import Foundation
-
 public protocol Transformer {
 	associatedtype From
 	associatedtype To
