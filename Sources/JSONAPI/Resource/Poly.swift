@@ -55,6 +55,13 @@ public protocol _Poly1: _Poly0 {
 
 	init(_ a: A)
 }
+
+public extension _Poly1 {
+	subscript(_ lookup: A.Type) -> A? {
+		return a
+	}
+}
+
 public enum Poly1<A: EntityType>: _Poly1 {
 	case a(A)
 
@@ -101,6 +108,13 @@ public protocol _Poly2: _Poly1 {
 
 	init(_ b: B)
 }
+
+public extension _Poly2 {
+	subscript(_ lookup: B.Type) -> B? {
+		return b
+	}
+}
+
 public enum Poly2<A: EntityType, B: EntityType>: _Poly2 {
 	case a(A)
 	case b(B)
@@ -173,6 +187,13 @@ public protocol _Poly3: _Poly2 {
 
 	init(_ c: C)
 }
+
+public extension _Poly3 {
+	subscript(_ lookup: C.Type) -> C? {
+		return c
+	}
+}
+
 public enum Poly3<A: EntityType, B: EntityType, C: EntityType>: _Poly3 {
 	case a(A)
 	case b(B)
@@ -260,6 +281,13 @@ public protocol _Poly4: _Poly3 {
 
 	init(_ d: D)
 }
+
+public extension _Poly4 {
+	subscript(_ lookup: D.Type) -> D? {
+		return d
+	}
+}
+
 public enum Poly4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>: _Poly4 {
 	case a(A)
 	case b(B)
@@ -362,6 +390,13 @@ public protocol _Poly5: _Poly4 {
 
 	init(_ e: E)
 }
+
+public extension _Poly5 {
+	subscript(_ lookup: E.Type) -> E? {
+		return e
+	}
+}
+
 public enum Poly5<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType>: _Poly5 {
 	case a(A)
 	case b(B)
@@ -479,6 +514,13 @@ public protocol _Poly6: _Poly5 {
 
 	init(_ f: F)
 }
+
+public extension _Poly6 {
+	subscript(_ lookup: F.Type) -> F? {
+		return f
+	}
+}
+
 public enum Poly6<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType>: _Poly6 {
 	case a(A)
 	case b(B)
