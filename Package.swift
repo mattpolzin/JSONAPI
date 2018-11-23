@@ -12,7 +12,7 @@ let package = Package(
             targets: ["JSONAPI"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/antitypical/Result.git", from: "4.0.0")
+        .package(url: "https://github.com/mattpolzin/Result", .revision("534d672316477abe29ec4b5ebf65827055b86973"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
