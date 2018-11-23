@@ -102,7 +102,7 @@ enum PersonDescription: IdentifiedEntityDescription {
 }
 ```
 
-To enumerate them, the requirements of an `EntityDescription` are
+The requirements of an `EntityDescription` are:
 1. A static `var` "type" that matches the JSON type; The JSON spec requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelatives`
@@ -238,18 +238,46 @@ The entirety of a JSON API request or response is encoded or decoded from- or to
 ```
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoIncludes, BasicJSONAPIError>.self
+let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoIncludes, BasicJSONAPIError>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```
+
+This document is guaranteed by the JSON API spec to be "data", "metadata", or "errors." If it is "data", it may also contain "metadata" and/or other "included" resources. If it is "errors," it may also contain "metadata."
 
 #### `ResourceBody`
 
 The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody` or a `ManyResourceBody`. You will find zero or one `Entity` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `Entity` values in a JSON API document that has a `ManyResourceBody`.
 
-#### `IncludeDecoder`
+If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
 
-The second generic type of a `JSONAPIDocument` is an `IncludeDecoder`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `IncludeDecoder`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
+#### `MetaType`
+
+The second generic type of a `JSONAPIDocument` is a `Meta`. This structure is entirely open-ended. As an example, the JSON API document may contain the following pagination info in its meta entry:
+```
+{
+	"meta": {
+		"total": 100,
+		"limit": 50,
+		"offset": 50
+	}
+}
+```
+
+You would then create the following `Meta` type:
+```
+struct PageMetadata: JSONAPI.Meta {
+		let total: Int
+		let limit: Int
+		let offset: Int
+}
+```
+
+You can always use `NoMetadata` if this JSON API feature is not needed.
+
+#### `IncludeType`
+
+The third generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
 
