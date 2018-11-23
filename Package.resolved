@@ -5,8 +5,8 @@
         "package": "Result",
         "repositoryURL": "https://github.com/mattpolzin/Result",
         "state": {
-          "branch": null,
-          "revision": "534d672316477abe29ec4b5ebf65827055b86973",
+          "branch": "master",
+          "revision": "b98e238da6ea030fa7862ae6fd6500552370019c",
           "version": null
         }
       }
