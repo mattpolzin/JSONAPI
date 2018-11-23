@@ -76,7 +76,7 @@ The primary goals of this framework are:
 - [ ] Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources????
 - [x] For `NoIncludes`, do not even loop over the "included" JSON API section if it exists.
 - [ ] Property-based testing (using `SwiftCheck`)
-- [ ] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
+- [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
 ## Usage
