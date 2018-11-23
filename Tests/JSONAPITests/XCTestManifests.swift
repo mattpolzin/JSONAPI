@@ -2,16 +2,24 @@ import XCTest
 
 extension DocumentTests {
     static let __allTests = [
+        ("test_errorDocumentNoMeta", test_errorDocumentNoMeta),
+        ("test_errorDocumentNoMeta_encode", test_errorDocumentNoMeta_encode),
+        ("test_errorDocumentWithMeta", test_errorDocumentWithMeta),
+        ("test_errorDocumentWithMeta_encode", test_errorDocumentWithMeta_encode),
         ("test_manyDocumentNoIncludes", test_manyDocumentNoIncludes),
         ("test_manyDocumentNoIncludes_encode", test_manyDocumentNoIncludes_encode),
         ("test_manyDocumentSomeIncludes", test_manyDocumentSomeIncludes),
         ("test_manyDocumentSomeIncludes_encode", test_manyDocumentSomeIncludes_encode),
+        ("test_metaDataDocument", test_metaDataDocument),
+        ("test_metaDataDocument_encode", test_metaDataDocument_encode),
         ("test_singleDocumentNoIncludes", test_singleDocumentNoIncludes),
         ("test_singleDocumentNoIncludes_encode", test_singleDocumentNoIncludes_encode),
         ("test_singleDocumentNull", test_singleDocumentNull),
         ("test_singleDocumentNull_encode", test_singleDocumentNull_encode),
         ("test_singleDocumentSomeIncludes", test_singleDocumentSomeIncludes),
         ("test_singleDocumentSomeIncludes_encode", test_singleDocumentSomeIncludes_encode),
+        ("test_unknownErrorDocumentNoMeta", test_unknownErrorDocumentNoMeta),
+        ("test_unknownErrorDocumentNoMeta_encode", test_unknownErrorDocumentNoMeta_encode),
     ]
 }
 

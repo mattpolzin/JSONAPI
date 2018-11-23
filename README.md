@@ -19,8 +19,8 @@ The primary goals of this framework are:
 #### Document
 - [x] `data`
 - [x] `included`
-- [x] `errors` (untested)
-- [ ] `meta`
+- [x] `errors`
+- [x] `meta`
 - [ ] `jsonapi`
 - [ ] `links`
 
@@ -41,8 +41,8 @@ The primary goals of this framework are:
 #### Document
 - [x] `data`
 - [x] `included`
-- [x] `errors` (untested)
-- [ ] `meta`
+- [x] `errors`
+- [x] `meta`
 - [ ] `jsonapi`
 - [ ] `links`
 
