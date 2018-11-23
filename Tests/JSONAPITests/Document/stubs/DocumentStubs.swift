@@ -28,6 +28,28 @@ let single_document_no_includes = """
 }
 """.data(using: .utf8)!
 
+let single_document_no_includes_with_metadata = """
+{
+	"data": {
+		"id": "1",
+		"type": "articles",
+		"relationships": {
+			"author": {
+				"data": {
+					"type": "authors",
+					"id": "33"
+				}
+			}
+		}
+	},
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	}
+}
+""".data(using: .utf8)!
+
 let single_document_some_includes = """
 {
 	"data": {
@@ -48,6 +70,34 @@ let single_document_some_includes = """
 			"type": "authors"
 		}
 	]
+}
+""".data(using: .utf8)!
+
+let single_document_some_includes_with_metadata = """
+{
+	"data": {
+		"id": "1",
+		"type": "articles",
+		"relationships": {
+			"author": {
+				"data": {
+					"type": "authors",
+					"id": "33"
+				}
+			}
+		}
+	},
+	"included": [
+		{
+			"id": "33",
+			"type": "authors"
+		}
+	],
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	}
 }
 """.data(using: .utf8)!
 
