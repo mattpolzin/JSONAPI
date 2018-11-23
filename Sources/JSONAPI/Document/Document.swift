@@ -12,41 +12,58 @@
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include, Error: JSONAPIError>: Equatable {
+public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, IncludeType: JSONAPI.Include, Error: JSONAPIError>: Equatable {
 	public typealias Include = IncludeType
 
 	public let body: Body
-//	public let meta: Meta?
 //	public let jsonApi: APIDescription?
 //	public let links: Links?
 	
 	public enum Body: Equatable {
-		case errors([Error])
-		case data(primary: ResourceBody, included: Includes<Include>)
+		case errors([Error], meta: MetaType?)
+		case data(primary: ResourceBody, included: Includes<Include>, meta: MetaType)
+		case meta(MetaType)
 		
 		public var isError: Bool {
 			guard case .errors = self else { return false }
 			return true
 		}
 		
-		public var data: (primary: ResourceBody, included: Includes<Include>)? {
-			guard case let .data(primary: body, included: includes) = self else { return nil }
-			return (primary: body, included: includes)
+		public var data: (primary: ResourceBody, included: Includes<Include>, meta: MetaType)? {
+			guard case let .data(primary: body, included: includes, meta: meta) = self else { return nil }
+			return (primary: body, included: includes, meta: meta)
+		}
+
+		public var meta: MetaType? {
+			guard case let .meta(metadata) = self else { return nil }
+			return metadata
 		}
 	}
 
-	public init(errors: [Error]) {
-		body = .errors(errors)
+	public init(errors: [Error], meta: MetaType? = nil) {
+		body = .errors(errors, meta: meta)
 	}
 
-	public init(body: ResourceBody, includes: Includes<Include>) {
-		self.body = .data(primary: body, included: includes)
+	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType) {
+		self.body = .data(primary: body, included: includes, meta: meta)
 	}
 }
 
 extension JSONAPIDocument where IncludeType == NoIncludes {
+	public init(body: ResourceBody, meta: MetaType) {
+		self.body = .data(primary: body, included: .none, meta: meta)
+	}
+}
+
+extension JSONAPIDocument where MetaType == NoMetadata {
+	public init(body: ResourceBody, includes: Includes<Include>) {
+		self.body = .data(primary: body, included: includes, meta: .none)
+	}
+}
+
+extension JSONAPIDocument where IncludeType == NoIncludes, MetaType == NoMetadata {
 	public init(body: ResourceBody) {
-		self.body = .data(primary: body, included: .none)
+		self.body = .data(primary: body, included: .none, meta: .none)
 	}
 }
 
@@ -65,36 +82,81 @@ extension JSONAPIDocument: Codable {
 
 		let errors = try container.decodeIfPresent([Error].self, forKey: .errors)
 
+		let meta: MetaType?
+		if let noMeta = NoMetadata() as? MetaType {
+			meta = noMeta
+		} else {
+			do {
+				meta = try container.decode(MetaType.self, forKey: .meta)
+			} catch {
+				meta = nil
+			}
+		}
+
+		// If there are errors, there cannot be a body. Return errors and any metadata found.
 		if let errors = errors {
-			body = .errors(errors)
+			body = .errors(errors, meta: meta)
 			return
 		}
 
-		let data = try container.decode(ResourceBody.self, forKey: .data)
+		let maybeData: ResourceBody?
+		if ResourceBody.self == NoResourceBody.self {
+			maybeData = nil
+		} else {
+			maybeData = try container.decode(ResourceBody.self, forKey: .data)
+		}
+
+		// If there were not errors but there is also no data, try to find metadata.
+		// No metadata is against JSON API Spec, but otherwise we can form a
+		// metadat-only document.
+		guard let data = maybeData else {
+			guard let metaVal = meta else {
+				throw JSONAPIEncodingError.missingOrMalformedMetadata
+			}
+			body = .meta(metaVal)
+			return
+		}
+
 		let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
 		
 		// TODO come back to this and make robust
+
+		guard let metaVal = meta else {
+			throw JSONAPIEncodingError.missingOrMalformedMetadata
+		}
 		
-		body = .data(primary: data, included: maybeIncludes ?? Includes<Include>.none)
+		body = .data(primary: data, included: maybeIncludes ?? Includes<Include>.none, meta: metaVal)
 	}
 
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: RootCodingKeys.self)
 
 		switch body {
-		case .errors(let errors):
+		case .errors(let errors, let meta):
 			var errContainer = container.nestedUnkeyedContainer(forKey: .errors)
 
 			for error in errors {
 				try errContainer.encode(error)
 			}
 
-		case .data(primary: let resourceBody, included: let includes):
+			if MetaType.self != NoMetadata.self,
+				let metaVal = meta {
+				try container.encode(metaVal, forKey: .meta)
+			}
+
+		case .data(primary: let resourceBody, included: let includes, let meta):
 			try container.encode(resourceBody, forKey: .data)
 
 			if Include.self != NoIncludes.self {
 				try container.encode(includes, forKey: .included)
 			}
+
+			if MetaType.self != NoMetadata.self {
+				try container.encode(meta, forKey: .meta)
+			}
+
+		case .meta(let metadata):
+			try container .encode(metadata, forKey: .meta)
 		}
 	}
 }

@@ -150,3 +150,40 @@ let many_document_some_includes = """
 	]
 }
 """.data(using: .utf8)!
+
+let error_document_no_metadata = """
+{
+	"errors": [
+		{
+			"description": "Boooo!",
+			"code": 1
+		}
+	]
+}
+""".data(using: .utf8)!
+
+let error_document_with_metadata = """
+{
+	"errors": [
+		{
+			"description": "Boooo!",
+			"code": 1
+		}
+	],
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	}
+}
+""".data(using: .utf8)!
+
+let metadata_document = """
+{
+	"meta": {
+		"total": 100,
+		"limit": 50,
+		"offset": 0
+	}
+}
+""".data(using: .utf8)!

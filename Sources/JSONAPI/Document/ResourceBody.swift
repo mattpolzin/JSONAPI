@@ -24,6 +24,12 @@ public struct ManyResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
 	}
 }
 
+/// Use NoResourceBody to indicate you expect a JSON API document to not
+/// contain a "data" top-level key.
+public struct NoResourceBody: ResourceBody {
+	public static var none: NoResourceBody { return NoResourceBody() }
+}
+
 // MARK: Decodable
 extension SingleResourceBody {
 	public init(from decoder: Decoder) throws {
