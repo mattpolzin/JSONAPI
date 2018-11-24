@@ -10,8 +10,12 @@ extension DocumentTests {
         ("test_manyDocumentSomeIncludes_encode", test_manyDocumentSomeIncludes_encode),
         ("test_metaDataDocument", test_metaDataDocument),
         ("test_metaDataDocument_encode", test_metaDataDocument_encode),
+        ("test_metaDocumentMissingMeta", test_metaDocumentMissingMeta),
+        ("test_singleDocument_PolyPrimaryResource", test_singleDocument_PolyPrimaryResource),
+        ("test_singleDocument_PolyPrimaryResource_encode", test_singleDocument_PolyPrimaryResource_encode),
         ("test_singleDocumentNoIncludes", test_singleDocumentNoIncludes),
         ("test_singleDocumentNoIncludes_encode", test_singleDocumentNoIncludes_encode),
+        ("test_singleDocumentNoIncludesMissingMetadata", test_singleDocumentNoIncludesMissingMetadata),
         ("test_singleDocumentNoIncludesWithMetadata", test_singleDocumentNoIncludesWithMetadata),
         ("test_singleDocumentNoIncludesWithMetadata_encode", test_singleDocumentNoIncludesWithMetadata_encode),
         ("test_singleDocumentNull", test_singleDocumentNull),
@@ -20,6 +24,8 @@ extension DocumentTests {
         ("test_singleDocumentSomeIncludes_encode", test_singleDocumentSomeIncludes_encode),
         ("test_singleDocumentSomeIncludesWithMetadata", test_singleDocumentSomeIncludesWithMetadata),
         ("test_singleDocumentSomeIncludesWithMetadata_encode", test_singleDocumentSomeIncludesWithMetadata_encode),
+        ("test_unknownErrorDocumentMissingMeta", test_unknownErrorDocumentMissingMeta),
+        ("test_unknownErrorDocumentMissingMeta_encode", test_unknownErrorDocumentMissingMeta_encode),
         ("test_unknownErrorDocumentNoMeta", test_unknownErrorDocumentNoMeta),
         ("test_unknownErrorDocumentNoMeta_encode", test_unknownErrorDocumentNoMeta_encode),
         ("test_unknownErrorDocumentWithMeta", test_unknownErrorDocumentWithMeta),
@@ -46,6 +52,9 @@ extension EntityTests {
         ("test_EntitySomeRelationshipsNoAttributes_encode", test_EntitySomeRelationshipsNoAttributes_encode),
         ("test_EntitySomeRelationshipsSomeAttributes", test_EntitySomeRelationshipsSomeAttributes),
         ("test_EntitySomeRelationshipsSomeAttributes_encode", test_EntitySomeRelationshipsSomeAttributes_encode),
+        ("test_IntOver10_encode", test_IntOver10_encode),
+        ("test_IntOver10_failure", test_IntOver10_failure),
+        ("test_IntOver10_success", test_IntOver10_success),
         ("test_IntToString", test_IntToString),
         ("test_IntToString_encode", test_IntToString_encode),
         ("test_NonNullOptionalNullableAttribute", test_NonNullOptionalNullableAttribute),
@@ -87,6 +96,33 @@ extension IncludedTests {
         ("test_TwoSameIncludes_encode", test_TwoSameIncludes_encode),
         ("test_zeroIncludes", test_zeroIncludes),
         ("test_zeroIncludes_encode", test_zeroIncludes_encode),
+        ("test_zeroIncludes_init", test_zeroIncludes_init),
+    ]
+}
+
+extension PolyTests {
+    static let __allTests = [
+        ("test_init_Poly0", test_init_Poly0),
+        ("test_init_Poly1", test_init_Poly1),
+        ("test_init_Poly2", test_init_Poly2),
+        ("test_init_Poly3", test_init_Poly3),
+        ("test_init_Poly4", test_init_Poly4),
+        ("test_init_Poly5", test_init_Poly5),
+        ("test_init_Poly6", test_init_Poly6),
+        ("test_Poly0_decode_throws", test_Poly0_decode_throws),
+        ("test_Poly0_encode_throws", test_Poly0_encode_throws),
+        ("test_Poly1_decode_throws_typeNotFound", test_Poly1_decode_throws_typeNotFound),
+        ("test_Poly1_lookup", test_Poly1_lookup),
+        ("test_Poly2_decode_throws_typeNotFound", test_Poly2_decode_throws_typeNotFound),
+        ("test_Poly2_lookup", test_Poly2_lookup),
+        ("test_Poly3_decode_throws_typeNotFound", test_Poly3_decode_throws_typeNotFound),
+        ("test_Poly3_lookup", test_Poly3_lookup),
+        ("test_Poly4_decode_throws_typeNotFound", test_Poly4_decode_throws_typeNotFound),
+        ("test_Poly4_lookup", test_Poly4_lookup),
+        ("test_Poly5_decode_throws_typeNotFound", test_Poly5_decode_throws_typeNotFound),
+        ("test_Poly5_lookup", test_Poly5_lookup),
+        ("test_Poly6_decode_throws_typeNotFound", test_Poly6_decode_throws_typeNotFound),
+        ("test_Poly6_lookup", test_Poly6_lookup),
     ]
 }
 
@@ -96,8 +132,10 @@ extension RelationshipTests {
         ("test_initToManyWithRelationships", test_initToManyWithRelationships),
         ("test_ToManyRelationship", test_ToManyRelationship),
         ("test_ToManyRelationship_encode", test_ToManyRelationship_encode),
+        ("test_ToManyTypeMismatch", test_ToManyTypeMismatch),
         ("test_ToOneRelationship", test_ToOneRelationship),
         ("test_ToOneRelationship_encode", test_ToOneRelationship_encode),
+        ("test_ToOneTypeMismatch", test_ToOneTypeMismatch),
     ]
 }
 
@@ -118,6 +156,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(DocumentTests.__allTests),
         testCase(EntityTests.__allTests),
         testCase(IncludedTests.__allTests),
+        testCase(PolyTests.__allTests),
         testCase(RelationshipTests.__allTests),
         testCase(ResourceBodyTests.__allTests),
     ]
