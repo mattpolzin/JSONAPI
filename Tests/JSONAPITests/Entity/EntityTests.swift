@@ -211,6 +211,23 @@ extension EntityTests {
 	}
 }
 
+// MARK: Attribute Validation
+extension EntityTests {
+	func test_IntOver10_success() {
+		XCTAssertNoThrow(decoded(type: TestEntity11.self, data: entity_valid_validated_attribute))
+
+
+	}
+
+	func test_IntOver10_encode() {
+		test_DecodeEncodeEquality(type: TestEntity11.self, data: entity_valid_validated_attribute)
+	}
+
+	func test_IntOver10_failure() {
+		XCTAssertThrowsError(try JSONDecoder().decode(TestEntity11.self, from: entity_invalid_validated_attribute))
+	}
+}
+
 // MARK: Relationship omission and nullification
 extension EntityTests {
 	func test_nullableRelationshipNotNull() {
@@ -385,11 +402,11 @@ extension EntityTests {
 		struct Attributes: JSONAPI.Attributes {
 			let string: Attribute<String>
 			let int: Attribute<Int>
-			let stringFromInt: TransformAttribute<Int, IntToString>
-			let plus: TransformAttribute<Int, IntPlusOneHundred>
-			let doubleFromInt: TransformAttribute<Int, IntToDouble>
-			let omitted: TransformAttribute<Int, IntToString>?
-			let nullToString: TransformAttribute<Int?, OptionalToString<Int>>
+			let stringFromInt: TransformedAttribute<Int, IntToString>
+			let plus: TransformedAttribute<Int, IntPlusOneHundred>
+			let doubleFromInt: TransformedAttribute<Int, IntToDouble>
+			let omitted: TransformedAttribute<Int, IntToString>?
+			let nullToString: TransformedAttribute<Int?, OptionalToString<Int>>
 		}
 	}
 	
@@ -430,6 +447,18 @@ extension EntityTests {
 
 	typealias TestEntity10 = Entity<TestEntityType10>
 
+	enum TestEntityType11: EntityDescription {
+		public static var type: String { return "eleventh_test_entities" }
+
+		public struct Attributes: JSONAPI.Attributes {
+			let number: ValidatedAttribute<Int, IntOver10>
+		}
+
+		typealias Relationships = NoRelatives
+	}
+
+	typealias TestEntity11 = Entity<TestEntityType11>
+
 	enum UnidentifiedTestEntityType: EntityDescription {
 		public static var type: String { return "unidentified_test_entities" }
 
@@ -463,6 +492,19 @@ extension EntityTests {
 	enum OptionalToString<T>: Transformer {
 		public static func transform(_ from: T?) -> String {
 			return String(describing: from)
+		}
+	}
+
+	enum IntOver10: Validator {
+		enum Error: Swift.Error {
+			case under10
+		}
+
+		public static func transform(_ from: Int) throws -> Int {
+			guard from > 10 else {
+				throw Error.under10
+			}
+			return from
 		}
 	}
 }

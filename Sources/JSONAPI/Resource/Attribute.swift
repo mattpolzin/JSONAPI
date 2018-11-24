@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 11/13/18.
 //
 
-public struct TransformAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: Codable where Transformer.From == RawValue {
+public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: Codable where Transformer.From == RawValue {
 	private let rawValue: RawValue
 	
 	public let value: Transformer.To
@@ -16,18 +16,20 @@ public struct TransformAttribute<RawValue: Codable, Transformer: JSONAPI.Transfo
 	}
 }
 
-extension TransformAttribute: CustomStringConvertible {
+extension TransformedAttribute: CustomStringConvertible {
 	public var description: String {
 		return "Attribute<\(String(describing: Transformer.From.self)) -> \(String(describing: Transformer.To.self))>(\(String(describing: value)))"
 	}
 }
 
-extension TransformAttribute: Equatable where Transformer.From: Equatable, Transformer.To: Equatable {}
+extension TransformedAttribute: Equatable where Transformer.From: Equatable, Transformer.To: Equatable {}
 
-public typealias Attribute<T: Codable> = TransformAttribute<T, IdentityTransformer<T>>
+public typealias ValidatedAttribute<RawValue: Codable, Validator: JSONAPI.Validator> = TransformedAttribute<RawValue, Validator> where RawValue == Validator.From
+
+public typealias Attribute<T: Codable> = TransformedAttribute<T, IdentityTransformer<T>>
 
 // MARK: - Codable
-extension TransformAttribute {
+extension TransformedAttribute {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 		

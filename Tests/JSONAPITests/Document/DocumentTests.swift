@@ -183,6 +183,10 @@ class DocumentTests: XCTestCase {
 		XCTAssertEqual(document.body.data?.primary.value?[Article.self], article)
 		XCTAssertNil(document.body.data?.primary.value?[Author.self])
 	}
+
+	func test_singleDocument_PolyPrimaryResource_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+	}
 	
 	func test_manyDocumentNoIncludes() {
 		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,

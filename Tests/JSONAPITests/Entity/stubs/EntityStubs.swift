@@ -206,6 +206,26 @@ let entity_self_ref_relationship = """
 }
 """.data(using: .utf8)!
 
+let entity_invalid_validated_attribute = """
+{
+	"id": "1",
+	"type": "eleventh_test_entities",
+	"attributes": {
+		"number": 10
+	}
+}
+""".data(using: .utf8)!
+
+let entity_valid_validated_attribute = """
+{
+	"id": "1",
+	"type": "eleventh_test_entities",
+	"attributes": {
+		"number": 60
+	}
+}
+""".data(using: .utf8)!
+
 let entity_unidentified = """
 {
 	"type": "unidentified_test_entities",
