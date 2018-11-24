@@ -237,3 +237,14 @@ let metadata_document = """
 	}
 }
 """.data(using: .utf8)!
+
+let metadata_document_missing_metadata = """
+{
+}
+""".data(using: .utf8)!
+
+let metadata_document_missing_metadata2 = """
+{
+	"meta": null
+}
+""".data(using: .utf8)!

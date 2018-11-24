@@ -49,6 +49,27 @@ class DocumentTests: XCTestCase {
 								  data: error_document_no_metadata)
 	}
 
+	func test_unknownErrorDocumentMissingMeta() {
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.meta)
+		XCTAssertNil(document.body.data)
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0[0], .unknown)
+		XCTAssertNil(errors.meta)
+	}
+
+	func test_unknownErrorDocumentMissingMeta_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+	}
+
 	func test_errorDocumentNoMeta() {
 		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoIncludes, TestError>.self,
 							   data: error_document_no_metadata)
@@ -109,6 +130,12 @@ class DocumentTests: XCTestCase {
 							   data: metadata_document)
 	}
 
+	func test_metaDocumentMissingMeta() {
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata))
+
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata2))
+	}
+
 	func test_singleDocumentNoIncludes() {
 		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
 							   data: single_document_no_includes)
@@ -139,6 +166,10 @@ class DocumentTests: XCTestCase {
 	func test_singleDocumentNoIncludesWithMetadata_encode() {
 		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata)
+	}
+
+	func test_singleDocumentNoIncludesMissingMetadata() {
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes))
 	}
 	
 	func test_singleDocumentSomeIncludes() {
