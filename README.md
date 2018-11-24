@@ -72,7 +72,7 @@ The primary goals of this framework are:
 - [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
 - [x] Fix `ToOneRelationship` so that it is possible to specify an optional relationship where the value is `null` rather than the key being omitted.
 - [x] Conform to `CustomStringConvertible`
-- [ ] More tests around failing to decode improperly structured JSON (not bad JSON, but JSON that is not to spec)
+- [x] More tests around failing to decode improperly structured JSON (not bad JSON, but JSON that is not to spec)
 - [ ] Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources????
 - [x] For `NoIncludes`, do not even loop over the "included" JSON API section if it exists.
 - [ ] Property-based testing (using `SwiftCheck`)

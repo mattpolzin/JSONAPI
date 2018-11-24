@@ -14,6 +14,15 @@ let to_one_relationship = """
 }
 """.data(using: .utf8)!
 
+let to_one_relationship_type_mismatch = """
+{
+	"data": {
+		"type": "not_a_type",
+		"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+	}
+}
+""".data(using: .utf8)!
+
 let to_many_relationship = """
 {
 	"data": [
@@ -27,6 +36,25 @@ let to_many_relationship = """
 		},
 		{
 			"type": "test_entity1",
+			"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+		}
+	]
+}
+""".data(using: .utf8)!
+
+let to_many_relationship_type_mismatch = """
+{
+	"data": [
+		{
+			"type": "test_entity1",
+			"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+		},
+		{
+			"type": "test_entity1",
+			"id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333"
+		},
+		{
+			"type": "not_a_type",
 			"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
 		}
 	]

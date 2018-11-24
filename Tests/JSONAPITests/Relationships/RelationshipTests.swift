@@ -61,6 +61,17 @@ extension RelationshipTests {
 	}
 }
 
+// MARK: Failure tests
+extension RelationshipTests {
+	func test_ToManyTypeMismatch() {
+		XCTAssertThrowsError(try JSONDecoder().decode(ToManyRelationship<TestEntity1>.self, from: to_many_relationship_type_mismatch))
+	}
+
+	func test_ToOneTypeMismatch() {
+		XCTAssertThrowsError(try JSONDecoder().decode(ToOneRelationship<TestEntity1>.self, from: to_one_relationship_type_mismatch))
+	}
+}
+
 // MARK: - Test types
 extension RelationshipTests {
 	enum TestEntityType1: EntityDescription {
