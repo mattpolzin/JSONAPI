@@ -5,7 +5,12 @@ import JSONAPI
 class IncludedTests: XCTestCase {
 
 	let decoder = JSONDecoder()
-	
+
+	func test_zeroIncludes_init() {
+		let includes = Includes()
+		XCTAssertEqual(includes.count, 0)
+	}
+
 	func test_zeroIncludes() {
 		let includes = decoded(type: Includes<NoIncludes>.self,
 												data: two_same_type_includes)
@@ -118,6 +123,7 @@ class IncludedTests: XCTestCase {
 	}
 }
 
+// MARK: - Test types
 extension IncludedTests {
 	enum TestEntityType: EntityDescription {
 

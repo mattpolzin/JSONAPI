@@ -19,14 +19,14 @@ public protocol Poly: Codable, Equatable {}
 
 // MARK: - Generic Decoding
 
-private func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, EncodingError> {
-	let ret: Result<Entity, EncodingError>
+private func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, DecodingError> {
+	let ret: Result<Entity, DecodingError>
 	do {
 		ret = try .success(container.decode(Entity.self))
-	} catch (let err as EncodingError) {
+	} catch (let err as DecodingError) {
 		ret = .failure(err)
 	} catch (let err) {
-		ret = .failure(EncodingError.invalidValue(Entity.Description.self,
+		ret = .failure(DecodingError.typeMismatch(Entity.Description.self,
 												  .init(codingPath: container.codingPath,
 														debugDescription: err.localizedDescription,
 														underlyingError: err)))
@@ -41,10 +41,11 @@ public struct Poly0: _Poly0 {
 	public init() {}
 
 	public init(from decoder: Decoder) throws {
+		throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.")
 	}
 
 	public func encode(to encoder: Encoder) throws {
-		throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Include0, which should be represented by the absence of an 'included' entry altogether.")
+		throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.")
 	}
 }
 
