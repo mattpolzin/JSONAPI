@@ -175,6 +175,14 @@ class DocumentTests: XCTestCase {
 		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, Include1<Author>, BasicJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata)
 	}
+
+	func test_singleDocument_PolyPrimaryResource() {
+		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+
+		XCTAssertEqual(document.body.data?.primary.value?[Article.self], article)
+		XCTAssertNil(document.body.data?.primary.value?[Author.self])
+	}
 	
 	func test_manyDocumentNoIncludes() {
 		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
@@ -215,7 +223,6 @@ class DocumentTests: XCTestCase {
 		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, Include1<Author>, BasicJSONAPIError>.self,
 							   data: many_document_some_includes)
 	}
-
 }
 
 // MARK: - Test Types

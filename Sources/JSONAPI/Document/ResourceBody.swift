@@ -5,10 +5,12 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
+public protocol PrimaryResource: Equatable, Codable {}
+
 public protocol ResourceBody: Codable, Equatable {
 }
 
-public struct SingleResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
+public struct SingleResourceBody<Entity: JSONAPI.PrimaryResource>: ResourceBody {
 	public let value: Entity?
 
 	public init(entity: Entity?) {

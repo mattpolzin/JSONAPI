@@ -37,7 +37,7 @@ public protocol EntityDescription {
 /// EntityType is the protocol that Entity conforms to. This
 /// protocol lets other types accept any Entity as a generic
 /// specialization.
-public protocol EntityType: Codable, Equatable {
+public protocol EntityType: PrimaryResource {
 	associatedtype Description: EntityDescription
 	associatedtype Identifier: Equatable & Codable
 }

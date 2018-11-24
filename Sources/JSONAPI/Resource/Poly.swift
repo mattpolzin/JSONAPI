@@ -15,7 +15,7 @@ import Result
 /// disparate types under one roof for
 /// the purposes of JSON API compliant
 /// encoding or decoding.
-public protocol Poly: Codable, Equatable {}
+public protocol Poly: PrimaryResource {}
 
 // MARK: - Generic Decoding
 
