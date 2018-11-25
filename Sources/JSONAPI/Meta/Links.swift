@@ -9,7 +9,10 @@
 public protocol Links: Codable, Equatable {}
 
 /// Use NoLinks where no links should belong to a JSON API component
-public struct NoLinks: Links {}
+public struct NoLinks: Links {
+	public static var none: NoLinks { return NoLinks() }
+	public init() {}
+}
 
 public protocol URL: Codable, Equatable {}
 

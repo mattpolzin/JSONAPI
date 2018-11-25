@@ -11,28 +11,28 @@ import JSONAPI
 class DocumentTests: XCTestCase {
 
 	func test_singleDocumentNull() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: single_document_null)
 
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.data?.primary.value)
-		XCTAssertEqual(document.body.data?.included.count, 0)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.primaryData?.value)
+		XCTAssertEqual(document.body.includes?.count, 0)
 	}
 
 	func test_singleDocumentNull_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 								  data: single_document_null)
 	}
 
 	func test_unknownErrorDocumentNoMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.data)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.primaryData)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -45,16 +45,16 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentNoMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 								  data: error_document_no_metadata)
 	}
 
 	func test_unknownErrorDocumentMissingMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.data)
+		XCTAssertNil(document.body.primaryData)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -67,16 +67,16 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentMissingMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
 	}
 
 	func test_errorDocumentNoMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoIncludes, TestError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestError>.self,
 							   data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.data)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.primaryData)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -89,17 +89,17 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_errorDocumentNoMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoIncludes, TestError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestError>.self,
 							   data: error_document_no_metadata)
 	}
 
 	func test_unknownErrorDocumentWithMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: error_document_with_metadata)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.data)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNil(document.body.primaryData)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -111,12 +111,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentWithMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: error_document_with_metadata)
 	}
 
 	func test_metaDataDocument() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: metadata_document)
 
 		XCTAssertFalse(document.body.isError)
@@ -126,136 +126,136 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_metaDataDocument_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: metadata_document)
 	}
 
 	func test_metaDocumentMissingMeta() {
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata))
 
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata2))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata2))
 	}
 
 	func test_singleDocumentNoIncludes() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: single_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.value?.id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.included.count, 0)
-		XCTAssertEqual(document.body.data?.meta, NoMetadata())
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, NoMetadata())
 	}
 
 	func test_singleDocumentNoIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: single_document_no_includes)
 	}
 
 	func test_singleDocumentNoIncludesWithMetadata() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: single_document_no_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.value?.id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.included.count, 0)
-		XCTAssertEqual(document.body.data?.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 	}
 
 	func test_singleDocumentNoIncludesWithMetadata_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata)
 	}
 
 	func test_singleDocumentNoIncludesMissingMetadata() {
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes))
 	}
 	
 	func test_singleDocumentSomeIncludes() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 							   data: single_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.value?.id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.included.count, 1)
-		XCTAssertEqual(document.body.data?.included[Author.self].count, 1)
-		XCTAssertEqual(document.body.data?.included[Author.self][0].id.rawValue, "33")
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
 	}
 
 	func test_singleDocumentSomeIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 							   data: single_document_some_includes)
 	}
 
 	func test_singleDocumentSomeIncludesWithMetadata() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 							   data: single_document_some_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.value?.id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.included.count, 1)
-		XCTAssertEqual(document.body.data?.included[Author.self].count, 1)
-		XCTAssertEqual(document.body.data?.included[Author.self][0].id.rawValue, "33")
-		XCTAssertEqual(document.body.data?.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 	}
 
 	func test_singleDocumentSomeIncludesWithMetadata_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata)
 	}
 
 	func test_singleDocument_PolyPrimaryResource() {
 		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
 
-		XCTAssertEqual(document.body.data?.primary.value?[Article.self], article)
-		XCTAssertNil(document.body.data?.primary.value?[Author.self])
+		XCTAssertEqual(document.body.primaryData?.value?[Article.self], article)
+		XCTAssertNil(document.body.primaryData?.value?[Author.self])
 	}
 
 	func test_singleDocument_PolyPrimaryResource_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
 	}
 	
 	func test_manyDocumentNoIncludes() {
-		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: many_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.values.count, 3)
-		XCTAssertEqual(document.body.data?.0.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.0.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.data?.0.values[2].id.rawValue, "3")
-		XCTAssertEqual(document.body.data?.included.count, 0)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.values.count, 3)
+		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertEqual(document.body.includes?.count, 0)
 	}
 
 	func test_manyDocumentNoIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: many_document_no_includes)
 	}
 	
 	func test_manyDocumentSomeIncludes() {
-		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 							   data: many_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
-		XCTAssertNotNil(document.body.data)
-		XCTAssertEqual(document.body.data?.0.values.count, 3)
-		XCTAssertEqual(document.body.data?.0.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.data?.0.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.data?.0.values[2].id.rawValue, "3")
-		XCTAssertEqual(document.body.data?.included.count, 3)
-		XCTAssertEqual(document.body.data?.included[Author.self].count, 3)
-		XCTAssertEqual(document.body.data?.included[Author.self][0].id.rawValue, "33")
-		XCTAssertEqual(document.body.data?.included[Author.self][1].id.rawValue, "22")
-		XCTAssertEqual(document.body.data?.included[Author.self][2].id.rawValue, "11")
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.values.count, 3)
+		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertEqual(document.body.includes?.count, 3)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 3)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.body.includes?[Author.self][1].id.rawValue, "22")
+		XCTAssertEqual(document.body.includes?[Author.self][2].id.rawValue, "11")
 	}
 
 	func test_manyDocumentSomeIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 							   data: many_document_some_includes)
 	}
 }

@@ -98,6 +98,7 @@ public enum JSONAPIEncodingError: Swift.Error {
 	case illegalEncoding(String)
 	case illegalDecoding(String)
 	case missingOrMalformedMetadata
+	case missingOrMalformedLinks
 }
 
 extension ToOneRelationship {
