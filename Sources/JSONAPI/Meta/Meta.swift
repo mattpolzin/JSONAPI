@@ -15,6 +15,10 @@
 public protocol Meta: Codable, Equatable {
 }
 
+// We make Optional a Meta if it wraps a Meta so that Metadata can be specified as
+// nullable.
+extension Optional: Meta where Wrapped: Meta {}
+
 public struct NoMetadata: Meta {
 	public static var none: NoMetadata { return NoMetadata() }
 

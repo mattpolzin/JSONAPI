@@ -100,6 +100,18 @@ extension IncludedTests {
     ]
 }
 
+extension LinksTests {
+    static let __allTests = [
+        ("test_linkFailsIfMetaNotFound", test_linkFailsIfMetaNotFound),
+        ("test_linkWithMetadata", test_linkWithMetadata),
+        ("test_linkWithMetadata_encode", test_linkWithMetadata_encode),
+        ("test_linkWithNoMeta", test_linkWithNoMeta),
+        ("test_linkWithNoMeta_encode", test_linkWithNoMeta_encode),
+        ("test_linkWithNullMetadata", test_linkWithNullMetadata),
+        ("test_linkWithNullMetadata_encode", test_linkWithNullMetadata_encode),
+    ]
+}
+
 extension PolyTests {
     static let __allTests = [
         ("test_init_Poly0", test_init_Poly0),
@@ -156,6 +168,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(DocumentTests.__allTests),
         testCase(EntityTests.__allTests),
         testCase(IncludedTests.__allTests),
+        testCase(LinksTests.__allTests),
         testCase(PolyTests.__allTests),
         testCase(RelationshipTests.__allTests),
         testCase(ResourceBodyTests.__allTests),
