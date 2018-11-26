@@ -50,6 +50,63 @@ let single_document_no_includes_with_metadata = """
 }
 """.data(using: .utf8)!
 
+let single_document_no_includes_with_links = """
+{
+	"data": {
+		"id": "1",
+		"type": "articles",
+		"relationships": {
+			"author": {
+				"data": {
+					"type": "authors",
+					"id": "33"
+				}
+			}
+		}
+	},
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
+	}
+}
+""".data(using: .utf8)!
+
+let single_document_no_includes_with_metadata_with_links = """
+{
+	"data": {
+		"id": "1",
+		"type": "articles",
+		"relationships": {
+			"author": {
+				"data": {
+					"type": "authors",
+					"id": "33"
+				}
+			}
+		}
+	},
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
+	},
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	}
+}
+""".data(using: .utf8)!
+
 let single_document_some_includes = """
 {
 	"data": {
@@ -70,6 +127,43 @@ let single_document_some_includes = """
 			"type": "authors"
 		}
 	]
+}
+""".data(using: .utf8)!
+
+let single_document_some_includes_with_metadata_with_links = """
+{
+	"data": {
+		"id": "1",
+		"type": "articles",
+		"relationships": {
+			"author": {
+				"data": {
+					"type": "authors",
+					"id": "33"
+				}
+			}
+		}
+	},
+	"included": [
+		{
+			"id": "33",
+			"type": "authors"
+		}
+	],
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
+	},
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	}
 }
 """.data(using: .utf8)!
 
@@ -234,6 +328,25 @@ let metadata_document = """
 		"total": 100,
 		"limit": 50,
 		"offset": 0
+	}
+}
+""".data(using: .utf8)!
+
+let metadata_document_with_links = """
+{
+	"meta": {
+		"total": 100,
+		"limit": 50,
+		"offset": 0
+	},
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
 	}
 }
 """.data(using: .utf8)!

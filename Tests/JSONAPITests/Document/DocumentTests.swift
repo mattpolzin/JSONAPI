@@ -130,6 +130,25 @@ class DocumentTests: XCTestCase {
 							   data: metadata_document)
 	}
 
+	func test_metaDataDocumentWithLinks() {
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: metadata_document_with_links)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertEqual(document.body.meta?.total, 100)
+		XCTAssertEqual(document.body.meta?.limit, 50)
+		XCTAssertEqual(document.body.meta?.offset, 0)
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+	}
+
+	func test_metaDataDocumentWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: metadata_document_with_links)
+	}
+
 	func test_metaDocumentMissingMeta() {
 		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata))
 
@@ -166,6 +185,48 @@ class DocumentTests: XCTestCase {
 	func test_singleDocumentNoIncludesWithMetadata_encode() {
 		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata)
+	}
+
+	func test_singleDocumentNoIncludesWithLinks() {
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: single_document_no_includes_with_links)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+
+	}
+
+	func test_singleDocumentNoIncludesWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+								  data: single_document_no_includes_with_links)
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithLinks() {
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: single_document_no_includes_with_metadata_with_links)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+								  data: single_document_no_includes_with_metadata_with_links)
 	}
 
 	func test_singleDocumentNoIncludesMissingMetadata() {
@@ -205,6 +266,28 @@ class DocumentTests: XCTestCase {
 	func test_singleDocumentSomeIncludesWithMetadata_encode() {
 		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata)
+	}
+
+	func test_singleDocumentNoIncludesWithSomeIncludesWithMetadataWithLinks() {
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, BasicJSONAPIError>.self,
+							   data: single_document_some_includes_with_metadata_with_links)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+	}
+
+	func test_singleDocumentNoIncludesWithSomeIncludesMetadataWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, BasicJSONAPIError>.self,
+								  data: single_document_some_includes_with_metadata_with_links)
 	}
 
 	func test_singleDocument_PolyPrimaryResource() {
@@ -289,6 +372,15 @@ extension DocumentTests {
 		let offset: Int
 	}
 
+	struct TestLinks: JSONAPI.Links {
+		let link: Link<String, NoMetadata>
+		let link2: Link<String,TestMetadata>
+
+		struct TestMetadata: JSONAPI.Meta {
+			let hello: String
+		}
+	}
+
 	enum TestError: JSONAPIError {
 		case unknownError
 		case basic(BasicError)
@@ -320,3 +412,5 @@ extension DocumentTests {
 		}
 	}
 }
+
+extension String: JSONAPI.URL {}

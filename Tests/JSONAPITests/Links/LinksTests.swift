@@ -66,5 +66,3 @@ extension LinksTests {
 		let hello: String
 	}
 }
-
-extension String: JSONAPI.URL {}
