@@ -322,6 +322,51 @@ let error_document_with_metadata = """
 }
 """.data(using: .utf8)!
 
+let error_document_with_links = """
+{
+	"errors": [
+		{
+			"description": "Boooo!",
+			"code": 1
+		}
+	],
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
+	}
+}
+""".data(using: .utf8)!
+
+let error_document_with_metadata_with_links = """
+{
+	"errors": [
+		{
+			"description": "Boooo!",
+			"code": 1
+		}
+	],
+	"meta": {
+		"total": 70,
+		"limit": 40,
+		"offset": 10
+	},
+	"links": {
+		"link": "https://website.com",
+		"link2": {
+			"href": "https://othersite.com",
+			"meta": {
+				"hello": "world"
+			}
+		}
+	}
+}
+""".data(using: .utf8)!
+
 let metadata_document = """
 {
 	"meta": {

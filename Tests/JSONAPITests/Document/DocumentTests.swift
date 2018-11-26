@@ -15,6 +15,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_null)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertNil(document.body.primaryData?.value)
@@ -33,6 +34,7 @@ class DocumentTests: XCTestCase {
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -40,6 +42,7 @@ class DocumentTests: XCTestCase {
 		}
 
 		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
 		XCTAssertEqual(errors.0[0], .unknown)
 		XCTAssertEqual(errors.meta, NoMetadata())
 	}
@@ -55,6 +58,7 @@ class DocumentTests: XCTestCase {
 		XCTAssertTrue(document.body.isError)
 		XCTAssertNil(document.body.meta)
 		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -62,6 +66,7 @@ class DocumentTests: XCTestCase {
 		}
 
 		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
 		XCTAssertEqual(errors.0[0], .unknown)
 		XCTAssertNil(errors.meta)
 	}
@@ -77,6 +82,7 @@ class DocumentTests: XCTestCase {
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -84,6 +90,7 @@ class DocumentTests: XCTestCase {
 		}
 
 		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
 		XCTAssertEqual(errors.0[0], TestError.basic(.init(code: 1, description: "Boooo!")))
 		XCTAssertEqual(errors.meta, NoMetadata())
 	}
@@ -100,6 +107,7 @@ class DocumentTests: XCTestCase {
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
 			XCTFail("Needed body to be in errors case but it was not.")
@@ -107,6 +115,7 @@ class DocumentTests: XCTestCase {
 		}
 
 		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
 		XCTAssertEqual(errors.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 	}
 
@@ -115,11 +124,89 @@ class DocumentTests: XCTestCase {
 							   data: error_document_with_metadata)
 	}
 
+	func test_unknownErrorDocumentWithMetaWithLinks() {
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: error_document_with_metadata_with_links)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+	}
+
+	func test_unknownErrorDocumentWithMetaWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+								  data: error_document_with_metadata_with_links)
+	}
+
+	func test_unknownErrorDocumentWithLinks() {
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: error_document_with_links)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+	}
+
+	func test_unknownErrorDocumentWithLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+								  data: error_document_with_links)
+	}
+
+	func test_unknownErrorDocumentMissingLinks() {
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+							   data: error_document_no_metadata)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertNil(document.body.links)
+	}
+
+	func test_unknownErrorDocumentMissingLinks_encode() {
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+								  data: error_document_no_metadata)
+	}
+
 	func test_metaDataDocument() {
 		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
 							   data: metadata_document)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertEqual(document.body.meta?.total, 100)
 		XCTAssertEqual(document.body.meta?.limit, 50)
 		XCTAssertEqual(document.body.meta?.offset, 0)
@@ -135,6 +222,7 @@ class DocumentTests: XCTestCase {
 							   data: metadata_document_with_links)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertEqual(document.body.meta?.total, 100)
 		XCTAssertEqual(document.body.meta?.limit, 50)
 		XCTAssertEqual(document.body.meta?.offset, 0)
@@ -160,6 +248,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
@@ -176,6 +265,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_no_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
@@ -192,6 +282,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_no_includes_with_links)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
@@ -213,6 +304,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_no_includes_with_metadata_with_links)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
@@ -229,6 +321,10 @@ class DocumentTests: XCTestCase {
 								  data: single_document_no_includes_with_metadata_with_links)
 	}
 
+	func test_singleDocumentNoIncludesWithMetadataMissingLinks() {
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes_with_metadata))
+	}
+
 	func test_singleDocumentNoIncludesMissingMetadata() {
 		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes))
 	}
@@ -238,6 +334,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
@@ -255,6 +352,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_some_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
@@ -273,6 +371,7 @@ class DocumentTests: XCTestCase {
 							   data: single_document_some_includes_with_metadata_with_links)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
@@ -307,6 +406,7 @@ class DocumentTests: XCTestCase {
 							   data: many_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.values.count, 3)
 		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
@@ -325,6 +425,7 @@ class DocumentTests: XCTestCase {
 							   data: many_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryData)
 		XCTAssertEqual(document.body.primaryData?.values.count, 3)
 		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
