@@ -22,7 +22,7 @@ The primary goals of this framework are:
 - [x] `errors`
 - [x] `meta`
 - [ ] `jsonapi`
-- [ ] `links`
+- [x] `links`
 
 #### Resource Object
 - [x] `id`
@@ -36,6 +36,10 @@ The primary goals of this framework are:
 - [x] `data`
 - [ ] `links`
 - [ ] `meta`
+
+#### Links Object
+- [x] `href`
+- [x] `meta`
 
 ### Encoding
 #### Document
@@ -44,7 +48,7 @@ The primary goals of this framework are:
 - [x] `errors`
 - [x] `meta`
 - [ ] `jsonapi`
-- [ ] `links`
+- [x] `links`
 
 #### Resource Object
 - [x] `id`
@@ -58,6 +62,10 @@ The primary goals of this framework are:
 - [x] `data`
 - [ ] `links`
 - [ ] `meta`
+
+#### Links Object
+- [x] `href`
+- [x] `meta`
 
 ### EntityDescription Validator (using reflection)
 - [ ] Disallow optional array in `Attribute` and `Relationship` (should be empty array, not `null`).
@@ -247,7 +255,7 @@ This document is guaranteed by the JSON API spec to be "data", "metadata", or "e
 
 #### `ResourceBody`
 
-The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody` or a `ManyResourceBody`. You will find zero or one `Entity` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `Entity` values in a JSON API document that has a `ManyResourceBody`.
+The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody` or a `ManyResourceBody`. You will find zero or one `Entity` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `Entity` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `Entity`. These `Poly` types work in the same way as the `Include` types described below.
 
 If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
 
@@ -275,9 +283,15 @@ struct PageMetadata: JSONAPI.Meta {
 
 You can always use `NoMetadata` if this JSON API feature is not needed.
 
+#### `LinksType`
+
+The third generic type of a `JSONAPIDocument` is a `Links` struct. A `Links` struct must contain only `Link` properties. Each `Link` property can either be a `URL` or a `URL` and some `Meta`.
+
+You can specify `NoLinks` if the document should not contain any links.
+
 #### `IncludeType`
 
-The third generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
+The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
 
