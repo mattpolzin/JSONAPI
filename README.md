@@ -233,12 +233,16 @@ enum ISODateTransformer: Transformer {
 }
 ```
 
-Then you define the attribute as a `TransformAttribute` instead of an `Attribute`:
+Then you define the attribute as a `TransformedAttribute` instead of an `Attribute`:
 ```
-let date: TransformAttribute<String, ISODateTransformer>
+let date: TransformedAttribute<String, ISODateTransformer>
 ```
 
 Note that the first generic parameter of `TransformAttribute` is the type you expect to decode from JSON, not the type you want to end up with after transformation.
+
+#### `Validator`
+
+You can also creator `Validator`s and `ValidatedAttribute`s. A `Validator` is just a `Transformer` that by convention does not perform a transformation. It simply `throws` if an attribute value is invalid.
 
 ### `JSONAPIDocument`
 
@@ -246,7 +250,7 @@ The entirety of a JSON API request or response is encoded or decoded from- or to
 ```
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoIncludes, BasicJSONAPIError>.self
+let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```
