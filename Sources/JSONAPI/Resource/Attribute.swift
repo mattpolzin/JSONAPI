@@ -24,6 +24,15 @@ extension TransformedAttribute: CustomStringConvertible {
 
 extension TransformedAttribute: Equatable where Transformer.From: Equatable, Transformer.To: Equatable {}
 
+extension TransformedAttribute where Transformer == IdentityTransformer<RawValue> {
+	// If we are using the identity transform, we can skip the transform and guarantee no
+	// error is thrown.
+	public init(value: RawValue) {
+		rawValue = value
+		self.value = value
+	}
+}
+
 public typealias ValidatedAttribute<RawValue: Codable, Validator: JSONAPI.Validator> = TransformedAttribute<RawValue, Validator> where RawValue == Validator.From
 
 public typealias Attribute<T: Codable> = TransformedAttribute<T, IdentityTransformer<T>>

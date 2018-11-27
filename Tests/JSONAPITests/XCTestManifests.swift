@@ -1,5 +1,24 @@
 import XCTest
 
+extension AttributeTests {
+    static let __allTests = [
+        ("test_AttributeIsTransformedAttribute", test_AttributeIsTransformedAttribute),
+        ("test_AttributeNonThrowingConstructor", test_AttributeNonThrowingConstructor),
+    ]
+}
+
+extension Attribute_LiteralTests {
+    static let __allTests = [
+        ("test_ArrayLiteral", test_ArrayLiteral),
+        ("test_BooleanLiteral", test_BooleanLiteral),
+        ("test_DictionaryLiteral", test_DictionaryLiteral),
+        ("test_FloatLiteral", test_FloatLiteral),
+        ("test_IntegerLiteral", test_IntegerLiteral),
+        ("test_NilLiteral", test_NilLiteral),
+        ("test_StringLiteral", test_StringLiteral),
+    ]
+}
+
 extension DocumentTests {
     static let __allTests = [
         ("test_errorDocumentNoMeta", test_errorDocumentNoMeta),
@@ -180,6 +199,8 @@ extension ResourceBodyTests {
 #if !os(macOS)
 public func __allTests() -> [XCTestCaseEntry] {
     return [
+        testCase(AttributeTests.__allTests),
+        testCase(Attribute_LiteralTests.__allTests),
         testCase(DocumentTests.__allTests),
         testCase(EntityTests.__allTests),
         testCase(IncludedTests.__allTests),
