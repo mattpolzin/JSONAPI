@@ -329,5 +329,5 @@ extension String: CreatableRawIdType {
 }
 ```
 
-## Testing
+# JSONAPITestLib
 JSONAPI comes with a test library to help you test your JSON API integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your JSONAPI structures that are not caught by Swift's type system. You can see the JSONAPITestLib in action in the Playground included with the JSONAPI repository.
