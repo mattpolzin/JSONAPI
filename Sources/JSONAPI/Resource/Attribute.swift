@@ -5,7 +5,10 @@
 //  Created by Mathew Polzin on 11/13/18.
 //
 
-public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: Codable where Transformer.From == RawValue {
+public protocol AttributeType: Codable {
+}
+
+public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: AttributeType where Transformer.From == RawValue {
 	private let rawValue: RawValue
 	
 	public let value: Transformer.To

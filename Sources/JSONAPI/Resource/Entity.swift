@@ -190,7 +190,7 @@ public extension Entity {
 		
 		try container.encode(Entity.type, forKey: .type)
 		
-		if Identifier.self != Unidentified.self {
+		if Identifier.self != Unidentified<Description>.self {
 			try container.encode(id, forKey: .id)
 		}
 		
@@ -213,7 +213,7 @@ public extension Entity {
 			throw JSONAPIEncodingError.typeMismatch(expected: Description.type, found: type)
 		}
 		
-		id = try (Unidentified() as? Identifier) ?? container.decode(Identifier.self, forKey: .id)
+		id = try (Unidentified<Description>() as? Identifier) ?? container.decode(Identifier.self, forKey: .id)
 		
 		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
 		

@@ -7,6 +7,7 @@
 
 import XCTest
 import JSONAPI
+import JSONAPITestLib
 
 class EntityTests: XCTestCase {
 	
@@ -50,6 +51,7 @@ extension EntityTests {
 
 		XCTAssert(type(of: entity.relationships) == NoRelationships.self)
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
+		XCTAssertNoThrow(try TestEntity1.check(entity))
 	}
 
 	func test_EntityNoRelationshipsNoAttributes_encode() {
@@ -64,6 +66,7 @@ extension EntityTests {
 		XCTAssert(type(of: entity.relationships) == NoRelationships.self)
 
 		XCTAssertEqual(entity[\.floater], 123.321)
+		XCTAssertNoThrow(try TestEntity5.check(entity))
 	}
 
 	func test_EntityNoRelationshipsSomeAttributes_encode() {
@@ -78,6 +81,7 @@ extension EntityTests {
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
 		
 		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+		XCTAssertNoThrow(try TestEntity3.check(entity))
 	}
 
 	func test_EntitySomeRelationshipsNoAttributes_encode() {
@@ -92,6 +96,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.word], "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
 		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertNoThrow(try TestEntity4.check(entity))
 	}
 
 	func test_EntitySomeRelationshipsSomeAttributes_encode() {
@@ -110,6 +115,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertNil(entity[\.maybeHere])
 		XCTAssertEqual(entity[\.maybeNull], "World")
+		XCTAssertNoThrow(try TestEntity6.check(entity))
 	}
 
 	func test_entityOneOmittedAttribute_encode() {
@@ -124,6 +130,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
 		XCTAssertNil(entity[\.maybeNull])
+		XCTAssertNoThrow(try TestEntity6.check(entity))
 	}
 
 	func test_entityOneNullAttribute_encode() {
@@ -138,6 +145,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
 		XCTAssertEqual(entity[\.maybeNull], "!")
+		XCTAssertNoThrow(try TestEntity6.check(entity))
 	}
 
 	func test_entityAllAttribute_encode() {
@@ -152,6 +160,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertNil(entity[\.maybeHere])
 		XCTAssertNil(entity[\.maybeNull])
+		XCTAssertNoThrow(try TestEntity6.check(entity))
 	}
 
 	func test_entityOneNullAndOneOmittedAttribute_encode() {
@@ -170,6 +179,7 @@ extension EntityTests {
 		
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertNil(entity[\.maybeHereMaybeNull])
+		XCTAssertNoThrow(try TestEntity7.check(entity))
 	}
 
 	func test_NullOptionalNullableAttribute_encode() {
@@ -183,6 +193,7 @@ extension EntityTests {
 
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertEqual(entity[\.maybeHereMaybeNull], "World")
+		XCTAssertNoThrow(try TestEntity7.check(entity))
 	}
 
 	func test_NonNullOptionalNullableAttribute_encode() {
@@ -203,6 +214,7 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.plus], 122)
 		XCTAssertEqual(entity[\.doubleFromInt], 22.0)
 		XCTAssertEqual(entity[\.nullToString], "nil")
+		XCTAssertNoThrow(try TestEntity8.check(entity))
 	}
 
 	func test_IntToString_encode() {
@@ -215,8 +227,6 @@ extension EntityTests {
 extension EntityTests {
 	func test_IntOver10_success() {
 		XCTAssertNoThrow(decoded(type: TestEntity11.self, data: entity_valid_validated_attribute))
-
-
 	}
 
 	func test_IntOver10_encode() {
@@ -236,6 +246,7 @@ extension EntityTests {
 
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+		XCTAssertNoThrow(try TestEntity9.check(entity))
 	}
 
 	func test_nullableRelationshipNotNull_encode() {
@@ -249,6 +260,7 @@ extension EntityTests {
 
 		XCTAssertNil(entity ~> \.nullableOne)
 		XCTAssertEqual((entity ~> \.one).rawValue, "4452")
+		XCTAssertNoThrow(try TestEntity9.check(entity))
 	}
 
 	func test_nullableRelationshipIsNull_encode() {
@@ -265,6 +277,7 @@ extension EntityTests {
 								   data: entity_self_ref_relationship)
 
 		XCTAssertEqual((entity ~> \.selfRef).rawValue, "1")
+		XCTAssertNoThrow(try TestEntity10.check(entity))
 	}
 
 	func test_RleationshipsOfSameType_encode() {
@@ -282,6 +295,7 @@ extension EntityTests {
 
 		XCTAssertNil(entity[\.me])
 		XCTAssertEqual(entity.id, Unidentified())
+		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 	}
 
 	func test_UnidentifiedEntity_encode() {
@@ -295,6 +309,7 @@ extension EntityTests {
 
 		XCTAssertEqual(entity[\.me], "unknown")
 		XCTAssertEqual(entity.id, Unidentified())
+		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 	}
 
 	func test_UnidentifiedEntityWithAttributes_encode() {

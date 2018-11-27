@@ -5,11 +5,13 @@
 //  Created by Mathew Polzin on 8/31/18.
 //
 
+public protocol RelationshipType: Codable {}
+
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<EntityDescription>`
-public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Codable {
+public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: RelationshipType, Equatable {
 
 	public let id: Relatable.WrappedIdentifier
 
@@ -34,7 +36,7 @@ extension ToOneRelationship where Relatable.WrappedIdentifier == Optional<Relata
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
-public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: Equatable, Codable {
+public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: RelationshipType, Equatable {
 
 	public let ids: [Relatable.Identifier]
 

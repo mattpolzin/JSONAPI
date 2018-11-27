@@ -22,16 +22,17 @@ public protocol CreatableRawIdType: RawIdType {
 
 extension String: RawIdType {}
 
-public protocol Identifier: Codable, Equatable {}
+public protocol Identifier: Codable, Equatable {
+	associatedtype EntityDescription: JSONAPI.EntityDescription
+}
 
-public struct Unidentified: Identifier, CustomStringConvertible {
+public struct Unidentified<EntityDescription: JSONAPI.EntityDescription>: Identifier, CustomStringConvertible {
 	public init() {}
 	
 	public var description: String { return "Id(Unidentified)" }
 }
 
 public protocol IdType: Identifier, CustomStringConvertible {
-	associatedtype EntityDescription: JSONAPI.EntityDescription
 	associatedtype RawType: RawIdType
 	
 	var rawValue: RawType { get }

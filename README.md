@@ -75,10 +75,10 @@ To create an Xcode project for JSONAPI, run
 - [x] `href`
 - [x] `meta`
 
-### EntityDescription Validator (using reflection)
+### Entity Validator (using reflection)
 - [ ] Disallow optional array in `Attribute` and `Relationship` (should be empty array, not `null`).
-- [ ] Only allow `Attribute` and `TransformAttribute` within `Attributes` struct.
-- [ ] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
+- [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
+- [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
 ### Strict Decoding/Encoding Settings
 - [ ] Error (potentially while still encoding/decoding successfully) if an included entity is not related to a primary entity (Turned off by default).
@@ -94,7 +94,7 @@ To create an Xcode project for JSONAPI, run
 - [ ] Property-based testing (using `SwiftCheck`)
 - [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
-- [ ] Make it easier to construct `Attributes` and `Relationships` values.
+- [x] Make it easier to construct `Attributes` and `Relationships` values in test cases (literal expressibility).
 
 ## Usage
 
@@ -330,4 +330,4 @@ extension String: CreatableRawIdType {
 ```
 
 ## Testing
-JSONAPI comes with a test library to help you test your JSON API integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. You can see the JSONAPITestLib in action in the Playground included with the JSONAPI repository.
+JSONAPI comes with a test library to help you test your JSON API integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your JSONAPI structures that are not caught by Swift's type system. You can see the JSONAPITestLib in action in the Playground included with the JSONAPI repository.
