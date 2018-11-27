@@ -67,6 +67,16 @@ extension DocumentTests {
     ]
 }
 
+extension EntityCheckTests {
+    static let __allTests = [
+        ("test_failsWithBadAttribute", test_failsWithBadAttribute),
+        ("test_FailsWithBadId", test_FailsWithBadId),
+        ("test_failsWithBadRelationship", test_failsWithBadRelationship),
+        ("test_failsWithEnumAttributes", test_failsWithEnumAttributes),
+        ("test_failsWithEnumRelationships", test_failsWithEnumRelationships),
+    ]
+}
+
 extension EntityTests {
     static let __allTests = [
         ("test_entityAllAttribute", test_entityAllAttribute),
@@ -109,6 +119,13 @@ extension EntityTests {
         ("test_UnidentifiedEntity_encode", test_UnidentifiedEntity_encode),
         ("test_UnidentifiedEntityWithAttributes", test_UnidentifiedEntityWithAttributes),
         ("test_UnidentifiedEntityWithAttributes_encode", test_UnidentifiedEntityWithAttributes_encode),
+    ]
+}
+
+extension Id_LiteralTests {
+    static let __allTests = [
+        ("test_IntegerLiteral", test_IntegerLiteral),
+        ("test_StringLiteral", test_StringLiteral),
     ]
 }
 
@@ -185,6 +202,12 @@ extension RelationshipTests {
     ]
 }
 
+extension Relationship_LiteralTests {
+    static let __allTests = [
+        ("test_NilLiteral", test_NilLiteral),
+    ]
+}
+
 extension ResourceBodyTests {
     static let __allTests = [
         ("test_manyResourceBody", test_manyResourceBody),
@@ -202,11 +225,14 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(AttributeTests.__allTests),
         testCase(Attribute_LiteralTests.__allTests),
         testCase(DocumentTests.__allTests),
+        testCase(EntityCheckTests.__allTests),
         testCase(EntityTests.__allTests),
+        testCase(Id_LiteralTests.__allTests),
         testCase(IncludedTests.__allTests),
         testCase(LinksTests.__allTests),
         testCase(PolyTests.__allTests),
         testCase(RelationshipTests.__allTests),
+        testCase(Relationship_LiteralTests.__allTests),
         testCase(ResourceBodyTests.__allTests),
     ]
 }
