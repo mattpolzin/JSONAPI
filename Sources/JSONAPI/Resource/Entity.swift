@@ -40,6 +40,9 @@ public protocol EntityDescription {
 public protocol EntityType: PrimaryResource {
 	associatedtype Description: EntityDescription
 	associatedtype Identifier: Equatable & Codable
+
+	typealias Attributes = Description.Attributes
+	typealias Relationships = Description.Relationships
 }
 
 /// An `Entity` is a single model type that can be
