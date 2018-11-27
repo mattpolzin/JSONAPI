@@ -37,7 +37,7 @@ class EntityTests: XCTestCase {
 		let entity1 = TestEntity1()
 		let entity2 = TestEntity2(other: entity1.pointer)
 		
-		XCTAssertEqual(entity2.relationships.other.ids, [entity1.id])
+		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
 }
 

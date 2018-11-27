@@ -40,7 +40,6 @@ extension RelationshipTests {
 								   data: to_one_relationship)
 
 		XCTAssertEqual(relationship.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
-		XCTAssertEqual(relationship.ids.count, 1)
 	}
 
 	func test_ToOneRelationship_encode() {

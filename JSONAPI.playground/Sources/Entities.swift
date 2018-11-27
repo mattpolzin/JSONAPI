@@ -34,12 +34,23 @@ public enum PersonDescription: EntityDescription {
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<[String]>
 		public let favoriteColor: Attribute<String>
+
+		public init(name: Attribute<[String]>, favoriteColor: Attribute<String>) {
+			self.name = name
+			self.favoriteColor = favoriteColor
+		}
 	}
 	
 	public struct Relationships: JSONAPI.Relationships {
 		public let friends: ToManyRelationship<Person>
 		public let dogs: ToManyRelationship<Dog>
 		public let home: ToOneRelationship<House>
+
+		public init(friends: ToManyRelationship<Person>, dogs: ToManyRelationship<Dog>, home: ToOneRelationship<House>) {
+			self.friends = friends
+			self.dogs = dogs
+			self.home = home
+		}
 	}
 }
 
@@ -57,10 +68,18 @@ public enum DogDescription: EntityDescription {
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<String>
+
+		public init(name: Attribute<String>) {
+			self.name = name
+		}
 	}
 
 	public struct Relationships: JSONAPI.Relationships {
 		public let owner: ToOneRelationship<Person?>
+
+		public init(owner: ToOneRelationship<Person?>) {
+			self.owner = owner
+		}
 	}
 }
 

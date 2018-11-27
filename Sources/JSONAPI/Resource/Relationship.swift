@@ -12,10 +12,6 @@
 public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Equatable, Codable {
 
 	public let id: Relatable.WrappedIdentifier
-	
-	public var ids: [Relatable.WrappedIdentifier] {
-		return [id]
-	}
 
 	public init(id: Relatable.WrappedIdentifier) {
 		self.id = id
