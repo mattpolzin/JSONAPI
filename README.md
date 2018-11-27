@@ -86,6 +86,7 @@ The primary goals of this framework are:
 - [ ] Property-based testing (using `SwiftCheck`)
 - [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
+- [ ] Make it easier to construct `Attributes` and `Relationships` values.
 
 ## Usage
 ### Prerequisites
