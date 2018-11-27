@@ -14,9 +14,9 @@ public struct NoLinks: Links {
 	public init() {}
 }
 
-public protocol URL: Codable, Equatable {}
+public protocol JSONAPIURL: Codable, Equatable {}
 
-public struct Link<URL: JSONAPI.URL, Meta: JSONAPI.Meta>: Equatable, Codable {
+public struct Link<URL: JSONAPI.JSONAPIURL, Meta: JSONAPI.Meta>: Equatable, Codable {
 	public let url: URL
 	public let meta: Meta
 }

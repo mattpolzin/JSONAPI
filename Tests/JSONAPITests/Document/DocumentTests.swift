@@ -514,4 +514,4 @@ extension DocumentTests {
 	}
 }
 
-extension String: JSONAPI.URL {}
+extension String: JSONAPI.JSONAPIURL {}
