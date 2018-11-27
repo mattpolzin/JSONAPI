@@ -13,6 +13,14 @@ The primary goals of this framework are:
 3. Do not sacrifice type safety.
 4. Be platform agnostic so that Swift code can be written once and used by both the client and the server.
 
+## Dev Environment
+### Prerequisites
+1. Swift 4.2+ and Swift Package Manager
+
+### Xcode project
+To create an Xcode project for JSONAPI, run
+`swift package generate-xcodeproj`
+
 ## Project Status
 
 ### Decoding
@@ -89,8 +97,6 @@ The primary goals of this framework are:
 - [ ] Make it easier to construct `Attributes` and `Relationships` values.
 
 ## Usage
-### Prerequisites
-1. Swift 4.2+ and Swift Package Manager
 
 ### `EntityDescription`
 
@@ -322,3 +328,6 @@ extension String: CreatableRawIdType {
 	}
 }
 ```
+
+## Testing
+JSONAPI comes with a test library to help you test your JSON API integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. You can see the JSONAPITestLib in action in the Playground included with the JSONAPI repository.
