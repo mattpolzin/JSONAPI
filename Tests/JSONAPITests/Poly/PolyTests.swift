@@ -265,7 +265,7 @@ extension PolyTests {
 extension PolyTests {
 	enum TestEntityType: EntityDescription {
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity1" }
 
@@ -311,7 +311,7 @@ extension PolyTests {
 
 		typealias Attributes = NoAttributes
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity4" }
 	}
@@ -322,7 +322,7 @@ extension PolyTests {
 
 		typealias Attributes = NoAttributes
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity5" }
 	}

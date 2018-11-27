@@ -77,7 +77,7 @@ extension RelationshipTests {
 	enum TestEntityType1: EntityDescription {
 		typealias Attributes = NoAttributes
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity1" }
 	}

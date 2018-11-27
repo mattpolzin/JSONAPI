@@ -54,7 +54,7 @@ class ResourceBodyTests: XCTestCase {
 	enum ArticleType: EntityDescription {
 		public static var type: String { return "articles" }
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		struct Attributes: JSONAPI.Attributes {
 			let title: Attribute<String>

@@ -114,7 +114,7 @@ enum PersonDescription: IdentifiedEntityDescription {
 The requirements of an `EntityDescription` are:
 1. A static `var` "type" that matches the JSON type; The JSON spec requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
-3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelatives`
+3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
 
 Note that an `enum` type is used here for the `EntityDescription`; it could have been a `struct`, but `EntityDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
 
@@ -189,7 +189,7 @@ let nullableRelative: ToOneRelationship<Person?>
 
 An entity that does not have relationships can be described by adding the following to an `EntityDescription`:
 ```
-typealias Relationships = NoRelatives
+typealias Relationships = NoRelationships
 ```
 
 `Relationship`s boil down to Ids of other entities. To access the Id of a related entity, you can use the shorthand `~>` operator with the `KeyPath` of the `Relationship` from which you want the Id. The friends of the above `Person` entity could be accessed as follows (type annotations for clarity):

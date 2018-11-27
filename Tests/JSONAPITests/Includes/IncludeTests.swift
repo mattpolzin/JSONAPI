@@ -127,7 +127,7 @@ class IncludedTests: XCTestCase {
 extension IncludedTests {
 	enum TestEntityType: EntityDescription {
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity1" }
 
@@ -173,7 +173,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity4" }
 	}
@@ -184,7 +184,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		public static var type: String { return "test_entity5" }
 	}

@@ -450,7 +450,7 @@ extension DocumentTests {
 		static var type: String { return "authors" }
 
 		typealias Attributes = NoAttributes
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 	}
 
 	typealias Author = Entity<AuthorType>

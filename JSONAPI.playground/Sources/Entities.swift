@@ -81,7 +81,7 @@ public enum HouseDescription: EntityDescription {
 	public static var type: String { return "houses" }
 
 	public typealias Attributes = NoAttributes
-	public typealias Relationships = NoRelatives
+	public typealias Relationships = NoRelationships
 }
 
 public typealias House = ExampleEntity<HouseDescription>

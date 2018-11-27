@@ -16,7 +16,7 @@ public typealias Attributes = Codable & Equatable
 
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
-public struct NoRelatives: Relationships {}
+public struct NoRelationships: Relationships {}
 
 /// Can be used as `Attributes` Type for Entities that do not
 /// have any Attributes.
@@ -100,27 +100,27 @@ extension Entity where Description.Attributes == NoAttributes, Identifier: Creat
 	}
 }
 
-extension Entity where Description.Relationships == NoRelatives {
+extension Entity where Description.Relationships == NoRelationships {
 	public init(id: Identifier, attributes: Description.Attributes) {
-		self.init(id: id, attributes: attributes, relationships: NoRelatives())
+		self.init(id: id, attributes: attributes, relationships: NoRelationships())
 	}
 }
 
-extension Entity where Description.Relationships == NoRelatives, Identifier: CreatableIdType {
+extension Entity where Description.Relationships == NoRelationships, Identifier: CreatableIdType {
 	public init(attributes: Description.Attributes) {
-		self.init(attributes: attributes, relationships: NoRelatives())
+		self.init(attributes: attributes, relationships: NoRelationships())
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelatives {
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
 	public init(id: Identifier) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelatives())
+		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships())
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelatives, Identifier: CreatableIdType {
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, Identifier: CreatableIdType {
 	public init() {
-		self.init(attributes: NoAttributes(), relationships: NoRelatives())
+		self.init(attributes: NoAttributes(), relationships: NoRelationships())
 	}
 }
 
@@ -198,7 +198,7 @@ public extension Entity {
 			try container.encode(attributes, forKey: .attributes)
 		}
 		
-		if Description.Relationships.self != NoRelatives.self {
+		if Description.Relationships.self != NoRelationships.self {
 			try container.encode(relationships, forKey: .relationships)
 		}
 	}
@@ -217,6 +217,6 @@ public extension Entity {
 		
 		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
 		
-		relationships = try (NoRelatives() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
+		relationships = try (NoRelationships() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
 	}
 }

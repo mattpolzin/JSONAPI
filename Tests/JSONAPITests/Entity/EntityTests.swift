@@ -48,7 +48,7 @@ extension EntityTests {
 		let entity = decoded(type: TestEntity1.self,
 								  data: entity_no_relationships_no_attributes)
 
-		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
+		XCTAssert(type(of: entity.relationships) == NoRelationships.self)
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
 	}
 
@@ -61,7 +61,7 @@ extension EntityTests {
 		let entity = decoded(type: TestEntity5.self,
 								   data: entity_no_relationships_some_attributes)
 
-		XCTAssert(type(of: entity.relationships) == NoRelatives.self)
+		XCTAssert(type(of: entity.relationships) == NoRelationships.self)
 
 		XCTAssertEqual(entity[\.floater], 123.321)
 	}
@@ -310,7 +310,7 @@ extension EntityTests {
 		static var type: String { return "test_entities"}
 
 		typealias Attributes = NoAttributes
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 	}
 
 	typealias TestEntity1 = Entity<TestEntityType1>
@@ -358,7 +358,7 @@ extension EntityTests {
 	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		struct Attributes: JSONAPI.Attributes {
 			let floater: Attribute<Double>
@@ -370,7 +370,7 @@ extension EntityTests {
 	enum TestEntityType6: EntityDescription {
 		static var type: String { return "sixth_test_entities" }
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		struct Attributes: JSONAPI.Attributes {
 			let here: Attribute<String>
@@ -384,7 +384,7 @@ extension EntityTests {
 	enum TestEntityType7: EntityDescription {
 		static var type: String { return "seventh_test_entities" }
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 
 		struct Attributes: JSONAPI.Attributes {
 			let here: Attribute<String>
@@ -397,7 +397,7 @@ extension EntityTests {
 	enum TestEntityType8: EntityDescription {
 		static var type: String { return "eighth_test_entities" }
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 		
 		struct Attributes: JSONAPI.Attributes {
 			let string: Attribute<String>
@@ -454,7 +454,7 @@ extension EntityTests {
 			let number: ValidatedAttribute<Int, IntOver10>
 		}
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 	}
 
 	typealias TestEntity11 = Entity<TestEntityType11>
@@ -466,7 +466,7 @@ extension EntityTests {
 			let me: Attribute<String>?
 		}
 
-		typealias Relationships = NoRelatives
+		typealias Relationships = NoRelationships
 	}
 
 	typealias UnidentifiedTestEntity = NewEntity<UnidentifiedTestEntityType>
