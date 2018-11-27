@@ -9,7 +9,7 @@ public protocol JSONAPIError: Swift.Error, Equatable, Codable {
 	static var unknown: Self { get }
 }
 
-public enum BasicJSONAPIError: JSONAPIError {
+public enum UnknownJSONAPIError: JSONAPIError {
 	case unknownError
 	
 	public init(from decoder: Decoder) throws {
@@ -21,7 +21,7 @@ public enum BasicJSONAPIError: JSONAPIError {
 		try container.encode("unknown")
 	}
 	
-	public static var unknown: BasicJSONAPIError {
+	public static var unknown: UnknownJSONAPIError {
 		return .unknownError
 	}
 }

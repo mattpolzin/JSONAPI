@@ -251,7 +251,7 @@ The entirety of a JSON API request or response is encoded or decoded from- or to
 ```
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self
+let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```

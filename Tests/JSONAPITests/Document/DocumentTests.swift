@@ -11,7 +11,7 @@ import JSONAPI
 class DocumentTests: XCTestCase {
 
 	func test_singleDocumentNull() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_null)
 
 		XCTAssertFalse(document.body.isError)
@@ -23,12 +23,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNull_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: single_document_null)
 	}
 
 	func test_unknownErrorDocumentNoMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
@@ -48,12 +48,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentNoMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: error_document_no_metadata)
 	}
 
 	func test_unknownErrorDocumentMissingMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertNil(document.body.meta)
@@ -72,7 +72,7 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentMissingMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: error_document_no_metadata)
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, data: error_document_no_metadata)
 	}
 
 	func test_errorDocumentNoMeta() {
@@ -101,7 +101,7 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentWithMeta() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_with_metadata)
 
 		XCTAssertTrue(document.body.isError)
@@ -120,12 +120,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentWithMeta_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_with_metadata)
 	}
 
 	func test_unknownErrorDocumentWithMetaWithLinks() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_with_metadata_with_links)
 
 		XCTAssertTrue(document.body.isError)
@@ -148,12 +148,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentWithMetaWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: error_document_with_metadata_with_links)
 	}
 
 	func test_unknownErrorDocumentWithLinks() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_with_links)
 
 		XCTAssertTrue(document.body.isError)
@@ -174,12 +174,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: error_document_with_links)
 	}
 
 	func test_unknownErrorDocumentMissingLinks() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
@@ -197,12 +197,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_unknownErrorDocumentMissingLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: error_document_no_metadata)
 	}
 
 	func test_metaDataDocument() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: metadata_document)
 
 		XCTAssertFalse(document.body.isError)
@@ -213,12 +213,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_metaDataDocument_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: metadata_document)
 	}
 
 	func test_metaDataDocumentWithLinks() {
-		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: metadata_document_with_links)
 
 		XCTAssertFalse(document.body.isError)
@@ -233,18 +233,18 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_metaDataDocumentWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: metadata_document_with_links)
 	}
 
 	func test_metaDocumentMissingMeta() {
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata))
 
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: metadata_document_missing_metadata2))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata2))
 	}
 
 	func test_singleDocumentNoIncludes() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
@@ -256,12 +256,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNoIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes)
 	}
 
 	func test_singleDocumentNoIncludesWithMetadata() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
@@ -273,12 +273,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNoIncludesWithMetadata_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata)
 	}
 
 	func test_singleDocumentNoIncludesWithLinks() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_links)
 
 		XCTAssertFalse(document.body.isError)
@@ -295,12 +295,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNoIncludesWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: single_document_no_includes_with_links)
 	}
 
 	func test_singleDocumentNoIncludesWithMetadataWithLinks() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_metadata_with_links)
 
 		XCTAssertFalse(document.body.isError)
@@ -317,20 +317,20 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNoIncludesWithMetadataWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata_with_links)
 	}
 
 	func test_singleDocumentNoIncludesWithMetadataMissingLinks() {
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes_with_metadata))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, UnknownJSONAPIError>.self, from: single_document_no_includes_with_metadata))
 	}
 
 	func test_singleDocumentNoIncludesMissingMetadata() {
-		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, from: single_document_no_includes))
+		XCTAssertThrowsError(try JSONDecoder().decode(JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, from: single_document_no_includes))
 	}
 	
 	func test_singleDocumentSomeIncludes() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
@@ -343,12 +343,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentSomeIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes)
 	}
 
 	func test_singleDocumentSomeIncludesWithMetadata() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes_with_metadata)
 
 		XCTAssertFalse(document.body.isError)
@@ -362,12 +362,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentSomeIncludesWithMetadata_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata)
 	}
 
 	func test_singleDocumentNoIncludesWithSomeIncludesWithMetadataWithLinks() {
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes_with_metadata_with_links)
 
 		XCTAssertFalse(document.body.isError)
@@ -385,24 +385,24 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_singleDocumentNoIncludesWithSomeIncludesMetadataWithLinks_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, UnknownJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata_with_links)
 	}
 
 	func test_singleDocument_PolyPrimaryResource() {
 		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
-		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+		let document = decoded(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, data: single_document_no_includes)
 
 		XCTAssertEqual(document.body.primaryData?.value?[Article.self], article)
 		XCTAssertNil(document.body.primaryData?.value?[Author.self])
 	}
 
 	func test_singleDocument_PolyPrimaryResource_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self, data: single_document_no_includes)
+		test_DecodeEncodeEquality(type: JSONAPIDocument<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self, data: single_document_no_includes)
 	}
 	
 	func test_manyDocumentNoIncludes() {
-		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: many_document_no_includes)
 		
 		XCTAssertFalse(document.body.isError)
@@ -416,12 +416,12 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_manyDocumentNoIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self,
 							   data: many_document_no_includes)
 	}
 	
 	func test_manyDocumentSomeIncludes() {
-		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		let document = decoded(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: many_document_some_includes)
 
 		XCTAssertFalse(document.body.isError)
@@ -439,7 +439,7 @@ class DocumentTests: XCTestCase {
 	}
 
 	func test_manyDocumentSomeIncludes_encode() {
-		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, BasicJSONAPIError>.self,
+		test_DecodeEncodeEquality(type: JSONAPIDocument<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, UnknownJSONAPIError>.self,
 							   data: many_document_some_includes)
 	}
 }
