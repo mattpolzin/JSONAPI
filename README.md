@@ -13,6 +13,11 @@ The primary goals of this framework are:
 3. Do not sacrifice type safety.
 4. Be platform agnostic so that Swift code can be written once and used by both the client and the server.
 
+### Caveat
+The big caveat is that, although the aim is to support the JSON API spec, this framework ends up being _naturally_ opinionated about certain things that the API Spec does not specify. These caveats are largely a side effect of attempting to write the library in a "Swifty" way.
+
+If you find that something in the JSON API v1.0 Spec is not explicitly missing from the **Project Status** checklist but this library does not support it, please let me know! I want to keep working towards a library implementation that is useful in any application.
+
 ## Dev Environment
 ### Prerequisites
 1. Swift 4.2+ and Swift Package Manager
