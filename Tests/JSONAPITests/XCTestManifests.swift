@@ -74,6 +74,7 @@ extension EntityCheckTests {
         ("test_failsWithBadRelationship", test_failsWithBadRelationship),
         ("test_failsWithEnumAttributes", test_failsWithEnumAttributes),
         ("test_failsWithEnumRelationships", test_failsWithEnumRelationships),
+        ("test_failsWithOptionalArrayAttribute", test_failsWithOptionalArrayAttribute),
     ]
 }
 

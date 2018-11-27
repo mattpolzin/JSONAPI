@@ -76,7 +76,7 @@ To create an Xcode project for JSONAPI, run
 - [x] `meta`
 
 ### Entity Validator (using reflection)
-- [ ] Disallow optional array in `Attribute` and `Relationship` (should be empty array, not `null`).
+- [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
 - [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 

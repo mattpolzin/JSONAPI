@@ -36,6 +36,11 @@ class EntityCheckTests: XCTestCase {
 		let entity = BadRelationshipEntity(relationships: .init(x: OkEntity().pointer, y: OkEntity().id))
 		XCTAssertThrowsError(try BadRelationshipEntity.check(entity))
 	}
+
+	func test_failsWithOptionalArrayAttribute() {
+		let entity = OptionalArrayAttributeEntity(attributes: .init(x: ["hello"], y: nil))
+		XCTAssertThrowsError(try OptionalArrayAttributeEntity.check(entity))
+	}
 }
 
 // MARK: - Test types
@@ -121,4 +126,17 @@ extension EntityCheckTests {
 	}
 
 	public typealias BadRelationshipEntity = Entity<BadRelationshipDescription>
+
+	enum OptionalArrayAttributeDescription: EntityDescription {
+		public static var type: String { return "hello" }
+
+		public struct Attributes: JSONAPI.Attributes {
+			let x: Attribute<[String]>
+			let y: Attribute<[String]?>
+		}
+
+		public typealias Relationships = NoRelationships
+	}
+
+	public typealias OptionalArrayAttributeEntity = Entity<OptionalArrayAttributeDescription>
 }
