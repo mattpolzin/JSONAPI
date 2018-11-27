@@ -18,7 +18,7 @@ public struct SingleResourceBody<Entity: JSONAPI.PrimaryResource>: ResourceBody 
 	}
 }
 
-public struct ManyResourceBody<Entity: JSONAPI.EntityType>: ResourceBody {
+public struct ManyResourceBody<Entity: JSONAPI.PrimaryResource>: ResourceBody {
 	public let values: [Entity]
 
 	public init(entities: [Entity]) {
