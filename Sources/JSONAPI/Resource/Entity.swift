@@ -43,6 +43,18 @@ public protocol EntityType: PrimaryResource {
 
 	typealias Attributes = Description.Attributes
 	typealias Relationships = Description.Relationships
+
+	/// The `Entity`'s Id. This can be of type `Unidentified` if
+	/// the entity is being created clientside and the
+	/// server is being asked to create a unique Id. Otherwise,
+	/// this should be of a type conforming to `IdType`.
+	var id: Identifier { get }
+
+	/// The JSON API compliant attributes of this `Entity`.
+	var attributes: Attributes { get }
+
+	/// The JSON API compliant relationships of this `Entity`.
+	var relationships: Relationships { get }
 }
 
 /// An `Entity` is a single model type that can be
