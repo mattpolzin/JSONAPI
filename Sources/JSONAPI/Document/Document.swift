@@ -33,10 +33,10 @@ public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Met
 		case data(Data)
 
 		public struct Data: Equatable {
-			let primary: ResourceBody
-			let includes: Includes<Include>
-			let meta: MetaType
-			let links: LinksType
+			public let primary: ResourceBody
+			public let includes: Includes<Include>
+			public let meta: MetaType
+			public let links: LinksType
 		}
 
 		public var isError: Bool {
