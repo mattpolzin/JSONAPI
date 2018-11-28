@@ -6,13 +6,16 @@
 //
 
 public protocol JSONAPIDocument: Codable, Equatable {
-	associatedtype ResourceBody: JSONAPI.ResourceBody
+	associatedtype PrimaryResourceBody: JSONAPI.ResourceBody
 	associatedtype MetaType: JSONAPI.Meta
 	associatedtype LinksType: JSONAPI.Links
 	associatedtype IncludeType: JSONAPI.Include
 	associatedtype Error: JSONAPIError
 
-	var body: Document<ResourceBody, MetaType, LinksType, IncludeType, Error>.Body { get }
+	typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, Error>.Body
+	typealias BodyData = Body.Data
+
+	var body: Body { get }
 }
 
 /// A JSON API Document represents the entire body
@@ -22,7 +25,7 @@ public protocol JSONAPIDocument: Codable, Equatable {
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, Error: JSONAPIError>: JSONAPIDocument {
+public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, Error: JSONAPIError>: JSONAPIDocument {
 	public typealias Include = IncludeType
 
 	public let body: Body
@@ -33,7 +36,7 @@ public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Met
 		case data(Data)
 
 		public struct Data: Equatable {
-			public let primary: ResourceBody
+			public let primary: PrimaryResourceBody
 			public let includes: Includes<Include>
 			public let meta: MetaType
 			public let links: LinksType
@@ -49,7 +52,7 @@ public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Met
 			return errors
 		}
 		
-		public var primaryData: ResourceBody? {
+		public var primaryData: PrimaryResourceBody? {
 			guard case let .data(data) = self else { return nil }
 			return data.primary
 		}
@@ -86,49 +89,49 @@ public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Met
 		body = .errors(errors, meta: meta, links: links)
 	}
 
-	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
 	}
 }
 
 extension Document where IncludeType == NoIncludes {
-	public init(body: ResourceBody, meta: MetaType, links: LinksType) {
+	public init(body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: links))
 	}
 }
 
 extension Document where MetaType == NoMetadata {
-	public init(body: ResourceBody, includes: Includes<Include>, links: LinksType) {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: links))
 	}
 }
 
 extension Document where LinksType == NoLinks {
-	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType) {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: .none))
 	}
 }
 
 extension Document where IncludeType == NoIncludes, LinksType == NoLinks {
-	public init(body: ResourceBody, meta: MetaType) {
+	public init(body: PrimaryResourceBody, meta: MetaType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: .none))
 	}
 }
 
 extension Document where IncludeType == NoIncludes, MetaType == NoMetadata {
-	public init(body: ResourceBody, links: LinksType) {
+	public init(body: PrimaryResourceBody, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: links))
 	}
 }
 
 extension Document where MetaType == NoMetadata, LinksType == NoLinks {
-	public init(body: ResourceBody, includes: Includes<Include>) {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>) {
 		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: .none))
 	}
 }
 
 extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(body: ResourceBody) {
+	public init(body: PrimaryResourceBody) {
 		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: .none))
 	}
 }
@@ -176,11 +179,11 @@ extension Document {
 			return
 		}
 
-		let data: ResourceBody
-		if let noData = NoResourceBody() as? ResourceBody {
+		let data: PrimaryResourceBody
+		if let noData = NoResourceBody() as? PrimaryResourceBody {
 			data = noData
 		} else {
-			data = try container.decode(ResourceBody.self, forKey: .data)
+			data = try container.decode(PrimaryResourceBody.self, forKey: .data)
 		}
 
 		let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)

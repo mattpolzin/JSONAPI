@@ -1,5 +1,5 @@
 //
-//  ResourceBody.swift
+//  PrimaryResourceBody.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 11/10/18.
@@ -80,12 +80,12 @@ extension ManyResourceBody {
 
 extension SingleResourceBody: CustomStringConvertible {
 	public var description: String {
-		return "ResourceBody(\(String(describing: value)))"
+		return "PrimaryResourceBody(\(String(describing: value)))"
 	}
 }
 
 extension ManyResourceBody: CustomStringConvertible {
 	public var description: String {
-		return "ResourceBody(\(String(describing: values)))"
+		return "PrimaryResourceBody(\(String(describing: values)))"
 	}
 }

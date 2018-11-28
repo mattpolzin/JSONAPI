@@ -47,3 +47,13 @@ if case let .data(bodyData) = peopleResponse.body {
 } else {
 	print("no body data")
 }
+
+// MARK: - Work in the abstract
+
+func process<T: JSONAPIDocument>(document: T) {
+	guard case let .data(body) = document.body else {
+		return
+	}
+	let x: T.BodyData = body
+}
+process(document: peopleResponse)
