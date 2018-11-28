@@ -291,9 +291,9 @@ The second generic type of a `JSONAPIDocument` is a `Meta`. This structure is en
 You would then create the following `Meta` type:
 ```
 struct PageMetadata: JSONAPI.Meta {
-		let total: Int
-		let limit: Int
-		let offset: Int
+	let total: Int
+	let limit: Int
+	let offset: Int
 }
 ```
 
