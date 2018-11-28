@@ -12,3 +12,11 @@ extension ToOneRelationship: ExpressibleByNilLiteral where Relatable.WrappedIden
 		self.init(id: Relatable.WrappedIdentifier(nilLiteral: ()))
 	}
 }
+
+extension ToManyRelationship: ExpressibleByArrayLiteral {
+	public typealias ArrayLiteralElement = Relatable.Identifier
+
+	public init(arrayLiteral elements: ArrayLiteralElement...) {
+		self.init(ids: elements)
+	}
+}

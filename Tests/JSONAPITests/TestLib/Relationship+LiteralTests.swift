@@ -14,6 +14,10 @@ class Relationship_LiteralTests: XCTestCase {
 	func test_NilLiteral() {
 		XCTAssertEqual(ToOneRelationship<TestEntity?>(id: nil), nil)
 	}
+
+	func test_ArrayLiteral() {
+		XCTAssertEqual(ToManyRelationship<TestEntity>(ids: ["1", "2", "3"]), ["1", "2", "3"])
+	}
 }
 
 // MARK: - Test types

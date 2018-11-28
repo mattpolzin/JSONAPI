@@ -40,6 +40,10 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: RelationshipType
 
 	public let ids: [Relatable.Identifier]
 
+	public init(ids: [Relatable.Identifier]) {
+		self.ids = ids
+	}
+
 	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T>]) where T.WrappedIdentifier == Relatable.Identifier {
 		ids = relationships.map { $0.id }
 	}
