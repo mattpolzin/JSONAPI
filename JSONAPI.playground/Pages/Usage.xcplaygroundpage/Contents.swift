@@ -39,3 +39,11 @@ let peopleResponse = try! JSONDecoder().decode(BatchPeopleDocument.self, from: b
 let peopleFromData = peopleResponse.body.primaryData?.values
 let dogsFromData = peopleResponse.body.includes?[Dog.self]
 let housesFromData = peopleResponse.body.includes?[House.self]
+
+// MARK: - Pass successfully parsed body to other parts of the code
+
+if case let .data(bodyData) = peopleResponse.body {
+	print(bodyData)
+} else {
+	print("no body data")
+}

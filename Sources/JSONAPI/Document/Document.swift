@@ -20,7 +20,14 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 	
 	public enum Body: Equatable {
 		case errors([Error], meta: MetaType?, links: LinksType?)
-		case data(primary: ResourceBody, included: Includes<Include>, meta: MetaType, links: LinksType)
+		case data(Data)
+
+		public struct Data: Equatable {
+			let primary: ResourceBody
+			let includes: Includes<Include>
+			let meta: MetaType
+			let links: LinksType
+		}
 
 		public var isError: Bool {
 			guard case .errors = self else { return false }
@@ -33,19 +40,20 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 		}
 		
 		public var primaryData: ResourceBody? {
-			guard case let .data(primary: body, included: _, meta: _, links: _) = self else { return nil }
-			return body
+			guard case let .data(data) = self else { return nil }
+			return data.primary
 		}
 
 		public var includes: Includes<Include>? {
-			guard case let .data(primary: _, included: includes, meta: _, links: _) = self else { return nil }
-			return includes
+			guard case let .data(data) = self else { return nil }
+			return data.includes
 		}
 
 		public var meta: MetaType? {
 			switch self {
-			case .data(primary: _, included: _, meta: let metadata, links: _),
-				 .errors(_, meta: let metadata?, links: _):
+			case .data(let data):
+				return data.meta
+			case .errors(_, meta: let metadata?, links: _):
 				return metadata
 			default:
 				return nil
@@ -54,8 +62,9 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 
 		public var links: LinksType? {
 			switch self {
-			case .data(primary: _, included: _, meta: _, links: let links),
-				 .errors(_, meta: _, links: let links?):
+			case .data(let data):
+				return data.links
+			case .errors(_, meta: _, links: let links?):
 				return links
 			default:
 				return nil
@@ -68,49 +77,49 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 	}
 
 	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
-		self.body = .data(primary: body, included: includes, meta: meta, links: links)
+		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
 	}
 }
 
 extension JSONAPIDocument where IncludeType == NoIncludes {
 	public init(body: ResourceBody, meta: MetaType, links: LinksType) {
-		self.body = .data(primary: body, included: .none, meta: meta, links: links)
+		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: links))
 	}
 }
 
 extension JSONAPIDocument where MetaType == NoMetadata {
 	public init(body: ResourceBody, includes: Includes<Include>, links: LinksType) {
-		self.body = .data(primary: body, included: includes, meta: .none, links: links)
+		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: links))
 	}
 }
 
 extension JSONAPIDocument where LinksType == NoLinks {
 	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType) {
-		self.body = .data(primary: body, included: includes, meta: meta, links: .none)
+		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: .none))
 	}
 }
 
 extension JSONAPIDocument where IncludeType == NoIncludes, LinksType == NoLinks {
 	public init(body: ResourceBody, meta: MetaType) {
-		self.body = .data(primary: body, included: .none, meta: meta, links: .none)
+		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: .none))
 	}
 }
 
 extension JSONAPIDocument where IncludeType == NoIncludes, MetaType == NoMetadata {
 	public init(body: ResourceBody, links: LinksType) {
-		self.body = .data(primary: body, included: .none, meta: .none, links: links)
+		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: links))
 	}
 }
 
 extension JSONAPIDocument where MetaType == NoMetadata, LinksType == NoLinks {
 	public init(body: ResourceBody, includes: Includes<Include>) {
-		self.body = .data(primary: body, included: includes, meta: .none, links: .none)
+		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: .none))
 	}
 }
 
 extension JSONAPIDocument where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(body: ResourceBody) {
-		self.body = .data(primary: body, included: .none, meta: .none, links: .none)
+		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: .none))
 	}
 }
 
@@ -175,7 +184,7 @@ extension JSONAPIDocument: Codable {
 			throw JSONAPIEncodingError.missingOrMalformedLinks
 		}
 		
-		body = .data(primary: data, included: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal)
+		body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal))
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -199,19 +208,19 @@ extension JSONAPIDocument: Codable {
 				try container.encode(linksVal, forKey: .links)
 			}
 
-		case .data(primary: let resourceBody, included: let includes, let meta, links: let links):
-			try container.encode(resourceBody, forKey: .data)
+		case .data(let data):
+			try container.encode(data.primary, forKey: .data)
 
 			if Include.self != NoIncludes.self {
-				try container.encode(includes, forKey: .included)
+				try container.encode(data.includes, forKey: .included)
 			}
 
 			if MetaType.self != NoMetadata.self {
-				try container.encode(meta, forKey: .meta)
+				try container.encode(data.meta, forKey: .meta)
 			}
 
 			if LinksType.self != NoLinks.self {
-				try container.encode(links, forKey: .links)
+				try container.encode(data.links, forKey: .links)
 			}
 		}
 	}
