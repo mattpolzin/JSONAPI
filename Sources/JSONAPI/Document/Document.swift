@@ -5,6 +5,14 @@
 //  Created by Mathew Polzin on 11/5/18.
 //
 
+public protocol JSONAPIDocument: Codable, Equatable {
+	associatedtype ResourceBody: JSONAPI.ResourceBody
+	associatedtype MetaType: JSONAPI.Meta
+	associatedtype LinksType: JSONAPI.Links
+	associatedtype IncludeType: JSONAPI.Include
+	associatedtype Error: JSONAPIError
+}
+
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
 /// a JSON API response.
@@ -12,7 +20,7 @@
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, Error: JSONAPIError>: Equatable {
+public struct Document<ResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, Error: JSONAPIError>: JSONAPIDocument {
 	public typealias Include = IncludeType
 
 	public let body: Body
@@ -81,49 +89,49 @@ public struct JSONAPIDocument<ResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 	}
 }
 
-extension JSONAPIDocument where IncludeType == NoIncludes {
+extension Document where IncludeType == NoIncludes {
 	public init(body: ResourceBody, meta: MetaType, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: links))
 	}
 }
 
-extension JSONAPIDocument where MetaType == NoMetadata {
+extension Document where MetaType == NoMetadata {
 	public init(body: ResourceBody, includes: Includes<Include>, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: links))
 	}
 }
 
-extension JSONAPIDocument where LinksType == NoLinks {
+extension Document where LinksType == NoLinks {
 	public init(body: ResourceBody, includes: Includes<Include>, meta: MetaType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: .none))
 	}
 }
 
-extension JSONAPIDocument where IncludeType == NoIncludes, LinksType == NoLinks {
+extension Document where IncludeType == NoIncludes, LinksType == NoLinks {
 	public init(body: ResourceBody, meta: MetaType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: .none))
 	}
 }
 
-extension JSONAPIDocument where IncludeType == NoIncludes, MetaType == NoMetadata {
+extension Document where IncludeType == NoIncludes, MetaType == NoMetadata {
 	public init(body: ResourceBody, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: links))
 	}
 }
 
-extension JSONAPIDocument where MetaType == NoMetadata, LinksType == NoLinks {
+extension Document where MetaType == NoMetadata, LinksType == NoLinks {
 	public init(body: ResourceBody, includes: Includes<Include>) {
 		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: .none))
 	}
 }
 
-extension JSONAPIDocument where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
+extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(body: ResourceBody) {
 		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: .none))
 	}
 }
 
-extension JSONAPIDocument: Codable {
+extension Document {
 	private enum RootCodingKeys: String, CodingKey {
 		case data
 		case errors
@@ -228,8 +236,8 @@ extension JSONAPIDocument: Codable {
 
 // MARK: - CustomStringConvertible
 
-extension JSONAPIDocument: CustomStringConvertible {
+extension Document: CustomStringConvertible {
 	public var description: String {
-		return "JSONAPIDocument(body: \(String(describing: body))"
+		return "Document(body: \(String(describing: body))"
 	}
 }
