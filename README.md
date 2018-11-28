@@ -100,7 +100,7 @@ To create an Xcode project for JSONAPI, run
 - [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 - [x] Make it easier to construct `Attributes` and `Relationships` values in test cases (literal expressibility).
-- [ ] Make `TransformedAttribute` a Monad (or at least a Functor).
+- [x] Make `TransformedAttribute` a Functor.
 
 ## Usage
 
@@ -256,6 +256,16 @@ Note that the first generic parameter of `TransformAttribute` is the type you ex
 #### `Validator`
 
 You can also creator `Validator`s and `ValidatedAttribute`s. A `Validator` is just a `Transformer` that by convention does not perform a transformation. It simply `throws` if an attribute value is invalid.
+
+#### Computed `Attribute`
+
+You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties should still have the type `Attribute` because that way you can take advantage of the quick access provided by `Entity`'s subscript operator. Here's an example of how you might take the `Person[\.name]` attribute from the example above and create a `fullName` computed property.
+
+```
+public var fullName: Attribute<String> {
+	return name.map { $0.joined(separator: " ") }
+}
+```
 
 ### `JSONAPIDocument`
 

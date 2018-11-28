@@ -44,6 +44,7 @@ let housesFromData = peopleResponse.body.includes?[House.self]
 
 if case let .data(bodyData) = peopleResponse.body {
 	print(bodyData)
+	print("first person's name: \(bodyData.primary.values[0][\.fullName])")
 } else {
 	print("no body data")
 }

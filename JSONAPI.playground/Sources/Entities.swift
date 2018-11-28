@@ -35,6 +35,10 @@ public enum PersonDescription: EntityDescription {
 		public let name: Attribute<[String]>
 		public let favoriteColor: Attribute<String>
 
+		public var fullName: Attribute<String> {
+			return name.map { $0.joined(separator: " ") }
+		}
+
 		public init(name: Attribute<[String]>, favoriteColor: Attribute<String>) {
 			self.name = name
 			self.favoriteColor = favoriteColor
