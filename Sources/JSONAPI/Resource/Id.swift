@@ -8,7 +8,7 @@
 /// Any type that you would like to be encoded to and
 /// decoded from JSON API ids should conform to this
 /// protocol. Conformance for `String` is given.
-public protocol RawIdType: Codable, Equatable {}
+public protocol RawIdType: Codable, Hashable {}
 
 /// If you would like to be able to create new
 /// Entities with Ids backed by a RawIdType then
@@ -32,7 +32,7 @@ public struct Unidentified<EntityDescription: JSONAPI.EntityDescription>: Identi
 	public var description: String { return "Id(Unidentified)" }
 }
 
-public protocol IdType: Identifier, CustomStringConvertible {
+public protocol IdType: Identifier, Hashable, CustomStringConvertible {
 	associatedtype RawType: RawIdType
 	
 	var rawValue: RawType { get }
