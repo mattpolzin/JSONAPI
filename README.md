@@ -100,6 +100,7 @@ To create an Xcode project for JSONAPI, run
 - [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 - [x] Make it easier to construct `Attributes` and `Relationships` values in test cases (literal expressibility).
+- [ ] Make `TransformedAttribute` a Monad (or at least a Functor).
 
 ## Usage
 
