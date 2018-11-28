@@ -11,6 +11,8 @@ public protocol JSONAPIDocument: Codable, Equatable {
 	associatedtype LinksType: JSONAPI.Links
 	associatedtype IncludeType: JSONAPI.Include
 	associatedtype Error: JSONAPIError
+
+	var body: Document<ResourceBody, MetaType, LinksType, IncludeType, Error>.Body { get }
 }
 
 /// A JSON API Document represents the entire body
