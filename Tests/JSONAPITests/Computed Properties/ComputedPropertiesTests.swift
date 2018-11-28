@@ -26,7 +26,7 @@ class ComputedPropertiesTests: XCTestCase {
 	func test_ComputedAttributeAccess() {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)
 
-		XCTAssertEqual(entity[\.computed], "Sarah")
+		XCTAssertEqual(entity[\.computed], "Sarah2")
 	}
 
 	func test_ComputedRelationshipAccess() {
@@ -44,7 +44,7 @@ extension ComputedPropertiesTests {
 		public struct Attributes: JSONAPI.Attributes {
 			public let name: Attribute<String>
 			public var computed: Attribute<String> {
-				return name
+				return name.map { $0 + "2" }
 			}
 		}
 
