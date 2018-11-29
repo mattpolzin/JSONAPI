@@ -294,7 +294,7 @@ extension EntityTests {
 								   data: entity_unidentified)
 
 		XCTAssertNil(entity[\.me])
-		XCTAssertEqual(entity.id, Unidentified())
+		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 	}
 
@@ -308,7 +308,7 @@ extension EntityTests {
 								   data: entity_unidentified_with_attributes)
 
 		XCTAssertEqual(entity[\.me], "unknown")
-		XCTAssertEqual(entity.id, Unidentified())
+		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 	}
 
@@ -524,13 +524,13 @@ extension EntityTests {
 	}
 }
 
-extension Entity where Description == EntityTests.TestEntityType2, Identifier: CreatableIdType {
+extension Entity where Description == EntityTests.TestEntityType2, EntityRawIdType: CreatableRawIdType {
 	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(other: other))
 	}
 }
 
-extension Entity where Description == EntityTests.TestEntityType3, Identifier: CreatableIdType {
+extension Entity where Description == EntityTests.TestEntityType3, EntityRawIdType: CreatableRawIdType {
 	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
 		self.init(relationships: .init(others: others))
 	}

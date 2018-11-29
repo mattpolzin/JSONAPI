@@ -98,7 +98,7 @@ extension Poly1: CustomStringConvertible {
 		case .a(let a):
 			str = String(describing: a)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }
 
@@ -177,7 +177,7 @@ extension Poly2: CustomStringConvertible {
 		case .b(let b):
 			str = String(describing: b)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }
 
@@ -271,7 +271,7 @@ extension Poly3: CustomStringConvertible {
 		case .c(let c):
 			str = String(describing: c)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }
 
@@ -380,7 +380,7 @@ extension Poly4: CustomStringConvertible {
 		case .d(let d):
 			str = String(describing: d)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }
 
@@ -504,7 +504,7 @@ extension Poly5: CustomStringConvertible {
 		case .e(let e):
 			str = String(describing: e)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }
 
@@ -643,6 +643,6 @@ extension Poly6: CustomStringConvertible {
 		case .f(let f):
 			str = String(describing: f)
 		}
-		return "Include(\(str))"
+		return "Poly(\(str))"
 	}
 }

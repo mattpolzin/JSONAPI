@@ -14,7 +14,7 @@ class ResourceBodyTests: XCTestCase {
 		let body = decoded(type: SingleResourceBody<Article>.self,
 						   data: single_resource_body)
 
-		XCTAssertEqual(body.value, Article(id: Id<String, ArticleType>(rawValue: "1"),
+		XCTAssertEqual(body.value, Article(id: Id<String, Article>(rawValue: "1"),
 										attributes: ArticleType.Attributes(title: try! .init(rawValue: "JSON:API paints my bikeshed!"))))
 	}
 

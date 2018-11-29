@@ -21,13 +21,13 @@ public struct ToOneRelationship<Relatable: JSONAPI.OptionalRelatable>: Relations
 }
 
 extension ToOneRelationship where Relatable.WrappedIdentifier == Relatable.Identifier {
-	public init(entity: Entity<Relatable.Description, Relatable.Identifier>) {
+	public init<E: EntityType>(entity: E) where E.Description == Relatable.Description, E.Id == Relatable.Identifier {
 		id = entity.id
 	}
 }
 
-extension ToOneRelationship where Relatable.WrappedIdentifier == Optional<Relatable.Identifier> {
-	public init(entity: Entity<Relatable.Description, Relatable.Identifier>?) {
+extension ToOneRelationship where Relatable.WrappedIdentifier == Relatable.Identifier? {
+	public init<E: EntityType>(entity: E?) where E.Description == Relatable.Description, E.Id == Relatable.Identifier {
 		id = entity?.id
 	}
 }
@@ -58,7 +58,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable>: RelationshipType
 }
 
 extension ToManyRelationship {
-	public init(entities: [Entity<Relatable.Description, Relatable.Identifier>]) {
+	public init<E: EntityType>(entities: [E]) where E.Description == Relatable.Description, E.Id == Relatable.Identifier {
 		ids = entities.map { $0.id }
 	}
 }
@@ -75,10 +75,6 @@ public typealias OptionalRelatable = WrappedRelatable
 /// The Relatable protocol describes anything that
 /// has an IdType Identifier
 public protocol Relatable: WrappedRelatable {}
-
-extension Entity: Relatable, WrappedRelatable where Identifier: JSONAPI.IdType {
-	public typealias WrappedIdentifier = Identifier
-}
 
 extension Optional: OptionalRelatable where Wrapped: Relatable {
 	public typealias Description = Wrapped.Description
@@ -184,5 +180,5 @@ extension ToOneRelationship: CustomStringConvertible {
 }
 
 extension ToManyRelationship: CustomStringConvertible {
-	public var description: String { return "Relationship(\(String(describing: ids)))" }
+	public var description: String { return "Relationship([\(ids.map(String.init(describing:)).joined(separator: ", "))])" }
 }

@@ -12,11 +12,6 @@ import JSONAPITestLib
 // Successes are fairly well-checked by the EntityTests. We will confirm failure cases are working
 // in this file.
 class EntityCheckTests: XCTestCase {
-	func test_FailsWithBadId() {
-		let entity = BadIdEntity()
-		XCTAssertThrowsError(try BadIdEntity.check(entity))
-	}
-
 	func test_failsWithEnumAttributes() {
 		let entity = EnumAttributesEntity(attributes: .hello)
 		XCTAssertThrowsError(try EnumAttributesEntity.check(entity))
@@ -61,7 +56,7 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias BadIdEntity = JSONAPI.Entity<OkDescription, JSONAPI.Id<String, OtherOkDescription>>
+	public typealias OtherOkEntity = Entity<OtherOkDescription>
 
 	enum EnumAttributesDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -121,7 +116,7 @@ extension EntityCheckTests {
 
 		public struct Relationships: JSONAPI.Relationships {
 			let x: ToOneRelationship<OkEntity>
-			let y: Id<String, OkDescription>
+			let y: Id<String, OkEntity>
 		}
 	}
 

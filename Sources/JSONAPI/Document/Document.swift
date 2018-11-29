@@ -243,6 +243,23 @@ extension Document {
 
 extension Document: CustomStringConvertible {
 	public var description: String {
-		return "Document(body: \(String(describing: body))"
+		return "Document(\(String(describing: body)))"
+	}
+}
+
+extension Document.Body: CustomStringConvertible {
+	public var description: String {
+		switch self {
+		case .errors(let errors, meta: let meta, links: let links):
+			return "errors: \(String(describing: errors)), meta: \(String(describing: meta)), links: \(String(describing: links))"
+		case .data(let data):
+			return String(describing: data)
+		}
+	}
+}
+
+extension Document.Body.Data: CustomStringConvertible {
+	public var description: String {
+		return "primary: \(String(describing: primary)), includes: \(String(describing: includes)), meta: \(String(describing: meta)), links: \(String(describing: links))"
 	}
 }

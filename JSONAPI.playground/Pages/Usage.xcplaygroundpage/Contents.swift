@@ -40,10 +40,13 @@ let peopleFromData = peopleResponse.body.primaryData?.values
 let dogsFromData = peopleResponse.body.includes?[Dog.self]
 let housesFromData = peopleResponse.body.includes?[House.self]
 
+print("-----")
+print(peopleResponse)
+print("-----")
+
 // MARK: - Pass successfully parsed body to other parts of the code
 
 if case let .data(bodyData) = peopleResponse.body {
-	print(bodyData)
 	print("first person's name: \(bodyData.primary.values[0][\.fullName])")
 } else {
 	print("no body data")

@@ -19,8 +19,10 @@ public protocol Meta: Codable, Equatable {
 // nullable.
 extension Optional: Meta where Wrapped: Meta {}
 
-public struct NoMetadata: Meta {
+public struct NoMetadata: Meta, CustomStringConvertible {
 	public static var none: NoMetadata { return NoMetadata() }
 
 	public init() { }
+
+	public var description: String { return "No Metadata" }
 }

@@ -70,7 +70,6 @@ extension DocumentTests {
 extension EntityCheckTests {
     static let __allTests = [
         ("test_failsWithBadAttribute", test_failsWithBadAttribute),
-        ("test_FailsWithBadId", test_FailsWithBadId),
         ("test_failsWithBadRelationship", test_failsWithBadRelationship),
         ("test_failsWithEnumAttributes", test_failsWithEnumAttributes),
         ("test_failsWithEnumRelationships", test_failsWithEnumRelationships),

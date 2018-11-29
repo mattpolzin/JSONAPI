@@ -170,13 +170,13 @@ An `Entity` needs to be specialized on two generic types. The first is the `Enti
 
 #### `IdType`
 
-An `IdType` packages up two pieces of information: A unique identifier of a given `RawIdType` and the `EntityDescription` of the type of entity the Id identifies. Having the `EntityDescription` type associated with the Id makes it easy to store all of your entities in a local hash broken out by `EntityDescription`; You can pass Ids around and always know where to look for the `Entity` to which the Id refers. `RawIdType`s are documented below.
+An `IdType` packages up two pieces of information: A unique identifier of a given `RawIdType` and the `Entity` type that the Id identifies. Having the `Entity` type associated with the Id makes it easy to store all of your entities in a local hash broken out by `Entity` type; You can pass Ids around and always know where to look for the `Entity` to which the Id refers. `RawIdType`s are documented below.
 
 #### Convenient `typealiases`
 
 Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using `typealias`es like the following:
 ```
-public typealias Entity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Id<String, Description>>
+public typealias Entity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, String>
 
 public typealias NewEntity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Unidentified>
 ```

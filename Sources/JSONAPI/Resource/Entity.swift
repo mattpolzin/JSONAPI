@@ -39,7 +39,9 @@ public protocol EntityDescription {
 /// specialization.
 public protocol EntityType: PrimaryResource {
 	associatedtype Description: EntityDescription
-	associatedtype Identifier: Equatable & Codable
+	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
+
+	typealias Id = JSONAPI.Id<EntityRawIdType, Self>
 
 	typealias Attributes = Description.Attributes
 	typealias Relationships = Description.Relationships
@@ -48,7 +50,7 @@ public protocol EntityType: PrimaryResource {
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
 	/// this should be of a type conforming to `IdType`.
-	var id: Identifier { get }
+	var id: Id { get }
 
 	/// The JSON API compliant attributes of this `Entity`.
 	var attributes: Attributes { get }
@@ -57,11 +59,13 @@ public protocol EntityType: PrimaryResource {
 	var relationships: Relationships { get }
 }
 
+public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
+
 /// An `Entity` is a single model type that can be
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<Description: JSONAPI.EntityDescription, Identifier: JSONAPI.Identifier>: EntityType {
+public struct Entity<Description: JSONAPI.EntityDescription, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
 	
 	/// The JSON API compliant "type" of this `Entity`.
 	public static var type: String { return Description.type }
@@ -70,7 +74,7 @@ public struct Entity<Description: JSONAPI.EntityDescription, Identifier: JSONAPI
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
 	/// this should be of a type conforming to `IdType`.
-	public let id: Identifier
+	public let id: Entity.Id
 	
 	/// The JSON API compliant attributes of this `Entity`.
 	public let attributes: Description.Attributes
@@ -78,11 +82,16 @@ public struct Entity<Description: JSONAPI.EntityDescription, Identifier: JSONAPI
 	/// The JSON API compliant relationships of this `Entity`.
 	public let relationships: Description.Relationships
 	
-	public init(id: Identifier, attributes: Description.Attributes, relationships: Description.Relationships) {
+	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.id = id
 		self.attributes = attributes
 		self.relationships = relationships
 	}
+}
+
+extension Entity: IdentifiableEntityType, Relatable, WrappedRelatable where EntityRawIdType: JSONAPI.RawIdType {
+	public typealias Identifier = Entity.Id
+	public typealias WrappedIdentifier = Identifier
 }
 
 extension Entity: CustomStringConvertible {
@@ -92,52 +101,52 @@ extension Entity: CustomStringConvertible {
 }
 
 // MARK: Convenience initializers
-extension Entity where Identifier: CreatableIdType {
+extension Entity where EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
-		self.id = Identifier()
+		self.id = Entity.Id()
 		self.attributes = attributes
 		self.relationships = relationships
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes {
-	public init(id: Identifier, relationships: Description.Relationships) {
+	public init(id: Entity.Id, relationships: Description.Relationships) {
 		self.init(id: id, attributes: NoAttributes(), relationships: relationships)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Identifier: CreatableIdType {
+extension Entity where Description.Attributes == NoAttributes, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships) {
 		self.init(attributes: NoAttributes(), relationships: relationships)
 	}
 }
 
 extension Entity where Description.Relationships == NoRelationships {
-	public init(id: Identifier, attributes: Description.Attributes) {
+	public init(id: Entity.Id, attributes: Description.Attributes) {
 		self.init(id: id, attributes: attributes, relationships: NoRelationships())
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, Identifier: CreatableIdType {
+extension Entity where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes) {
 		self.init(attributes: attributes, relationships: NoRelationships())
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
-	public init(id: Identifier) {
+	public init(id: Entity.Id) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships())
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, Identifier: CreatableIdType {
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
 	public init() {
 		self.init(attributes: NoAttributes(), relationships: NoRelationships())
 	}
 }
 
 // MARK: Pointer for Relationships use.
-public extension Entity where Identifier: IdType {
+public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
 	public var pointer: ToOneRelationship<Entity> {
@@ -202,7 +211,7 @@ public extension Entity {
 		
 		try container.encode(Entity.type, forKey: .type)
 		
-		if Identifier.self != Unidentified<Description>.self {
+		if EntityRawIdType.self != Unidentified.self {
 			try container.encode(id, forKey: .id)
 		}
 		
@@ -224,8 +233,9 @@ public extension Entity {
 		guard Entity.type == type else {
 			throw JSONAPIEncodingError.typeMismatch(expected: Description.type, found: type)
 		}
-		
-		id = try (Unidentified<Description>() as? Identifier) ?? container.decode(Identifier.self, forKey: .id)
+
+		let maybeUnidentified = Unidentified() as? EntityRawIdType
+		id = try maybeUnidentified.map { Entity.Id(rawValue: $0) } ?? container.decode(Entity.Id.self, forKey: .id)
 		
 		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
 		

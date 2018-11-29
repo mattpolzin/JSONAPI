@@ -14,11 +14,11 @@ extension Int: RawIdType {}
 class Id_LiteralTests: XCTestCase {
 
 	func test_StringLiteral() {
-		XCTAssertEqual(Id<String, TestDescription>(rawValue: "hello"), "hello")
+		XCTAssertEqual(Id<String, TestEntity>(rawValue: "hello"), "hello")
 	}
 
 	func test_IntegerLiteral() {
-		XCTAssertEqual(Id<Int, TestDescription>(rawValue: 121), 121)
+		XCTAssertEqual(Id<Int, TestEntity>(rawValue: 121), 121)
 	}
 }
 

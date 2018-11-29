@@ -9,9 +9,11 @@
 public protocol Links: Codable, Equatable {}
 
 /// Use NoLinks where no links should belong to a JSON API component
-public struct NoLinks: Links {
+public struct NoLinks: Links, CustomStringConvertible {
 	public static var none: NoLinks { return NoLinks() }
 	public init() {}
+
+	public var description: String { return "No Links" }
 }
 
 public protocol JSONAPIURL: Codable, Equatable {}

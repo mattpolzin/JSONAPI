@@ -36,7 +36,7 @@ public extension Entity {
 	public static func check(_ entity: Entity) throws {
 		var problems = [EntityCheckError]()
 
-		if Swift.type(of: entity.id).EntityDescription.self != Description.self {
+		if Swift.type(of: entity.id).EntityType.Description.self != Description.self {
 			problems.append(.badId)
 		}
 
