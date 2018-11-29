@@ -32,7 +32,7 @@ public struct NoResourceBody: ResourceBody {
 	public static var none: NoResourceBody { return NoResourceBody() }
 }
 
-// MARK: Decodable
+// MARK: Codable
 extension SingleResourceBody {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()

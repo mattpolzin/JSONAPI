@@ -39,6 +39,13 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 			public let includes: Includes<Include>
 			public let meta: MetaType
 			public let links: LinksType
+
+			public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+				self.primary = primary
+				self.includes = includes
+				self.meta = meta
+				self.links = links
+			}
 		}
 
 		public var isError: Bool {
