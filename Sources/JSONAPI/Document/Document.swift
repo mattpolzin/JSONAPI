@@ -13,7 +13,6 @@ public protocol JSONAPIDocument: Codable, Equatable {
 	associatedtype Error: JSONAPIError
 
 	typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, Error>.Body
-	typealias BodyData = Body.Data
 
 	var body: Body { get }
 }
