@@ -7,6 +7,14 @@ extension AttributeTests {
     ]
 }
 
+extension Attribute_FunctorTests {
+    static let __allTests = [
+        ("test_mapGuaranteed", test_mapGuaranteed),
+        ("test_mapOptionalFailure", test_mapOptionalFailure),
+        ("test_mapOptionalSuccess", test_mapOptionalSuccess),
+    ]
+}
+
 extension Attribute_LiteralTests {
     static let __allTests = [
         ("test_ArrayLiteral", test_ArrayLiteral),
@@ -16,6 +24,15 @@ extension Attribute_LiteralTests {
         ("test_IntegerLiteral", test_IntegerLiteral),
         ("test_NilLiteral", test_NilLiteral),
         ("test_StringLiteral", test_StringLiteral),
+    ]
+}
+
+extension ComputedPropertiesTests {
+    static let __allTests = [
+        ("test_ComputedAttributeAccess", test_ComputedAttributeAccess),
+        ("test_ComputedRelationshipAccess", test_ComputedRelationshipAccess),
+        ("test_DecodeIgnoresComputed", test_DecodeIgnoresComputed),
+        ("test_EncodeIgnoresComputed", test_EncodeIgnoresComputed),
     ]
 }
 
@@ -204,6 +221,7 @@ extension RelationshipTests {
 
 extension Relationship_LiteralTests {
     static let __allTests = [
+        ("test_ArrayLiteral", test_ArrayLiteral),
         ("test_NilLiteral", test_NilLiteral),
     ]
 }
@@ -223,7 +241,9 @@ extension ResourceBodyTests {
 public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(AttributeTests.__allTests),
+        testCase(Attribute_FunctorTests.__allTests),
         testCase(Attribute_LiteralTests.__allTests),
+        testCase(ComputedPropertiesTests.__allTests),
         testCase(DocumentTests.__allTests),
         testCase(EntityCheckTests.__allTests),
         testCase(EntityTests.__allTests),
