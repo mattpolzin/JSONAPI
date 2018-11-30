@@ -9,11 +9,16 @@ public protocol Transformer {
 	associatedtype From
 	associatedtype To
 
-	static func transform(_ from: From) throws -> To
+	static func transform(_ value: From) throws -> To
 }
 
-public enum IdentityTransformer<T>: Transformer {
-	public static func transform(_ from: T) throws -> T { return from }
+public protocol ReversibleTransformer: Transformer {
+	static func reverse(_ value: To) throws -> From
+}
+
+public enum IdentityTransformer<T>: ReversibleTransformer {
+	public static func transform(_ value: T) throws -> T { return value }
+	public static func reverse(_ value: T) throws -> T { return value }
 }
 
 // MARK: - Validator
@@ -22,10 +27,19 @@ public enum IdentityTransformer<T>: Transformer {
 /// is passed to it but it does not change the type of the value. Any
 /// Transformer will perform validation in one sense so a Validator is
 /// really just semantic sugar (it can provide clarity in its use).
-public protocol Validator: Transformer where From == To {}
+/// To enforce the semantics, any change of the value in your implementation
+/// of `Validator.transform()` will be ignored.
+public protocol Validator: ReversibleTransformer where From == To {
+}
 
 extension Validator {
+	public static func reverse(_ value: To) throws -> To {
+		let _ = try transform(value)
+		return value
+	}
+
 	public static func validate(_ value: To) throws -> To {
-		return try transform(value)
+		let _ = try transform(value)
+		return value
 	}
 }

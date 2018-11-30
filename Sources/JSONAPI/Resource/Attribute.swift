@@ -19,6 +19,13 @@ public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Trans
 	}
 }
 
+extension TransformedAttribute where Transformer: ReversibleTransformer {
+	public init(transformedValue: Transformer.To) throws {
+		self.value = transformedValue
+		rawValue = try Transformer.reverse(value)
+	}
+}
+
 extension TransformedAttribute: CustomStringConvertible {
 	public var description: String {
 		return "Attribute<\(String(describing: Transformer.From.self)) -> \(String(describing: Transformer.To.self))>(\(String(describing: value)))"

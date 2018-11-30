@@ -8,12 +8,25 @@
 import JSONAPI
 
 public enum EntityCheckError: Swift.Error {
+	/// The attributes should live in a struct, not
+	/// another type class.
 	case attributesNotStruct
+
+	/// The relationships should live in a struct, not
+	/// another type class.
 	case relationshipsNotStruct
+
+	/// All stored properties on an Attributes struct should
+	/// be one of the supplied Attribute types.
 	case nonAttribute(named: String)
+
+	/// All stored properties on a Relationships struct should
+	/// be one of the supplied Relationship types.
 	case nonRelationship(named: String)
+
+	/// It is explicitly stated by the JSON spec
+	/// a "none" value for arrays is an empty array, not `nil`.
 	case nullArray(named: String)
-	case badId
 }
 
 public struct EntityCheckErrors: Swift.Error {
@@ -35,10 +48,6 @@ extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
 public extension Entity {
 	public static func check(_ entity: Entity) throws {
 		var problems = [EntityCheckError]()
-
-		if Swift.type(of: entity.id).EntityType.Description.self != Description.self {
-			problems.append(.badId)
-		}
 
 		let attributesMirror = Mirror(reflecting: entity.attributes)
 
