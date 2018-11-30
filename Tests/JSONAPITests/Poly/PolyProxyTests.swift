@@ -25,9 +25,27 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserA.relationships, .none)
 	}
 
-	func test_UserAEncode() {
+	func test_UserAAndBEncodeEquality() {
 		test_DecodeEncodeEquality(type: User.self, data: poly_user_stub_1)
 		test_DecodeEncodeEquality(type: User.self, data: poly_user_stub_2)
+	}
+
+	func test_AsymmetricEncodeDecodeUserA() {
+		let userA = decoded(type: UserA.self, data: poly_user_stub_1)
+		let polyUserA = decoded(type: User.self, data: poly_user_stub_1)
+
+		let encodedPoly = try! JSONEncoder().encode(polyUserA)
+
+		XCTAssertEqual(decoded(type: UserA.self, data: encodedPoly), userA)
+	}
+
+	func test_AsymmetricEncodeDecodeUserB() {
+		let userB = decoded(type: UserB.self, data: poly_user_stub_2)
+		let polyUserB = decoded(type: User.self, data: poly_user_stub_2)
+
+		let encodedPoly = try! JSONEncoder().encode(polyUserB)
+
+		XCTAssertEqual(decoded(type: UserB.self, data: encodedPoly), userB)
 	}
 
 	func test_UserBDecode() {
