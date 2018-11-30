@@ -4,6 +4,9 @@ extension AttributeTests {
     static let __allTests = [
         ("test_AttributeIsTransformedAttribute", test_AttributeIsTransformedAttribute),
         ("test_AttributeNonThrowingConstructor", test_AttributeNonThrowingConstructor),
+        ("test_TransformedAttributeNoThrow", test_TransformedAttributeNoThrow),
+        ("test_TransformedAttributeReversNoThrow", test_TransformedAttributeReversNoThrow),
+        ("test_TransformedAttributeThrows", test_TransformedAttributeThrows),
     ]
 }
 
@@ -180,6 +183,17 @@ extension LinksTests {
     ]
 }
 
+extension PolyProxyTests {
+    static let __allTests = [
+        ("test_AsymmetricEncodeDecodeUserA", test_AsymmetricEncodeDecodeUserA),
+        ("test_AsymmetricEncodeDecodeUserB", test_AsymmetricEncodeDecodeUserB),
+        ("test_generalReasonableness", test_generalReasonableness),
+        ("test_UserAAndBEncodeEquality", test_UserAAndBEncodeEquality),
+        ("test_UserADecode", test_UserADecode),
+        ("test_UserBDecode", test_UserBDecode),
+    ]
+}
+
 extension PolyTests {
     static let __allTests = [
         ("test_init_Poly0", test_init_Poly0),
@@ -223,6 +237,7 @@ extension Relationship_LiteralTests {
     static let __allTests = [
         ("test_ArrayLiteral", test_ArrayLiteral),
         ("test_NilLiteral", test_NilLiteral),
+        ("test_StringLiteral", test_StringLiteral),
     ]
 }
 
@@ -250,6 +265,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(Id_LiteralTests.__allTests),
         testCase(IncludedTests.__allTests),
         testCase(LinksTests.__allTests),
+        testCase(PolyProxyTests.__allTests),
         testCase(PolyTests.__allTests),
         testCase(RelationshipTests.__allTests),
         testCase(Relationship_LiteralTests.__allTests),
