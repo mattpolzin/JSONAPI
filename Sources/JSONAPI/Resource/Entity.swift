@@ -16,11 +16,15 @@ public typealias Attributes = Codable & Equatable
 
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
-public struct NoRelationships: Relationships {}
+public struct NoRelationships: Relationships {
+	public static var none: NoRelationships { return .init() }
+}
 
 /// Can be used as `Attributes` Type for Entities that do not
 /// have any Attributes.
-public struct NoAttributes: Attributes {}
+public struct NoAttributes: Attributes {
+	public static var none: NoAttributes { return .init() }
+}
 
 /// An `EntityDescription` describes a JSON API
 /// Resource Object. The Resource Object
@@ -34,10 +38,10 @@ public protocol EntityDescription {
 	static var type: String { get }
 }
 
-/// EntityType is the protocol that Entity conforms to. This
-/// protocol lets other types accept any Entity as a generic
-/// specialization.
-public protocol EntityType: PrimaryResource {
+/// EntityProxy is a protocol that can be used to create
+/// types that _act_ like Entities but cannot be encoded
+/// or decoded as Entities.
+public protocol EntityProxy: Equatable {
 	associatedtype Description: EntityDescription
 	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
@@ -59,6 +63,17 @@ public protocol EntityType: PrimaryResource {
 	var relationships: Relationships { get }
 }
 
+extension EntityProxy {
+	/// The JSON API compliant "type" of this `Entity`.
+	public static var type: String { return Description.type }
+}
+
+/// EntityType is the protocol that Entity conforms to. This
+/// protocol lets other types accept any Entity as a generic
+/// specialization.
+public protocol EntityType: EntityProxy, PrimaryResource {
+}
+
 public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
 
 /// An `Entity` is a single model type that can be
@@ -66,10 +81,6 @@ public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdT
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
 public struct Entity<Description: JSONAPI.EntityDescription, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
-	
-	/// The JSON API compliant "type" of this `Entity`.
-	public static var type: String { return Description.type }
-	
 	/// The `Entity`'s Id. This can be of type `Unidentified` if
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
@@ -155,21 +166,21 @@ public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 }
 
 // MARK: Attribute Access
-public extension Entity {
+public extension EntityProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
 	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>>) -> TFRM.To {
 		return attributes[keyPath: path].value
 	}
-	
+
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
 	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>?>) -> TFRM.To? {
 		return attributes[keyPath: path]?.value
 	}
-	
+
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
@@ -179,18 +190,18 @@ public extension Entity {
 }
 
 // MARK: Relationship Access
-public extension Entity {
+public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: OptionalRelatable>(entity: Entity, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.WrappedIdentifier {
+	public static func ~><OtherEntity: OptionalRelatable>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.WrappedIdentifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntity: Relatable>(entity: Entity, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
+	public static func ~><OtherEntity: Relatable>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 }
