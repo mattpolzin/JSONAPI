@@ -5,15 +5,24 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-public protocol PrimaryResource: Equatable, Codable {}
+public protocol MaybePrimaryResource: Equatable, Codable {}
 
+/// A PrimaryResource is a type that can be used in the body of a JSON API
+/// document as the primary resource.
+public protocol PrimaryResource: MaybePrimaryResource {}
+
+extension Optional: MaybePrimaryResource where Wrapped: PrimaryResource {}
+
+/// A ResourceBody is a representation of the body of the JSON API Document.
+/// It can either be one resource (which can be specified as optional or not)
+/// or it can contain many resources (and array with zero or more entries).
 public protocol ResourceBody: Codable, Equatable {
 }
 
-public struct SingleResourceBody<Entity: JSONAPI.PrimaryResource>: ResourceBody {
-	public let value: Entity?
+public struct SingleResourceBody<Entity: JSONAPI.MaybePrimaryResource>: ResourceBody {
+	public let value: Entity
 
-	public init(entity: Entity?) {
+	public init(entity: Entity) {
 		self.value = entity
 	}
 }
@@ -37,8 +46,10 @@ extension SingleResourceBody {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
-		if container.decodeNil() {
-			value = nil
+		let anyNil: Any? = nil
+		if container.decodeNil(),
+			let val = anyNil as? Entity {
+			value = val
 			return
 		}
 
@@ -48,7 +59,7 @@ extension SingleResourceBody {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.singleValueContainer()
 
-		if value == nil {
+		if (value as Any?) == nil {
 			try container.encodeNil()
 			return
 		}

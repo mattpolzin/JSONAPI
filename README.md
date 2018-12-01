@@ -26,6 +26,11 @@ If you find that something in the JSON API v1.0 Spec is not explicitly missing f
 To create an Xcode project for JSONAPI, run
 `swift package generate-xcodeproj`
 
+### Running the Playground
+To run the included Playground files, create an Xcode project using Swift Package Manager, then create an Xcode Workspace in the root of the repository and add both the generated Xcode project and the playground to the Workspace.
+
+Note that Playground support for importing non-system Frameworks is still a bit touchy as of Swift 4.2. Sometimes building, cleaning and building, or commenting out and then uncommenting import statements (especially in the Entities.swift Playground Source file) can get things working for me when I am getting an error about JSONAPI not being found.
+
 ## Project Status
 
 ### Decoding
@@ -278,13 +283,19 @@ let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, 
 let document = try decoder.decode(responseStructure, from: data)
 ```
 
-This document is guaranteed by the JSON API spec to be "data", "metadata", or "errors." If it is "data", it may also contain "metadata" and/or other "included" resources. If it is "errors," it may also contain "metadata."
+A JSON API Document is guaranteed by the JSON API spec to be "data", "metadata", or "errors." If it is "data", it may also contain "metadata" and/or other "included" resources. If it is "errors," it may also contain "metadata."
 
 #### `ResourceBody`
 
-The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody` or a `ManyResourceBody`. You will find zero or one `Entity` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `Entity` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `Entity`. These `Poly` types work in the same way as the `Include` types described below.
+The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `Entity`. These `Poly` types work in the same way as the `Include` types described below.
 
 If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
+
+##### nullable `PrimaryResource`
+
+If you expect a `SingleResourceBody` to sometimes come back `null`, you should make your `PrimaryResource` optional. If you do not make your `PrimaryResource` optional then a `null` primary resource will be considered an error when parsing the JSON.
+
+You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody` because JSON API requires that an empty document in that case be represented by an empty array rather than `null`.
 
 #### `MetaType`
 
