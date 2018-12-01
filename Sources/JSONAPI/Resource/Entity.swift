@@ -120,6 +120,14 @@ extension Entity where EntityRawIdType: CreatableRawIdType {
 	}
 }
 
+extension Entity where EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
+		self.id = .unidentified
+		self.attributes = attributes
+		self.relationships = relationships
+	}
+}
+
 extension Entity where Description.Attributes == NoAttributes {
 	public init(id: Entity.Id, relationships: Description.Relationships) {
 		self.init(id: id, attributes: NoAttributes(), relationships: relationships)
@@ -139,6 +147,12 @@ extension Entity where Description.Relationships == NoRelationships {
 }
 
 extension Entity where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
+	public init(attributes: Description.Attributes) {
+		self.init(attributes: attributes, relationships: NoRelationships())
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes) {
 		self.init(attributes: attributes, relationships: NoRelationships())
 	}

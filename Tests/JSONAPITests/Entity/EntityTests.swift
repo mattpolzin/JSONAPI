@@ -40,6 +40,24 @@ class EntityTests: XCTestCase {
 		
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
+
+	func test_initialization() {
+		let entity1 = TestEntity1(id: .init(rawValue: "wow"))
+		let entity2 = TestEntity2(id: .init(rawValue: "cool"), relationships: .init(other: .init(entity: entity1)))
+		let _ = TestEntity3(id: .init(rawValue: "3"), relationships: .init(others: .init(ids: [.init(rawValue: "10"), .init(rawValue: "20"), entity1.id])))
+		let _ = TestEntity4(id: .init(rawValue: "4"), attributes: .init(word: .init(value: "hello"), number: .init(value: 10), array: .init(value: [10.2, 10.3])), relationships: .init(other: entity2.pointer))
+		let _ = TestEntity5(id: .init(rawValue: "5"), attributes: .init(floater: .init(value: 10.2)))
+		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)))
+		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")))
+		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil))))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil))
+		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
+		let e10id2 = TestEntity10.Id(rawValue: "world")
+		let e10id3: TestEntity10.Id = "!"
+		let _ = TestEntity10(id: .init(rawValue: "10"), relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])))
+		XCTAssertNoThrow(try TestEntity11(id: .init(rawValue: "11"), attributes: .init(number: .init(rawValue: 11))))
+		let _ = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")))
+	}
 }
 
 // MARK: - Encode/Decode
