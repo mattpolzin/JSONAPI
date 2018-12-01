@@ -1,14 +1,14 @@
 # JSONAPI
 [![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 4.2](http://img.shields.io/badge/Swift-4.2-blue.svg)](https://swift.org) [![Build Status](https://app.bitrise.io/app/c8295b9589aa401e/status.svg?token=vzcyqWD5bQ4xqQfZsaVzNw&branch=master)](https://app.bitrise.io/app/c8295b9589aa401e)
 
-A Swift package for encoding to- and decoding from *JSON API* compliant requests and responses.
+A Swift package for encoding to- and decoding from **JSON API** compliant requests and responses.
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
 ## Primary Goals
 
 The primary goals of this framework are:
-1. Allow creation of Swift types that are easy to use in code but also can be encoded to- or decoded from *JSON API* compliant payloads without lots of boilerplate code.
+1. Allow creation of Swift types that are easy to use in code but also can be encoded to- or decoded from **JSON API v1.0 Spec** compliant payloads without lots of boilerplate code.
 2. Leverage `Codable` to avoid additional outside dependencies and get operability with non-JSON encoders/decoders for free.
 3. Do not sacrifice type safety.
 4. Be platform agnostic so that Swift code can be written once and used by both the client and the server.
@@ -16,7 +16,7 @@ The primary goals of this framework are:
 ### Caveat
 The big caveat is that, although the aim is to support the JSON API spec, this framework ends up being _naturally_ opinionated about certain things that the API Spec does not specify. These caveats are largely a side effect of attempting to write the library in a "Swifty" way.
 
-If you find that something in the JSON API v1.0 Spec is not explicitly missing from the **Project Status** checklist but this library does not support it, please let me know! I want to keep working towards a library implementation that is useful in any application.
+If you find something wrong with this library and it isn't already mentioned under **Project Status**, let me know! I want to keep working towards a library implementation that is useful in any application.
 
 ## Dev Environment
 ### Prerequisites
@@ -109,9 +109,11 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ## Usage
 
+In this documentation, in order to draw attention to the difference between the `JSONAPI` framework (this Swift library) and the **JSON API Spec** (the specification this library helps you follow), the specification will consistently be referred to below as simply the **SPEC**.
+
 ### `EntityDescription`
 
-An `EntityDescription` is the `JSONAPI` framework's specification for what the JSON API spec calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
+An `EntityDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
 
 ```
 enum PersonDescription: IdentifiedEntityDescription {
@@ -129,13 +131,13 @@ enum PersonDescription: IdentifiedEntityDescription {
 ```
 
 The requirements of an `EntityDescription` are:
-1. A static `var` "type" that matches the JSON type; The JSON spec requires every *Resource Object* to have a "type".
+1. A static `var` "type" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
 
 Note that an `enum` type is used here for the `EntityDescription`; it could have been a `struct`, but `EntityDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
 
-This readme doesn't go into detail on the JSON API Spec, but the following JSON API *Resource Object* would be described by the above `PersonDescription`:
+This readme doesn't go into detail on the **SPEC**, but the following *Resource Object* would be described by the above `PersonDescription`:
 
 ```
 {
@@ -167,15 +169,17 @@ This readme doesn't go into detail on the JSON API Spec, but the following JSON 
 
 ### `Entity`
 
-Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entity`s that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entity`s that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
+Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entities` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entities` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
 
 The `Entity` and `EntityDescription` together embody the rules and properties of a JSON API *Resource Object*.
 
-An `Entity` needs to be specialized on two generic types. The first is the `EntityDescription` described above. The second is the type of Id to use for the `Entity`.
-
 #### `IdType`
 
-An `IdType` packages up two pieces of information: A unique identifier of a given `RawIdType` and the `Entity` type that the Id identifies. Having the `Entity` type associated with the Id makes it easy to store all of your entities in a local hash broken out by `Entity` type; You can pass Ids around and always know where to look for the `Entity` to which the Id refers. `RawIdType`s are documented below.
+An `Entity` needs to be specialized on two generic types. The first is the `EntityDescription` described above. The second is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, RawIdType>>`.
+
+Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers.
+
+A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
 
 #### Convenient `typealiases`
 
@@ -193,13 +197,13 @@ typealias Person = Entity<PersonDescription>
 typealias NewPerson = NewEntity<PersonDescription>
 ```
 
-Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time JSON API spec allows a *Resource Object* to be encoded without an Id is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the Id for that object.
+Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
 
 ### `Relationships`
 
-There are two types of `Relationship`s: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship`s of either of these types. Do not store anything other than `Relationship`s in the `Relationships` struct of an `EntityDescription`.
+There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of an `EntityDescription`.
 
-To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent no related objects exist with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value might be `null` or it might be a resource identifier) like this:
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value might be `null` or it might be a resource identifier) like this:
 ```
 let nullableRelative: ToOneRelationship<Person?>
 ```
@@ -209,14 +213,14 @@ An entity that does not have relationships can be described by adding the follow
 typealias Relationships = NoRelationships
 ```
 
-`Relationship`s boil down to Ids of other entities. To access the Id of a related entity, you can use the shorthand `~>` operator with the `KeyPath` of the `Relationship` from which you want the Id. The friends of the above `Person` entity could be accessed as follows (type annotations for clarity):
+`Relationship` values boil down to `Ids` of other entities. To access the `Id` of a related `Entity`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `Entity` can be accessed as follows (type annotations for clarity):
 ```
 let friendIds: [Person.Identifier] = person ~> \.friends
 ```
 
 ### `Attributes`
 
-The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute` or `TransformAttribute` `struct`. This is the place to store all attributes of an entity.
+The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
 
 To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
 ```
@@ -240,12 +244,12 @@ let favoriteColor: String = person[\.favoriteColor]
 
 #### `Transformer`
 
-Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. To do this, you create a `Transformer`.
+Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. The Foundation library `JSONDecoder` has a setting to make this adjustment, but for the sake of an example, you could create a `Transformer`.
 
 A `Transformer` just provides one static function that transforms one type to another. You might define one for an ISO 8601 compliant `Date` like this:
 ```
 enum ISODateTransformer: Transformer {
-	public static func transform(_ from: String) throws -> Date {
+	public static func transform(_ value: String) throws -> Date {
 		// parse Date out of input and return
 	}
 }
@@ -258,9 +262,21 @@ let date: TransformedAttribute<String, ISODateTransformer>
 
 Note that the first generic parameter of `TransformAttribute` is the type you expect to decode from JSON, not the type you want to end up with after transformation.
 
+If you make your `Transformer` a `ReversibleTransformer` then your life will be a bit easier when you construct `TransformedAttributes` because you have access to initializers for both the pre- and post-transformed value types. Continuing with the above example of a `ISODateTransformer`:
+```
+extension ISODateTransformer: ReversibleTransformer {
+	public static func reverse(_ value: Date) throws -> String {
+		// serialize Date to a String
+	}
+}
+
+let exampleAttribute = try? TransformedAttribute<String, ISODateTransformer>(transformedValue: Date())
+let otherAttribute = try? TransformedAttribute<String, ISODateTransformer>(rawValue: "2018-12-01 09:06:41 +0000")
+```
+
 #### `Validator`
 
-You can also creator `Validator`s and `ValidatedAttribute`s. A `Validator` is just a `Transformer` that by convention does not perform a transformation. It simply `throws` if an attribute value is invalid.
+You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is just a `Transformer` that by convention does not perform a transformation. It simply `throws` if an attribute value is invalid.
 
 #### Computed `Attribute`
 
@@ -283,7 +299,7 @@ let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, 
 let document = try decoder.decode(responseStructure, from: data)
 ```
 
-A JSON API Document is guaranteed by the JSON API spec to be "data", "metadata", or "errors." If it is "data", it may also contain "metadata" and/or other "included" resources. If it is "errors," it may also contain "metadata."
+A JSON API Document is guaranteed by the **SPEC** to be "data", "metadata", or "errors." If it is "data", it may also contain "metadata" and/or other "included" resources. If it is "errors," it may also contain "metadata."
 
 #### `ResourceBody`
 
@@ -295,11 +311,11 @@ If you expect a response to not have a "data" top-level key at all, then use `No
 
 If you expect a `SingleResourceBody` to sometimes come back `null`, you should make your `PrimaryResource` optional. If you do not make your `PrimaryResource` optional then a `null` primary resource will be considered an error when parsing the JSON.
 
-You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody` because JSON API requires that an empty document in that case be represented by an empty array rather than `null`.
+You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody` because the **SPEC** requires that an empty document in that case be represented by an empty array rather than `null`.
 
 #### `MetaType`
 
-The second generic type of a `JSONAPIDocument` is a `Meta`. This structure is entirely open-ended. As an example, the JSON API document may contain the following pagination info in its meta entry:
+The second generic type of a `JSONAPIDocument` is a `Meta`. This structure is entirely open-ended. As an example, the JSON API document could, as an example, contain the following pagination info in its meta entry:
 ```
 {
 	"meta": {
@@ -337,7 +353,7 @@ To specify that we expect friends of a person to be included in the above exampl
 
 #### `Error`
 
-The final generic type of a `JSONAPIDocument` is the `Error`. You should create an error type that can decode all the errors you expect your `JSONAPIDocument` to be able to decode. As prescribed by the JSON API Spec, these errors will be found in the root document member `errors`.
+The final generic type of a `JSONAPIDocument` is the `Error`. You should create an error type that can decode all the errors you expect your `JSONAPIDocument` to be able to decode. As prescribed by the **SPEC**, these errors will be found in the root document member `errors`.
 
 ### `RawIdType`
 
@@ -357,4 +373,4 @@ extension String: CreatableRawIdType {
 ```
 
 # JSONAPITestLib
-JSONAPI comes with a test library to help you test your JSON API integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your JSONAPI structures that are not caught by Swift's type system. You can see the JSONAPITestLib in action in the Playground included with the JSONAPI repository.
+The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITestLib` in action in the Playground included with the `JSONAPI` repository.
