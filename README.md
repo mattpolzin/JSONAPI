@@ -90,22 +90,16 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
-### Strict Decoding/Encoding Settings
-- [ ] Error (potentially while still encoding/decoding successfully) if an included entity is not related to a primary entity (Turned off by default).
-
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
-- [x] Support ability to distinguish between `Attributes` fields that are optional (i.e. the key might not be there) and `Attributes` values that are optional (i.e. the key is guaranteed to be there but it might be `null`).
-- [x] Fix `ToOneRelationship` so that it is possible to specify an optional relationship where the value is `null` rather than the key being omitted.
-- [x] Conform to `CustomStringConvertible`
-- [x] More tests around failing to decode improperly structured JSON (not bad JSON, but JSON that is not to spec)
-- [ ] Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources????
-- [x] For `NoIncludes`, do not even loop over the "included" JSON API section if it exists.
-- [ ] Property-based testing (using `SwiftCheck`)
-- [x] Roll my own `Result` or find an alternative that doesn't use `Foundation`.
+- [x] Support validation on `Attributes`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
-- [x] Make it easier to construct `Attributes` and `Relationships` values in test cases (literal expressibility).
-- [x] Make `TransformedAttribute` a Functor.
+
+### Potential Improvements
+- [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
+- [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
+- [ ] Property-based testing (using `SwiftCheck`).
+- [ ] Error or warning if an included entity is not related to a primary entity or another included entity (Turned off or at least not throwing by default).
 
 ## Usage
 
