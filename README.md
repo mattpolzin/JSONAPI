@@ -85,15 +85,16 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] `href`
 - [x] `meta`
 
-### Entity Validator (using reflection)
-- [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
-- [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
-- [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
-
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support validation on `Attributes`.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
+
+### JSONAPITestLib
+#### Entity Validator
+- [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
+- [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
+- [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
 ### Potential Improvements
 - [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
