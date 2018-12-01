@@ -58,6 +58,6 @@ func process<T: JSONAPIDocument>(document: T) {
 	guard case let .data(body) = document.body else {
 		return
 	}
-	let x: T.BodyData = body
+	let x: T.Body.Data = body
 }
 process(document: peopleResponse)
