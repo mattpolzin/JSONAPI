@@ -11,6 +11,15 @@ let single_document_null = """
 }
 """.data(using: .utf8)!
 
+let single_document_null_with_api_description = """
+{
+	"data": null,
+	"jsonapi": {
+		"version": "1.0"
+	}
+}
+""".data(using: .utf8)!
+
 let single_document_no_includes = """
 {
 	"data": {

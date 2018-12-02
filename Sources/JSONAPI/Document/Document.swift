@@ -10,9 +10,10 @@ public protocol JSONAPIDocument: Codable, Equatable {
 	associatedtype MetaType: JSONAPI.Meta
 	associatedtype LinksType: JSONAPI.Links
 	associatedtype IncludeType: JSONAPI.Include
+	associatedtype APIDescription: APIDescriptionType
 	associatedtype Error: JSONAPIError
 
-	typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, Error>.Body
+	typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, APIDescription, Error>.Body
 
 	var body: Body { get }
 }
@@ -24,11 +25,19 @@ public protocol JSONAPIDocument: Codable, Equatable {
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, Error: JSONAPIError>: JSONAPIDocument {
+public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: JSONAPIDocument {
 	public typealias Include = IncludeType
 
+	/// The JSON API Spec calls this the JSON:API Object. It contains version
+	/// and metadata information about the API itself.
+	public let apiDescription: APIDescription
+
+	/// The Body of the Document. This body is either one or more errors
+	/// with links and metadata attempted to parse but not guaranteed or
+	/// it is a successful data struct containing all the primary and
+	/// included resources, the metadata, and the links that this
+	/// document type specifies.
 	public let body: Body
-//	public let jsonApi: APIDescription?
 	
 	public enum Body: Equatable {
 		case errors([Error], meta: MetaType?, links: LinksType?)
@@ -91,54 +100,86 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 		}
 	}
 
-	public init(errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
+	public init(apiDescription: APIDescription, errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
 		body = .errors(errors, meta: meta, links: links)
+		self.apiDescription = apiDescription
 	}
 
-	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
+		self.apiDescription = apiDescription
 	}
 }
 
 extension Document where IncludeType == NoIncludes {
-	public init(body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
-		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: links))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
+		self.init(apiDescription: apiDescription, body: body, includes: .none, meta: meta, links: links)
 	}
 }
 
 extension Document where MetaType == NoMetadata {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
-		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: links))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
+		self.init(apiDescription: apiDescription, body: body, includes: includes, meta: .none, links: links)
 	}
 }
 
 extension Document where LinksType == NoLinks {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType) {
-		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: .none))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType) {
+		self.init(apiDescription: apiDescription, body: body, includes: includes, meta: meta, links: .none)
+	}
+}
+
+extension Document where APIDescription == NoAPIDescription {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+		self.init(apiDescription: .none, body: body, includes: includes, meta: meta, links: links)
 	}
 }
 
 extension Document where IncludeType == NoIncludes, LinksType == NoLinks {
-	public init(body: PrimaryResourceBody, meta: MetaType) {
-		self.body = .data(.init(primary: body, includes: .none, meta: meta, links: .none))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType) {
+		self.init(apiDescription: apiDescription, body: body, meta: meta, links: .none)
 	}
 }
 
 extension Document where IncludeType == NoIncludes, MetaType == NoMetadata {
-	public init(body: PrimaryResourceBody, links: LinksType) {
-		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: links))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, links: LinksType) {
+		self.init(apiDescription: apiDescription, body: body, meta: .none, links: links)
+	}
+}
+
+extension Document where IncludeType == NoIncludes, APIDescription == NoAPIDescription {
+	public init(body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
+		self.init(apiDescription: .none, body: body, meta: meta, links: links)
 	}
 }
 
 extension Document where MetaType == NoMetadata, LinksType == NoLinks {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>) {
-		self.body = .data(.init(primary: body, includes: includes, meta: .none, links: .none))
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>) {
+		self.init(apiDescription: apiDescription, body: body, includes: includes, links: .none)
+	}
+}
+
+extension Document where MetaType == NoMetadata, APIDescription == NoAPIDescription {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
+		self.init(apiDescription: .none, body: body, includes: includes, links: links)
 	}
 }
 
 extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
+	public init(apiDescription: APIDescription, body: PrimaryResourceBody) {
+		self.init(apiDescription: apiDescription, body: body, includes: .none)
+	}
+}
+
+extension Document where MetaType == NoMetadata, LinksType == NoLinks, APIDescription == NoAPIDescription {
+	public init(body: PrimaryResourceBody, includes: Includes<Include>) {
+		self.init(apiDescription: .none, body: body, includes: includes)
+	}
+}
+
+extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks, APIDescription == NoAPIDescription {
 	public init(body: PrimaryResourceBody) {
-		self.body = .data(.init(primary: body, includes: .none, meta: .none, links: .none))
+		self.init(apiDescription: .none, body: body)
 	}
 }
 
@@ -154,6 +195,12 @@ extension Document {
 	
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: RootCodingKeys.self)
+
+		if let noData = NoAPIDescription() as? APIDescription {
+			apiDescription = noData
+		} else {
+			apiDescription = try container.decode(APIDescription.self, forKey: .jsonapi)
+		}
 
 		let errors = try container.decodeIfPresent([Error].self, forKey: .errors)
 
@@ -241,6 +288,10 @@ extension Document {
 			if LinksType.self != NoLinks.self {
 				try container.encode(data.links, forKey: .links)
 			}
+		}
+
+		if APIDescription.self != NoAPIDescription.self {
+			try container.encode(apiDescription, forKey: .jsonapi)
 		}
 	}
 }

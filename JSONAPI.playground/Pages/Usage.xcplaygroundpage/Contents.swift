@@ -11,7 +11,7 @@ Please enjoy these examples, but allow me the forced casting and the lack of err
 // MARK: - Create a request or response body with one Dog in it
 let dogFromCode = try! Dog(name: "Buddy", owner: nil)
 
-typealias SingleDogDocument = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>
+typealias SingleDogDocument = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, NoJSONAPIDescription, UnknownJSONAPIError>
 
 let singleDogDocument = SingleDogDocument(body: SingleResourceBody(entity: dogFromCode))
 
@@ -27,7 +27,7 @@ let dogs = try! [Dog(name: "Buddy", owner: personIds[0]), Dog(name: "Joy", owner
 let houses = [House(), House()]
 let people = try! [Person(id: personIds[0], name: ["Gary", "Doe"], favoriteColor: "Orange-Red", friends: [], dogs: [dogs[0], dogs[1]], home: houses[0]), Person(id: personIds[1], name: ["Elise", "Joy"], favoriteColor: "Red", friends: [], dogs: [dogs[2]], home: houses[1])]
 
-typealias BatchPeopleDocument = JSONAPI.Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include2<Dog, House>, UnknownJSONAPIError>
+typealias BatchPeopleDocument = JSONAPI.Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include2<Dog, House>, NoJSONAPIDescription, UnknownJSONAPIError>
 
 let includes = dogs.map { BatchPeopleDocument.Include($0) } + houses.map { BatchPeopleDocument.Include($0) }
 let batchPeopleDocument = BatchPeopleDocument(body: .init(entities: people), includes: .init(values: includes))
