@@ -71,6 +71,8 @@ extension DocumentTests {
         ("test_singleDocumentNonOptionalFailsOnNull", test_singleDocumentNonOptionalFailsOnNull),
         ("test_singleDocumentNull", test_singleDocumentNull),
         ("test_singleDocumentNull_encode", test_singleDocumentNull_encode),
+        ("test_singleDocumentNullWithAPIDescription", test_singleDocumentNullWithAPIDescription),
+        ("test_singleDocumentNullWithAPIDescription_encode", test_singleDocumentNullWithAPIDescription_encode),
         ("test_singleDocumentSomeIncludes", test_singleDocumentSomeIncludes),
         ("test_singleDocumentSomeIncludes_encode", test_singleDocumentSomeIncludes_encode),
         ("test_singleDocumentSomeIncludesWithMetadata", test_singleDocumentSomeIncludesWithMetadata),
