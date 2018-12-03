@@ -12,7 +12,7 @@ public protocol APIDescriptionType: Codable, Equatable {
 
 /// This is what the JSON API Spec calls the "JSON:API Object"
 public struct APIDescription<Meta: JSONAPI.Meta>: APIDescriptionType {
-	public let version: String?
+	public let version: String
 	public let meta: Meta
 }
 
@@ -35,7 +35,8 @@ extension APIDescription {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
-		version = try container.decode(String?.self, forKey: .version)
+		// The spec says that if a version is not specified, it should be assumed to be at least 1.0
+		version = (try? container.decode(String.self, forKey: .version)) ?? "1.0"
 
 		if let metaVal = NoMetadata() as? Meta {
 			meta = metaVal

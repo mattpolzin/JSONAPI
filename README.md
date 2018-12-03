@@ -33,39 +33,13 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ## Project Status
 
-### Decoding
+### Encoding/Decoding
 #### Document
 - [x] `data`
 - [x] `included`
 - [x] `errors`
 - [x] `meta`
-- [ ] `jsonapi`
-- [x] `links`
-
-#### Resource Object
-- [x] `id`
-- [x] `type`
-- [x] `attributes`
-- [x] `relationships`
-- [ ] `links`
-- [ ] `meta`
-
-#### Relationship Object
-- [x] `data`
-- [ ] `links`
-- [ ] `meta`
-
-#### Links Object
-- [x] `href`
-- [x] `meta`
-
-### Encoding
-#### Document
-- [x] `data`
-- [x] `included`
-- [x] `errors`
-- [x] `meta`
-- [ ] `jsonapi`
+- [x] `jsonapi`
 - [x] `links`
 
 #### Resource Object
@@ -345,6 +319,16 @@ The fourth generic type of a `JSONAPIDocument` is an `Include`. This type contro
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
 
 To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<Person>` instead of `NoIncludes`.
+
+#### `APIDescriptionType`
+
+The fifth generic type of a `JSONAPIDocument` is an `APIDescription`. The type represents the "JSON:API Object" described by the **SPEC**. This type describes the highest version of the **SPEC** supported and can carry additional metadata to describe the API.
+
+You can specify this is not part of the document by using the `NoAPIDescription` type.
+
+You can describe the API by a version with no metadata by using `APIDescription<NoMetadata>`.
+
+You can supply any `JSONAPI.Meta` type as the metadata type of the API description.
 
 #### `Error`
 

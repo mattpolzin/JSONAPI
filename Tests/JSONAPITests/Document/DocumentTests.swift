@@ -52,10 +52,21 @@ class DocumentTests: XCTestCase {
 		XCTAssertThrowsError(try JSONDecoder().decode(Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   from: single_document_null))
 	}
+
+	func test_singleDocumentNullFailsWithNoAPIDescription() {
+		XCTAssertThrowsError(try JSONDecoder().decode(Document<SingleResourceBody<Article?>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+													  from: single_document_null))
+	}
 }
 
 // MARK: - Error Document Tests
 extension DocumentTests {
+
+	func test_errorDocumentFailsWithNoAPIDescription() {
+		XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+													  from: error_document_no_metadata))
+	}
+
 	func test_unknownErrorDocumentNoMeta() {
 		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: error_document_no_metadata)
@@ -81,6 +92,32 @@ extension DocumentTests {
 								  data: error_document_no_metadata)
 	}
 
+	func test_unknownErrorDocumentNoMetaWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_no_metadata_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.0[0], .unknown)
+		XCTAssertEqual(errors.meta, NoMetadata())
+	}
+
+	func test_unknownErrorDocumentNoMetaWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: error_document_no_metadata_with_api_description)
+	}
+
 	func test_unknownErrorDocumentMissingMeta() {
 		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata)
 
@@ -102,6 +139,30 @@ extension DocumentTests {
 
 	func test_unknownErrorDocumentMissingMeta_encode() {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata)
+	}
+
+	func test_unknownErrorDocumentMissingMetaWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.meta)
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.0[0], .unknown)
+		XCTAssertNil(errors.meta)
+	}
+
+	func test_unknownErrorDocumentMissingMetaWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: error_document_no_metadata_with_api_description)
 	}
 
 	func test_errorDocumentNoMeta() {
@@ -129,6 +190,32 @@ extension DocumentTests {
 							   data: error_document_no_metadata)
 	}
 
+	func test_errorDocumentNoMetaWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, TestError>.self,
+							   data: error_document_no_metadata_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.0[0], TestError.basic(.init(code: 1, description: "Boooo!")))
+		XCTAssertEqual(errors.meta, NoMetadata())
+	}
+
+	func test_errorDocumentNoMetaWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, TestError>.self,
+								  data: error_document_no_metadata_with_api_description)
+	}
+
 	func test_unknownErrorDocumentWithMeta() {
 		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: error_document_with_metadata)
@@ -151,6 +238,31 @@ extension DocumentTests {
 	func test_unknownErrorDocumentWithMeta_encode() {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: error_document_with_metadata)
+	}
+
+	func test_unknownErrorDocumentWithMetaWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_with_metadata_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+	}
+
+	func test_unknownErrorDocumentWithMetaWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: error_document_with_metadata_with_api_description)
 	}
 
 	func test_unknownErrorDocumentWithMetaWithLinks() {
@@ -181,6 +293,35 @@ extension DocumentTests {
 								  data: error_document_with_metadata_with_links)
 	}
 
+	func test_unknownErrorDocumentWithMetaWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_with_metadata_with_links_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(errors.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+	}
+
+	func test_unknownErrorDocumentWithMetaWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: error_document_with_metadata_with_links_with_api_description)
+	}
+
 	func test_unknownErrorDocumentWithLinks() {
 		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: error_document_with_links)
@@ -207,6 +348,33 @@ extension DocumentTests {
 								  data: error_document_with_links)
 	}
 
+	func test_unknownErrorDocumentWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_with_links_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+	}
+
+	func test_unknownErrorDocumentWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: error_document_with_links_with_api_description)
+	}
+
 	func test_unknownErrorDocumentMissingLinks() {
 		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: error_document_no_metadata)
@@ -229,10 +397,38 @@ extension DocumentTests {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: error_document_no_metadata)
 	}
+
+	func test_unknownErrorDocumentMissingLinksWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_no_metadata_with_api_description)
+
+		XCTAssertTrue(document.body.isError)
+		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.includes)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+		guard case let .errors(errors) = document.body else {
+			XCTFail("Needed body to be in errors case but it was not.")
+			return
+		}
+
+		XCTAssertEqual(errors.0.count, 1)
+		XCTAssertEqual(errors.0, document.body.errors)
+		XCTAssertNil(document.body.links)
+	}
+
+	func test_unknownErrorDocumentMissingLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: error_document_no_metadata_with_api_description)
+	}
 }
 
 // MARK: - Meta Document Tests
 extension DocumentTests {
+	func test_metaDataDocumentFailsIfMissingAPIDescription() {
+		XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, from: metadata_document))
+	}
+
 	func test_metaDataDocument() {
 		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: metadata_document)
@@ -247,6 +443,23 @@ extension DocumentTests {
 	func test_metaDataDocument_encode() {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: metadata_document)
+	}
+
+	func test_metaDataDocumentWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: metadata_document_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertEqual(document.body.meta?.total, 100)
+		XCTAssertEqual(document.body.meta?.limit, 50)
+		XCTAssertEqual(document.body.meta?.offset, 0)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_metaDataDocumentWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: metadata_document_with_api_description)
 	}
 
 	func test_metaDataDocumentWithLinks() {
@@ -269,6 +482,27 @@ extension DocumentTests {
 							   data: metadata_document_with_links)
 	}
 
+	func test_metaDataDocumentWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: metadata_document_with_links_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertEqual(document.body.meta?.total, 100)
+		XCTAssertEqual(document.body.meta?.limit, 50)
+		XCTAssertEqual(document.body.meta?.offset, 0)
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_metaDataDocumentWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<NoResourceBody, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: metadata_document_with_links_with_api_description)
+	}
+
 	func test_metaDocumentMissingMeta() {
 		XCTAssertThrowsError(try JSONDecoder().decode(Document<NoResourceBody, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, from: metadata_document_missing_metadata))
 
@@ -279,6 +513,10 @@ extension DocumentTests {
 
 // MARK: Single Document Tests
 extension DocumentTests {
+	func test_singleDocumentNoIncludesMissingAPIDescription() {
+		XCTAssertThrowsError(try JSONDecoder().decode(Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, from: single_document_no_includes))
+	}
+
 	func test_singleDocumentNoIncludes() {
 		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes)
@@ -294,6 +532,24 @@ extension DocumentTests {
 	func test_singleDocumentNoIncludes_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes)
+	}
+
+	func test_singleDocumentNoIncludesWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentNoIncludesWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_no_includes_with_api_description)
 	}
 
 	func test_singleDocumentNoIncludesOptionalNotNull() {
@@ -313,6 +569,24 @@ extension DocumentTests {
 								  data: single_document_no_includes)
 	}
 
+	func test_singleDocumentNoIncludesOptionalNotNullWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article?>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentNoIncludesOptionalNotNullWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article?>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_no_includes_with_api_description)
+	}
+
 	func test_singleDocumentNoIncludesWithMetadata() {
 		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_metadata)
@@ -328,6 +602,24 @@ extension DocumentTests {
 	func test_singleDocumentNoIncludesWithMetadata_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata)
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes_with_metadata_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_no_includes_with_metadata_with_api_description)
 	}
 
 	func test_singleDocumentNoIncludesWithLinks() {
@@ -352,6 +644,29 @@ extension DocumentTests {
 								  data: single_document_no_includes_with_links)
 	}
 
+	func test_singleDocumentNoIncludesWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes_with_links_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+	}
+
+	func test_singleDocumentNoIncludesWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, NoMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_no_includes_with_links_with_api_description)
+	}
+
 	func test_singleDocumentNoIncludesWithMetadataWithLinks() {
 		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_metadata_with_links)
@@ -372,6 +687,29 @@ extension DocumentTests {
 	func test_singleDocumentNoIncludesWithMetadataWithLinks_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: single_document_no_includes_with_metadata_with_links)
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes_with_metadata_with_links_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+
+	}
+
+	func test_singleDocumentNoIncludesWithMetadataWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_no_includes_with_metadata_with_links_with_api_description)
 	}
 
 	func test_singleDocumentNoIncludesWithMetadataMissingLinks() {
@@ -400,6 +738,25 @@ extension DocumentTests {
 							   data: single_document_some_includes)
 	}
 
+	func test_singleDocumentSomeIncludesWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_some_includes_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentSomeIncludesWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_some_includes_with_api_description)
+	}
+
 	func test_singleDocumentSomeIncludesWithMetadata() {
 		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes_with_metadata)
@@ -417,6 +774,26 @@ extension DocumentTests {
 	func test_singleDocumentSomeIncludesWithMetadata_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata)
+	}
+
+	func test_singleDocumentSomeIncludesWithMetadataWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_some_includes_with_metadata_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentSomeIncludesWithMetadataWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_some_includes_with_metadata_with_api_description)
 	}
 
 	func test_singleDocumentNoIncludesWithSomeIncludesWithMetadataWithLinks() {
@@ -441,6 +818,30 @@ extension DocumentTests {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: single_document_some_includes_with_metadata_with_links)
 	}
+
+	func test_singleDocumentNoIncludesWithSomeIncludesWithMetadataWithLinksWithAPIDescription() {
+		let document = decoded(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_some_includes_with_metadata_with_links_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
+		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
+		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
+		XCTAssertEqual(document.body.links?.link2.url, "https://othersite.com")
+		XCTAssertEqual(document.body.links?.link2.meta, TestLinks.TestMetadata(hello: "world"))
+		XCTAssertEqual(document.body.includes?.count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocumentNoIncludesWithSomeIncludesMetadataWithLinksWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, TestPageMetadata, TestLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: single_document_some_includes_with_metadata_with_links_with_api_description)
+	}
 }
 
 // MARK: Poly PrimaryResource Tests
@@ -455,6 +856,19 @@ extension DocumentTests {
 
 	func test_singleDocument_PolyPrimaryResource_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes)
+	}
+
+	func test_singleDocument_PolyPrimaryResourceWithAPIDescription() {
+		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
+		let document = decoded(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes_with_api_description)
+
+		XCTAssertEqual(document.body.primaryData?.value[Article.self], article)
+		XCTAssertNil(document.body.primaryData?.value[Author.self])
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_singleDocument_PolyPrimaryResourceWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes_with_api_description)
 	}
 }
 
@@ -478,6 +892,26 @@ extension DocumentTests {
 		test_DecodeEncodeEquality(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: many_document_no_includes)
 	}
+
+	func test_manyDocumentNoIncludesWithAPIDescription() {
+		let document = decoded(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: many_document_no_includes_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.values.count, 3)
+		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertEqual(document.body.includes?.count, 0)
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_manyDocumentNoIncludesWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: many_document_no_includes_with_api_description)
+	}
 	
 	func test_manyDocumentSomeIncludes() {
 		let document = decoded(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
@@ -500,6 +934,30 @@ extension DocumentTests {
 	func test_manyDocumentSomeIncludes_encode() {
 		test_DecodeEncodeEquality(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: many_document_some_includes)
+	}
+
+	func test_manyDocumentSomeIncludesWithAPIDescription() {
+		let document = decoded(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+							   data: many_document_some_includes_with_api_description)
+
+		XCTAssertFalse(document.body.isError)
+		XCTAssertNil(document.body.errors)
+		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertEqual(document.body.primaryData?.values.count, 3)
+		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertEqual(document.body.includes?.count, 3)
+		XCTAssertEqual(document.body.includes?[Author.self].count, 3)
+		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
+		XCTAssertEqual(document.body.includes?[Author.self][1].id.rawValue, "22")
+		XCTAssertEqual(document.body.includes?[Author.self][2].id.rawValue, "11")
+		XCTAssertEqual(document.apiDescription.version, "1.0")
+	}
+
+	func test_manyDocumentSomeIncludesWithAPIDescription_encode() {
+		test_DecodeEncodeEquality(type: Document<ManyResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, TestAPIDescription, UnknownJSONAPIError>.self,
+								  data: many_document_some_includes_with_api_description)
 	}
 }
 
