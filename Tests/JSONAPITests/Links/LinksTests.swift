@@ -13,11 +13,24 @@ class LinksTests: XCTestCase {
 		let links = decoded(type: LinksTests.Links.self, data: link_without_meta)
 
 		XCTAssertEqual(links.link.url, "https://website.com/path/file")
+		XCTAssertEqual(links.optionalLink?.url, "https://theweb.com/not")
 		XCTAssertEqual(links.link.meta, NoMetadata())
 	}
 
 	func test_linkWithNoMeta_encode() {
 		test_DecodeEncodeEquality(type: LinksTests.Links.self, data: link_without_meta)
+	}
+
+	func test_linkWithNoMetaWithoutOptionalLink() {
+		let links = decoded(type: LinksTests.Links.self, data: link_without_meta_without_optional_link)
+
+		XCTAssertEqual(links.link.url, "https://website.com/path/file")
+		XCTAssertNil(links.optionalLink)
+		XCTAssertEqual(links.link.meta, NoMetadata())
+	}
+
+	func test_linkWithNoMetaWithoutOptionalLink_encode() {
+		test_DecodeEncodeEquality(type: LinksTests.Links.self, data: link_without_meta_without_optional_link)
 	}
 
 	func test_linkWithNullMetadata() {
@@ -60,6 +73,7 @@ extension LinksTests {
 
 	struct Links: JSONAPI.Links {
 		let link: Link<LinksTests.URL, NoMetadata>
+		let optionalLink: Link<LinksTests.URL, NoMetadata>?
 	}
 
 	struct Metadata: JSONAPI.Meta {

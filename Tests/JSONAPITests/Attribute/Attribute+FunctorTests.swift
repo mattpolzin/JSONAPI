@@ -60,7 +60,7 @@ extension Attribute_FunctorTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	typealias TestType = Entity<TestTypeDescription>
+	typealias TestType = BasicEntity<TestTypeDescription>
 
 	enum DoubleToString: Transformer {
 		public static func transform(_ from: Double) -> String {

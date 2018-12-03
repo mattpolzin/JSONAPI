@@ -137,7 +137,7 @@ extension IncludedTests {
 		}
 	}
 
-	typealias TestEntity = Entity<TestEntityType>
+	typealias TestEntity = BasicEntity<TestEntityType>
 
 	enum TestEntityType2: EntityDescription {
 
@@ -153,7 +153,7 @@ extension IncludedTests {
 		}
 	}
 
-	typealias TestEntity2 = Entity<TestEntityType2>
+	typealias TestEntity2 = BasicEntity<TestEntityType2>
 
 	enum TestEntityType3: EntityDescription {
 
@@ -167,7 +167,7 @@ extension IncludedTests {
 		}
 	}
 
-	typealias TestEntity3 = Entity<TestEntityType3>
+	typealias TestEntity3 = BasicEntity<TestEntityType3>
 
 	enum TestEntityType4: EntityDescription {
 
@@ -178,7 +178,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity4" }
 	}
 
-	typealias TestEntity4 = Entity<TestEntityType4>
+	typealias TestEntity4 = BasicEntity<TestEntityType4>
 
 	enum TestEntityType5: EntityDescription {
 
@@ -189,7 +189,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity5" }
 	}
 
-	typealias TestEntity5 = Entity<TestEntityType5>
+	typealias TestEntity5 = BasicEntity<TestEntityType5>
 
 	enum TestEntityType6: EntityDescription {
 
@@ -202,5 +202,5 @@ extension IncludedTests {
 		}
 	}
 
-	typealias TestEntity6 = Entity<TestEntityType6>
+	typealias TestEntity6 = BasicEntity<TestEntityType6>
 }

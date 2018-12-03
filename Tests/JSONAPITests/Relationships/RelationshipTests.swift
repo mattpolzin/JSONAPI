@@ -81,5 +81,5 @@ extension RelationshipTests {
 		public static var type: String { return "test_entity1" }
 	}
 
-	typealias TestEntity1 = Entity<TestEntityType1>
+	typealias TestEntity1 = BasicEntity<TestEntityType1>
 }

@@ -83,8 +83,8 @@ public extension PolyProxyTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias UserA = Entity<UserDescription1>
-	public typealias UserB = Entity<UserDescription2>
+	public typealias UserA = BasicEntity<UserDescription1>
+	public typealias UserB = BasicEntity<UserDescription2>
 
 	public typealias User = Poly2<UserA, UserB>
 }

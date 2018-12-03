@@ -970,7 +970,7 @@ extension DocumentTests {
 		typealias Relationships = NoRelationships
 	}
 
-	typealias Author = Entity<AuthorType>
+	typealias Author = BasicEntity<AuthorType>
 	
 	enum ArticleType: EntityDescription {
 		static var type: String { return "articles" }
@@ -982,7 +982,7 @@ extension DocumentTests {
 		}
 	}
 	
-	typealias Article = Entity<ArticleType>
+	typealias Article = BasicEntity<ArticleType>
 
 	struct TestPageMetadata: JSONAPI.Meta {
 		let total: Int

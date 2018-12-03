@@ -80,7 +80,7 @@ public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdT
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<Description: JSONAPI.EntityDescription, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
+public struct Entity<Description: JSONAPI.EntityDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
 	/// The `Entity`'s Id. This can be of type `Unidentified` if
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
@@ -92,11 +92,19 @@ public struct Entity<Description: JSONAPI.EntityDescription, EntityRawIdType: JS
 	
 	/// The JSON API compliant relationships of this `Entity`.
 	public let relationships: Description.Relationships
+
+	/// Any additional metadata packaged with the entity.
+	public let meta: MetaType
+
+	/// Links related to the entity.
+	public let links: LinksType
 	
-	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
+	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = id
 		self.attributes = attributes
 		self.relationships = relationships
+		self.meta = meta
+		self.links = links
 	}
 }
 
@@ -113,60 +121,214 @@ extension Entity: CustomStringConvertible {
 
 // MARK: Convenience initializers
 extension Entity where EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = Entity.Id()
 		self.attributes = attributes
 		self.relationships = relationships
+		self.meta = meta
+		self.links = links
 	}
 }
 
 extension Entity where EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = .unidentified
 		self.attributes = attributes
 		self.relationships = relationships
+		self.meta = meta
+		self.links = links
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes {
+	public init(id: Entity.Id, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+		self.init(id: id, attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata {
+	public init(id: Entity.Id, relationships: Description.Relationships, links: LinksType) {
+		self.init(id: id, relationships: relationships, meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, LinksType == NoLinks {
+	public init(id: Entity.Id, relationships: Description.Relationships, meta: MetaType) {
+		self.init(id: id, relationships: relationships, meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(id: Entity.Id, relationships: Description.Relationships) {
-		self.init(id: id, attributes: NoAttributes(), relationships: relationships)
+		self.init(id: id, relationships: relationships, links: .none)
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes, EntityRawIdType: CreatableRawIdType {
+	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+	public init(relationships: Description.Relationships, links: LinksType) {
+		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+	public init(relationships: Description.Relationships, meta: MetaType) {
+		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships) {
-		self.init(attributes: NoAttributes(), relationships: relationships)
+		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: .none)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, EntityRawIdType == Unidentified {
+	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
 	}
 }
 
 extension Entity where Description.Relationships == NoRelationships {
+	public init(id: Entity.Id, attributes: Description.Attributes, meta: MetaType, links: LinksType) {
+		self.init(id: id, attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata {
+	public init(id: Entity.Id, attributes: Description.Attributes, links: LinksType) {
+		self.init(id: id, attributes: attributes, meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks {
+	public init(id: Entity.Id, attributes: Description.Attributes, meta: MetaType) {
+		self.init(id: id, attributes: attributes, meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(id: Entity.Id, attributes: Description.Attributes) {
-		self.init(id: id, attributes: attributes, relationships: NoRelationships())
+		self.init(id: id, attributes: attributes, meta: .none, links: .none)
 	}
 }
 
 extension Entity where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
+	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+	public init(attributes: Description.Attributes, links: LinksType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+	public init(attributes: Description.Attributes, meta: MetaType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes) {
-		self.init(attributes: attributes, relationships: NoRelationships())
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
 extension Entity where Description.Relationships == NoRelationships, EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, links: LinksType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, meta: MetaType) {
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes) {
-		self.init(attributes: attributes, relationships: NoRelationships())
+		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
+	public init(id: Entity.Id, meta: MetaType, links: LinksType) {
+		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata {
+	public init(id: Entity.Id, links: LinksType) {
+		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks {
+	public init(id: Entity.Id, meta: MetaType) {
+		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(id: Entity.Id) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships())
+		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
 extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
+	public init(meta: MetaType, links: LinksType) {
+		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+	public init(links: LinksType) {
+		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+	public init(meta: MetaType) {
+		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
+	}
+}
+
+extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init() {
-		self.init(attributes: NoAttributes(), relationships: NoRelationships())
+		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
+	}
+}
+
+extension Entity where MetaType == NoMetadata {
+	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
+		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: links)
+	}
+}
+
+extension Entity where LinksType == NoLinks {
+	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
+		self.init(id: id, attributes: attributes, relationships: relationships, meta: meta, links: .none)
+	}
+}
+
+extension Entity where MetaType == NoMetadata, LinksType == NoLinks {
+	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
+		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
 }
 
@@ -228,6 +390,8 @@ private enum ResourceObjectCodingKeys: String, CodingKey {
 	case id = "id"
 	case attributes = "attributes"
 	case relationships = "relationships"
+	case meta = "meta"
+	case links = "links"
 }
 
 public extension Entity {
@@ -247,6 +411,14 @@ public extension Entity {
 		if Description.Relationships.self != NoRelationships.self {
 			try container.encode(relationships, forKey: .relationships)
 		}
+
+		if MetaType.self != NoMetadata.self {
+			try container.encode(meta, forKey: .meta)
+		}
+
+		if LinksType.self != NoLinks.self {
+			try container.encode(links, forKey: .links)
+		}
 	}
 
 	public init(from decoder: Decoder) throws {
@@ -265,5 +437,9 @@ public extension Entity {
 		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
 		
 		relationships = try (NoRelationships() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
+
+		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+
+		links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
 	}
 }

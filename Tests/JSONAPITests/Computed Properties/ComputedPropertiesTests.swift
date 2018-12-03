@@ -57,5 +57,5 @@ extension ComputedPropertiesTests {
 		}
 	}
 
-	public typealias TestType = Entity<TestTypeDescription>
+	public typealias TestType = BasicEntity<TestTypeDescription>
 }

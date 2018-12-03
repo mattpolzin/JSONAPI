@@ -7,6 +7,13 @@
 
 let link_without_meta = """
 {
+	"link": "https://website.com/path/file",
+	"optionalLink": "https://theweb.com/not"
+}
+""".data(using: .utf8)!
+
+let link_without_meta_without_optional_link = """
+{
 	"link": "https://website.com/path/file"
 }
 """.data(using: .utf8)!

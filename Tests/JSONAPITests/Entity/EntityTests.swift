@@ -13,14 +13,14 @@ class EntityTests: XCTestCase {
 	
 	func test_relationship_access() {
 		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(other: entity1.pointer)
+		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
 		
 		XCTAssertEqual(entity2.relationships.other, entity1.pointer)
 	}
 	
 	func test_relationship_operator_access() {
 		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(other: entity1.pointer)
+		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
 
 		XCTAssertEqual(entity2 ~> \.other, entity1.id)
 	}
@@ -29,14 +29,14 @@ class EntityTests: XCTestCase {
 		let entity1 = TestEntity1()
 		let entity2 = TestEntity1()
 		let entity4 = TestEntity1()
-		let entity3 = TestEntity3(others: .init(relationships: [entity1.pointer, entity2.pointer, entity4.pointer]))
+		let entity3 = TestEntity3(relationships: .init(others: .init(relationships: [entity1.pointer, entity2.pointer, entity4.pointer])))
 
 		XCTAssertEqual(entity3 ~> \.others, [entity1.id, entity2.id, entity4.id])
 	}
 	
 	func test_relationshipIds() {
 		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(other: entity1.pointer)
+		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
 		
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
@@ -346,7 +346,7 @@ extension EntityTests {
 		typealias Relationships = NoRelationships
 	}
 
-	typealias TestEntity1 = Entity<TestEntityType1>
+	typealias TestEntity1 = BasicEntity<TestEntityType1>
 
 	enum TestEntityType2: EntityDescription {
 		static var type: String { return "second_test_entities"}
@@ -358,7 +358,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity2 = Entity<TestEntityType2>
+	typealias TestEntity2 = BasicEntity<TestEntityType2>
 
 	enum TestEntityType3: EntityDescription {
 		static var type: String { return "third_test_entities"}
@@ -370,7 +370,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity3 = Entity<TestEntityType3>
+	typealias TestEntity3 = BasicEntity<TestEntityType3>
 
 	enum TestEntityType4: EntityDescription {
 		static var type: String { return "fourth_test_entities"}
@@ -386,7 +386,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity4 = Entity<TestEntityType4>
+	typealias TestEntity4 = BasicEntity<TestEntityType4>
 
 	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
@@ -398,7 +398,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity5 = Entity<TestEntityType5>
+	typealias TestEntity5 = BasicEntity<TestEntityType5>
 
 	enum TestEntityType6: EntityDescription {
 		static var type: String { return "sixth_test_entities" }
@@ -412,7 +412,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity6 = Entity<TestEntityType6>
+	typealias TestEntity6 = BasicEntity<TestEntityType6>
 
 	enum TestEntityType7: EntityDescription {
 		static var type: String { return "seventh_test_entities" }
@@ -425,7 +425,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity7 = Entity<TestEntityType7>
+	typealias TestEntity7 = BasicEntity<TestEntityType7>
 
 	enum TestEntityType8: EntityDescription {
 		static var type: String { return "eighth_test_entities" }
@@ -443,7 +443,7 @@ extension EntityTests {
 		}
 	}
 	
-	typealias TestEntity8 = Entity<TestEntityType8>
+	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
 	enum TestEntityType9: EntityDescription {
 		public static var type: String { return "ninth_test_entities" }
@@ -465,7 +465,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity9 = Entity<TestEntityType9>
+	typealias TestEntity9 = BasicEntity<TestEntityType9>
 
 	enum TestEntityType10: EntityDescription {
 		public static var type: String { return "tenth_test_entities" }
@@ -478,7 +478,7 @@ extension EntityTests {
 		}
 	}
 
-	typealias TestEntity10 = Entity<TestEntityType10>
+	typealias TestEntity10 = BasicEntity<TestEntityType10>
 
 	enum TestEntityType11: EntityDescription {
 		public static var type: String { return "eleventh_test_entities" }
@@ -490,7 +490,7 @@ extension EntityTests {
 		typealias Relationships = NoRelationships
 	}
 
-	typealias TestEntity11 = Entity<TestEntityType11>
+	typealias TestEntity11 = BasicEntity<TestEntityType11>
 
 	enum UnidentifiedTestEntityType: EntityDescription {
 		public static var type: String { return "unidentified_test_entities" }
@@ -502,7 +502,7 @@ extension EntityTests {
 		typealias Relationships = NoRelationships
 	}
 
-	typealias UnidentifiedTestEntity = NewEntity<UnidentifiedTestEntityType>
+	typealias UnidentifiedTestEntity = NewEntity<UnidentifiedTestEntityType, NoMetadata, NoLinks>
 
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {
@@ -539,17 +539,5 @@ extension EntityTests {
 			}
 			return from
 		}
-	}
-}
-
-extension Entity where Description == EntityTests.TestEntityType2, EntityRawIdType: CreatableRawIdType {
-	init(other: ToOneRelationship<EntityTests.TestEntity1>) {
-		self.init(relationships: .init(other: other))
-	}
-}
-
-extension Entity where Description == EntityTests.TestEntityType3, EntityRawIdType: CreatableRawIdType {
-	init(others: ToManyRelationship<EntityTests.TestEntity1>) {
-		self.init(relationships: .init(others: others))
 	}
 }

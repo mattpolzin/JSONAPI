@@ -47,7 +47,7 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias OkEntity = Entity<OkDescription>
+	public typealias OkEntity = BasicEntity<OkDescription>
 
 	enum OtherOkDescription: EntityDescription {
 		public static var type: String { return "hmm" }
@@ -56,7 +56,7 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias OtherOkEntity = Entity<OtherOkDescription>
+	public typealias OtherOkEntity = BasicEntity<OtherOkDescription>
 
 	enum EnumAttributesDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -75,7 +75,7 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias EnumAttributesEntity = Entity<EnumAttributesDescription>
+	public typealias EnumAttributesEntity = BasicEntity<EnumAttributesDescription>
 
 	enum EnumRelationshipsDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -94,7 +94,7 @@ extension EntityCheckTests {
 		}
 	}
 
-	public typealias EnumRelationshipsEntity = Entity<EnumRelationshipsDescription>
+	public typealias EnumRelationshipsEntity = BasicEntity<EnumRelationshipsDescription>
 
 	enum BadAttributeDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -107,7 +107,7 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias BadAttributeEntity = Entity<BadAttributeDescription>
+	public typealias BadAttributeEntity = BasicEntity<BadAttributeDescription>
 
 	enum BadRelationshipDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -120,7 +120,7 @@ extension EntityCheckTests {
 		}
 	}
 
-	public typealias BadRelationshipEntity = Entity<BadRelationshipDescription>
+	public typealias BadRelationshipEntity = BasicEntity<BadRelationshipDescription>
 
 	enum OptionalArrayAttributeDescription: EntityDescription {
 		public static var type: String { return "hello" }
@@ -133,5 +133,5 @@ extension EntityCheckTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias OptionalArrayAttributeEntity = Entity<OptionalArrayAttributeDescription>
+	public typealias OptionalArrayAttributeEntity = BasicEntity<OptionalArrayAttributeDescription>
 }

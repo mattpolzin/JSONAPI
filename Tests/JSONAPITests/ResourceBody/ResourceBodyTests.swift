@@ -61,5 +61,5 @@ class ResourceBodyTests: XCTestCase {
 		}
 	}
 
-	typealias Article = Entity<ArticleType>
+	typealias Article = BasicEntity<ArticleType>
 }

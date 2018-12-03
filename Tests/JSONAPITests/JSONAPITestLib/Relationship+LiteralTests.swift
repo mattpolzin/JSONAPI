@@ -34,5 +34,5 @@ extension Relationship_LiteralTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	typealias TestEntity = Entity<TestDescription>
+	typealias TestEntity = BasicEntity<TestDescription>
 }
