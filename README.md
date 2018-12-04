@@ -47,8 +47,8 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] `type`
 - [x] `attributes`
 - [x] `relationships`
-- [ ] `links`
-- [ ] `meta`
+- [x] `links` (untested)
+- [x] `meta` (untested)
 
 #### Relationship Object
 - [x] `data`
@@ -140,30 +140,44 @@ This readme doesn't go into detail on the **SPEC**, but the following *Resource 
 
 Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entities` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entities` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
 
-The `Entity` and `EntityDescription` together embody the rules and properties of a JSON API *Resource Object*.
+The `Entity` and `EntityDescription` together with a `JSONAPI.Meta` type and a `JSONAPI.Links` type embody the rules and properties of a JSON API *Resource Object*.
+
+An `Entity` needs to be specialized on four generic types. The first is the `EntityDescription` described above. The others are a `Meta`, `Links`, and `MaybeRawId`.
+
+#### `Meta`
+
+The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#meta). All `Meta` at any level of a JSON API Document follow the same rules.
+
+#### `Links`
+
+The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#links). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
 
 #### `IdType`
 
-An `Entity` needs to be specialized on two generic types. The first is the `EntityDescription` described above. The second is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, RawIdType>>`.
+ The second is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, RawIdType>>`.
 
 Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers.
 
 A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
 
+#### `MaybeRawId`
+
+`MaybeRawId` is either a `RawIdType` that can be used to uniquely identify `Entities` or it is `Unidentified` which is used to indicate an `Entity` does not have an `Id` (which is useful when a client is requesting that the server create an `Entity` and assign it a new `Id`).
+
 #### Convenient `typealiases`
 
 Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using `typealias`es like the following:
 ```
-public typealias Entity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, String>
+public typealias Entity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, String>
 
-public typealias NewEntity<Description: JSONAPI.EntityDescription> = JSONAPI.Entity<Description, Unidentified>
+public typealias NewEntity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, Unidentified>
 ```
 
 It can also be nice to create a `typealias` for each type of entity you want to work with:
 ```
-typealias Person = Entity<PersonDescription>
+typealias Person = Entity<PersonDescription, NoMetadata, NoLinks>
 
-typealias NewPerson = NewEntity<PersonDescription>
+typealias NewPerson = NewEntity<PersonDescription, NoMetadata, NoLinks>
 ```
 
 Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
@@ -284,7 +298,7 @@ You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody`
 
 #### `MetaType`
 
-The second generic type of a `JSONAPIDocument` is a `Meta`. This structure is entirely open-ended. As an example, the JSON API document could, as an example, contain the following pagination info in its meta entry:
+The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
 ```
 {
 	"meta": {
@@ -308,9 +322,7 @@ You can always use `NoMetadata` if this JSON API feature is not needed.
 
 #### `LinksType`
 
-The third generic type of a `JSONAPIDocument` is a `Links` struct. A `Links` struct must contain only `Link` properties. Each `Link` property can either be a `URL` or a `URL` and some `Meta`.
-
-You can specify `NoLinks` if the document should not contain any links.
+The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#links).
 
 #### `IncludeType`
 
@@ -333,6 +345,18 @@ You can supply any `JSONAPI.Meta` type as the metadata type of the API descripti
 #### `Error`
 
 The final generic type of a `JSONAPIDocument` is the `Error`. You should create an error type that can decode all the errors you expect your `JSONAPIDocument` to be able to decode. As prescribed by the **SPEC**, these errors will be found in the root document member `errors`.
+
+### `Meta`
+
+A `Meta` struct is totally open-ended. It is described by the **SPEC** as a place to put any information that does not fit into the standard JSON API Document structure anywhere else.
+
+You can specify `NoMetadata` if the part of the document being described should not contain any `Meta`.
+
+### `Links`
+
+A `Links` struct must contain only `Link` properties. Each `Link` property can either be a `URL` or a `URL` and some `Meta`. Each part of the document has some suggested common `Links` to include but generally any link can be included.
+
+You can specify `NoLinks` if the part of the document being described should not contain any `Links`.
 
 ### `RawIdType`
 
