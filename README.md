@@ -80,7 +80,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 In this documentation, in order to draw attention to the difference between the `JSONAPI` framework (this Swift library) and the **JSON API Spec** (the specification this library helps you follow), the specification will consistently be referred to below as simply the **SPEC**.
 
-### `EntityDescription`
+### `JSONAPI.EntityDescription`
 
 An `EntityDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
 
@@ -136,7 +136,7 @@ This readme doesn't go into detail on the **SPEC**, but the following *Resource 
 }
 ```
 
-### `Entity`
+### `JSONAPI.Entity`
 
 Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entities` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entities` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
 
@@ -182,7 +182,7 @@ typealias NewPerson = NewEntity<PersonDescription, NoMetadata, NoLinks>
 
 Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
 
-### `Relationships`
+### `JSONAPI.Relationships`
 
 There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of an `EntityDescription`.
 
@@ -201,7 +201,7 @@ typealias Relationships = NoRelationships
 let friendIds: [Person.Identifier] = person ~> \.friends
 ```
 
-### `Attributes`
+### `JSONAPI.Attributes`
 
 The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
 
@@ -271,13 +271,13 @@ public var fullName: Attribute<String> {
 }
 ```
 
-### `JSONAPIDocument`
+### `JSONAPI.Document`
 
-The entirety of a JSON API request or response is encoded or decoded from- or to a `JSONAPIDocument`. As an example, a JSON API response containing one `Person` and no included entities could be decoded as follows:
+The entirety of a JSON API request or response is encoded or decoded from- or to a `Document`. As an example, a JSON API response containing one `Person` and no included entities could be decoded as follows:
 ```
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPIDocument<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self
+let responseStructure = JSONAPI.Document<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```
