@@ -175,6 +175,12 @@ extension EntityTests {
         ("test_EntitySomeRelationshipsNoAttributes_encode", test_EntitySomeRelationshipsNoAttributes_encode),
         ("test_EntitySomeRelationshipsSomeAttributes", test_EntitySomeRelationshipsSomeAttributes),
         ("test_EntitySomeRelationshipsSomeAttributes_encode", test_EntitySomeRelationshipsSomeAttributes_encode),
+        ("test_EntitySomeRelationshipsSomeAttributesWithLinks", test_EntitySomeRelationshipsSomeAttributesWithLinks),
+        ("test_EntitySomeRelationshipsSomeAttributesWithLinks_encode", test_EntitySomeRelationshipsSomeAttributesWithLinks_encode),
+        ("test_EntitySomeRelationshipsSomeAttributesWithMeta", test_EntitySomeRelationshipsSomeAttributesWithMeta),
+        ("test_EntitySomeRelationshipsSomeAttributesWithMeta_encode", test_EntitySomeRelationshipsSomeAttributesWithMeta_encode),
+        ("test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks", test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks),
+        ("test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_encode", test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_encode),
         ("test_initialization", test_initialization),
         ("test_IntOver10_encode", test_IntOver10_encode),
         ("test_IntOver10_failure", test_IntOver10_failure),
@@ -199,6 +205,12 @@ extension EntityTests {
         ("test_UnidentifiedEntity_encode", test_UnidentifiedEntity_encode),
         ("test_UnidentifiedEntityWithAttributes", test_UnidentifiedEntityWithAttributes),
         ("test_UnidentifiedEntityWithAttributes_encode", test_UnidentifiedEntityWithAttributes_encode),
+        ("test_UnidentifiedEntityWithAttributesAndLinks", test_UnidentifiedEntityWithAttributesAndLinks),
+        ("test_UnidentifiedEntityWithAttributesAndLinks_encode", test_UnidentifiedEntityWithAttributesAndLinks_encode),
+        ("test_UnidentifiedEntityWithAttributesAndMeta", test_UnidentifiedEntityWithAttributesAndMeta),
+        ("test_UnidentifiedEntityWithAttributesAndMeta_encode", test_UnidentifiedEntityWithAttributesAndMeta_encode),
+        ("test_UnidentifiedEntityWithAttributesAndMetaAndLinks", test_UnidentifiedEntityWithAttributesAndMetaAndLinks),
+        ("test_UnidentifiedEntityWithAttributesAndMetaAndLinks_encode", test_UnidentifiedEntityWithAttributesAndMetaAndLinks_encode),
     ]
 }
 
@@ -238,6 +250,8 @@ extension LinksTests {
         ("test_linkWithMetadata_encode", test_linkWithMetadata_encode),
         ("test_linkWithNoMeta", test_linkWithNoMeta),
         ("test_linkWithNoMeta_encode", test_linkWithNoMeta_encode),
+        ("test_linkWithNoMetaWithoutOptionalLink", test_linkWithNoMetaWithoutOptionalLink),
+        ("test_linkWithNoMetaWithoutOptionalLink_encode", test_linkWithNoMetaWithoutOptionalLink_encode),
         ("test_linkWithNullMetadata", test_linkWithNullMetadata),
         ("test_linkWithNullMetadata_encode", test_linkWithNullMetadata_encode),
     ]
