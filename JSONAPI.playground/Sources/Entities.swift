@@ -24,7 +24,7 @@ extension String: CreatableRawIdType {
 }
 
 // MARK: - Entity typealias for convenience
-public typealias ExampleEntity<Description: EntityDescription> = Entity<Description, String>
+public typealias ExampleEntity<Description: EntityDescription> = Entity<Description, NoMetadata, NoLinks, String>
 
 // MARK: - A few resource objects (entities)
 public enum PersonDescription: EntityDescription {
@@ -60,7 +60,7 @@ public enum PersonDescription: EntityDescription {
 
 public typealias Person = ExampleEntity<PersonDescription>
 
-public extension Entity where Description == PersonDescription, EntityRawIdType == String {
+public extension Entity where Description == PersonDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	public init(id: Person.Id? = nil,name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
 		self = try Person(id: id ?? Person.Id(), attributes: .init(name: .init(rawValue: name), favoriteColor: .init(rawValue: favoriteColor)), relationships: .init(friends: .init(entities: friends), dogs: .init(entities: dogs), home: .init(entity: home)))
 	}
@@ -89,7 +89,7 @@ public enum DogDescription: EntityDescription {
 
 public typealias Dog = ExampleEntity<DogDescription>
 
-public extension Entity where Description == DogDescription, EntityRawIdType == String {
+public extension Entity where Description == DogDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	public init(name: String, owner: Person?) throws {
 		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: DogDescription.Relationships(owner: .init(entity: owner)))
 	}
