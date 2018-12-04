@@ -57,6 +57,83 @@ let entity_some_relationships_some_attributes = """
 }
 """.data(using: .utf8)!
 
+let entity_some_relationships_some_attributes_with_meta = """
+{
+	"id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
+	"type": "fourth_test_entities",
+	"attributes": {
+		"word": "coolio",
+		"number": 992299,
+		"array": [12.3, 4, 0.1]
+	},
+	"relationships": {
+		"other": {
+			"data": {
+				"type": "second_test_entities",
+				"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+			}
+		}
+	},
+	"meta": {
+		"x": "world",
+		"y": 5
+	},
+	"links": {
+		"link1": "https://image.com/image.png"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_some_relationships_some_attributes_with_links = """
+{
+	"id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
+	"type": "fourth_test_entities",
+	"attributes": {
+		"word": "coolio",
+		"number": 992299,
+		"array": [12.3, 4, 0.1]
+	},
+	"relationships": {
+		"other": {
+			"data": {
+				"type": "second_test_entities",
+				"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+			}
+		}
+	},
+	"links": {
+		"link1": "https://image.com/image.png"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_some_relationships_some_attributes_with_meta_and_links = """
+{
+	"id": "90F03B69-4DF1-467F-B52E-B0C9E44FC333",
+	"type": "fourth_test_entities",
+	"attributes": {
+		"word": "coolio",
+		"number": 992299,
+		"array": [12.3, 4, 0.1]
+	},
+	"relationships": {
+		"other": {
+			"data": {
+				"type": "second_test_entities",
+				"id": "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"
+			}
+		}
+	},
+	"meta": {
+		"x": "world",
+		"y": 5
+	},
+	"links": {
+		"link1": "https://image.com/image.png"
+	}
+}
+""".data(using: .utf8)!
+
 let entity_one_omitted_attribute = """
 {
 	"id": "1",
@@ -238,6 +315,47 @@ let entity_unidentified_with_attributes = """
 	"type": "unidentified_test_entities",
 	"attributes": {
 		"me": "unknown"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_unidentified_with_attributes_and_meta = """
+{
+	"type": "unidentified_test_entities",
+	"attributes": {
+		"me": "unknown"
+	},
+	"meta": {
+		"x": "world",
+		"y": 5
+	}
+}
+""".data(using: .utf8)!
+
+let entity_unidentified_with_attributes_and_links = """
+{
+	"type": "unidentified_test_entities",
+	"attributes": {
+		"me": "unknown"
+	},
+	"links": {
+		"link1": "https://image.com/image.png"
+	}
+}
+""".data(using: .utf8)!
+
+let entity_unidentified_with_attributes_and_meta_and_links = """
+{
+	"type": "unidentified_test_entities",
+	"attributes": {
+		"me": "unknown"
+	},
+	"meta": {
+		"x": "world",
+		"y": 5
+	},
+	"links": {
+		"link1": "https://image.com/image.png"
 	}
 }
 """.data(using: .utf8)!

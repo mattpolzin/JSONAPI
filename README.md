@@ -47,8 +47,8 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] `type`
 - [x] `attributes`
 - [x] `relationships`
-- [x] `links` (untested)
-- [x] `meta` (untested)
+- [x] `links`
+- [x] `meta`
 
 #### Relationship Object
 - [x] `data`

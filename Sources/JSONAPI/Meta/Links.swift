@@ -21,6 +21,17 @@ public protocol JSONAPIURL: Codable, Equatable {}
 public struct Link<URL: JSONAPI.JSONAPIURL, Meta: JSONAPI.Meta>: Equatable, Codable {
 	public let url: URL
 	public let meta: Meta
+
+	public init(url: URL, meta: Meta) {
+		self.url = url
+		self.meta = meta
+	}
+}
+
+extension Link where Meta == NoMetadata {
+	public init(url: URL) {
+		self.init(url: url, meta: .none)
+	}
 }
 
 public extension Link {

@@ -57,6 +57,8 @@ class EntityTests: XCTestCase {
 		let _ = TestEntity10(id: .init(rawValue: "10"), relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])))
 		XCTAssertNoThrow(try TestEntity11(id: .init(rawValue: "11"), attributes: .init(number: .init(rawValue: 11))))
 		let _ = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")))
+		let _ = UnidentifiedTestEntityWithMeta(attributes: .init(me: .init(value: "hello")), meta: .init(x: "world", y: nil))
+		let _ = UnidentifiedTestEntityWithLinks(attributes: .init(me: .init(value: "hello")), links: .init(link1: .init(url: "hmmm")))
 	}
 }
 
@@ -336,6 +338,109 @@ extension EntityTests {
 	}
 }
 
+// MARK: With Meta and/or Links
+
+extension EntityTests {
+	func test_UnidentifiedEntityWithAttributesAndMeta() {
+		let entity = decoded(type: UnidentifiedTestEntityWithMeta.self,
+							 data: entity_unidentified_with_attributes_and_meta)
+
+		XCTAssertEqual(entity[\.me], "unknown")
+		XCTAssertEqual(entity.id, .unidentified)
+		XCTAssertEqual(entity.meta.x, "world")
+		XCTAssertEqual(entity.meta.y, 5)
+		XCTAssertNoThrow(try UnidentifiedTestEntityWithMeta.check(entity))
+	}
+
+	func test_UnidentifiedEntityWithAttributesAndMeta_encode() {
+		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMeta.self,
+								  data: entity_unidentified_with_attributes_and_meta)
+	}
+
+	func test_UnidentifiedEntityWithAttributesAndLinks() {
+		let entity = decoded(type: UnidentifiedTestEntityWithLinks.self,
+							 data: entity_unidentified_with_attributes_and_links)
+
+		XCTAssertEqual(entity[\.me], "unknown")
+		XCTAssertEqual(entity.id, .unidentified)
+		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
+		XCTAssertNoThrow(try UnidentifiedTestEntityWithLinks.check(entity))
+	}
+
+	func test_UnidentifiedEntityWithAttributesAndLinks_encode() {
+		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithLinks.self,
+								  data: entity_unidentified_with_attributes_and_links)
+	}
+
+	func test_UnidentifiedEntityWithAttributesAndMetaAndLinks() {
+		let entity = decoded(type: UnidentifiedTestEntityWithMetaAndLinks.self,
+							 data: entity_unidentified_with_attributes_and_meta_and_links)
+
+		XCTAssertEqual(entity[\.me], "unknown")
+		XCTAssertEqual(entity.id, .unidentified)
+		XCTAssertEqual(entity.meta.x, "world")
+		XCTAssertEqual(entity.meta.y, 5)
+		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
+		XCTAssertNoThrow(try UnidentifiedTestEntityWithMetaAndLinks.check(entity))
+	}
+
+	func test_UnidentifiedEntityWithAttributesAndMetaAndLinks_encode() {
+		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMetaAndLinks.self,
+								  data: entity_unidentified_with_attributes_and_meta_and_links)
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithMeta() {
+		let entity = decoded(type: TestEntity4WithMeta.self,
+							 data: entity_some_relationships_some_attributes_with_meta)
+
+		XCTAssertEqual(entity[\.word], "coolio")
+		XCTAssertEqual(entity[\.number], 992299)
+		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(entity.meta.x, "world")
+		XCTAssertEqual(entity.meta.y, 5)
+		XCTAssertNoThrow(try TestEntity4WithMeta.check(entity))
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithMeta_encode() {
+		test_DecodeEncodeEquality(type: TestEntity4WithMeta.self,
+								  data: entity_some_relationships_some_attributes_with_meta)
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithLinks() {
+		let entity = decoded(type: TestEntity4WithLinks.self,
+							 data: entity_some_relationships_some_attributes_with_links)
+
+		XCTAssertEqual(entity[\.word], "coolio")
+		XCTAssertEqual(entity[\.number], 992299)
+		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
+		XCTAssertNoThrow(try TestEntity4WithLinks.check(entity))
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithLinks_encode() {
+		test_DecodeEncodeEquality(type: TestEntity4WithLinks.self,
+								  data: entity_some_relationships_some_attributes_with_links)
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks() {
+		let entity = decoded(type: TestEntity4WithMetaAndLinks.self,
+							 data: entity_some_relationships_some_attributes_with_meta_and_links)
+
+		XCTAssertEqual(entity[\.word], "coolio")
+		XCTAssertEqual(entity[\.number], 992299)
+		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(entity.meta.x, "world")
+		XCTAssertEqual(entity.meta.y, 5)
+		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
+		XCTAssertNoThrow(try TestEntity4WithMetaAndLinks.check(entity))
+	}
+
+	func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_encode() {
+		test_DecodeEncodeEquality(type: TestEntity4WithMetaAndLinks.self,
+								  data: entity_some_relationships_some_attributes_with_meta_and_links)
+	}
+}
+
 // MARK: - Test Types
 extension EntityTests {
 
@@ -387,6 +492,12 @@ extension EntityTests {
 	}
 
 	typealias TestEntity4 = BasicEntity<TestEntityType4>
+
+	typealias TestEntity4WithMeta = Entity<TestEntityType4, TestEntityMeta, NoLinks>
+
+	typealias TestEntity4WithLinks = Entity<TestEntityType4, NoMetadata, TestEntityLinks>
+
+	typealias TestEntity4WithMetaAndLinks = Entity<TestEntityType4, TestEntityMeta, TestEntityLinks>
 
 	enum TestEntityType5: EntityDescription {
 		static var type: String { return "fifth_test_entities"}
@@ -504,6 +615,12 @@ extension EntityTests {
 
 	typealias UnidentifiedTestEntity = NewEntity<UnidentifiedTestEntityType, NoMetadata, NoLinks>
 
+	typealias UnidentifiedTestEntityWithMeta = NewEntity<UnidentifiedTestEntityType, TestEntityMeta, NoLinks>
+
+	typealias UnidentifiedTestEntityWithLinks = NewEntity<UnidentifiedTestEntityType, NoMetadata, TestEntityLinks>
+
+	typealias UnidentifiedTestEntityWithMetaAndLinks = NewEntity<UnidentifiedTestEntityType, TestEntityMeta, TestEntityLinks>
+
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {
 			return String(from)
@@ -539,5 +656,14 @@ extension EntityTests {
 			}
 			return from
 		}
+	}
+
+	struct TestEntityMeta: JSONAPI.Meta {
+		let x: String
+		let y: Int?
+	}
+
+	struct TestEntityLinks: JSONAPI.Links {
+		let link1: Link<String, NoMetadata>
 	}
 }
