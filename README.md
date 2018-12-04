@@ -146,11 +146,11 @@ An `Entity` needs to be specialized on four generic types. The first is the `Ent
 
 #### `Meta`
 
-The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#meta). All `Meta` at any level of a JSON API Document follow the same rules.
+The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapi.meta). All `Meta` at any level of a JSON API Document follow the same rules.
 
 #### `Links`
 
-The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#links). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
+The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapi.links). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
 
 #### `IdType`
 
@@ -322,7 +322,7 @@ You can always use `NoMetadata` if this JSON API feature is not needed.
 
 #### `LinksType`
 
-The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#links).
+The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#jsonapi.links).
 
 #### `IncludeType`
 
@@ -346,19 +346,19 @@ You can supply any `JSONAPI.Meta` type as the metadata type of the API descripti
 
 The final generic type of a `JSONAPIDocument` is the `Error`. You should create an error type that can decode all the errors you expect your `JSONAPIDocument` to be able to decode. As prescribed by the **SPEC**, these errors will be found in the root document member `errors`.
 
-### `Meta`
+### `JSONAPI.Meta`
 
 A `Meta` struct is totally open-ended. It is described by the **SPEC** as a place to put any information that does not fit into the standard JSON API Document structure anywhere else.
 
 You can specify `NoMetadata` if the part of the document being described should not contain any `Meta`.
 
-### `Links`
+### `JSONAPI.Links`
 
 A `Links` struct must contain only `Link` properties. Each `Link` property can either be a `URL` or a `URL` and some `Meta`. Each part of the document has some suggested common `Links` to include but generally any link can be included.
 
 You can specify `NoLinks` if the part of the document being described should not contain any `Links`.
 
-### `RawIdType`
+### `JSONAPI.RawIdType`
 
 If you want to create new `JSONAPI.Entity` values and assign them Ids then you will need to conform at least one type to `CreatableRawIdType`. Doing so is easy; here are two example conformances for `UUID` and `String` (via `UUID`):
 ```
