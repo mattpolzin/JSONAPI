@@ -146,11 +146,11 @@ An `Entity` needs to be specialized on four generic types. The first is the `Ent
 
 #### `Meta`
 
-The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapi.meta). All `Meta` at any level of a JSON API Document follow the same rules.
+The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules.
 
 #### `Links`
 
-The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapi.links). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
+The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
 
 #### `IdType`
 
@@ -322,7 +322,7 @@ You can always use `NoMetadata` if this JSON API feature is not needed.
 
 #### `LinksType`
 
-The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#jsonapi.links).
+The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#jsonapilinks).
 
 #### `IncludeType`
 
