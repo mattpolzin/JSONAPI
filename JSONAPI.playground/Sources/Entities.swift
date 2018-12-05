@@ -23,8 +23,10 @@ extension String: CreatableRawIdType {
 	}
 }
 
-// MARK: - Entity typealias for convenience
+// MARK: - typealiases for convenience
 public typealias ExampleEntity<Description: EntityDescription> = Entity<Description, NoMetadata, NoLinks, String>
+public typealias ToOne<E: OptionalRelatable> = ToOneRelationship<E, NoMetadata, NoLinks>
+public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoMetadata, NoLinks>
 
 // MARK: - A few resource objects (entities)
 public enum PersonDescription: EntityDescription {
@@ -46,11 +48,11 @@ public enum PersonDescription: EntityDescription {
 	}
 	
 	public struct Relationships: JSONAPI.Relationships {
-		public let friends: ToManyRelationship<Person>
-		public let dogs: ToManyRelationship<Dog>
-		public let home: ToOneRelationship<House>
+		public let friends: ToMany<Person>
+		public let dogs: ToMany<Dog>
+		public let home: ToOne<House>
 
-		public init(friends: ToManyRelationship<Person>, dogs: ToManyRelationship<Dog>, home: ToOneRelationship<House>) {
+		public init(friends: ToMany<Person>, dogs: ToMany<Dog>, home: ToOne<House>) {
 			self.friends = friends
 			self.dogs = dogs
 			self.home = home
@@ -79,9 +81,9 @@ public enum DogDescription: EntityDescription {
 	}
 
 	public struct Relationships: JSONAPI.Relationships {
-		public let owner: ToOneRelationship<Person?>
+		public let owner: ToOne<Person?>
 
-		public init(owner: ToOneRelationship<Person?>) {
+		public init(owner: ToOne<Person?>) {
 			self.owner = owner
 		}
 	}

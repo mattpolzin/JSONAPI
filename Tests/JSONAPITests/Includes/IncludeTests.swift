@@ -144,7 +144,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity2" }
 
 		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntity>
+			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
 		}
 
 		public struct Attributes: JSONAPI.Attributes {
@@ -162,8 +162,8 @@ extension IncludedTests {
 		public static var type: String { return "test_entity3" }
 		
 		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntity>
-			let entity2: ToManyRelationship<TestEntity2>
+			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+			let entity2: ToManyRelationship<TestEntity2, NoMetadata, NoLinks>
 		}
 	}
 
@@ -198,7 +198,7 @@ extension IncludedTests {
 		public static var type: String { return "test_entity6" }
 
 		struct Relationships: JSONAPI.Relationships {
-			let entity4: ToOneRelationship<TestEntity4>
+			let entity4: ToOneRelationship<TestEntity4, NoMetadata, NoLinks>
 		}
 	}
 

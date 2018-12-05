@@ -354,8 +354,12 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawId
 public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
-	public var pointer: ToOneRelationship<Entity> {
-		return ToOneRelationship(entity: self)
+	public var pointer: ToOneRelationship<Entity, NoMetadata, NoLinks> {
+		return ToOneRelationship(entity: self, meta: .none, links: .none)
+	}
+
+	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, andLinks links: LType) -> ToOneRelationship<Entity, MType, LType> {
+		return ToOneRelationship(entity: self, meta: meta, links: links)
 	}
 }
 
@@ -388,14 +392,14 @@ public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: OptionalRelatable>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity>>) -> OtherEntity.WrappedIdentifier {
+	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.WrappedIdentifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntity: Relatable>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity>>) -> [OtherEntity.Identifier] {
+	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 }

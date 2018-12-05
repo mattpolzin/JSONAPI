@@ -7,14 +7,14 @@
 
 import JSONAPI
 
-extension ToOneRelationship: ExpressibleByNilLiteral where Relatable.WrappedIdentifier: ExpressibleByNilLiteral {
+extension ToOneRelationship: ExpressibleByNilLiteral where Relatable.WrappedIdentifier: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(nilLiteral: ()) {
 
 		self.init(id: Relatable.WrappedIdentifier(nilLiteral: ()))
 	}
 }
 
-extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Relatable.WrappedIdentifier: ExpressibleByUnicodeScalarLiteral {
+extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Relatable.WrappedIdentifier: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
 	public typealias UnicodeScalarLiteralType =  Relatable.WrappedIdentifier.UnicodeScalarLiteralType
 
 	public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
@@ -22,7 +22,7 @@ extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Relatable.W
 	}
 }
 
-extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Relatable.WrappedIdentifier: ExpressibleByExtendedGraphemeClusterLiteral {
+extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Relatable.WrappedIdentifier: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
 	public typealias ExtendedGraphemeClusterLiteralType =  Relatable.WrappedIdentifier.ExtendedGraphemeClusterLiteralType
 
 	public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
@@ -30,7 +30,7 @@ extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where R
 	}
 }
 
-extension ToOneRelationship: ExpressibleByStringLiteral where Relatable.WrappedIdentifier: ExpressibleByStringLiteral {
+extension ToOneRelationship: ExpressibleByStringLiteral where Relatable.WrappedIdentifier: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
 	public typealias StringLiteralType = Relatable.WrappedIdentifier.StringLiteralType
 
 	public init(stringLiteral value: StringLiteralType) {
@@ -38,7 +38,7 @@ extension ToOneRelationship: ExpressibleByStringLiteral where Relatable.WrappedI
 	}
 }
 
-extension ToManyRelationship: ExpressibleByArrayLiteral {
+extension ToManyRelationship: ExpressibleByArrayLiteral where MetaType == NoMetadata, LinksType == NoLinks {
 	public typealias ArrayLiteralElement = Relatable.Identifier
 
 	public init(arrayLiteral elements: ArrayLiteralElement...) {

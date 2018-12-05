@@ -12,16 +12,16 @@ import JSONAPITestLib
 class Relationship_LiteralTests: XCTestCase {
 
 	func test_NilLiteral() {
-		XCTAssertEqual(ToOneRelationship<TestEntity?>(id: nil), nil)
+		XCTAssertEqual(ToOneRelationship<TestEntity?, NoMetadata, NoLinks>(id: nil), nil)
 	}
 
 	func test_ArrayLiteral() {
-		XCTAssertEqual(ToManyRelationship<TestEntity>(ids: ["1", "2", "3"]), ["1", "2", "3"])
+		XCTAssertEqual(ToManyRelationship<TestEntity, NoMetadata, NoLinks>(ids: ["1", "2", "3"]), ["1", "2", "3"])
 	}
 
 	func test_StringLiteral() {
-		XCTAssertEqual(ToOneRelationship<TestEntity>(id: "123"), "123")
-		XCTAssertEqual(ToOneRelationship<TestEntity?>(id: "123"), "123")
+		XCTAssertEqual(ToOneRelationship<TestEntity, NoMetadata, NoLinks>(id: "123"), "123")
+		XCTAssertEqual(ToOneRelationship<TestEntity?, NoMetadata, NoLinks>(id: "123"), "123")
 	}
 }
 

@@ -978,7 +978,7 @@ extension DocumentTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let author: ToOneRelationship<Author>
+			let author: ToOneRelationship<Author, NoMetadata, NoLinks>
 		}
 	}
 	

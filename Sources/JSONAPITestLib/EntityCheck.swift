@@ -45,6 +45,10 @@ extension TransformedAttribute: AttributeTypeWithOptionalArray where RawValue: O
 private protocol OptionalRelationshipType {}
 extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
 
+private protocol _RelationshipType {}
+extension ToOneRelationship: _RelationshipType {}
+extension ToManyRelationship: _RelationshipType {}
+
 public extension Entity {
 	public static func check(_ entity: Entity) throws {
 		var problems = [EntityCheckError]()
@@ -72,7 +76,7 @@ public extension Entity {
 		}
 
 		for relationship in relationshipsMirror.children {
-			if relationship.value as? RelationshipType == nil {
+			if relationship.value as? _RelationshipType == nil {
 				problems.append(.nonRelationship(named: relationship.label ?? "unnamed"))
 			}
 		}

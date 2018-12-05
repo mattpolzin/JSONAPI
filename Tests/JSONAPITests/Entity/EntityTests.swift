@@ -459,7 +459,7 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntity1>
+			let other: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
 	}
 
@@ -471,7 +471,7 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 		
 		struct Relationships: JSONAPI.Relationships {
-			let others: ToManyRelationship<TestEntity1>
+			let others: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
 	}
 
@@ -481,7 +481,7 @@ extension EntityTests {
 		static var type: String { return "fourth_test_entities"}
 
 		struct Relationships: JSONAPI.Relationships {
-			let other: ToOneRelationship<TestEntity2>
+			let other: ToOneRelationship<TestEntity2, NoMetadata, NoLinks>
 		}
 
 		struct Attributes: JSONAPI.Attributes {
@@ -562,9 +562,9 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
-			let one: ToOneRelationship<TestEntity1>
+			let one: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 
-			let nullableOne: ToOneRelationship<TestEntity1?>
+			let nullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>
 
 			// a nullable many is not allowed. it should
 			// just be an empty array.
@@ -584,8 +584,8 @@ extension EntityTests {
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
-			let selfRef: ToOneRelationship<TestEntity10>
-			let selfRefs: ToManyRelationship<TestEntity10>
+			let selfRef: ToOneRelationship<TestEntity10, NoMetadata, NoLinks>
+			let selfRefs: ToManyRelationship<TestEntity10, NoMetadata, NoLinks>
 		}
 	}
 
