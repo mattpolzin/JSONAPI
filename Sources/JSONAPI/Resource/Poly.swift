@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 11/22/18.
 //
 
-import Result
-
 /// Poly is a protocol to which types that
 /// are polymorphic belong to. Specifically,
 /// Poly1, Poly2, Poly3, etc. types conform
@@ -28,7 +26,7 @@ private func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from contai
 	} catch (let err) {
 		ret = .failure(DecodingError.typeMismatch(Entity.Description.self,
 												  .init(codingPath: container.codingPath,
-														debugDescription: err.localizedDescription,
+														debugDescription: String(describing: err),
 														underlyingError: err)))
 	}
 	return ret

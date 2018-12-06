@@ -1,15 +1,7 @@
 {
   "object": {
     "pins": [
-      {
-        "package": "Result",
-        "repositoryURL": "https://github.com/mattpolzin/Result",
-        "state": {
-          "branch": "master",
-          "revision": "b98e238da6ea030fa7862ae6fd6500552370019c",
-          "version": null
-        }
-      }
+
     ]
   },
   "version": 1

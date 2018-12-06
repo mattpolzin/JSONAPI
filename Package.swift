@@ -14,13 +14,11 @@ let package = Package(
 			targets: ["JSONAPITestLib"])
     ],
     dependencies: [
-		// antitypical/Result without the Foundation requirement:
-        .package(url: "https://github.com/mattpolzin/Result", .branch("master"))
     ],
     targets: [
         .target(
             name: "JSONAPI",
-            dependencies: ["Result"]),
+            dependencies: []),
 		.target(
 			name: "JSONAPITestLib",
 			dependencies: ["JSONAPI"]),
