@@ -358,7 +358,7 @@ public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 		return ToOneRelationship(entity: self, meta: .none, links: .none)
 	}
 
-	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, andLinks links: LType) -> ToOneRelationship<Entity, MType, LType> {
+	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {
 		return ToOneRelationship(entity: self, meta: meta, links: links)
 	}
 }

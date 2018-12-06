@@ -41,9 +41,21 @@ class EntityTests: XCTestCase {
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
 
+	func test_pointerWithMetaAndLinks() {
+		let entity = TestEntity4WithMetaAndLinks(attributes: .init(word: "hello", number: 10, array: []), relationships: .init(other: .init(id: "2")), meta: .init(x: "world", y: nil), links: .init(link1: .init(url: "ok")))
+
+		let pointer = entity.pointer(withMeta: TestEntityMeta(x: "world", y: nil), links: TestEntityLinks(link1: .init(url: "ok")))
+
+		XCTAssertEqual(pointer.id, entity.id)
+		XCTAssertEqual(pointer.meta.x, "world")
+		XCTAssertEqual(pointer.links.link1.url, "ok")
+	}
+
 	func test_initialization() {
 		let entity1 = TestEntity1(id: .init(rawValue: "wow"))
 		let entity2 = TestEntity2(id: .init(rawValue: "cool"), relationships: .init(other: .init(entity: entity1)))
+		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)))
+		let _ = TestEntity2(id: .init(rawValue: "cool"), relationships: .init(other: .init(entity: entity1)), meta: .none)
 		let _ = TestEntity3(id: .init(rawValue: "3"), relationships: .init(others: .init(ids: [.init(rawValue: "10"), .init(rawValue: "20"), entity1.id])))
 		let _ = TestEntity3(id: .init(rawValue: "3"), relationships: .init(others: .none))
 		let _ = TestEntity4(id: .init(rawValue: "4"), attributes: .init(word: .init(value: "hello"), number: .init(value: 10), array: .init(value: [10.2, 10.3])), relationships: .init(other: entity2.pointer))

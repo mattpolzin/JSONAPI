@@ -10,6 +10,10 @@ import JSONAPI
 
 class APIDescriptionTests: XCTestCase {
 
+	func test_NoDescriptionString() {
+		XCTAssertEqual(String(describing: NoAPIDescription()), "No JSON:API Object")
+	}
+
 	func test_empty() {
 		let description = decoded(type: APIDescription<NoMetadata>.self, data: api_description_empty)
 

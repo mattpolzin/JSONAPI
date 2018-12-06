@@ -10,6 +10,16 @@ import JSONAPI
 
 class ResourceBodyTests: XCTestCase {
 
+	func test_initializers() {
+		let articles = [
+			Article(attributes: .init(title: "hello")),
+			Article(attributes: .init(title: "world"))
+		]
+		let _ = SingleResourceBody(entity: articles[0])
+		let _ = ManyResourceBody(entities: articles)
+		let _: NoResourceBody = .none
+	}
+
 	func test_singleResourceBody() {
 		let body = decoded(type: SingleResourceBody<Article>.self,
 						   data: single_resource_body)
