@@ -326,6 +326,12 @@ extension Entity where MetaType == NoMetadata, EntityRawIdType: CreatableRawIdTy
 	}
 }
 
+extension Entity where MetaType == NoMetadata, EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
+		self.init(attributes: attributes, relationships: relationships, meta: .none, links: links)
+	}
+}
+
 extension Entity where LinksType == NoLinks {
 	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
 		self.init(id: id, attributes: attributes, relationships: relationships, meta: meta, links: .none)
@@ -338,6 +344,12 @@ extension Entity where LinksType == NoLinks, EntityRawIdType: CreatableRawIdType
 	}
 }
 
+extension Entity where LinksType == NoLinks, EntityRawIdType == Unidentified {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
+		self.init(attributes: attributes, relationships: relationships, meta: meta, links: .none)
+	}
+}
+
 extension Entity where MetaType == NoMetadata, LinksType == NoLinks {
 	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: .none)
@@ -345,6 +357,12 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks {
 }
 
 extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
+		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
+	}
+}
+
+extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
