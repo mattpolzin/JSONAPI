@@ -78,8 +78,8 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
 		self.links = links
 	}
 
-	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.WrappedIdentifier == Relatable.Identifier {
-		ids = relationships.map { $0.id }
+	public init<T: JSONAPI.Relatable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.WrappedIdentifier == Relatable.Identifier {
+		ids = pointers.map { $0.id }
 		self.meta = meta
 		self.links = links
 	}
@@ -103,8 +103,8 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
 		self.init(ids: ids, meta: .none, links: .none)
 	}
 
-	public init<T: JSONAPI.Relatable>(relationships: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.WrappedIdentifier == Relatable.Identifier {
-		self.init(relationships: relationships, meta: .none, links: .none)
+	public init<T: JSONAPI.Relatable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.WrappedIdentifier == Relatable.Identifier {
+		self.init(pointers: pointers, meta: .none, links: .none)
 	}
 
 	public static var none: ToManyRelationship {

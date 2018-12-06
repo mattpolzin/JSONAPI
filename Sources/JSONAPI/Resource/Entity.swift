@@ -352,10 +352,16 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawId
 
 // MARK: Pointer for Relationships use.
 public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
+
+	/// An Entity.Pointer is a `ToOneRelationship` with no metadata or links.
+	/// This is just a convenient way to reference an Entity given that
+	/// other Entities' Relationships can be built up from it.
+	public typealias Pointer = ToOneRelationship<Entity, NoMetadata, NoLinks>
+
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
-	public var pointer: ToOneRelationship<Entity, NoMetadata, NoLinks> {
-		return ToOneRelationship(entity: self, meta: .none, links: .none)
+	public var pointer: Pointer {
+		return Pointer(entity: self)
 	}
 
 	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {

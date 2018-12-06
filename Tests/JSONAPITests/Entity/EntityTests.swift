@@ -29,7 +29,7 @@ class EntityTests: XCTestCase {
 		let entity1 = TestEntity1()
 		let entity2 = TestEntity1()
 		let entity4 = TestEntity1()
-		let entity3 = TestEntity3(relationships: .init(others: .init(relationships: [entity1.pointer, entity2.pointer, entity4.pointer])))
+		let entity3 = TestEntity3(relationships: .init(others: .init(pointers: [entity1.pointer, entity2.pointer, entity4.pointer])))
 
 		XCTAssertEqual(entity3 ~> \.others, [entity1.id, entity2.id, entity4.id])
 	}

@@ -26,7 +26,7 @@ class RelationshipTests: XCTestCase {
 		let entity2 = TestEntity1()
 		let entity3 = TestEntity1()
 		let entity4 = TestEntity1()
-		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(relationships: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
+		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(pointers: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
 
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
