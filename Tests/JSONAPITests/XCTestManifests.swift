@@ -4,6 +4,7 @@ extension APIDescriptionTests {
     static let __allTests = [
         ("test_empty", test_empty),
         ("test_failsMissingMeta", test_failsMissingMeta),
+        ("test_NoDescriptionString", test_NoDescriptionString),
         ("test_WithMeta", test_WithMeta),
         ("test_WithVersion", test_WithVersion),
         ("test_WithVersionAndMeta", test_WithVersionAndMeta),
@@ -195,6 +196,7 @@ extension EntityTests {
         ("test_nullableRelationshipNotNull_encode", test_nullableRelationshipNotNull_encode),
         ("test_NullOptionalNullableAttribute", test_NullOptionalNullableAttribute),
         ("test_NullOptionalNullableAttribute_encode", test_NullOptionalNullableAttribute_encode),
+        ("test_pointerWithMetaAndLinks", test_pointerWithMetaAndLinks),
         ("test_relationship_access", test_relationship_access),
         ("test_relationship_operator_access", test_relationship_operator_access),
         ("test_relationshipIds", test_relationshipIds),
@@ -300,9 +302,21 @@ extension RelationshipTests {
         ("test_initToManyWithRelationships", test_initToManyWithRelationships),
         ("test_ToManyRelationship", test_ToManyRelationship),
         ("test_ToManyRelationship_encode", test_ToManyRelationship_encode),
+        ("test_ToManyRelationshipWithLinks", test_ToManyRelationshipWithLinks),
+        ("test_ToManyRelationshipWithLinks_encode", test_ToManyRelationshipWithLinks_encode),
+        ("test_ToManyRelationshipWithMeta", test_ToManyRelationshipWithMeta),
+        ("test_ToManyRelationshipWithMeta_encode", test_ToManyRelationshipWithMeta_encode),
+        ("test_ToManyRelationshipWithMetaAndLinks", test_ToManyRelationshipWithMetaAndLinks),
+        ("test_ToManyRelationshipWithMetaAndLinks_encode", test_ToManyRelationshipWithMetaAndLinks_encode),
         ("test_ToManyTypeMismatch", test_ToManyTypeMismatch),
         ("test_ToOneRelationship", test_ToOneRelationship),
         ("test_ToOneRelationship_encode", test_ToOneRelationship_encode),
+        ("test_ToOneRelationshipWithLinks", test_ToOneRelationshipWithLinks),
+        ("test_ToOneRelationshipWithLinks_encode", test_ToOneRelationshipWithLinks_encode),
+        ("test_ToOneRelationshipWithMeta", test_ToOneRelationshipWithMeta),
+        ("test_ToOneRelationshipWithMeta_encode", test_ToOneRelationshipWithMeta_encode),
+        ("test_ToOneRelationshipWithMetaAndLinks", test_ToOneRelationshipWithMetaAndLinks),
+        ("test_ToOneRelationshipWithMetaAndLinks_encode", test_ToOneRelationshipWithMetaAndLinks_encode),
         ("test_ToOneTypeMismatch", test_ToOneTypeMismatch),
     ]
 }
@@ -317,6 +331,7 @@ extension Relationship_LiteralTests {
 
 extension ResourceBodyTests {
     static let __allTests = [
+        ("test_initializers", test_initializers),
         ("test_manyResourceBody", test_manyResourceBody),
         ("test_manyResourceBody_encode", test_manyResourceBody_encode),
         ("test_manyResourceBodyEmpty", test_manyResourceBodyEmpty),
