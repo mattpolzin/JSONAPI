@@ -47,6 +47,46 @@ extension RelationshipTests {
 								   data: to_one_relationship)
 	}
 
+	func test_ToOneRelationshipWithMeta() {
+		let relationship = decoded(type: ToOneWithMeta.self,
+								   data: to_one_relationship_with_meta)
+
+		XCTAssertEqual(relationship.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(relationship.meta.a, "hello")
+	}
+
+	func test_ToOneRelationshipWithMeta_encode() {
+		test_DecodeEncodeEquality(type: ToOneWithMeta.self,
+								  data: to_one_relationship_with_meta)
+	}
+
+	func test_ToOneRelationshipWithLinks() {
+		let relationship = decoded(type: ToOneWithLinks.self,
+								   data: to_one_relationship_with_links)
+
+		XCTAssertEqual(relationship.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(relationship.links.b, .init(url: "world"))
+	}
+
+	func test_ToOneRelationshipWithLinks_encode() {
+		test_DecodeEncodeEquality(type: ToOneWithLinks.self,
+								  data: to_one_relationship_with_links)
+	}
+
+	func test_ToOneRelationshipWithMetaAndLinks() {
+		let relationship = decoded(type: ToOneWithMetaAndLinks.self,
+								   data: to_one_relationship_with_meta_and_links)
+
+		XCTAssertEqual(relationship.id.rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
+		XCTAssertEqual(relationship.meta.a, "hello")
+		XCTAssertEqual(relationship.links.b, .init(url: "world"))
+	}
+
+	func test_ToOneRelationshipWithMetaAndLinks_encode() {
+		test_DecodeEncodeEquality(type: ToOneWithMetaAndLinks.self,
+								  data: to_one_relationship_with_meta_and_links)
+	}
+
 	func test_ToManyRelationship() {
 		let relationship = decoded(type: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>.self,
 								   data: to_many_relationship)
@@ -57,6 +97,46 @@ extension RelationshipTests {
 	func test_ToManyRelationship_encode() {
 		test_DecodeEncodeEquality(type: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>.self,
 								   data: to_many_relationship)
+	}
+
+	func test_ToManyRelationshipWithMeta() {
+		let relationship = decoded(type: ToManyWithMeta.self,
+								   data: to_many_relationship_with_meta)
+
+		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.meta.a, "hello")
+	}
+
+	func test_ToManyRelationshipWithMeta_encode() {
+		test_DecodeEncodeEquality(type: ToManyWithMeta.self,
+								  data: to_many_relationship_with_meta)
+	}
+
+	func test_ToManyRelationshipWithLinks() {
+		let relationship = decoded(type: ToManyWithLinks.self,
+								   data: to_many_relationship_with_links)
+
+		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.links.b, .init(url: "world"))
+	}
+
+	func test_ToManyRelationshipWithLinks_encode() {
+		test_DecodeEncodeEquality(type: ToManyWithLinks.self,
+								  data: to_many_relationship_with_links)
+	}
+
+	func test_ToManyRelationshipWithMetaAndLinks() {
+		let relationship = decoded(type: ToManyWithMetaAndLinks.self,
+								   data: to_many_relationship_with_meta_and_links)
+
+		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.meta.a, "hello")
+		XCTAssertEqual(relationship.links.b, .init(url: "world"))
+	}
+
+	func test_ToManyRelationshipWithMetaAndLinks_encode() {
+		test_DecodeEncodeEquality(type: ToManyWithMetaAndLinks.self,
+								  data: to_many_relationship_with_meta_and_links)
 	}
 }
 
@@ -82,4 +162,23 @@ extension RelationshipTests {
 	}
 
 	typealias TestEntity1 = BasicEntity<TestEntityType1>
+
+	typealias ToOneWithMeta = ToOneRelationship<TestEntity1, TestMeta, NoLinks>
+
+	typealias ToOneWithLinks = ToOneRelationship<TestEntity1, NoMetadata, TestLinks>
+	typealias ToOneWithMetaAndLinks = ToOneRelationship<TestEntity1, TestMeta, TestLinks>
+
+	typealias ToManyWithMeta = ToManyRelationship<TestEntity1, TestMeta, NoLinks>
+	typealias ToManyWithLinks = ToManyRelationship<TestEntity1, NoMetadata, TestLinks>
+	typealias ToManyWithMetaAndLinks = ToManyRelationship<TestEntity1, TestMeta, TestLinks>
+
+	struct TestMeta: JSONAPI.Meta {
+		let a: String
+	}
+
+	typealias TestLink = JSONAPI.Link<String, NoMetadata>
+
+	struct TestLinks: JSONAPI.Links {
+		let b: TestLink
+	}
 }
