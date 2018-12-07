@@ -121,6 +121,24 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self,
 							   data: six_different_type_includes)
 	}
+
+	func test_SevenDifferentIncludes() {
+		let includes = decoded(type: Includes<Include7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7>>.self,
+							   data: seven_different_type_includes)
+
+		XCTAssertEqual(includes[TestEntity.self].count, 1)
+		XCTAssertEqual(includes[TestEntity2.self].count, 1)
+		XCTAssertEqual(includes[TestEntity3.self].count, 1)
+		XCTAssertEqual(includes[TestEntity4.self].count, 1)
+		XCTAssertEqual(includes[TestEntity5.self].count, 1)
+		XCTAssertEqual(includes[TestEntity6.self].count, 1)
+		XCTAssertEqual(includes[TestEntity7.self].count, 1)
+	}
+
+	func test_SevenDifferentIncludes_encode() {
+		test_DecodeEncodeEquality(type: Includes<Include7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7>>.self,
+								  data: seven_different_type_includes)
+	}
 }
 
 // MARK: - Test types
@@ -203,4 +221,15 @@ extension IncludedTests {
 	}
 
 	typealias TestEntity6 = BasicEntity<TestEntityType6>
+
+	enum TestEntityType7: EntityDescription {
+
+		typealias Attributes = NoAttributes
+
+		public static var type: String { return "test_entity7" }
+
+		typealias Relationships = NoRelationships
+	}
+
+	typealias TestEntity7 = BasicEntity<TestEntityType7>
 }

@@ -164,6 +164,72 @@ class PolyTests: XCTestCase {
 		XCTAssertNil(poly6.d)
 		XCTAssertNil(poly6.e)
 	}
+
+	func test_init_Poly7() {
+		let entity = TestEntity5()
+		let poly = Poly7<TestEntity5, TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6, TestEntity7>(entity)
+		XCTAssertEqual(poly.a, entity)
+		XCTAssertNil(poly.b)
+		XCTAssertNil(poly.c)
+		XCTAssertNil(poly.d)
+		XCTAssertNil(poly.e)
+		XCTAssertNil(poly.f)
+		XCTAssertNil(poly.g)
+
+		let poly2 = Poly7<TestEntity, TestEntity5, TestEntity2, TestEntity3, TestEntity4, TestEntity6, TestEntity7>(entity)
+		XCTAssertEqual(poly2.b, entity)
+		XCTAssertNil(poly2.a)
+		XCTAssertNil(poly2.c)
+		XCTAssertNil(poly2.d)
+		XCTAssertNil(poly2.e)
+		XCTAssertNil(poly2.f)
+		XCTAssertNil(poly2.g)
+
+		let poly3 = Poly7<TestEntity, TestEntity2, TestEntity5, TestEntity3, TestEntity4, TestEntity6, TestEntity7>(entity)
+		XCTAssertEqual(poly3.c, entity)
+		XCTAssertNil(poly3.a)
+		XCTAssertNil(poly3.b)
+		XCTAssertNil(poly3.d)
+		XCTAssertNil(poly3.e)
+		XCTAssertNil(poly3.f)
+		XCTAssertNil(poly3.g)
+
+		let poly4 = Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity5, TestEntity4, TestEntity6, TestEntity7>(entity)
+		XCTAssertEqual(poly4.d, entity)
+		XCTAssertNil(poly4.a)
+		XCTAssertNil(poly4.b)
+		XCTAssertNil(poly4.c)
+		XCTAssertNil(poly4.e)
+		XCTAssertNil(poly4.f)
+		XCTAssertNil(poly4.g)
+
+		let poly5 = Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7>(entity)
+		XCTAssertEqual(poly5.e, entity)
+		XCTAssertNil(poly5.a)
+		XCTAssertNil(poly5.b)
+		XCTAssertNil(poly5.c)
+		XCTAssertNil(poly5.d)
+		XCTAssertNil(poly5.f)
+		XCTAssertNil(poly5.g)
+
+		let poly6 = Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6, TestEntity5, TestEntity7>(entity)
+		XCTAssertEqual(poly6.f, entity)
+		XCTAssertNil(poly6.a)
+		XCTAssertNil(poly6.b)
+		XCTAssertNil(poly6.c)
+		XCTAssertNil(poly6.d)
+		XCTAssertNil(poly6.e)
+		XCTAssertNil(poly6.g)
+
+		let poly7 = Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6, TestEntity7, TestEntity5>(entity)
+		XCTAssertEqual(poly7.g, entity)
+		XCTAssertNil(poly7.a)
+		XCTAssertNil(poly7.b)
+		XCTAssertNil(poly7.c)
+		XCTAssertNil(poly7.d)
+		XCTAssertNil(poly7.e)
+		XCTAssertNil(poly7.f)
+	}
 }
 
 // MARK: - subscript lookup
@@ -224,6 +290,19 @@ extension PolyTests {
 		XCTAssertNil(poly[TestEntity5.self])
 		XCTAssertEqual(entity, poly[TestEntity6.self])
 	}
+
+	func test_Poly7_lookup() {
+		let entity = decoded(type: TestEntity7.self, data: poly_entity7)
+		let poly = decoded(type: Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7>.self, data: poly_entity7)
+
+		XCTAssertNil(poly[TestEntity.self])
+		XCTAssertNil(poly[TestEntity2.self])
+		XCTAssertNil(poly[TestEntity3.self])
+		XCTAssertNil(poly[TestEntity4.self])
+		XCTAssertNil(poly[TestEntity5.self])
+		XCTAssertNil(poly[TestEntity6.self])
+		XCTAssertEqual(entity, poly[TestEntity7.self])
+	}
 }
 
 // MARK: - failures
@@ -258,6 +337,10 @@ extension PolyTests {
 
 	func test_Poly6_decode_throws_typeNotFound() {
 		XCTAssertThrowsError(try JSONDecoder().decode(Poly6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>.self, from: poly_entity7))
+	}
+
+	func test_Poly7_decode_throws_typeNotFound() {
+		XCTAssertThrowsError(try JSONDecoder().decode(Poly7<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7>.self, from: poly_entity8))
 	}
 }
 
@@ -341,4 +424,15 @@ extension PolyTests {
 	}
 
 	typealias TestEntity6 = BasicEntity<TestEntityType6>
+
+	enum TestEntityType7: EntityDescription {
+
+		typealias Attributes = NoAttributes
+
+		public static var type: String { return "test_entity7" }
+
+		typealias Relationships = NoRelationships
+	}
+
+	typealias TestEntity7 = BasicEntity<TestEntityType7>
 }
