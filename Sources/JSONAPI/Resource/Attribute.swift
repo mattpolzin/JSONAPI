@@ -8,6 +8,8 @@
 public protocol AttributeType: Codable {
 }
 
+// MARK: TransformedAttribute
+/// A TransformedAttribute takes a Codable type and attempts to turn it into another type.
 public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: AttributeType where Transformer.From == RawValue {
 	private let rawValue: RawValue
 	
@@ -18,6 +20,15 @@ public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Trans
 		value = try Transformer.transform(rawValue)
 	}
 }
+
+// MARK: ValidatedAttribute
+/// A ValidatedAttribute does not transform its raw value, but it throws
+/// an error if the raw value does not match expectations.
+public typealias ValidatedAttribute<RawValue: Codable, Validator: JSONAPI.Validator> = TransformedAttribute<RawValue, Validator> where RawValue == Validator.From
+
+// MARK: Attribute
+/// An Attribute simply represents a type that can be encoded and decoded.
+public typealias Attribute<T: Codable> = TransformedAttribute<T, IdentityTransformer<T>>
 
 extension TransformedAttribute where Transformer: ReversibleTransformer {
 	public init(transformedValue: Transformer.To) throws {
@@ -42,10 +53,6 @@ extension TransformedAttribute where Transformer == IdentityTransformer<RawValue
 		self.value = value
 	}
 }
-
-public typealias ValidatedAttribute<RawValue: Codable, Validator: JSONAPI.Validator> = TransformedAttribute<RawValue, Validator> where RawValue == Validator.From
-
-public typealias Attribute<T: Codable> = TransformedAttribute<T, IdentityTransformer<T>>
 
 // MARK: - Codable
 extension TransformedAttribute {
