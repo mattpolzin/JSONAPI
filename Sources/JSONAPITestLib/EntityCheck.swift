@@ -76,7 +76,8 @@ public extension Entity {
 		}
 
 		for relationship in relationshipsMirror.children {
-			if relationship.value as? _RelationshipType == nil {
+			if relationship.value as? _RelationshipType == nil,
+				relationship.value as? OptionalRelationshipType == nil {
 				problems.append(.nonRelationship(named: relationship.label ?? "unnamed"))
 			}
 		}

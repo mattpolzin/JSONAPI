@@ -24,6 +24,10 @@ class EntityTests: XCTestCase {
 
 		XCTAssertEqual(entity2 ~> \.other, entity1.id)
 	}
+
+	func test_optional_relationship_operator_access() {
+		
+	}
 	
 	func test_toMany_relationship_operator_access() {
 		let entity1 = TestEntity1()
@@ -32,6 +36,10 @@ class EntityTests: XCTestCase {
 		let entity3 = TestEntity3(relationships: .init(others: .init(pointers: [entity1.pointer, entity2.pointer, entity4.pointer])))
 
 		XCTAssertEqual(entity3 ~> \.others, [entity1.id, entity2.id, entity4.id])
+	}
+
+	func test_optionalToMany_relationship_opeartor_access() {
+
 	}
 	
 	func test_relationshipIds() {
@@ -63,9 +71,12 @@ class EntityTests: XCTestCase {
 		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)))
 		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")))
 		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil))))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: nil)))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none)))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: nil))
+		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: .init(entities: [], meta: .none, links: .none)))
 		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
@@ -275,18 +286,50 @@ extension EntityTests {
 
 // MARK: Relationship omission and nullification
 extension EntityTests {
-	func test_nullableRelationshipNotNull() {
+	func test_nullableRelationshipNotNullOrOmitted() {
 		let entity = decoded(type: TestEntity9.self,
-								   data: entity_omitted_relationship)
+								   data: entity_optional_not_omitted_relationship)
 
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+		XCTAssertNil(entity ~> \.optionalOne)
+		XCTAssertEqual((entity ~> \.optionalNullableOne)?.rawValue, "1229")
+		XCTAssertNoThrow(try TestEntity9.check(entity))
+	}
+
+	func test_nullableRelationshipNotNullOrOmitted_encode() {
+		test_DecodeEncodeEquality(type: TestEntity9.self,
+								   data: entity_optional_not_omitted_relationship)
+	}
+
+	func test_nullableRelationshipNotNull() {
+		let entity = decoded(type: TestEntity9.self,
+							 data: entity_omitted_relationship)
+
+		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
+		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+		XCTAssertNil(entity ~> \.optionalNullableOne)
 		XCTAssertNoThrow(try TestEntity9.check(entity))
 	}
 
 	func test_nullableRelationshipNotNull_encode() {
 		test_DecodeEncodeEquality(type: TestEntity9.self,
-								   data: entity_omitted_relationship)
+								  data: entity_omitted_relationship)
+	}
+
+	func test_optionalNullableRelationshipNulled() {
+		let entity = decoded(type: TestEntity9.self,
+							 data: entity_optional_nullable_nulled_relationship)
+
+		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
+		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+		XCTAssertNil(entity ~> \.optionalNullableOne)
+		XCTAssertNoThrow(try TestEntity9.check(entity))
+	}
+
+	func test_optionalNullableRelationshipNulled_encode() {
+		test_DecodeEncodeEquality(type: TestEntity9.self,
+								  data: entity_optional_nullable_nulled_relationship)
 	}
 
 	func test_nullableRelationshipIsNull() {
@@ -295,12 +338,29 @@ extension EntityTests {
 
 		XCTAssertNil(entity ~> \.nullableOne)
 		XCTAssertEqual((entity ~> \.one).rawValue, "4452")
+		XCTAssertNil(entity ~> \.optionalNullableOne)
 		XCTAssertNoThrow(try TestEntity9.check(entity))
 	}
 
 	func test_nullableRelationshipIsNull_encode() {
 		test_DecodeEncodeEquality(type: TestEntity9.self,
 								   data: entity_nulled_relationship)
+	}
+
+	func test_optionalToManyIsNotOmitted() {
+		let entity = decoded(type: TestEntity9.self,
+							 data: entity_optional_to_many_relationship_not_omitted)
+
+		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
+		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
+		XCTAssertEqual((entity ~> \.optionalMany)?[0].rawValue, "332223")
+		XCTAssertNil(entity ~> \.optionalNullableOne)
+		XCTAssertNoThrow(try TestEntity9.check(entity))
+	}
+
+	func test_optionalToManyIsNotOmitted_encode() {
+		test_DecodeEncodeEquality(type: TestEntity9.self,
+								  data: entity_optional_to_many_relationship_not_omitted)
 	}
 }
 
@@ -581,13 +641,14 @@ extension EntityTests {
 
 			let nullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>
 
+			let optionalOne: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?
+
+			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?
+
+			let optionalMany: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?
+
 			// a nullable many is not allowed. it should
 			// just be an empty array.
-
-			// omitted relationships are not allowed either,
-			// so ToOneRelationship<TestEntity1>? (with the
-			// question on the relationship, not the entity)
-			// is not a thing.
 		}
 	}
 

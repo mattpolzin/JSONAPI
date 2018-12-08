@@ -228,6 +228,57 @@ let entity_int_to_string_attribute = """
 }
 """.data(using: .utf8)!
 
+let entity_optional_not_omitted_relationship = """
+{
+	"id": "1",
+	"type": "ninth_test_entities",
+	"relationships": {
+		"nullableOne": {
+			"data": {
+				"id": "3323",
+				"type": "test_entities"
+			}
+		},
+		"one": {
+			"data": {
+				"id": "4459",
+				"type": "test_entities"
+			}
+		},
+		"optionalNullableOne": {
+			"data": {
+				"id": "1229",
+				"type": "test_entities"
+			}
+		}
+	}
+}
+""".data(using: .utf8)!
+
+let entity_optional_nullable_nulled_relationship = """
+{
+	"id": "1",
+	"type": "ninth_test_entities",
+	"relationships": {
+		"nullableOne": {
+			"data": {
+				"id": "3323",
+				"type": "test_entities"
+			}
+		},
+		"one": {
+			"data": {
+				"id": "4459",
+				"type": "test_entities"
+			}
+		},
+		"optionalNullableOne": {
+			"data": null
+		}
+	}
+}
+""".data(using: .utf8)!
+
 let entity_omitted_relationship = """
 {
 	"id": "1",
@@ -244,6 +295,35 @@ let entity_omitted_relationship = """
 				"id": "4459",
 				"type": "test_entities"
 			}
+		}
+	}
+}
+""".data(using: .utf8)!
+
+let entity_optional_to_many_relationship_not_omitted = """
+{
+	"id": "1",
+	"type": "ninth_test_entities",
+	"relationships": {
+		"nullableOne": {
+			"data": {
+				"id": "3323",
+				"type": "test_entities"
+			}
+		},
+		"one": {
+			"data": {
+				"id": "4459",
+				"type": "test_entities"
+			}
+		},
+		"optionalMany": {
+			"data": [
+				{
+					"id": "332223",
+					"type": "test_entities"
+				}
+			]
 		}
 	}
 }

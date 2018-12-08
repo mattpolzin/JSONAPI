@@ -420,11 +420,36 @@ public extension EntityProxy {
 		return entity.relationships[keyPath: path].id
 	}
 
+	/// Access to an Id of an optional `ToOneRelationship`.
+	/// This allows you to write `entity ~> \.other` instead
+	/// of `entity.relationships.other?.id`.
+	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.WrappedIdentifier where OtherEntity.WrappedIdentifier == OtherEntity.Identifier? {
+		// Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
+		// whereas the one below applies to `ToOneRelationship<E, _, _>?`
+		return entity.relationships[keyPath: path]?.id
+	}
+
+	/// Access to an Id of an optional `ToOneRelationship`.
+	/// This allows you to write `entity ~> \.other` instead
+	/// of `entity.relationships.other?.id`.
+	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? where OtherEntity.WrappedIdentifier == OtherEntity.Identifier {
+		// Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
+		// whereas the one above applies to `ToOneRelationship<E?, _, _>?`
+		return entity.relationships[keyPath: path]?.id
+	}
+
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
 	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
+	}
+
+	/// Access to all Ids of an optional `ToManyRelationship`.
+	/// This allows you to write `entity ~> \.others` instead
+	/// of `entity.relationships.others?.ids`.
+	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.Identifier]? {
+		return entity.relationships[keyPath: path]?.ids
 	}
 }
 
