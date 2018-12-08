@@ -407,7 +407,18 @@ public extension EntityProxy {
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
 	subscript<T, TFRM: Transformer, U>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>?>) -> U? where TFRM.To == U? {
+		// Implementation Note: Handles Transform that returns optional
+		// type.
 		return attributes[keyPath: path].flatMap { $0.value }
+	}
+
+	/// Access the computed attribute at the given keypath. This just
+	/// allows you to write `entity[\.propertyName]` instead
+	/// of `entity.relationships.propertyName`.
+	subscript<T>(_ path: KeyPath<Description.Attributes, T>) -> T {
+		// Implementation Note: Handles attributes that are not
+		// AttributeType. These should only exist as computed properties.
+		return attributes[keyPath: path]
 	}
 }
 

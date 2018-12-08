@@ -29,6 +29,12 @@ class ComputedPropertiesTests: XCTestCase {
 		XCTAssertEqual(entity[\.computed], "Sarah2")
 	}
 
+	func test_ComputedNonAttributeAccess() {
+		let entity = decoded(type: TestType.self, data: computed_property_attribute)
+
+		XCTAssertEqual(entity[\.computed2], "Sarah2")
+	}
+
 	func test_ComputedRelationshipAccess() {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)
 
@@ -45,6 +51,10 @@ extension ComputedPropertiesTests {
 			public let name: Attribute<String>
 			public var computed: Attribute<String> {
 				return name.map { $0 + "2" }
+			}
+
+			public var computed2: String {
+				return computed.value
 			}
 		}
 
