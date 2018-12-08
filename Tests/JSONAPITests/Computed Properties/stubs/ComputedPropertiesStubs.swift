@@ -10,7 +10,8 @@ let computed_property_attribute = """
 	"id": "1234",
 	"type": "test",
 	"attributes": {
-		"name": "Sarah"
+		"name": "Sarah",
+		"secret": "shhhh"
 	},
 	"relationships": {
 		"other": {

@@ -89,7 +89,7 @@ public extension PolyProxyTests {
 	public typealias User = Poly2<UserA, UserB>
 }
 
-extension Poly2: EntityProxy where A == PolyProxyTests.UserA, B == PolyProxyTests.UserB {
+extension Poly2: EntityProxy, JSONTyped where A == PolyProxyTests.UserA, B == PolyProxyTests.UserB {
 
 	public var userA: PolyProxyTests.UserA? {
 		return a

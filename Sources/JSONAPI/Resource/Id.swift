@@ -74,6 +74,10 @@ public struct Id<RawType: MaybeRawId, EntityType: JSONAPI.EntityProxy>: Codable,
 
 extension Id: Hashable, CustomStringConvertible, IdType where RawType: RawIdType {}
 
+extension Id: WrappedIdType where RawType: RawIdType {
+	public typealias Identifier = Id
+}
+
 extension Id: CreatableIdType where RawType: CreatableRawIdType {
 	public init() {
 		rawValue = .unique()

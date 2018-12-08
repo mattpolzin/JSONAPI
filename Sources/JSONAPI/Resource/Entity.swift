@@ -26,22 +26,26 @@ public struct NoAttributes: Attributes {
 	public static var none: NoAttributes { return .init() }
 }
 
+/// Something that is JSONTyped provides a String representation
+/// of its type.
+public protocol JSONTyped {
+	static var type: String { get }
+}
+
 /// An `EntityDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
 /// `Entity`, which gets specialized on an
 /// `EntityDescription`.
-public protocol EntityDescription {
+public protocol EntityDescription: JSONTyped {
 	associatedtype Attributes: JSONAPI.Attributes
 	associatedtype Relationships: JSONAPI.Relationships
-	
-	static var type: String { get }
 }
 
 /// EntityProxy is a protocol that can be used to create
 /// types that _act_ like Entities but cannot be encoded
 /// or decoded as Entities.
-public protocol EntityProxy: Equatable {
+public protocol EntityProxy: Equatable, JSONTyped {
 	associatedtype Description: EntityDescription
 	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
@@ -108,9 +112,10 @@ public struct Entity<Description: JSONAPI.EntityDescription, MetaType: JSONAPI.M
 	}
 }
 
-extension Entity: IdentifiableEntityType, Relatable, WrappedRelatable where EntityRawIdType: JSONAPI.RawIdType {
+extension Entity: IdentifiableEntityType, Relatable, OptionalRelatable where EntityRawIdType: JSONAPI.RawIdType {
 	public typealias Identifier = Entity.Id
-	public typealias WrappedIdentifier = Identifier
+	public typealias Wrapped = Entity
+	public typealias WrappedId = Identifier
 }
 
 extension Entity: CustomStringConvertible {
@@ -427,14 +432,14 @@ public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.WrappedIdentifier {
+	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.WrappedId {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.WrappedIdentifier where OtherEntity.WrappedIdentifier == OtherEntity.Identifier? {
+	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.WrappedId where OtherEntity.WrappedId == OtherEntity.Wrapped.Identifier? {
 		// Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
 		// whereas the one below applies to `ToOneRelationship<E, _, _>?`
 		return entity.relationships[keyPath: path]?.id
@@ -443,7 +448,7 @@ public extension EntityProxy {
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? where OtherEntity.WrappedIdentifier == OtherEntity.Identifier {
+	public static func ~><OtherEntity: Relatable & OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? where OtherEntity.WrappedId == OtherEntity.Identifier {
 		// Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
 		// whereas the one above applies to `ToOneRelationship<E?, _, _>?`
 		return entity.relationships[keyPath: path]?.id
