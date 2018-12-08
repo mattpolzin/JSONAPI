@@ -112,10 +112,8 @@ public struct Entity<Description: JSONAPI.EntityDescription, MetaType: JSONAPI.M
 	}
 }
 
-extension Entity: IdentifiableEntityType, Relatable, OptionalRelatable where EntityRawIdType: JSONAPI.RawIdType {
+extension Entity: Identifiable, IdentifiableEntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
 	public typealias Identifier = Entity.Id
-	public typealias Wrapped = Entity
-	public typealias WrappedId = Identifier
 }
 
 extension Entity: CustomStringConvertible {
@@ -432,14 +430,14 @@ public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.WrappedId {
+	public static func ~><OtherEntity: Identifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.WrappedId where OtherEntity.WrappedId == OtherEntity.Wrapped.Identifier? {
+	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier {
 		// Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
 		// whereas the one below applies to `ToOneRelationship<E, _, _>?`
 		return entity.relationships[keyPath: path]?.id
@@ -448,7 +446,7 @@ public extension EntityProxy {
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: Relatable & OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? where OtherEntity.WrappedId == OtherEntity.Identifier {
+	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? {
 		// Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
 		// whereas the one above applies to `ToOneRelationship<E?, _, _>?`
 		return entity.relationships[keyPath: path]?.id

@@ -32,9 +32,9 @@ extension NonJSONAPIRelatableTests {
 //		typealias Relationships = NoRelationships
 //	}
 
-//	struct NonJSONAPIEntity: Relatable, OptionalRelatable {
-//		typealias Description = NonJSONAPIEntityDescription
-//		typealias EntityRawIdType = String
+//	struct NonJSONAPIEntity: Relatable, OptionalRelatable, JSONTyped {
+//		static var type: String { return "other" }
+//
 //		typealias Identifier = NonJSONAPIEntity.Id
 //		typealias WrappedIdentifier = NonJSONAPIEntity.Id
 //
@@ -44,13 +44,10 @@ extension NonJSONAPIRelatableTests {
 //		let relationships: NoRelationships
 //
 //		struct Id: IdType {
-//			var rawValue: NonJSONAPIRelatableTests.NonJSONAPIEntity.Id.RawType
+//			var rawValue: String
 //
-//			typealias EntityType = <#type#>
-//
+//			typealias IdentifiableType = NonJSONAPIEntity
 //			typealias RawType = String
-//
-//			let rawValue: String
 //		}
 //	}
 }

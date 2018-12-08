@@ -35,7 +35,7 @@ public struct Unidentified: MaybeRawId, CustomStringConvertible {
 }
 
 public protocol MaybeId: Codable {
-	associatedtype EntityType: JSONAPI.EntityProxy
+	associatedtype IdentifiableType: JSONAPI.JSONTyped
 	associatedtype RawType: MaybeRawId
 }
 
@@ -53,7 +53,7 @@ public protocol CreatableIdType: IdType {
 
 /// An Entity ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
-public struct Id<RawType: MaybeRawId, EntityType: JSONAPI.EntityProxy>: Codable, Equatable, MaybeId {
+public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Codable, Equatable, MaybeId {
 
 	public let rawValue: RawType
 	
@@ -73,10 +73,6 @@ public struct Id<RawType: MaybeRawId, EntityType: JSONAPI.EntityProxy>: Codable,
 }
 
 extension Id: Hashable, CustomStringConvertible, IdType where RawType: RawIdType {}
-
-extension Id: WrappedIdType where RawType: RawIdType {
-	public typealias Identifier = Id
-}
 
 extension Id: CreatableIdType where RawType: CreatableRawIdType {
 	public init() {

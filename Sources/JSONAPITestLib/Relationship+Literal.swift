@@ -7,34 +7,34 @@
 
 import JSONAPI
 
-extension ToOneRelationship: ExpressibleByNilLiteral where OptionalRelatable.WrappedId: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByNilLiteral where Identifiable.Identifier: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
 	public init(nilLiteral: ()) {
 
-		self.init(id: OptionalRelatable.WrappedId(nilLiteral: ()))
+		self.init(id: Identifiable.Identifier(nilLiteral: ()))
 	}
 }
 
-extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where OptionalRelatable.WrappedId: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-	public typealias UnicodeScalarLiteralType =  OptionalRelatable.WrappedId.UnicodeScalarLiteralType
+extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiable.Identifier: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+	public typealias UnicodeScalarLiteralType =  Identifiable.Identifier.UnicodeScalarLiteralType
 
 	public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
-		self.init(id: OptionalRelatable.WrappedId(unicodeScalarLiteral: value))
+		self.init(id: Identifiable.Identifier(unicodeScalarLiteral: value))
 	}
 }
 
-extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where OptionalRelatable.WrappedId: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-	public typealias ExtendedGraphemeClusterLiteralType =  OptionalRelatable.WrappedId.ExtendedGraphemeClusterLiteralType
+extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Identifiable.Identifier: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+	public typealias ExtendedGraphemeClusterLiteralType =  Identifiable.Identifier.ExtendedGraphemeClusterLiteralType
 
 	public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-		self.init(id: OptionalRelatable.WrappedId(extendedGraphemeClusterLiteral: value))
+		self.init(id: Identifiable.Identifier(extendedGraphemeClusterLiteral: value))
 	}
 }
 
-extension ToOneRelationship: ExpressibleByStringLiteral where OptionalRelatable.WrappedId: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-	public typealias StringLiteralType = OptionalRelatable.WrappedId.StringLiteralType
+extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.Identifier: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+	public typealias StringLiteralType = Identifiable.Identifier.StringLiteralType
 
 	public init(stringLiteral value: StringLiteralType) {
-		self.init(id: OptionalRelatable.WrappedId(stringLiteral: value))
+		self.init(id: Identifiable.Identifier(stringLiteral: value))
 	}
 }
 
