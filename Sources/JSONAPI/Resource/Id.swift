@@ -34,13 +34,31 @@ public struct Unidentified: MaybeRawId, CustomStringConvertible {
 	public var description: String { return "Unidentified" }
 }
 
-public protocol MaybeId: Codable {
+public protocol OptionalId: Codable {
 	associatedtype IdentifiableType: JSONAPI.JSONTyped
 	associatedtype RawType: MaybeRawId
+
+	var rawValue: RawType { get }
+	init(rawValue: RawType)
 }
 
-public protocol IdType: MaybeId, CustomStringConvertible, Hashable where RawType: RawIdType {
-	var rawValue: RawType { get }
+public protocol IdType: OptionalId, CustomStringConvertible, Hashable where RawType: RawIdType {}
+
+extension Optional: MaybeRawId where Wrapped: Codable & Equatable {}
+extension Optional: OptionalId where Wrapped: IdType {
+	public typealias IdentifiableType = Wrapped.IdentifiableType
+	public typealias RawType = Wrapped.RawType?
+
+	public var rawValue: Wrapped.RawType? {
+		guard case .some(let value) = self else {
+			return nil
+		}
+		return value.rawValue
+	}
+
+	public init(rawValue: Wrapped.RawType?) {
+		self = rawValue.map { Wrapped(rawValue: $0) }
+	}
 }
 
 public extension IdType {
@@ -53,7 +71,7 @@ public protocol CreatableIdType: IdType {
 
 /// An Entity ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
-public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Codable, Equatable, MaybeId {
+public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equatable, OptionalId {
 
 	public let rawValue: RawType
 	
@@ -63,7 +81,8 @@ public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Coda
 
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
-		rawValue = try container.decode(RawType.self)
+		let rawValue = try container.decode(RawType.self)
+		self.init(rawValue: rawValue)
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -72,7 +91,11 @@ public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Coda
 	}
 }
 
-extension Id: Hashable, CustomStringConvertible, IdType where RawType: RawIdType {}
+extension Id: Hashable, CustomStringConvertible, IdType where RawType: RawIdType {
+	public static func id(from rawValue: RawType) -> Id<RawType, IdentifiableType> {
+		return Id(rawValue: rawValue)
+	}
+}
 
 extension Id: CreatableIdType where RawType: CreatableRawIdType {
 	public init() {

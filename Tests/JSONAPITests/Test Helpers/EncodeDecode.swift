@@ -12,6 +12,10 @@ func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
 	return try! JSONDecoder().decode(T.self, from: data)
 }
 
+func encoded<T: Encodable>(value: T) -> Data {
+	return try! JSONEncoder().encode(value)
+}
+
 /// A helper function that tests that decode() == decode().encode().decode().
 /// If decoding is well tested and the above is true then encoding is well
 /// tested.

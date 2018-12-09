@@ -140,6 +140,25 @@ extension RelationshipTests {
 	}
 }
 
+// MARK: Nullable
+extension RelationshipTests {
+	func test_ToOneNullableIsNullIfNil() {
+		let relationship = ToOneNullable(entity: nil)
+		let relationshipData = try! JSONEncoder().encode(relationship)
+		let relationshipString = String(data: relationshipData, encoding: .utf8)!
+
+		XCTAssertEqual(relationshipString, "{\"data\":null}")
+	}
+
+	func test_ToOneNullableIsEqualToNonNullableIfNotNil() {
+		let entity = TestEntity1()
+		let relationship1 = ToOneNonNullable(entity: entity)
+		let relationship2 = ToOneNullable(entity: entity)
+
+		XCTAssertEqual(encoded(value: relationship1), encoded(value: relationship2))
+	}
+}
+
 // MARK: Failure tests
 extension RelationshipTests {
 	func test_ToManyTypeMismatch() {
@@ -171,6 +190,9 @@ extension RelationshipTests {
 	typealias ToManyWithMeta = ToManyRelationship<TestEntity1, TestMeta, NoLinks>
 	typealias ToManyWithLinks = ToManyRelationship<TestEntity1, NoMetadata, TestLinks>
 	typealias ToManyWithMetaAndLinks = ToManyRelationship<TestEntity1, TestMeta, TestLinks>
+
+	typealias ToOneNullable = ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>
+	typealias ToOneNonNullable = ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 
 	struct TestMeta: JSONAPI.Meta {
 		let a: String

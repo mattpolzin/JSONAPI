@@ -226,6 +226,8 @@ extension EntityTests {
 		XCTAssertEqual(entity[\.here], "Hello")
 		XCTAssertNil(entity[\.maybeHereMaybeNull])
 		XCTAssertNoThrow(try TestEntity7.check(entity))
+
+		print(encodable: entity)
 	}
 
 	func test_NullOptionalNullableAttribute_encode() {

@@ -83,12 +83,13 @@ extension TransformedAttribute {
 		
 		// See note in decode above about the weirdness
 		// going on here.
-		let anyNil: Any? = nil
-		if let _ = anyNil as? Transformer.From,
-			(rawValue as Any?) == nil {
-			try container.encodeNil()
-		}
-		
+//		let anyNil: Any? = nil
+//		let nilRawValue = anyNil as? Transformer.From
+//		guard rawValue != nilRawValue else {
+//			try container.encodeNil()
+//			return
+//		}
+
 		try container.encode(rawValue)
 	}
 }

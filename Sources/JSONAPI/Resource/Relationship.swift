@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 8/31/18.
 //
 
-public protocol RelationshipType: Codable {
+public protocol RelationshipType {
 	associatedtype LinksType
 	associatedtype MetaType
 
@@ -117,7 +117,7 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
 }
 
 public protocol Identifiable: JSONTyped {
-	associatedtype Identifier: Equatable, Codable
+	associatedtype Identifier: Equatable
 }
 
 /// The Relatable protocol describes anything that
@@ -148,7 +148,7 @@ private enum ResourceIdentifierCodingKeys: String, CodingKey {
 	case entityType = "type"
 }
 
-extension ToOneRelationship {
+extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
 
@@ -184,7 +184,7 @@ extension ToOneRelationship {
 			throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.type, found: type)
 		}
 		
-		id = try identifier.decode(Identifiable.Identifier.self, forKey: .id)
+		id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
 	}
 	
 	public func encode(to encoder: Encoder) throws {
@@ -202,14 +202,23 @@ extension ToOneRelationship {
 			try container.encode(links, forKey: .links)
 		}
 
+		// If id is nil, instead of {id: , type: } we will just
+		// encode `null`
+		let anyNil: Any? = nil
+		let nilId = anyNil as? Identifiable.Identifier
+		guard id != nilId else {
+			try container.encodeNil(forKey: .data)
+			return
+		}
+
 		var identifier = container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
 		
-		try identifier.encode(id, forKey: .id)
+		try identifier.encode(id.rawValue, forKey: .id)
 		try identifier.encode(Identifiable.type, forKey: .entityType)
 	}
 }
 
-extension ToManyRelationship {
+extension ToManyRelationship: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
 
@@ -237,7 +246,7 @@ extension ToManyRelationship {
 				throw JSONAPIEncodingError.typeMismatch(expected: Relatable.type, found: type)
 			}
 			
-			newIds.append(try identifier.decode(Relatable.Identifier.self, forKey: .id))
+			newIds.append(Relatable.Identifier(rawValue: try identifier.decode(Relatable.Identifier.RawType.self, forKey: .id)))
 		}
 		ids = newIds
 	}
@@ -258,7 +267,7 @@ extension ToManyRelationship {
 		for id in ids {
 			var identifier = identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 			
-			try identifier.encode(id, forKey: .id)
+			try identifier.encode(id.rawValue, forKey: .id)
 			try identifier.encode(Relatable.type, forKey: .entityType)
 		}
 	}
