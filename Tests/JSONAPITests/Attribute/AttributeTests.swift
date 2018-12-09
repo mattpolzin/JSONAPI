@@ -29,6 +29,29 @@ class AttributeTests: XCTestCase {
 	func test_TransformedAttributeReversNoThrow() {
 		XCTAssertNoThrow(try TransformedAttribute<String, TestTransformer>(transformedValue: 10))
 	}
+
+	func test_NullableIsNullIfNil() {
+		struct Wrapper: Codable {
+			let dummy: Attribute<String?>
+		}
+		let data = encoded(value: Wrapper(dummy: .init(value: nil)))
+		let string = String(data: data, encoding: .utf8)!
+
+		XCTAssertEqual(string, "{\"dummy\":null}")
+	}
+
+	func test_NullableIsEqualToNonNullableIfNotNil() {
+		struct Wrapper1: Codable {
+			let dummy: Attribute<String?>
+		}
+		struct Wrapper2: Codable {
+			let dummy: Attribute<String>
+		}
+		let data1 = encoded(value: Wrapper1(dummy: .init(value: "hello")))
+		let data2 = encoded(value: Wrapper2(dummy: .init(value: "hello")))
+
+		XCTAssertEqual(data1, data2)
+	}
 }
 
 // MARK: Test types

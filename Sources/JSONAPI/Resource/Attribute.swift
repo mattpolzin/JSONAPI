@@ -80,15 +80,6 @@ extension TransformedAttribute {
 	
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.singleValueContainer()
-		
-		// See note in decode above about the weirdness
-		// going on here.
-//		let anyNil: Any? = nil
-//		let nilRawValue = anyNil as? Transformer.From
-//		guard rawValue != nilRawValue else {
-//			try container.encodeNil()
-//			return
-//		}
 
 		try container.encode(rawValue)
 	}

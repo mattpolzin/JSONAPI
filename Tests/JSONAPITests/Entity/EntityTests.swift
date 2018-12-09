@@ -207,6 +207,8 @@ extension EntityTests {
 		XCTAssertNil(entity[\.maybeHere])
 		XCTAssertNil(entity[\.maybeNull])
 		XCTAssertNoThrow(try TestEntity6.check(entity))
+
+		print(encodable: entity)
 	}
 
 	func test_entityOneNullAndOneOmittedAttribute_encode() {
