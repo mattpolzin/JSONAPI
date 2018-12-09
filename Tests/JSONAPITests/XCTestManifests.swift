@@ -15,6 +15,8 @@ extension AttributeTests {
     static let __allTests = [
         ("test_AttributeIsTransformedAttribute", test_AttributeIsTransformedAttribute),
         ("test_AttributeNonThrowingConstructor", test_AttributeNonThrowingConstructor),
+        ("test_NullableIsEqualToNonNullableIfNotNil", test_NullableIsEqualToNonNullableIfNotNil),
+        ("test_NullableIsNullIfNil", test_NullableIsNullIfNil),
         ("test_TransformedAttributeNoThrow", test_TransformedAttributeNoThrow),
         ("test_TransformedAttributeReversNoThrow", test_TransformedAttributeReversNoThrow),
         ("test_TransformedAttributeThrows", test_TransformedAttributeThrows),
@@ -44,6 +46,7 @@ extension Attribute_LiteralTests {
 extension ComputedPropertiesTests {
     static let __allTests = [
         ("test_ComputedAttributeAccess", test_ComputedAttributeAccess),
+        ("test_ComputedNonAttributeAccess", test_ComputedNonAttributeAccess),
         ("test_ComputedRelationshipAccess", test_ComputedRelationshipAccess),
         ("test_DecodeIgnoresComputed", test_DecodeIgnoresComputed),
         ("test_EncodeIgnoresComputed", test_EncodeIgnoresComputed),
@@ -194,8 +197,16 @@ extension EntityTests {
         ("test_nullableRelationshipIsNull_encode", test_nullableRelationshipIsNull_encode),
         ("test_nullableRelationshipNotNull", test_nullableRelationshipNotNull),
         ("test_nullableRelationshipNotNull_encode", test_nullableRelationshipNotNull_encode),
+        ("test_nullableRelationshipNotNullOrOmitted", test_nullableRelationshipNotNullOrOmitted),
+        ("test_nullableRelationshipNotNullOrOmitted_encode", test_nullableRelationshipNotNullOrOmitted_encode),
         ("test_NullOptionalNullableAttribute", test_NullOptionalNullableAttribute),
         ("test_NullOptionalNullableAttribute_encode", test_NullOptionalNullableAttribute_encode),
+        ("test_optional_relationship_operator_access", test_optional_relationship_operator_access),
+        ("test_optionalNullableRelationshipNulled", test_optionalNullableRelationshipNulled),
+        ("test_optionalNullableRelationshipNulled_encode", test_optionalNullableRelationshipNulled_encode),
+        ("test_optionalToMany_relationship_opeartor_access", test_optionalToMany_relationship_opeartor_access),
+        ("test_optionalToManyIsNotOmitted", test_optionalToManyIsNotOmitted),
+        ("test_optionalToManyIsNotOmitted_encode", test_optionalToManyIsNotOmitted_encode),
         ("test_pointerWithMetaAndLinks", test_pointerWithMetaAndLinks),
         ("test_relationship_access", test_relationship_access),
         ("test_relationship_operator_access", test_relationship_operator_access),
@@ -231,6 +242,8 @@ extension IncludedTests {
         ("test_FourDifferentIncludes_encode", test_FourDifferentIncludes_encode),
         ("test_OneInclude", test_OneInclude),
         ("test_OneInclude_encode", test_OneInclude_encode),
+        ("test_SevenDifferentIncludes", test_SevenDifferentIncludes),
+        ("test_SevenDifferentIncludes_encode", test_SevenDifferentIncludes_encode),
         ("test_SixDifferentIncludes", test_SixDifferentIncludes),
         ("test_SixDifferentIncludes_encode", test_SixDifferentIncludes_encode),
         ("test_ThreeDifferentIncludes", test_ThreeDifferentIncludes),
@@ -259,6 +272,14 @@ extension LinksTests {
     ]
 }
 
+extension NonJSONAPIRelatableTests {
+    static let __allTests = [
+        ("test_initialization1", test_initialization1),
+        ("test_initialization2_all_relationships_missing", test_initialization2_all_relationships_missing),
+        ("test_initialization2_all_relationships_there", test_initialization2_all_relationships_there),
+    ]
+}
+
 extension PolyProxyTests {
     static let __allTests = [
         ("test_AsymmetricEncodeDecodeUserA", test_AsymmetricEncodeDecodeUserA),
@@ -279,6 +300,7 @@ extension PolyTests {
         ("test_init_Poly4", test_init_Poly4),
         ("test_init_Poly5", test_init_Poly5),
         ("test_init_Poly6", test_init_Poly6),
+        ("test_init_Poly7", test_init_Poly7),
         ("test_Poly0_decode_throws", test_Poly0_decode_throws),
         ("test_Poly0_encode_throws", test_Poly0_encode_throws),
         ("test_Poly1_decode_throws_typeNotFound", test_Poly1_decode_throws_typeNotFound),
@@ -293,6 +315,8 @@ extension PolyTests {
         ("test_Poly5_lookup", test_Poly5_lookup),
         ("test_Poly6_decode_throws_typeNotFound", test_Poly6_decode_throws_typeNotFound),
         ("test_Poly6_lookup", test_Poly6_lookup),
+        ("test_Poly7_decode_throws_typeNotFound", test_Poly7_decode_throws_typeNotFound),
+        ("test_Poly7_lookup", test_Poly7_lookup),
     ]
 }
 
@@ -309,6 +333,8 @@ extension RelationshipTests {
         ("test_ToManyRelationshipWithMetaAndLinks", test_ToManyRelationshipWithMetaAndLinks),
         ("test_ToManyRelationshipWithMetaAndLinks_encode", test_ToManyRelationshipWithMetaAndLinks_encode),
         ("test_ToManyTypeMismatch", test_ToManyTypeMismatch),
+        ("test_ToOneNullableIsEqualToNonNullableIfNotNil", test_ToOneNullableIsEqualToNonNullableIfNotNil),
+        ("test_ToOneNullableIsNullIfNil", test_ToOneNullableIsNullIfNil),
         ("test_ToOneRelationship", test_ToOneRelationship),
         ("test_ToOneRelationship_encode", test_ToOneRelationship_encode),
         ("test_ToOneRelationshipWithLinks", test_ToOneRelationshipWithLinks),
@@ -355,6 +381,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(Id_LiteralTests.__allTests),
         testCase(IncludedTests.__allTests),
         testCase(LinksTests.__allTests),
+        testCase(NonJSONAPIRelatableTests.__allTests),
         testCase(PolyProxyTests.__allTests),
         testCase(PolyTests.__allTests),
         testCase(RelationshipTests.__allTests),
