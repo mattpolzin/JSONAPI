@@ -39,6 +39,14 @@ extension TransformedAttribute: ExpressibleByFloatLiteral where RawValue: Expres
 	}
 }
 
+extension Optional: ExpressibleByFloatLiteral where Wrapped: ExpressibleByFloatLiteral {
+	public typealias FloatLiteralType = Wrapped.FloatLiteralType
+
+	public init(floatLiteral value: FloatLiteralType) {
+		self = .some(Wrapped(floatLiteral: value))
+	}
+}
+
 extension TransformedAttribute: ExpressibleByBooleanLiteral where RawValue: ExpressibleByBooleanLiteral, Transformer == IdentityTransformer<RawValue> {
 	public typealias BooleanLiteralType = RawValue.BooleanLiteralType
 
@@ -47,11 +55,27 @@ extension TransformedAttribute: ExpressibleByBooleanLiteral where RawValue: Expr
 	}
 }
 
+extension Optional: ExpressibleByBooleanLiteral where Wrapped: ExpressibleByBooleanLiteral {
+	public typealias BooleanLiteralType = Wrapped.BooleanLiteralType
+
+	public init(booleanLiteral value: BooleanLiteralType) {
+		self = .some(Wrapped(booleanLiteral: value))
+	}
+}
+
 extension TransformedAttribute: ExpressibleByIntegerLiteral where RawValue: ExpressibleByIntegerLiteral, Transformer == IdentityTransformer<RawValue> {
 	public typealias IntegerLiteralType = RawValue.IntegerLiteralType
 
 	public init(integerLiteral value: IntegerLiteralType) {
 		self.init(value: RawValue(integerLiteral: value))
+	}
+}
+
+extension Optional: ExpressibleByIntegerLiteral where Wrapped: ExpressibleByIntegerLiteral {
+	public typealias IntegerLiteralType = Wrapped.IntegerLiteralType
+
+	public init(integerLiteral value: IntegerLiteralType) {
+		self = .some(Wrapped(integerLiteral: value))
 	}
 }
 
@@ -79,6 +103,16 @@ extension TransformedAttribute: ExpressibleByDictionaryLiteral where RawValue: D
 	}
 }
 
+extension Optional: DictionaryType where Wrapped: DictionaryType {
+	public typealias Key = Wrapped.Key
+
+	public typealias Value = Wrapped.Value
+
+	public init<S>(_ keysAndValues: S, uniquingKeysWith combine: (Dictionary<Key, Value>.Value, Dictionary<Key, Value>.Value) throws -> Dictionary<Key, Value>.Value) rethrows where S : Sequence, S.Element == (Key, Value) {
+		self = try .some(Wrapped(keysAndValues, uniquingKeysWith: combine))
+	}
+}
+
 public protocol ArrayType {
 	associatedtype Element
 
@@ -92,5 +126,13 @@ extension TransformedAttribute: ExpressibleByArrayLiteral where RawValue: ArrayT
 
 	public init(arrayLiteral elements: ArrayLiteralElement...) {
 		self.init(value: RawValue(elements))
+	}
+}
+
+extension Optional: ArrayType where Wrapped: ArrayType {
+	public typealias Element = Wrapped.Element
+
+	public init<S>(_ s: S) where Element == S.Element, S : Sequence {
+		self = .some(Wrapped(s))
 	}
 }
