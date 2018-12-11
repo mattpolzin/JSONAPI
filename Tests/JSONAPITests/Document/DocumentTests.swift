@@ -847,7 +847,7 @@ extension DocumentTests {
 // MARK: Poly PrimaryResource Tests
 extension DocumentTests {
 	func test_singleDocument_PolyPrimaryResource() {
-		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
+		let article = Article(id: Id(rawValue: "1"), attributes: .none, relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))), meta: .none, links: .none)
 		let document = decoded(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes)
 
 		XCTAssertEqual(document.body.primaryData?.value[Article.self], article)
@@ -859,7 +859,7 @@ extension DocumentTests {
 	}
 
 	func test_singleDocument_PolyPrimaryResourceWithAPIDescription() {
-		let article = Article(id: Id(rawValue: "1"), relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))))
+		let article = Article(id: Id(rawValue: "1"), attributes: .none, relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))), meta: .none, links: .none)
 		let document = decoded(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes_with_api_description)
 
 		XCTAssertEqual(document.body.primaryData?.value[Article.self], article)

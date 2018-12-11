@@ -110,7 +110,7 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 		self.apiDescription = apiDescription
 	}
 }
-
+/*
 extension Document where IncludeType == NoIncludes {
 	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
 		self.init(apiDescription: apiDescription, body: body, includes: .none, meta: meta, links: links)
@@ -182,6 +182,7 @@ extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, Link
 		self.init(apiDescription: .none, body: body)
 	}
 }
+*/
 
 extension Document {
 	private enum RootCodingKeys: String, CodingKey {

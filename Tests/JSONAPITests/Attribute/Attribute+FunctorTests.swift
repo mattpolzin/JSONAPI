@@ -11,7 +11,7 @@ import JSONAPITestLib
 
 class Attribute_FunctorTests: XCTestCase {
 	func test_mapGuaranteed() {
-		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)))
+		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)), relationships: .none, meta: .none, links: .none)
 
 		XCTAssertNotNil(entity)
 
@@ -19,7 +19,7 @@ class Attribute_FunctorTests: XCTestCase {
 	}
 
 	func test_mapOptionalSuccess() {
-		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)))
+		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)), relationships: .none, meta: .none, links: .none)
 
 		XCTAssertNotNil(entity)
 
@@ -27,7 +27,7 @@ class Attribute_FunctorTests: XCTestCase {
 	}
 
 	func test_mapOptionalFailure() {
-		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.5)))
+		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.5)), relationships: .none, meta: .none, links: .none)
 
 		XCTAssertNotNil(entity)
 

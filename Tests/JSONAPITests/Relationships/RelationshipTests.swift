@@ -11,10 +11,10 @@ import JSONAPI
 class RelationshipTests: XCTestCase {
 
 	func test_initToManyWithEntities() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity1()
-		let entity3 = TestEntity1()
-		let entity4 = TestEntity1()
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity3 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity4 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(entities: [entity1, entity2, entity3, entity4])
 
 		XCTAssertEqual(relationship.ids.count, 4)
@@ -22,10 +22,10 @@ class RelationshipTests: XCTestCase {
 	}
 
 	func test_initToManyWithRelationships() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity1()
-		let entity3 = TestEntity1()
-		let entity4 = TestEntity1()
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity3 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity4 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(pointers: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
 
 		XCTAssertEqual(relationship.ids.count, 4)
@@ -151,7 +151,7 @@ extension RelationshipTests {
 	}
 
 	func test_ToOneNullableIsEqualToNonNullableIfNotNil() {
-		let entity = TestEntity1()
+		let entity = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let relationship1 = ToOneNonNullable(entity: entity)
 		let relationship2 = ToOneNullable(entity: entity)
 

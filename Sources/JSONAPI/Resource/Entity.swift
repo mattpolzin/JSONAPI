@@ -143,6 +143,7 @@ extension Entity where EntityRawIdType == Unidentified {
 	}
 }
 
+/*
 extension Entity where Description.Attributes == NoAttributes {
 	public init(id: Entity.Id, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.init(id: id, attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
@@ -370,6 +371,7 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawId
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
 }
+*/
 
 // MARK: Pointer for Relationships use.
 public extension Entity where EntityRawIdType: JSONAPI.RawIdType {

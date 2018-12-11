@@ -12,8 +12,8 @@ class ResourceBodyTests: XCTestCase {
 
 	func test_initializers() {
 		let articles = [
-			Article(attributes: .init(title: "hello")),
-			Article(attributes: .init(title: "world"))
+			Article(attributes: .init(title: "hello"), relationships: .none, meta: .none, links: .none),
+			Article(attributes: .init(title: "world"), relationships: .none, meta: .none, links: .none)
 		]
 		let _ = SingleResourceBody(entity: articles[0])
 		let _ = ManyResourceBody(entities: articles)
@@ -25,7 +25,7 @@ class ResourceBodyTests: XCTestCase {
 						   data: single_resource_body)
 
 		XCTAssertEqual(body.value, Article(id: Id<String, Article>(rawValue: "1"),
-										attributes: ArticleType.Attributes(title: try! .init(rawValue: "JSON:API paints my bikeshed!"))))
+										attributes: ArticleType.Attributes(title: try! .init(rawValue: "JSON:API paints my bikeshed!")), relationships: .none, meta: .none, links: .none))
 	}
 
 	func test_singleResourceBody_encode() {
@@ -38,9 +38,9 @@ class ResourceBodyTests: XCTestCase {
 						   data: many_resource_body)
 
 		XCTAssertEqual(body.values, [
-			Article(id: .init(rawValue: "1"), attributes: try! .init(title: .init(rawValue: "JSON:API paints my bikeshed!"))),
-			Article(id: .init(rawValue: "2"), attributes: try! .init(title: .init(rawValue: "Sick"))),
-			Article(id: .init(rawValue: "3"), attributes: try! .init(title: .init(rawValue: "Hello World")))
+			Article(id: .init(rawValue: "1"), attributes: try! .init(title: .init(rawValue: "JSON:API paints my bikeshed!")), relationships: .none, meta: .none, links: .none),
+			Article(id: .init(rawValue: "2"), attributes: try! .init(title: .init(rawValue: "Sick")), relationships: .none, meta: .none, links: .none),
+			Article(id: .init(rawValue: "3"), attributes: try! .init(title: .init(rawValue: "Hello World")), relationships: .none, meta: .none, links: .none)
 		])
 	}
 

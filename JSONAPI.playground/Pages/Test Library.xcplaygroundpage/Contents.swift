@@ -13,7 +13,7 @@ Please enjoy these examples, but allow me the forced casting and the lack of err
 // MARK: - Literal Expressibility
 // The JSONAPITestLib provides literal expressibility for key types to
 // make creating tests easier
-let dog = Dog(id: "1234", attributes: Dog.Attributes(name: "Buddy"), relationships: Dog.Relationships(owner: nil))
+let dog = Dog(id: "1234", attributes: Dog.Attributes(name: "Buddy"), relationships: Dog.Relationships(owner: nil), meta: .none, links: .none)
 
 // MARK: - JSON API structure checking
 // The JSONAPITestLib provides a `check` function for each Entity type

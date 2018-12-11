@@ -13,27 +13,27 @@ import JSONAPITestLib
 // in this file.
 class EntityCheckTests: XCTestCase {
 	func test_failsWithEnumAttributes() {
-		let entity = EnumAttributesEntity(attributes: .hello)
+		let entity = EnumAttributesEntity(attributes: .hello, relationships: .none, meta: .none, links: .none)
 		XCTAssertThrowsError(try EnumAttributesEntity.check(entity))
 	}
 
 	func test_failsWithEnumRelationships() {
-		let entity = EnumRelationshipsEntity(relationships: .hello)
+		let entity = EnumRelationshipsEntity(attributes: .none, relationships: .hello, meta: .none, links: .none)
 		XCTAssertThrowsError(try EnumRelationshipsEntity.check(entity))
 	}
 
 	func test_failsWithBadAttribute() {
-		let entity = BadAttributeEntity(attributes: .init(x: "ok", y: "not ok"))
+		let entity = BadAttributeEntity(attributes: .init(x: "ok", y: "not ok"), relationships: .none, meta: .none, links: .none)
 		XCTAssertThrowsError(try BadAttributeEntity.check(entity))
 	}
 
 	func test_failsWithBadRelationship() {
-		let entity = BadRelationshipEntity(relationships: .init(x: OkEntity().pointer, y: OkEntity().id))
+		let entity = BadRelationshipEntity(attributes: .none, relationships: .init(x: OkEntity(attributes: .none, relationships: .none, meta: .none, links: .none).pointer, y: OkEntity(attributes: .none, relationships: .none, meta: .none, links: .none).id), meta: .none, links: .none)
 		XCTAssertThrowsError(try BadRelationshipEntity.check(entity))
 	}
 
 	func test_failsWithOptionalArrayAttribute() {
-		let entity = OptionalArrayAttributeEntity(attributes: .init(x: ["hello"], y: nil))
+		let entity = OptionalArrayAttributeEntity(attributes: .init(x: ["hello"], y: nil), relationships: .none, meta: .none, links: .none)
 		XCTAssertThrowsError(try OptionalArrayAttributeEntity.check(entity))
 	}
 }

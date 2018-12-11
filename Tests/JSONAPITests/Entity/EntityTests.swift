@@ -12,15 +12,15 @@ import JSONAPITestLib
 class EntityTests: XCTestCase {
 	
 	func test_relationship_access() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
 		
 		XCTAssertEqual(entity2.relationships.other, entity1.pointer)
 	}
 	
 	func test_relationship_operator_access() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
 
 		XCTAssertEqual(entity2 ~> \.other, entity1.id)
 	}
@@ -30,10 +30,10 @@ class EntityTests: XCTestCase {
 	}
 	
 	func test_toMany_relationship_operator_access() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity1()
-		let entity4 = TestEntity1()
-		let entity3 = TestEntity3(relationships: .init(others: .init(pointers: [entity1.pointer, entity2.pointer, entity4.pointer])))
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity4 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity3 = TestEntity3(attributes: .none, relationships: .init(others: .init(pointers: [entity1.pointer, entity2.pointer, entity4.pointer])), meta: .none, links: .none)
 
 		XCTAssertEqual(entity3 ~> \.others, [entity1.id, entity2.id, entity4.id])
 	}
@@ -43,8 +43,8 @@ class EntityTests: XCTestCase {
 	}
 	
 	func test_relationshipIds() {
-		let entity1 = TestEntity1()
-		let entity2 = TestEntity2(relationships: .init(other: entity1.pointer))
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
 		
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
@@ -60,31 +60,31 @@ class EntityTests: XCTestCase {
 	}
 
 	func test_initialization() {
-		let entity1 = TestEntity1(id: .init(rawValue: "wow"))
-		let entity2 = TestEntity2(id: .init(rawValue: "cool"), relationships: .init(other: .init(entity: entity1)))
-		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)))
-		let _ = TestEntity2(id: .init(rawValue: "cool"), relationships: .init(other: .init(entity: entity1)), meta: .none)
-		let _ = TestEntity3(id: .init(rawValue: "3"), relationships: .init(others: .init(ids: [.init(rawValue: "10"), .init(rawValue: "20"), entity1.id])))
-		let _ = TestEntity3(id: .init(rawValue: "3"), relationships: .init(others: .none))
-		let _ = TestEntity4(id: .init(rawValue: "4"), attributes: .init(word: .init(value: "hello"), number: .init(value: 10), array: .init(value: [10.2, 10.3])), relationships: .init(other: entity2.pointer))
-		let _ = TestEntity5(id: .init(rawValue: "5"), attributes: .init(floater: .init(value: 10.2)))
-		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)))
-		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")))
-		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil))))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: nil))
-		let _ = TestEntity9(id: .init(rawValue: "9"), relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: .init(entities: [], meta: .none, links: .none)))
+		let entity1 = TestEntity1(id: .init(rawValue: "wow"), attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity2 = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
+		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
+		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
+		let _ = TestEntity3(id: .init(rawValue: "3"), attributes: .none, relationships: .init(others: .init(ids: [.init(rawValue: "10"), .init(rawValue: "20"), entity1.id])), meta: .none, links: .none)
+		let _ = TestEntity3(id: .init(rawValue: "3"), attributes: .none, relationships: .init(others: .none), meta: .none, links: .none)
+		let _ = TestEntity4(id: .init(rawValue: "4"), attributes: .init(word: .init(value: "hello"), number: .init(value: 10), array: .init(value: [10.2, 10.3])), relationships: .init(other: entity2.pointer), meta: .none, links: .none)
+		let _ = TestEntity5(id: .init(rawValue: "5"), attributes: .init(floater: .init(value: 10.2)), relationships: .none, meta: .none, links: .none)
+		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)), relationships: .none, meta: .none, links: .none)
+		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")), relationships: .none, meta: .none, links: .none)
+		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil)), relationships: .none, meta: .none, links: .none))
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: .init(entities: [], meta: .none, links: .none)), meta: .none, links: .none)
 		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
-		let _ = TestEntity10(id: .init(rawValue: "10"), relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])))
-		XCTAssertNoThrow(try TestEntity11(id: .init(rawValue: "11"), attributes: .init(number: .init(rawValue: 11))))
-		let _ = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")))
-		let _ = UnidentifiedTestEntityWithMeta(attributes: .init(me: .init(value: "hello")), meta: .init(x: "world", y: nil))
-		let _ = UnidentifiedTestEntityWithLinks(attributes: .init(me: .init(value: "hello")), links: .init(link1: .init(url: "hmmm")))
+		let _ = TestEntity10(id: .init(rawValue: "10"), attributes: .none, relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])), meta: .none, links: .none)
+		XCTAssertNoThrow(try TestEntity11(id: .init(rawValue: "11"), attributes: .init(number: .init(rawValue: 11)), relationships: .none, meta: .none, links: .none))
+		let _ = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .none, links: .none)
+		let _ = UnidentifiedTestEntityWithMeta(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .init(x: "world", y: nil), links: .none)
+		let _ = UnidentifiedTestEntityWithLinks(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .none, links: .init(link1: .init(url: "hmmm")))
 	}
 }
 

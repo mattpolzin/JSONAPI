@@ -15,13 +15,13 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly1() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly1(entity)
 		XCTAssertEqual(poly.a, entity)
 	}
 
 	func test_init_Poly2() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly2<TestEntity5, TestEntity>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
@@ -32,7 +32,7 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly3() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly3<TestEntity5, TestEntity, TestEntity2>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
@@ -50,7 +50,7 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly4() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly4<TestEntity5, TestEntity, TestEntity2, TestEntity3>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
@@ -77,7 +77,7 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly5() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly5<TestEntity5, TestEntity, TestEntity2, TestEntity3, TestEntity4>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
@@ -115,7 +115,7 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly6() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly6<TestEntity5, TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
@@ -166,7 +166,7 @@ class PolyTests: XCTestCase {
 	}
 
 	func test_init_Poly7() {
-		let entity = TestEntity5()
+		let entity = TestEntity5(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let poly = Poly7<TestEntity5, TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6, TestEntity7>(entity)
 		XCTAssertEqual(poly.a, entity)
 		XCTAssertNil(poly.b)
