@@ -66,6 +66,11 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 			guard case let .errors(errors, meta: _, links: _) = self else { return nil }
 			return errors
 		}
+
+		public var data: Data? {
+			guard case let .data(data) = self else { return nil }
+			return data
+		}
 		
 		public var primaryResource: PrimaryResourceBody? {
 			guard case let .data(data) = self else { return nil }
