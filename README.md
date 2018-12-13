@@ -67,7 +67,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 ### JSONAPITestLib
 #### Entity Validator
 - [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
-- [x] Only allow `TransformedAttribute` and its derivatives within `Attributes` struct.
+- [x] Only allow `TransformedAttribute` and its derivatives as stored properties within `Attributes` struct. Computed properties can still be any type because they do not get encoded or decoded.
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
 ### Potential Improvements

@@ -16,9 +16,9 @@ class DocumentTests: XCTestCase {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertNotNil(document.body.primaryResource)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData?.value)
+		XCTAssertNil(document.body.primaryResource?.value)
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.links, NoLinks())
 		XCTAssertEqual(document.apiDescription, .none)
@@ -35,9 +35,9 @@ class DocumentTests: XCTestCase {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
+		XCTAssertNotNil(document.body.primaryResource)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData?.value)
+		XCTAssertNil(document.body.primaryResource?.value)
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.links, NoLinks())
 		XCTAssertEqual(document.apiDescription.version, "1.0")
@@ -73,7 +73,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -98,7 +98,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -123,7 +123,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -146,7 +146,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertNil(document.body.meta)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -171,7 +171,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -196,7 +196,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -222,7 +222,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -246,7 +246,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -271,7 +271,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -299,7 +299,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -327,7 +327,7 @@ extension DocumentTests {
 							   data: error_document_with_links)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -353,7 +353,7 @@ extension DocumentTests {
 							   data: error_document_with_links_with_api_description)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -380,7 +380,7 @@ extension DocumentTests {
 							   data: error_document_no_metadata)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
 		guard case let .errors(errors) = document.body else {
@@ -403,7 +403,7 @@ extension DocumentTests {
 							   data: error_document_no_metadata_with_api_description)
 
 		XCTAssertTrue(document.body.isError)
-		XCTAssertNil(document.body.primaryData)
+		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 
@@ -523,8 +523,8 @@ extension DocumentTests {
 		
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 	}
@@ -540,8 +540,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertEqual(document.apiDescription.version, "1.0")
@@ -558,8 +558,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 	}
@@ -575,8 +575,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value?.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value?.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertEqual(document.apiDescription.version, "1.0")
@@ -593,8 +593,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 	}
@@ -610,8 +610,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertEqual(document.apiDescription.version, "1.0")
@@ -628,8 +628,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
@@ -650,8 +650,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
@@ -673,8 +673,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
@@ -695,8 +695,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
@@ -726,8 +726,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
@@ -744,8 +744,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
@@ -763,8 +763,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
@@ -782,8 +782,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.includes?.count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 1)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
@@ -802,8 +802,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
@@ -825,8 +825,8 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.value.id.rawValue, "1")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
 		XCTAssertEqual(document.body.meta, TestPageMetadata(total: 70, limit: 40, offset: 10))
 		XCTAssertEqual(document.body.links?.link.url, "https://website.com")
 		XCTAssertEqual(document.body.links?.link.meta, NoMetadata())
@@ -850,8 +850,8 @@ extension DocumentTests {
 		let article = Article(id: Id(rawValue: "1"), attributes: .none, relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))), meta: .none, links: .none)
 		let document = decoded(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes)
 
-		XCTAssertEqual(document.body.primaryData?.value[Article.self], article)
-		XCTAssertNil(document.body.primaryData?.value[Author.self])
+		XCTAssertEqual(document.body.primaryResource?.value[Article.self], article)
+		XCTAssertNil(document.body.primaryResource?.value[Author.self])
 	}
 
 	func test_singleDocument_PolyPrimaryResource_encode() {
@@ -862,8 +862,8 @@ extension DocumentTests {
 		let article = Article(id: Id(rawValue: "1"), attributes: .none, relationships: .init(author: ToOneRelationship(id: Id(rawValue: "33"))), meta: .none, links: .none)
 		let document = decoded(type: Document<SingleResourceBody<Poly2<Article, Author>>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self, data: single_document_no_includes_with_api_description)
 
-		XCTAssertEqual(document.body.primaryData?.value[Article.self], article)
-		XCTAssertNil(document.body.primaryData?.value[Author.self])
+		XCTAssertEqual(document.body.primaryResource?.value[Article.self], article)
+		XCTAssertNil(document.body.primaryResource?.value[Author.self])
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 	}
 
@@ -880,11 +880,11 @@ extension DocumentTests {
 		
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.values.count, 3)
-		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.values.count, 3)
+		XCTAssertEqual(document.body.primaryResource?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryResource?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryResource?.values[2].id.rawValue, "3")
 		XCTAssertEqual(document.body.includes?.count, 0)
 	}
 
@@ -899,11 +899,11 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.values.count, 3)
-		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.values.count, 3)
+		XCTAssertEqual(document.body.primaryResource?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryResource?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryResource?.values[2].id.rawValue, "3")
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.apiDescription.version, "1.0")
 	}
@@ -919,11 +919,11 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.values.count, 3)
-		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.values.count, 3)
+		XCTAssertEqual(document.body.primaryResource?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryResource?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryResource?.values[2].id.rawValue, "3")
 		XCTAssertEqual(document.body.includes?.count, 3)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 3)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
@@ -942,11 +942,11 @@ extension DocumentTests {
 
 		XCTAssertFalse(document.body.isError)
 		XCTAssertNil(document.body.errors)
-		XCTAssertNotNil(document.body.primaryData)
-		XCTAssertEqual(document.body.primaryData?.values.count, 3)
-		XCTAssertEqual(document.body.primaryData?.values[0].id.rawValue, "1")
-		XCTAssertEqual(document.body.primaryData?.values[1].id.rawValue, "2")
-		XCTAssertEqual(document.body.primaryData?.values[2].id.rawValue, "3")
+		XCTAssertNotNil(document.body.primaryResource)
+		XCTAssertEqual(document.body.primaryResource?.values.count, 3)
+		XCTAssertEqual(document.body.primaryResource?.values[0].id.rawValue, "1")
+		XCTAssertEqual(document.body.primaryResource?.values[1].id.rawValue, "2")
+		XCTAssertEqual(document.body.primaryResource?.values[2].id.rawValue, "3")
 		XCTAssertEqual(document.body.includes?.count, 3)
 		XCTAssertEqual(document.body.includes?[Author.self].count, 3)
 		XCTAssertEqual(document.body.includes?[Author.self][0].id.rawValue, "33")
