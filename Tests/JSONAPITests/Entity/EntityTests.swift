@@ -26,7 +26,10 @@ class EntityTests: XCTestCase {
 	}
 
 	func test_optional_relationship_operator_access() {
-		
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: .init(entity: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(entities: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+
+		XCTAssertEqual(entity ~> \.optionalOne, entity1.id)
 	}
 	
 	func test_toMany_relationship_operator_access() {
@@ -39,7 +42,10 @@ class EntityTests: XCTestCase {
 	}
 
 	func test_optionalToMany_relationship_opeartor_access() {
+		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(entities: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
+		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
 	
 	func test_relationshipIds() {
@@ -57,6 +63,12 @@ class EntityTests: XCTestCase {
 		XCTAssertEqual(pointer.id, entity.id)
 		XCTAssertEqual(pointer.meta.x, "world")
 		XCTAssertEqual(pointer.links.link1.url, "ok")
+	}
+
+	func test_unidentifiedEntityAttributeAccess() {
+		let entity = UnidentifiedTestEntity(attributes: .init(me: "hello"), relationships: .none, meta: .none, links: .none)
+
+		XCTAssertEqual(entity[\.me], "hello")
 	}
 
 	func test_initialization() {
