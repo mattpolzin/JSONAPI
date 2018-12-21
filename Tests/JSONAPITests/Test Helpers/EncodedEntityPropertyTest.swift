@@ -49,20 +49,3 @@ func testEncoded<E: EntityType>(entity: E) {
 		XCTAssertNotNil(jsonLinks)
 	}
 }
-
-// MARK: - Extensions to help with identifying structure of Mirror
-private protocol OptionalAttributeType {}
-extension Optional: OptionalAttributeType where Wrapped: AttributeType {}
-
-private protocol OptionalArray {}
-extension Optional: OptionalArray where Wrapped: ArrayType {}
-
-private protocol AttributeTypeWithOptionalArray {}
-extension TransformedAttribute: AttributeTypeWithOptionalArray where RawValue: OptionalArray {}
-
-private protocol OptionalRelationshipType {}
-extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
-
-private protocol _RelationshipType {}
-extension ToOneRelationship: _RelationshipType {}
-extension ToManyRelationship: _RelationshipType {}

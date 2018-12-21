@@ -11,7 +11,7 @@ public protocol AttributeType: Codable {
 // MARK: TransformedAttribute
 /// A TransformedAttribute takes a Codable type and attempts to turn it into another type.
 public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Transformer>: AttributeType where Transformer.From == RawValue {
-	private let rawValue: RawValue
+	let rawValue: RawValue
 	
 	public let value: Transformer.To
 	

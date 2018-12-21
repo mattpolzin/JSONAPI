@@ -30,6 +30,18 @@ class AttributeTests: XCTestCase {
 		XCTAssertNoThrow(try TransformedAttribute<String, TestTransformer>(transformedValue: 10))
 	}
 
+	func test_EncodedPrimitives() {
+		testEncodedPrimitive(attribute: Attribute<Int>(value: 10))
+		testEncodedPrimitive(attribute: Attribute<Bool>(value: false))
+		testEncodedPrimitive(attribute: Attribute<Double>(value: 10.2))
+
+		testEncodedPrimitive(attribute: try! TransformedAttribute<Int, IntToString>(rawValue: 10))
+		testEncodedPrimitive(attribute: try! TransformedAttribute<Int, IntToInt>(rawValue: 10))
+		testEncodedPrimitive(attribute: try! TransformedAttribute<Int, IntToDouble>(rawValue: 10))
+		testEncodedPrimitive(attribute: try! TransformedAttribute<String, TestTransformer>(rawValue: "10"))
+		testEncodedPrimitive(attribute: try! TransformedAttribute<String?, OptionalToString<String>>(rawValue: "10"))
+	}
+
 	func test_NullableIsNullIfNil() {
 		struct Wrapper: Codable {
 			let dummy: Attribute<String?>
@@ -66,6 +78,30 @@ extension AttributeTests {
 
 		public static func reverse(_ value: Int) throws -> String {
 			return String(value)
+		}
+	}
+
+	enum IntToString: Transformer {
+		public static func transform(_ from: Int) -> String {
+			return String(from)
+		}
+	}
+
+	enum IntToInt: Transformer {
+		public static func transform(_ from: Int) -> Int {
+			return from + 100
+		}
+	}
+
+	enum IntToDouble: Transformer {
+		public static func transform(_ from: Int) -> Double {
+			return Double(from)
+		}
+	}
+
+	enum OptionalToString<T>: Transformer {
+		public static func transform(_ from: T?) -> String {
+			return String(describing: from)
 		}
 	}
 }
