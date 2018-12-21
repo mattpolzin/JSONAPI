@@ -19,7 +19,7 @@ private struct Wrapper<Value: Equatable & Codable, Transform: Transformer>: Coda
 }
 
 /// This function attempts to just cast to the type, so it only works
-/// for Attributes of primitive types.
+/// for Attributes of primitive types (primitive to JSON).
 func testEncodedPrimitive<Value: Equatable & Codable, Transform: Transformer>(attribute: TransformedAttribute<Value, Transform>) {
 	let encodedAttributeData = encoded(value: Wrapper<Value, Transform>(x: attribute))
 	let wrapperObject = try! JSONSerialization.jsonObject(with: encodedAttributeData, options: []) as! [String: Any]

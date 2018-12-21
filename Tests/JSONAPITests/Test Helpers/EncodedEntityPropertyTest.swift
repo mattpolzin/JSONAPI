@@ -17,6 +17,18 @@ func testEncoded<E: EntityType>(entity: E) {
 
 	XCTAssertNotNil(jsonDict)
 
+	let jsonId = jsonDict?["id"]
+
+	if E.EntityRawIdType.self == Unidentified.self {
+		XCTAssertNil(jsonId)
+	} else {
+		XCTAssertNotNil(jsonId)
+	}
+
+	let jsonType = jsonDict?["type"] as? String
+
+	XCTAssertEqual(jsonType, E.type)
+
 	let jsonAttributes = jsonDict?["attributes"] as? [String: Any]
 
 	if E.Attributes.self == NoAttributes.self {
