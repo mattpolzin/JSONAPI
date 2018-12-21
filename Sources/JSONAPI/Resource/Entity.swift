@@ -76,6 +76,8 @@ extension EntityProxy {
 /// protocol lets other types accept any Entity as a generic
 /// specialization.
 public protocol EntityType: EntityProxy, PrimaryResource {
+	associatedtype Meta: JSONAPI.Meta
+	associatedtype Links: JSONAPI.Links
 }
 
 public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
@@ -85,6 +87,10 @@ public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdT
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
 public struct Entity<Description: JSONAPI.EntityDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
+
+	public typealias Meta = MetaType
+	public typealias Links = LinksType
+
 	/// The `Entity`'s Id. This can be of type `Unidentified` if
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
