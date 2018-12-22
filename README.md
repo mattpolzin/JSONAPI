@@ -273,6 +273,23 @@ public var fullName: Attribute<String> {
 }
 ```
 
+### Copying `Entities`
+`Entity` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying an `Entity`:
+1. Assigning a new `Identifier` to the copy of an identified `Entity`.
+2. Assigning a new `Identifier` to the copy of an unidentified `Entity`.
+
+The above can be accomplished with code like the following:
+
+```
+// use case 1
+let person1 = person.withNewIdentifier()
+
+// use case 2
+let newlyIdentifiedPerson1 = unidentifiedPerson.identified(byType: String.self)
+
+let newlyIdentifiedPerson2 = unidentifiedPerson.identified(by: "2232")
+```
+
 ### `JSONAPI.Document`
 
 The entirety of a JSON API request or response is encoded or decoded from- or to a `Document`. As an example, a JSON API response containing one `Person` and no included entities could be decoded as follows:
