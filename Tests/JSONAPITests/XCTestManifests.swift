@@ -15,6 +15,7 @@ extension AttributeTests {
     static let __allTests = [
         ("test_AttributeIsTransformedAttribute", test_AttributeIsTransformedAttribute),
         ("test_AttributeNonThrowingConstructor", test_AttributeNonThrowingConstructor),
+        ("test_EncodedPrimitives", test_EncodedPrimitives),
         ("test_NullableIsEqualToNonNullableIfNotNil", test_NullableIsEqualToNonNullableIfNotNil),
         ("test_NullableIsNullIfNil", test_NullableIsNullIfNil),
         ("test_TransformedAttributeNoThrow", test_TransformedAttributeNoThrow),
@@ -181,6 +182,9 @@ extension EntityCheckTests {
 
 extension EntityTests {
     static let __allTests = [
+        ("test_copyIdentifiedByType", test_copyIdentifiedByType),
+        ("test_copyIdentifiedByValue", test_copyIdentifiedByValue),
+        ("test_copyWithNewId", test_copyWithNewId),
         ("test_entityAllAttribute", test_entityAllAttribute),
         ("test_entityAllAttribute_encode", test_entityAllAttribute_encode),
         ("test_entityBrokenNullableOmittedAttribute", test_entityBrokenNullableOmittedAttribute),
@@ -235,6 +239,7 @@ extension EntityTests {
         ("test_toMany_relationship_operator_access", test_toMany_relationship_operator_access),
         ("test_UnidentifiedEntity", test_UnidentifiedEntity),
         ("test_UnidentifiedEntity_encode", test_UnidentifiedEntity_encode),
+        ("test_unidentifiedEntityAttributeAccess", test_unidentifiedEntityAttributeAccess),
         ("test_UnidentifiedEntityWithAttributes", test_UnidentifiedEntityWithAttributes),
         ("test_UnidentifiedEntityWithAttributes_encode", test_UnidentifiedEntityWithAttributes_encode),
         ("test_UnidentifiedEntityWithAttributesAndLinks", test_UnidentifiedEntityWithAttributesAndLinks),
