@@ -383,9 +383,14 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawId
 public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 
 	/// An Entity.Pointer is a `ToOneRelationship` with no metadata or links.
-	/// This is just a convenient way to reference an Entity given that
+	/// This is just a convenient way to reference an Entity so that
 	/// other Entities' Relationships can be built up from it.
 	public typealias Pointer = ToOneRelationship<Entity, NoMetadata, NoLinks>
+
+	/// Entity.Pointers is a `ToManyRelationship` with no metadata or links.
+	/// This is just a convenient way to reference a bunch of Entities so
+	/// that other Entities' Relationships can be built up from them.
+	public typealias Pointers = ToManyRelationship<Entity, NoMetadata, NoLinks>
 
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
@@ -395,6 +400,27 @@ public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 
 	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {
 		return ToOneRelationship(entity: self, meta: meta, links: links)
+	}
+}
+
+// MARK: Identifying Unidentified Entities
+public extension Entity where EntityRawIdType == Unidentified {
+	/// Create a new Entity from this one with a newly created
+	/// unique Id of the given type.
+	public func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> Entity<Description, MetaType, LinksType, RawIdType> {
+		return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
+	}
+
+	/// Create a new Entity from this one with the given Id.
+	public func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> Entity<Description, MetaType, LinksType, RawIdType> {
+		return .init(id: Entity<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
+	}
+}
+
+public extension Entity where EntityRawIdType: CreatableRawIdType {
+	/// Create a copy of this Entity with a new unique Id.
+	public func withNewIdentifier() -> Entity {
+		return Entity(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 

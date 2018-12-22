@@ -101,6 +101,36 @@ class EntityTests: XCTestCase {
 	}
 }
 
+// MARK: - Identifying entity copies
+extension EntityTests {
+	func test_copyIdentifiedByType() {
+		let unidentifiedEntity = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .none, links: .none)
+
+		let identifiedCopy = unidentifiedEntity.identified(byType: String.self)
+
+		XCTAssertEqual(unidentifiedEntity.attributes, identifiedCopy.attributes)
+		XCTAssertEqual(unidentifiedEntity.relationships, identifiedCopy.relationships)
+	}
+
+	func test_copyIdentifiedByValue() {
+		let unidentifiedEntity = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .none, links: .none)
+
+		let identifiedCopy = unidentifiedEntity.identified(by: "hello")
+
+		XCTAssertEqual(unidentifiedEntity.attributes, identifiedCopy.attributes)
+		XCTAssertEqual(unidentifiedEntity.relationships, identifiedCopy.relationships)
+		XCTAssertEqual(identifiedCopy.id, "hello")
+	}
+
+	func test_copyWithNewId() {
+		let identifiedEntity = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+
+		let identifiedCopy = identifiedEntity.withNewIdentifier()
+
+		XCTAssertNotEqual(identifiedEntity.id, identifiedCopy.id)
+	}
+}
+
 // MARK: - Encode/Decode
 extension EntityTests {
 
