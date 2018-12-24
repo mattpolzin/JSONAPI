@@ -23,6 +23,7 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserA[\.name], "Ken Moore")
 		XCTAssertEqual(polyUserA.id, "1")
 		XCTAssertEqual(polyUserA.relationships, .none)
+		XCTAssertEqual(polyUserA[\.x], .init(x: "y"))
 	}
 
 	func test_UserAAndBEncodeEquality() {
@@ -57,6 +58,7 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserB[\.name], "Ken Less")
 		XCTAssertEqual(polyUserB.id, "2")
 		XCTAssertEqual(polyUserB.relationships, .none)
+		XCTAssertEqual(polyUserB[\.x], .init(x: "y"))
 	}
 }
 
@@ -111,9 +113,9 @@ extension Poly2: EntityProxy, JSONTyped where A == PolyProxyTests.UserA, B == Po
 	public var attributes: SharedUserDescription.Attributes {
 		switch self {
 		case .a(let a):
-			return .init(name: .init(value: "\(a[\.firstName]) \(a[\.lastName])"))
+			return .init(name: .init(value: "\(a[\.firstName]) \(a[\.lastName])"), x: .init(x: "y"))
 		case .b(let b):
-			return .init(name: .init(value: b[\.name].joined(separator: " ")))
+			return .init(name: .init(value: b[\.name].joined(separator: " ")), x: .init(x: "y"))
 		}
 	}
 
@@ -121,14 +123,19 @@ extension Poly2: EntityProxy, JSONTyped where A == PolyProxyTests.UserA, B == Po
 		return .none
 	}
 
-	public enum SharedUserDescription: EntityDescription {
+	public enum SharedUserDescription: EntityProxyDescription {
 		public static var type: String { return A.type }
 
-		public struct Attributes: JSONAPI.Attributes {
+		public struct Attributes: Equatable {
 			let name: Attribute<String>
+			let x: SomeRandomThingThatIsNotCodable
 		}
 
 		public typealias Relationships = NoRelationships
+
+		public struct SomeRandomThingThatIsNotCodable: Equatable {
+			let x: String
+		}
 	}
 
 	public typealias Description = SharedUserDescription
