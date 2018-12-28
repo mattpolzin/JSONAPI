@@ -227,6 +227,11 @@ typealias Attributes = NoAttributes
 let favoriteColor: String = person[\.favoriteColor]
 ```
 
+NOTE: Because of support for computed properties that are not wrapped in `Attribute`, `TransformedAttribute`, or `ValidatedAttribute`, the compiler cannot always infer the type of thing you want back when using subscript attribute access. The following code is ambiguous about whether it should return a `String` or an `Attribute<String>`:
+```
+let favoriteColor = person[\.favoriteColor]
+```
+
 #### `Transformer`
 
 Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. The Foundation library `JSONDecoder` has a setting to make this adjustment, but for the sake of an example, you could create a `Transformer`.
@@ -265,7 +270,7 @@ You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is ju
 
 #### Computed `Attribute`
 
-You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties should still have the type `Attribute` because that way you can take advantage of the quick access provided by `Entity`'s subscript operator. Here's an example of how you might take the `Person[\.name]` attribute from the example above and create a `fullName` computed property.
+You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `Person[\.name]` attribute from the example above and create a `fullName` computed property.
 
 ```
 public var fullName: Attribute<String> {
