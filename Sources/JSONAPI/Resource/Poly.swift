@@ -799,3 +799,360 @@ extension Poly7: CustomStringConvertible {
 		return "Poly(\(str))"
 	}
 }
+
+// MARK: - 8 types
+public protocol _Poly8: _Poly7 {
+	associatedtype H: EntityType
+	var h: H? { get }
+
+	init(_ h: H)
+}
+
+public extension _Poly8 {
+	subscript(_ lookup: H.Type) -> H? {
+		return h
+	}
+}
+
+public enum Poly8<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType, G: EntityType, H: EntityType>: _Poly8 {
+	case a(A)
+	case b(B)
+	case c(C)
+	case d(D)
+	case e(E)
+	case f(F)
+	case g(G)
+	case h(H)
+
+	public var a: A? {
+		guard case let .a(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
+
+	public var b: B? {
+		guard case let .b(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
+	}
+
+	public var c: C? {
+		guard case let .c(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ c: C) {
+		self = .c(c)
+	}
+
+	public var d: D? {
+		guard case let .d(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ d: D) {
+		self = .d(d)
+	}
+
+	public var e: E? {
+		guard case let .e(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ e: E) {
+		self = .e(e)
+	}
+
+	public var f: F? {
+		guard case let .f(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ f: F) {
+		self = .f(f)
+	}
+
+	public var g: G? {
+		guard case let .g(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ g: G) {
+		self = .g(g)
+	}
+
+	public var h: H? {
+		guard case let .h(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ h: H) {
+		self = .h(h)
+	}
+
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.singleValueContainer()
+
+		let attempts = [
+			try decode(A.self, from: container).map { Poly8.a($0) },
+			try decode(B.self, from: container).map { Poly8.b($0) },
+			try decode(C.self, from: container).map { Poly8.c($0) },
+			try decode(D.self, from: container).map { Poly8.d($0) },
+			try decode(E.self, from: container).map { Poly8.e($0) },
+			try decode(F.self, from: container).map { Poly8.f($0) },
+			try decode(G.self, from: container).map { Poly8.g($0) },
+			try decode(H.self, from: container).map { Poly8.h($0) }]
+
+		let maybeVal: Poly8<A, B, C, D, E, F, G, H>? = attempts
+			.compactMap { $0.value }
+			.first
+
+		guard let val = maybeVal else {
+			throw EncodingError.invalidValue(Poly8<A, B, C, D, E, F, G, H>.self, .init(codingPath: decoder.codingPath,
+																					   debugDescription: "Failed to find an include of the expected type. Attempts: \(attempts.map { $0.error }.compactMap { $0 })"))
+		}
+
+		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		case .d(let d):
+			try container.encode(d)
+		case .e(let e):
+			try container.encode(e)
+		case .f(let f):
+			try container.encode(f)
+		case .g(let g):
+			try container.encode(g)
+		case .h(let h):
+			try container.encode(h)
+		}
+	}
+}
+
+extension Poly8: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		case .d(let d):
+			str = String(describing: d)
+		case .e(let e):
+			str = String(describing: e)
+		case .f(let f):
+			str = String(describing: f)
+		case .g(let g):
+			str = String(describing: g)
+		case .h(let h):
+			str = String(describing: h)
+		}
+
+		return "Poly(\(str))"
+	}
+}
+
+// MARK: - 9 types
+public protocol _Poly9: _Poly8 {
+	associatedtype I: EntityType
+	var i: I? { get }
+
+	init(_ i: I)
+}
+
+public extension _Poly9 {
+	subscript(_ lookup: I.Type) -> I? {
+		return i
+	}
+}
+
+public enum Poly9<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType, G: EntityType, H: EntityType, I: EntityType>: _Poly9 {
+	case a(A)
+	case b(B)
+	case c(C)
+	case d(D)
+	case e(E)
+	case f(F)
+	case g(G)
+	case h(H)
+	case i(I)
+
+	public var a: A? {
+		guard case let .a(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ a: A) {
+		self = .a(a)
+	}
+
+	public var b: B? {
+		guard case let .b(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ b: B) {
+		self = .b(b)
+	}
+
+	public var c: C? {
+		guard case let .c(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ c: C) {
+		self = .c(c)
+	}
+
+	public var d: D? {
+		guard case let .d(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ d: D) {
+		self = .d(d)
+	}
+
+	public var e: E? {
+		guard case let .e(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ e: E) {
+		self = .e(e)
+	}
+
+	public var f: F? {
+		guard case let .f(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ f: F) {
+		self = .f(f)
+	}
+
+	public var g: G? {
+		guard case let .g(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ g: G) {
+		self = .g(g)
+	}
+
+	public var h: H? {
+		guard case let .h(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ h: H) {
+		self = .h(h)
+	}
+
+	public var i: I? {
+		guard case let .i(ret) = self else { return nil }
+		return ret
+	}
+
+	public init(_ i: I) {
+		self = .i(i)
+	}
+
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.singleValueContainer()
+
+		let attempts = [
+			try decode(A.self, from: container).map { Poly9.a($0) },
+			try decode(B.self, from: container).map { Poly9.b($0) },
+			try decode(C.self, from: container).map { Poly9.c($0) },
+			try decode(D.self, from: container).map { Poly9.d($0) },
+			try decode(E.self, from: container).map { Poly9.e($0) },
+			try decode(F.self, from: container).map { Poly9.f($0) },
+			try decode(G.self, from: container).map { Poly9.g($0) },
+			try decode(H.self, from: container).map { Poly9.h($0) },
+			try decode(I.self, from: container).map { Poly9.i($0) }]
+
+		let maybeVal: Poly9<A, B, C, D, E, F, G, H, I>? = attempts
+			.compactMap { $0.value }
+			.first
+
+		guard let val = maybeVal else {
+			throw EncodingError.invalidValue(Poly9<A, B, C, D, E, F, G, H, I>.self, .init(codingPath: decoder.codingPath,
+																						  debugDescription: "Failed to find an include of the expected type. Attempts: \(attempts.map { $0.error }.compactMap { $0 })"))
+		}
+
+		self = val
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		switch self {
+		case .a(let a):
+			try container.encode(a)
+		case .b(let b):
+			try container.encode(b)
+		case .c(let c):
+			try container.encode(c)
+		case .d(let d):
+			try container.encode(d)
+		case .e(let e):
+			try container.encode(e)
+		case .f(let f):
+			try container.encode(f)
+		case .g(let g):
+			try container.encode(g)
+		case .h(let h):
+			try container.encode(h)
+		case .i(let i):
+			try container.encode(i)
+		}
+	}
+}
+
+extension Poly9: CustomStringConvertible {
+	public var description: String {
+		let str: String
+		switch self {
+		case .a(let a):
+			str = String(describing: a)
+		case .b(let b):
+			str = String(describing: b)
+		case .c(let c):
+			str = String(describing: c)
+		case .d(let d):
+			str = String(describing: d)
+		case .e(let e):
+			str = String(describing: e)
+		case .f(let f):
+			str = String(describing: f)
+		case .g(let g):
+			str = String(describing: g)
+		case .h(let h):
+			str = String(describing: h)
+		case .i(let i):
+			str = String(describing: i)
+		}
+
+		return "Poly(\(str))"
+	}
+}

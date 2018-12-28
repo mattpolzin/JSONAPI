@@ -100,3 +100,17 @@ let poly_entity8 = """
 	"id": "A24B3444-4DF1-467F-B52E-B0C9E44F436A"
 }
 """.data(using: .utf8)!
+
+let poly_entity9 = """
+{
+	"type": "test_entity9",
+	"id": "A24B3444-4DF1-467F-B52E-B0C2B44F436A"
+}
+""".data(using: .utf8)!
+
+let poly_entity10 = """
+{
+	"type": "test_entity10",
+	"id": "A24B3444-4DF1-467F-B52E-B0C9E12F436A"
+}
+""".data(using: .utf8)!

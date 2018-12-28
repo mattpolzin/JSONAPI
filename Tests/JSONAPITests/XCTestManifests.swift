@@ -269,10 +269,14 @@ extension Id_LiteralTests {
 
 extension IncludedTests {
     static let __allTests = [
+        ("test_EightDifferentIncludes", test_EightDifferentIncludes),
+        ("test_EightDifferentIncludes_encode", test_EightDifferentIncludes_encode),
         ("test_FiveDifferentIncludes", test_FiveDifferentIncludes),
         ("test_FiveDifferentIncludes_encode", test_FiveDifferentIncludes_encode),
         ("test_FourDifferentIncludes", test_FourDifferentIncludes),
         ("test_FourDifferentIncludes_encode", test_FourDifferentIncludes_encode),
+        ("test_NineDifferentIncludes", test_NineDifferentIncludes),
+        ("test_NineDifferentIncludes_encode", test_NineDifferentIncludes_encode),
         ("test_OneInclude", test_OneInclude),
         ("test_OneInclude_encode", test_OneInclude_encode),
         ("test_SevenDifferentIncludes", test_SevenDifferentIncludes),
@@ -334,6 +338,8 @@ extension PolyTests {
         ("test_init_Poly5", test_init_Poly5),
         ("test_init_Poly6", test_init_Poly6),
         ("test_init_Poly7", test_init_Poly7),
+        ("test_init_Poly8", test_init_Poly8),
+        ("test_init_Poly9", test_init_Poly9),
         ("test_Poly0_decode_throws", test_Poly0_decode_throws),
         ("test_Poly0_encode_throws", test_Poly0_encode_throws),
         ("test_Poly1_decode_throws_typeNotFound", test_Poly1_decode_throws_typeNotFound),
@@ -350,6 +356,10 @@ extension PolyTests {
         ("test_Poly6_lookup", test_Poly6_lookup),
         ("test_Poly7_decode_throws_typeNotFound", test_Poly7_decode_throws_typeNotFound),
         ("test_Poly7_lookup", test_Poly7_lookup),
+        ("test_Poly8_decode_throws_typeNotFound", test_Poly8_decode_throws_typeNotFound),
+        ("test_Poly8_lookup", test_Poly8_lookup),
+        ("test_Poly9_decode_throws_typeNotFound", test_Poly9_decode_throws_typeNotFound),
+        ("test_Poly9_lookup", test_Poly9_lookup),
     ]
 }
 
