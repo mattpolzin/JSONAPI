@@ -84,3 +84,11 @@ extension TransformedAttribute {
 		try container.encode(rawValue)
 	}
 }
+
+// MARK: Attribute decoding and encoding defaults
+
+extension AttributeType {
+	public static func defaultDecoding<Container: KeyedDecodingContainerProtocol>(from container: Container, forKey key: Container.Key) throws -> Self {
+		return try container.decode(Self.self, forKey: key)
+	}
+}

@@ -8,11 +8,11 @@
 /// A JSON API structure within an Entity that contains
 /// named properties of types `ToOneRelationship` and
 /// `ToManyRelationship`.
-public typealias Relationships = Codable & Equatable
+public protocol Relationships: Codable & Equatable {}
 
 /// A JSON API structure within an Entity that contains
 /// properties of any types that are JSON encodable.
-public typealias Attributes = Codable & Equatable
+public protocol Attributes: Codable & Equatable {}
 
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
@@ -556,9 +556,10 @@ public extension Entity {
 
 		let maybeUnidentified = Unidentified() as? EntityRawIdType
 		id = try maybeUnidentified.map { Entity.Id(rawValue: $0) } ?? container.decode(Entity.Id.self, forKey: .id)
-		
-		attributes = try (NoAttributes() as? Description.Attributes) ?? container.decode(Description.Attributes.self, forKey: .attributes)
-		
+
+		attributes = try (NoAttributes() as? Description.Attributes) ??
+			container.decode(Description.Attributes.self, forKey: .attributes)
+
 		relationships = try (NoRelationships() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
 
 		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)

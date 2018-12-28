@@ -61,7 +61,7 @@ extension EntityCheckTests {
 	enum EnumAttributesDescription: EntityDescription {
 		public static var type: String { return "hello" }
 
-		public enum Attributes: Codable, Equatable {
+		public enum Attributes: JSONAPI.Attributes {
 			case hello
 
 			public init(from decoder: Decoder) throws {
@@ -82,7 +82,7 @@ extension EntityCheckTests {
 
 		public typealias Attributes = NoAttributes
 
-		public enum Relationships: Codable, Equatable {
+		public enum Relationships: JSONAPI.Relationships {
 			case hello
 
 			public init(from decoder: Decoder) throws {

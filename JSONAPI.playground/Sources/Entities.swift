@@ -91,6 +91,34 @@ public enum DogDescription: EntityDescription {
 
 public typealias Dog = ExampleEntity<DogDescription>
 
+public enum AlternativeDogDescription: EntityDescription {
+
+	public static var type: String { return "dogs" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let name: Attribute<String>
+
+		public init(name: Attribute<String>) {
+			self.name = name
+		}
+	}
+
+	public struct Relationships: JSONAPI.Relationships {
+		public let human: ToOne<Person?>
+
+		public init(human: ToOne<Person?>) {
+			self.human = human
+		}
+
+		// define custom key mapping:
+		enum CodingKeys: String, CodingKey {
+			case human = "owner"
+		}
+	}
+}
+
+public typealias AlternativeDog = ExampleEntity<AlternativeDogDescription>
+
 public extension Entity where Description == DogDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	public init(name: String, owner: Person?) throws {
 		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: DogDescription.Relationships(owner: .init(entity: owner)), meta: .none, links: .none)

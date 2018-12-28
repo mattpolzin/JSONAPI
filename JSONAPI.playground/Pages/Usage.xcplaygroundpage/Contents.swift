@@ -19,7 +19,14 @@ let singleDogData = try! JSONEncoder().encode(singleDogDocument)
 
 // MARK: - Parse a request or response body with one Dog in it
 let dogResponse = try! JSONDecoder().decode(SingleDogDocument.self, from: singleDogData)
-let dogFromData = dogResponse.body.primaryData?.value
+let dogFromData = dogResponse.body.primaryResource?.value
+let dogOwner: Person.Identifier? = dogFromData.flatMap { $0 ~> \.owner }
+
+// MARKL - Parse a request or response body with one Dog in it using an alternative model
+typealias AltSingleDogDocument = JSONAPI.Document<SingleResourceBody<AlternativeDog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>
+let altDogResponse = try! JSONDecoder().decode(AltSingleDogDocument.self, from: singleDogData)
+let altDogFromData = altDogResponse.body.primaryResource?.value
+let altDogHuman: Person.Identifier? = altDogFromData.flatMap { $0 ~> \.human }
 
 // MARK: - Create a request or response with multiple people and dogs and houses included
 let personIds = [Person.Identifier(), Person.Identifier()]
@@ -36,7 +43,7 @@ let batchPeopleData = try! JSONEncoder().encode(batchPeopleDocument)
 // MARK: - Parse a request or response body with multiple people in it and dogs and houses included
 
 let peopleResponse = try! JSONDecoder().decode(BatchPeopleDocument.self, from: batchPeopleData)
-let peopleFromData = peopleResponse.body.primaryData?.values
+let peopleFromData = peopleResponse.body.primaryResource?.values
 let dogsFromData = peopleResponse.body.includes?[Dog.self]
 let housesFromData = peopleResponse.body.includes?[House.self]
 

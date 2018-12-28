@@ -399,5 +399,75 @@ extension String: CreatableRawIdType {
 }
 ```
 
+### Custom Attribute or Relationship Key Mapping
+There is not anything special going on at the `JSONAPI.Attributes` and `JSONAPI.Relationships` levels, so you can easily provide custom key mappings by taking advantage of `Codable`'s `CodingKeys` pattern. Here are two models that will encode/decode equivalently but offer different naming in your codebase:
+```
+public enum EntityDescription1: JSONAPI.EntityDescription {
+	public static var type: String { return "entity" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let coolProperty: Attribute<String>
+	}
+
+	public typealias Relationships = NoRelationships
+}
+
+public enum EntityDescription2: JSONAPI.EntityDescription {
+	public static var type: String { return "entity" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let wholeOtherThing: Attribute<String>
+
+		enum CodingKeys: String, CodingKey {
+			case wholeOtherThing = "coolProperty"
+		}
+	}
+}
+```
+
+### Custom Attribute Encode/Decode
+You can safely provide your own encoding or decoding functions for your Attributes struct if you need to as long as you are careful that your encode operation correctly reverses your decode operation. Although this is generally not necessary, `AttributeType` provides a convenience method to make your decoding a bit less boilerplate ridden. This is what it looks like:
+```
+public enum EntityDescription1: JSONAPI.EntityDescription {
+	public static var type: String { return "entity" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let property1: Attribute<String>
+		public let property2: Attribute<Int>
+		public let property3: Attribute<String>
+
+		public let weirdThing: Attribute<String>
+
+		enum CodingKeys: String, CodingKey {
+			case property1
+			case property2
+			case property3
+		}
+	}
+
+	public typealias Relationships = NoRelationships
+}
+
+extension EntityDescription1.Attributes {
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+
+		property1 = try .defaultDecoding(from: container, forKey: .property1)
+		property2 = try .defaultDecoding(from: container, forKey: .property2)
+		property3 = try .defaultDecoding(from: container, forKey: .property3)
+
+		weirdThing = "hello world"
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+
+		try container.encode(property1, forKey: .property1)
+		try container.encode(property2, forKey: .property2)
+		try container.encode(property3, forKey: .property3)
+	}
+}
+```
+
 # JSONAPITestLib
 The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITestLib` in action in the Playground included with the `JSONAPI` repository.

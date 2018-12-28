@@ -73,6 +73,15 @@ extension ComputedPropertiesTests {
     ]
 }
 
+extension CustomAttributesTests {
+    static let __allTests = [
+        ("test_customDecode", test_customDecode),
+        ("test_customEncode", test_customEncode),
+        ("test_customKeysDecode", test_customKeysDecode),
+        ("test_customKeysEncode", test_customKeysEncode),
+    ]
+}
+
 extension DocumentTests {
     static let __allTests = [
         ("test_errorDocumentFailsWithNoAPIDescription", test_errorDocumentFailsWithNoAPIDescription),
@@ -399,6 +408,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(Attribute_FunctorTests.__allTests),
         testCase(Attribute_LiteralTests.__allTests),
         testCase(ComputedPropertiesTests.__allTests),
+        testCase(CustomAttributesTests.__allTests),
         testCase(DocumentTests.__allTests),
         testCase(EntityCheckTests.__allTests),
         testCase(EntityTests.__allTests),
