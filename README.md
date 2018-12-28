@@ -456,7 +456,7 @@ extension EntityDescription1.Attributes {
 		property2 = try .defaultDecoding(from: container, forKey: .property2)
 		property3 = try .defaultDecoding(from: container, forKey: .property3)
 
-		weirdThing = "hello world"
+		weirdThing = .init(value: "hello world")
 	}
 
 	public func encode(to encoder: Encoder) throws {
