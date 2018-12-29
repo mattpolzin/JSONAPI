@@ -19,6 +19,14 @@ extension Optional: MaybePrimaryResource where Wrapped: PrimaryResource {}
 public protocol ResourceBody: Codable, Equatable {
 }
 
+public protocol AppendableResourceBody: ResourceBody {
+	func appending(_ other: Self) -> Self
+}
+
+public func +<R: AppendableResourceBody>(_ left: R, right: R) -> R {
+	return left.appending(right)
+}
+
 public struct SingleResourceBody<Entity: JSONAPI.MaybePrimaryResource>: ResourceBody {
 	public let value: Entity
 
@@ -27,11 +35,15 @@ public struct SingleResourceBody<Entity: JSONAPI.MaybePrimaryResource>: Resource
 	}
 }
 
-public struct ManyResourceBody<Entity: JSONAPI.PrimaryResource>: ResourceBody {
+public struct ManyResourceBody<Entity: JSONAPI.PrimaryResource>: AppendableResourceBody {
 	public let values: [Entity]
 
 	public init(entities: [Entity]) {
 		values = entities
+	}
+
+	public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
+		return ManyResourceBody(entities: values + other.values)
 	}
 }
 

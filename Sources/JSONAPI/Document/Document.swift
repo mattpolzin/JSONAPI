@@ -189,6 +189,26 @@ extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, Link
 }
 */
 
+extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody {
+	public func merging(_ other: Document.Body.Data,
+						combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
+						combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
+		return Document.Body.Data(primary: primary.appending(other.primary),
+								  includes: includes.appending(other.includes),
+								  meta: metaMerge(meta, other.meta),
+								  links: linksMerge(links, other.links))
+	}
+}
+
+extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody, MetaType == NoMetadata, LinksType == NoLinks {
+	public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
+		return merging(other,
+					   combiningMetaWith: { _, _ in .none },
+					   combiningLinksWith: { _, _ in .none })
+	}
+}
+
+// MARK: - Codable
 extension Document {
 	private enum RootCodingKeys: String, CodingKey {
 		case data

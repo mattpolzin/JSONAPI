@@ -1,6 +1,6 @@
 
 import XCTest
-import JSONAPI
+@testable import JSONAPI
 
 class IncludedTests: XCTestCase {
 
@@ -177,6 +177,18 @@ class IncludedTests: XCTestCase {
 	func test_NineDifferentIncludes_encode() {
 		test_DecodeEncodeEquality(type: Includes<Include9<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9>>.self,
 								  data: nine_different_type_includes)
+	}
+}
+
+extension IncludedTests {
+	func test_appending() {
+		let include1 = Includes<Include2<TestEntity8, TestEntity9>>(values: [.init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity9(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none))])
+
+		let include2 = Includes<Include2<TestEntity8, TestEntity9>>(values: [.init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity9(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none))])
+
+		let combined = include1 + include2
+
+		XCTAssertEqual(combined.values, include1.values + include2.values)
 	}
 }
 

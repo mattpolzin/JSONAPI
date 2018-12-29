@@ -61,6 +61,31 @@ class ResourceBodyTests: XCTestCase {
 						   data: many_resource_body_empty)
 	}
 
+	func test_manyResourceBodyMerge() {
+		let body1 = ManyResourceBody(entities: [
+			Article(attributes: .init(title: "hello"),
+					relationships: .none,
+					meta: .none,
+					links: .none),
+			Article(attributes: .init(title: "world"),
+					relationships: .none,
+					meta: .none,
+					links: .none)
+			])
+
+		let body2 = ManyResourceBody(entities: [
+			Article(attributes: .init(title: "once more"),
+					relationships: .none,
+					meta: .none,
+					links: .none)
+			])
+
+		let combined = body1 + body2
+
+		XCTAssertEqual(combined.values.count, 3)
+		XCTAssertEqual(combined.values, body1.values + body2.values)
+	}
+
 	enum ArticleType: EntityDescription {
 		public static var type: String { return "articles" }
 

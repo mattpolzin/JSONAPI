@@ -961,6 +961,55 @@ extension DocumentTests {
 	}
 }
 
+// MARK: - Merging
+extension DocumentTests {
+	public func test_MergeBodyDataBasic(){
+		let entity1 = Article(attributes: .none, relationships: .init(author: "2"), meta: .none, links: .none)
+		let entity2 = Article(attributes: .none, relationships: .init(author: "3"), meta: .none, links: .none)
+
+		let bodyData1 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [entity1]),
+																																			  includes: .none,
+																																			  meta: .none,
+																																			  links: .none)
+		let bodyData2 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [entity2]),
+																																			  includes: .none,
+																																			  meta: .none,
+																																			  links: .none)
+		let combined = bodyData1.merging(bodyData2)
+
+		XCTAssertEqual(combined.primary.values, bodyData1.primary.values + bodyData2.primary.values)
+	}
+
+	public func test_MergeBodyDataWithMergeFunctions() {
+		let article1 = Article(attributes: .none, relationships: .init(author: "2"), meta: .none, links: .none)
+		let author1 = Author(id: "2", attributes: .none, relationships: .none, meta: .none, links: .none)
+		let article2 = Article(attributes: .none, relationships: .init(author: "3"), meta: .none, links: .none)
+		let author2 = Author(id: "3", attributes: .none, relationships: .none, meta: .none, links: .none)
+
+		let bodyData1 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [article1]),
+																																						  includes: .init(values: [.init(author1)]),
+																																						  meta: .init(total: 50, limit: 5, offset: 5),
+																																						  links: .none)
+		let bodyData2 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [article2]),
+																																						  includes: .init(values: [.init(author2)]),
+																																						  meta: .init(total: 60, limit: 5, offset: 5),
+																																						  links: .none)
+
+		let combined = bodyData1.merging(bodyData2,
+										 combiningMetaWith: { (meta1, meta2) in
+											return .init(total: max(meta1.total, meta2.total), limit: max(meta1.limit, meta2.limit), offset: max(meta1.offset, meta2.offset))
+		},
+										 combiningLinksWith: { _, _ in .none })
+
+		XCTAssertEqual(combined.meta.total, bodyData2.meta.total)
+		XCTAssertEqual(combined.meta.limit, bodyData2.meta.limit)
+		XCTAssertEqual(combined.meta.offset, bodyData1.meta.offset)
+
+		XCTAssertEqual(combined.includes, bodyData1.includes + bodyData2.includes)
+		XCTAssertEqual(combined.primary, bodyData1.primary + bodyData2.primary)
+	}
+}
+
 // MARK: - Test Types
 extension DocumentTests {
 	enum AuthorType: EntityDescription {

@@ -97,6 +97,8 @@ extension DocumentTests {
         ("test_manyDocumentSomeIncludes_encode", test_manyDocumentSomeIncludes_encode),
         ("test_manyDocumentSomeIncludesWithAPIDescription", test_manyDocumentSomeIncludesWithAPIDescription),
         ("test_manyDocumentSomeIncludesWithAPIDescription_encode", test_manyDocumentSomeIncludesWithAPIDescription_encode),
+        ("test_MergeBodyDataBasic", test_MergeBodyDataBasic),
+        ("test_MergeBodyDataWithMergeFunctions", test_MergeBodyDataWithMergeFunctions),
         ("test_metaDataDocument", test_metaDataDocument),
         ("test_metaDataDocument_encode", test_metaDataDocument_encode),
         ("test_metaDataDocumentFailsIfMissingAPIDescription", test_metaDataDocumentFailsIfMissingAPIDescription),
@@ -269,6 +271,7 @@ extension Id_LiteralTests {
 
 extension IncludedTests {
     static let __allTests = [
+        ("test_appending", test_appending),
         ("test_EightDifferentIncludes", test_EightDifferentIncludes),
         ("test_EightDifferentIncludes_encode", test_EightDifferentIncludes_encode),
         ("test_FiveDifferentIncludes", test_FiveDifferentIncludes),
@@ -405,6 +408,7 @@ extension ResourceBodyTests {
         ("test_manyResourceBody_encode", test_manyResourceBody_encode),
         ("test_manyResourceBodyEmpty", test_manyResourceBodyEmpty),
         ("test_manyResourceBodyEmpty_encode", test_manyResourceBodyEmpty_encode),
+        ("test_manyResourceBodyMerge", test_manyResourceBodyMerge),
         ("test_singleResourceBody", test_singleResourceBody),
         ("test_singleResourceBody_encode", test_singleResourceBody_encode),
     ]

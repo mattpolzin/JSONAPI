@@ -50,6 +50,16 @@ public struct Includes<I: Include>: Codable, Equatable {
 	}
 }
 
+extension Includes {
+	public func appending(_ other: Includes<I>) -> Includes {
+		return Includes(values: values + other.values)
+	}
+}
+
+public func +<I: Include>(_ left: Includes<I>, _ right: Includes<I>) -> Includes<I> {
+	return left.appending(right)
+}
+
 extension Includes: CustomStringConvertible {
 	public var description: String {
 		return "Includes(\(String(describing: values))"
