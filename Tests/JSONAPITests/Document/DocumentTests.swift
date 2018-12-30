@@ -73,6 +73,7 @@ extension DocumentTests {
 
 		XCTAssertTrue(document.body.isError)
 		XCTAssertEqual(document.body.meta, NoMetadata())
+		XCTAssertNil(document.body.data)
 		XCTAssertNil(document.body.primaryResource)
 		XCTAssertNil(document.body.includes)
 
@@ -525,6 +526,7 @@ extension DocumentTests {
 		XCTAssertNil(document.body.errors)
 		XCTAssertNotNil(document.body.primaryResource)
 		XCTAssertEqual(document.body.primaryResource?.value.id.rawValue, "1")
+		XCTAssertEqual(document.body.data?.primary, document.body.primaryResource)
 		XCTAssertEqual(document.body.includes?.count, 0)
 		XCTAssertEqual(document.body.meta, NoMetadata())
 	}

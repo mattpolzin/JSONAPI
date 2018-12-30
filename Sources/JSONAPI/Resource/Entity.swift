@@ -433,21 +433,21 @@ public extension EntityProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>>) -> TFRM.To {
+	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
 		return attributes[keyPath: path].value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>?>) -> TFRM.To? {
+	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
 		return attributes[keyPath: path]?.value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.relationships.propertyName`.
-	subscript<T, TFRM: Transformer, U>(_ path: KeyPath<Description.Attributes, TransformedAttribute<T, TFRM>?>) -> U? where TFRM.To == U? {
+	subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
 		// Implementation Note: Handles Transform that returns optional
 		// type.
 		return attributes[keyPath: path].flatMap { $0.value }

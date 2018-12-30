@@ -5,6 +5,7 @@
 //  Created by Mathew Polzin on 11/17/18.
 //
 
+/// A Transformer simply defines a static function that transforms a value.
 public protocol Transformer {
 	associatedtype From
 	associatedtype To
@@ -12,10 +13,13 @@ public protocol Transformer {
 	static func transform(_ value: From) throws -> To
 }
 
+/// ReversibleTransformers define a function that reverses the transform
+/// operation.
 public protocol ReversibleTransformer: Transformer {
 	static func reverse(_ value: To) throws -> From
 }
 
+/// The IdentityTransformer does not perform any transformation on a value.
 public enum IdentityTransformer<T>: ReversibleTransformer {
 	public static func transform(_ value: T) throws -> T { return value }
 	public static func reverse(_ value: T) throws -> T { return value }

@@ -16,6 +16,8 @@ public struct APIDescription<Meta: JSONAPI.Meta>: APIDescriptionType {
 	public let meta: Meta
 }
 
+/// Can be used as `APIDescriptionType` for Documents that do not
+/// have any API Description (a.k.a. "JSON:API Object").
 public struct NoAPIDescription: APIDescriptionType, CustomStringConvertible {
 	public typealias Meta = NoMetadata
 

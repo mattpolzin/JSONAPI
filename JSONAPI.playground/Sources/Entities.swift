@@ -64,7 +64,7 @@ public typealias Person = ExampleEntity<PersonDescription>
 
 public extension Entity where Description == PersonDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	public init(id: Person.Id? = nil,name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
-		self = try Person(id: id ?? Person.Id(), attributes: .init(name: .init(rawValue: name), favoriteColor: .init(rawValue: favoriteColor)), relationships: .init(friends: .init(entities: friends), dogs: .init(entities: dogs), home: .init(entity: home)), meta: .none, links: .none)
+		self = Person(id: id ?? Person.Id(), attributes: .init(name: .init(value: name), favoriteColor: .init(value: favoriteColor)), relationships: .init(friends: .init(entities: friends), dogs: .init(entities: dogs), home: .init(entity: home)), meta: .none, links: .none)
 	}
 }
 
@@ -121,11 +121,11 @@ public typealias AlternativeDog = ExampleEntity<AlternativeDogDescription>
 
 public extension Entity where Description == DogDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	public init(name: String, owner: Person?) throws {
-		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: DogDescription.Relationships(owner: .init(entity: owner)), meta: .none, links: .none)
+		self = Dog(attributes: .init(name: .init(value: name)), relationships: DogDescription.Relationships(owner: .init(entity: owner)), meta: .none, links: .none)
 	}
 
 	public init(name: String, owner: Person.Id) throws {
-		self = try Dog(attributes: .init(name: .init(rawValue: name)), relationships: .init(owner: .init(id: owner)), meta: .none, links: .none)
+		self = Dog(attributes: .init(name: .init(value: name)), relationships: .init(owner: .init(id: owner)), meta: .none, links: .none)
 	}
 }
 

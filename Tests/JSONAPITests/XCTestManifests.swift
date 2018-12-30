@@ -13,8 +13,7 @@ extension APIDescriptionTests {
 
 extension AttributeTests {
     static let __allTests = [
-        ("test_AttributeIsTransformedAttribute", test_AttributeIsTransformedAttribute),
-        ("test_AttributeNonThrowingConstructor", test_AttributeNonThrowingConstructor),
+        ("test_AttributeConstructor", test_AttributeConstructor),
         ("test_EncodedPrimitives", test_EncodedPrimitives),
         ("test_NullableIsEqualToNonNullableIfNotNil", test_NullableIsEqualToNonNullableIfNotNil),
         ("test_NullableIsNullIfNil", test_NullableIsNullIfNil),

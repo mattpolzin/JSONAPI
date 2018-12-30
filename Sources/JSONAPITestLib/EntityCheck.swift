@@ -41,6 +41,7 @@ extension Optional: OptionalArray where Wrapped: ArrayType {}
 
 private protocol AttributeTypeWithOptionalArray {}
 extension TransformedAttribute: AttributeTypeWithOptionalArray where RawValue: OptionalArray {}
+extension Attribute: AttributeTypeWithOptionalArray where RawValue: OptionalArray {}
 
 private protocol OptionalRelationshipType {}
 extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
@@ -48,6 +49,10 @@ extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
 private protocol _RelationshipType {}
 extension ToOneRelationship: _RelationshipType {}
 extension ToManyRelationship: _RelationshipType {}
+
+private protocol _AttributeType {}
+extension TransformedAttribute: _AttributeType {}
+extension Attribute: _AttributeType {}
 
 public extension Entity {
 	public static func check(_ entity: Entity) throws {
@@ -60,7 +65,7 @@ public extension Entity {
 		}
 
 		for attribute in attributesMirror.children {
-			if attribute.value as? AttributeType == nil,
+			if attribute.value as? _AttributeType == nil,
 				attribute.value as? OptionalAttributeType == nil {
 				problems.append(.nonAttribute(named: attribute.label ?? "unnamed"))
 			}

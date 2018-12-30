@@ -1,7 +1,7 @@
 
 import JSONAPI
 
-extension TransformedAttribute: ExpressibleByUnicodeScalarLiteral where RawValue: ExpressibleByUnicodeScalarLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByUnicodeScalarLiteral where RawValue: ExpressibleByUnicodeScalarLiteral {
 	public typealias UnicodeScalarLiteralType = RawValue.UnicodeScalarLiteralType
 
 	public init(unicodeScalarLiteral value: RawValue.UnicodeScalarLiteralType) {
@@ -9,7 +9,7 @@ extension TransformedAttribute: ExpressibleByUnicodeScalarLiteral where RawValue
 	}
 }
 
-extension TransformedAttribute: ExpressibleByExtendedGraphemeClusterLiteral where RawValue: ExpressibleByExtendedGraphemeClusterLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByExtendedGraphemeClusterLiteral where RawValue: ExpressibleByExtendedGraphemeClusterLiteral {
 	public typealias ExtendedGraphemeClusterLiteralType = RawValue.ExtendedGraphemeClusterLiteralType
 
 	public init(extendedGraphemeClusterLiteral value: RawValue.ExtendedGraphemeClusterLiteralType) {
@@ -17,7 +17,7 @@ extension TransformedAttribute: ExpressibleByExtendedGraphemeClusterLiteral wher
 	}
 }
 
-extension TransformedAttribute: ExpressibleByStringLiteral where RawValue: ExpressibleByStringLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByStringLiteral where RawValue: ExpressibleByStringLiteral {
 	public typealias StringLiteralType = RawValue.StringLiteralType
 
 	public init(stringLiteral value: RawValue.StringLiteralType) {
@@ -25,13 +25,13 @@ extension TransformedAttribute: ExpressibleByStringLiteral where RawValue: Expre
 	}
 }
 
-extension TransformedAttribute: ExpressibleByNilLiteral where RawValue: ExpressibleByNilLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByNilLiteral where RawValue: ExpressibleByNilLiteral {
 	public init(nilLiteral: ()) {
 		self.init(value: RawValue(nilLiteral: ()))
 	}
 }
 
-extension TransformedAttribute: ExpressibleByFloatLiteral where RawValue: ExpressibleByFloatLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByFloatLiteral where RawValue: ExpressibleByFloatLiteral {
 	public typealias FloatLiteralType = RawValue.FloatLiteralType
 
 	public init(floatLiteral value: RawValue.FloatLiteralType) {
@@ -47,7 +47,7 @@ extension Optional: ExpressibleByFloatLiteral where Wrapped: ExpressibleByFloatL
 	}
 }
 
-extension TransformedAttribute: ExpressibleByBooleanLiteral where RawValue: ExpressibleByBooleanLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByBooleanLiteral where RawValue: ExpressibleByBooleanLiteral {
 	public typealias BooleanLiteralType = RawValue.BooleanLiteralType
 
 	public init(booleanLiteral value: BooleanLiteralType) {
@@ -63,7 +63,7 @@ extension Optional: ExpressibleByBooleanLiteral where Wrapped: ExpressibleByBool
 	}
 }
 
-extension TransformedAttribute: ExpressibleByIntegerLiteral where RawValue: ExpressibleByIntegerLiteral, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByIntegerLiteral where RawValue: ExpressibleByIntegerLiteral {
 	public typealias IntegerLiteralType = RawValue.IntegerLiteralType
 
 	public init(integerLiteral value: IntegerLiteralType) {
@@ -91,7 +91,7 @@ public protocol DictionaryType {
 }
 extension Dictionary: DictionaryType {}
 
-extension TransformedAttribute: ExpressibleByDictionaryLiteral where RawValue: DictionaryType, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByDictionaryLiteral where RawValue: DictionaryType {
 	public typealias Key = RawValue.Key
 
 	public typealias Value = RawValue.Value
@@ -121,7 +121,7 @@ public protocol ArrayType {
 extension Array: ArrayType {}
 extension ArraySlice: ArrayType {}
 
-extension TransformedAttribute: ExpressibleByArrayLiteral where RawValue: ArrayType, Transformer == IdentityTransformer<RawValue> {
+extension Attribute: ExpressibleByArrayLiteral where RawValue: ArrayType {
 	public typealias ArrayLiteralElement = RawValue.Element
 
 	public init(arrayLiteral elements: ArrayLiteralElement...) {
