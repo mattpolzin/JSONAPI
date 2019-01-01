@@ -3,5 +3,6 @@
     <pages>
         <page name='Test Library'/>
         <page name='Usage'/>
+        <page name='Full Document Verbose Generation'/>
     </pages>
 </playground>

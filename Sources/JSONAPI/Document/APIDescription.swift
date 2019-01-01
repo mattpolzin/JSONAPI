@@ -14,6 +14,11 @@ public protocol APIDescriptionType: Codable, Equatable {
 public struct APIDescription<Meta: JSONAPI.Meta>: APIDescriptionType {
 	public let version: String
 	public let meta: Meta
+
+	public init(version: String, meta: Meta) {
+		self.version = version
+		self.meta = meta
+	}
 }
 
 /// Can be used as `APIDescriptionType` for Documents that do not
