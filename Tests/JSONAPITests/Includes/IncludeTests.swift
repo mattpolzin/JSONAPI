@@ -198,7 +198,7 @@ extension IncludedTests {
 
 		typealias Relationships = NoRelationships
 
-		public static var type: String { return "test_entity1" }
+		public static var jsonType: String { return "test_entity1" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let foo: Attribute<String>
@@ -210,7 +210,7 @@ extension IncludedTests {
 
 	enum TestEntityType2: EntityDescription {
 
-		public static var type: String { return "test_entity2" }
+		public static var jsonType: String { return "test_entity2" }
 
 		public struct Relationships: JSONAPI.Relationships {
 			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
@@ -228,7 +228,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 		
-		public static var type: String { return "test_entity3" }
+		public static var jsonType: String { return "test_entity3" }
 		
 		public struct Relationships: JSONAPI.Relationships {
 			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
@@ -244,7 +244,7 @@ extension IncludedTests {
 
 		typealias Relationships = NoRelationships
 
-		public static var type: String { return "test_entity4" }
+		public static var jsonType: String { return "test_entity4" }
 	}
 
 	typealias TestEntity4 = BasicEntity<TestEntityType4>
@@ -255,7 +255,7 @@ extension IncludedTests {
 
 		typealias Relationships = NoRelationships
 
-		public static var type: String { return "test_entity5" }
+		public static var jsonType: String { return "test_entity5" }
 	}
 
 	typealias TestEntity5 = BasicEntity<TestEntityType5>
@@ -264,7 +264,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		public static var type: String { return "test_entity6" }
+		public static var jsonType: String { return "test_entity6" }
 
 		struct Relationships: JSONAPI.Relationships {
 			let entity4: ToOneRelationship<TestEntity4, NoMetadata, NoLinks>
@@ -277,7 +277,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		public static var type: String { return "test_entity7" }
+		public static var jsonType: String { return "test_entity7" }
 
 		typealias Relationships = NoRelationships
 	}
@@ -288,7 +288,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		public static var type: String { return "test_entity8" }
+		public static var jsonType: String { return "test_entity8" }
 
 		typealias Relationships = NoRelationships
 	}
@@ -299,7 +299,7 @@ extension IncludedTests {
 
 		typealias Attributes = NoAttributes
 
-		public static var type: String { return "test_entity9" }
+		public static var jsonType: String { return "test_entity9" }
 
 		typealias Relationships = NoRelationships
 	}

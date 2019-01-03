@@ -102,7 +102,7 @@ class ResourceBodyTests: XCTestCase {
 	}
 
 	enum ArticleType: EntityDescription {
-		public static var type: String { return "articles" }
+		public static var jsonType: String { return "articles" }
 
 		typealias Relationships = NoRelationships
 

@@ -134,7 +134,7 @@ public protocol OptionalRelatable: Identifiable where Identifier == Wrapped.Iden
 extension Optional: Identifiable, OptionalRelatable, JSONTyped where Wrapped: JSONAPI.Relatable {
 	public typealias Identifier = Wrapped.Identifier?
 
-	public static var type: String { return Wrapped.type }
+	public static var jsonType: String { return Wrapped.jsonType }
 }
 
 // MARK: Codable
@@ -180,8 +180,8 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
 		
 		let type = try identifier.decode(String.self, forKey: .entityType)
 		
-		guard type == Identifiable.type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.type, found: type)
+		guard type == Identifiable.jsonType else {
+			throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.jsonType, found: type)
 		}
 		
 		id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
@@ -214,7 +214,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
 		var identifier = container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
 		
 		try identifier.encode(id.rawValue, forKey: .id)
-		try identifier.encode(Identifiable.type, forKey: .entityType)
+		try identifier.encode(Identifiable.jsonType, forKey: .entityType)
 	}
 }
 
@@ -242,8 +242,8 @@ extension ToManyRelationship: Codable {
 			
 			let type = try identifier.decode(String.self, forKey: .entityType)
 			
-			guard type == Relatable.type else {
-				throw JSONAPIEncodingError.typeMismatch(expected: Relatable.type, found: type)
+			guard type == Relatable.jsonType else {
+				throw JSONAPIEncodingError.typeMismatch(expected: Relatable.jsonType, found: type)
 			}
 			
 			newIds.append(Relatable.Identifier(rawValue: try identifier.decode(Relatable.Identifier.RawType.self, forKey: .id)))
@@ -268,7 +268,7 @@ extension ToManyRelationship: Codable {
 			var identifier = identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 			
 			try identifier.encode(id.rawValue, forKey: .id)
-			try identifier.encode(Relatable.type, forKey: .entityType)
+			try identifier.encode(Relatable.jsonType, forKey: .entityType)
 		}
 	}
 }

@@ -177,7 +177,7 @@ extension RelationshipTests {
 
 		typealias Relationships = NoRelationships
 
-		public static var type: String { return "test_entity1" }
+		public static var jsonType: String { return "test_entity1" }
 	}
 
 	typealias TestEntity1 = BasicEntity<TestEntityType1>

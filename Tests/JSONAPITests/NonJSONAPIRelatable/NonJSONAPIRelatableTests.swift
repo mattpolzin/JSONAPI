@@ -53,7 +53,7 @@ class NonJSONAPIRelatableTests: XCTestCase {
 // MARK: - Test Types
 extension NonJSONAPIRelatableTests {
 	enum TestEntityDescription: EntityDescription {
-		static var type: String { return "test" }
+		static var jsonType: String { return "test" }
 
 		typealias Attributes = NoAttributes
 
@@ -66,7 +66,7 @@ extension NonJSONAPIRelatableTests {
 	typealias TestEntity = JSONAPI.Entity<TestEntityDescription, NoMetadata, NoLinks, String>
 
 	enum TestEntity2Description: EntityDescription {
-		static var type: String { return "test" }
+		static var jsonType: String { return "test" }
 
 		typealias Attributes = NoAttributes
 
@@ -81,7 +81,7 @@ extension NonJSONAPIRelatableTests {
 	typealias TestEntity2 = JSONAPI.Entity<TestEntity2Description, NoMetadata, NoLinks, String>
 
 	struct NonJSONAPIEntity: Relatable, JSONTyped {
-		static var type: String { return "other" }
+		static var jsonType: String { return "other" }
 
 		typealias Identifier = NonJSONAPIEntity.Id
 

@@ -27,7 +27,7 @@ func testEncoded<E: EntityType>(entity: E) {
 
 	let jsonType = jsonDict?["type"] as? String
 
-	XCTAssertEqual(jsonType, E.type)
+	XCTAssertEqual(jsonType, E.jsonType)
 
 	let jsonAttributes = jsonDict?["attributes"] as? [String: Any]
 

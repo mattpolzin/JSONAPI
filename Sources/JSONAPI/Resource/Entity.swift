@@ -37,7 +37,7 @@ extension NoAttributes: CustomStringConvertible {
 /// Something that is JSONTyped provides a String representation
 /// of its type.
 public protocol JSONTyped {
-	static var type: String { get }
+	static var jsonType: String { get }
 }
 
 /// An `EntityProxyDescription` is an `EntityDescription`
@@ -81,7 +81,7 @@ public protocol EntityProxy: Equatable, JSONTyped {
 
 extension EntityProxy {
 	/// The JSON API compliant "type" of this `Entity`.
-	public static var type: String { return Description.type }
+	public static var jsonType: String { return Description.jsonType }
 }
 
 /// EntityType is the protocol that Entity conforms to. This
@@ -136,7 +136,7 @@ extension Entity: Identifiable, IdentifiableEntityType, Relatable where EntityRa
 
 extension Entity: CustomStringConvertible {
 	public var description: String {
-		return "Entity<\(Entity.type)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
+		return "Entity<\(Entity.jsonType)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
 	}
 }
 
@@ -529,7 +529,7 @@ public extension Entity {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
 		
-		try container.encode(Entity.type, forKey: .type)
+		try container.encode(Entity.jsonType, forKey: .type)
 		
 		if EntityRawIdType.self != Unidentified.self {
 			try container.encode(id, forKey: .id)
@@ -558,8 +558,8 @@ public extension Entity {
 		
 		let type = try container.decode(String.self, forKey: .type)
 		
-		guard Entity.type == type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: Description.type, found: type)
+		guard Entity.jsonType == type else {
+			throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
 		}
 
 		let maybeUnidentified = Unidentified() as? EntityRawIdType

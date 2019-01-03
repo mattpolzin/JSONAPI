@@ -11,7 +11,7 @@ import JSONAPI
 public class PolyProxyTests: XCTestCase {
 	func test_generalReasonableness() {
 		XCTAssertNotEqual(decoded(type: User.self, data: poly_user_stub_1), decoded(type: User.self, data: poly_user_stub_2))
-		XCTAssertEqual(User.type, "users")
+		XCTAssertEqual(User.jsonType, "users")
 	}
 
 	func test_UserADecode() {
@@ -65,7 +65,7 @@ public class PolyProxyTests: XCTestCase {
 // MARK: - Test types
 public extension PolyProxyTests {
 	public enum UserDescription1: EntityDescription {
-		public static var type: String { return "users" }
+		public static var jsonType: String { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let firstName: Attribute<String>
@@ -76,7 +76,7 @@ public extension PolyProxyTests {
 	}
 
 	public enum UserDescription2: EntityDescription {
-		public static var type: String { return "users" }
+		public static var jsonType: String { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
 			let name: Attribute<[String]>
@@ -124,7 +124,7 @@ extension Poly2: EntityProxy, JSONTyped where A == PolyProxyTests.UserA, B == Po
 	}
 
 	public enum SharedUserDescription: EntityProxyDescription {
-		public static var type: String { return A.type }
+		public static var jsonType: String { return A.jsonType }
 
 		public struct Attributes: Equatable {
 			let name: Attribute<String>
