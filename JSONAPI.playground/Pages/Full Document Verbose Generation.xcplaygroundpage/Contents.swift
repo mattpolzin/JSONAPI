@@ -65,7 +65,7 @@ struct ToManyRelationshipLinks: JSONAPI.Links {
 
 /// Description of an Author entity.
 enum AuthorDescription: EntityDescription {
-	static var type: String { return "authors" }
+	static var jsonType: String { return "authors" }
 
 	struct Attributes: JSONAPI.Attributes {
 		let name: Attribute<String>
@@ -80,7 +80,7 @@ typealias Author = JSONAPI.Entity<AuthorDescription, EntityMetadata, EntityLinks
 
 /// Description of an Article entity.
 enum ArticleDescription: EntityDescription {
-	static var type: String { return "articles" }
+	static var jsonType: String { return "articles" }
 
 	struct Attributes: JSONAPI.Attributes {
 		let title: Attribute<String>

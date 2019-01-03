@@ -31,7 +31,7 @@ public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoMetadata, NoLink
 // MARK: - A few resource objects (entities)
 public enum PersonDescription: EntityDescription {
 
-	public static var type: String { return "people" }
+	public static var jsonType: String { return "people" }
 	
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<[String]>
@@ -70,7 +70,7 @@ public extension Entity where Description == PersonDescription, MetaType == NoMe
 
 public enum DogDescription: EntityDescription {
 
-	public static var type: String { return "dogs" }
+	public static var jsonType: String { return "dogs" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<String>
@@ -93,7 +93,7 @@ public typealias Dog = ExampleEntity<DogDescription>
 
 public enum AlternativeDogDescription: EntityDescription {
 
-	public static var type: String { return "dogs" }
+	public static var jsonType: String { return "dogs" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<String>
@@ -131,7 +131,7 @@ public extension Entity where Description == DogDescription, MetaType == NoMetad
 
 public enum HouseDescription: EntityDescription {
 
-	public static var type: String { return "houses" }
+	public static var jsonType: String { return "houses" }
 
 	public typealias Attributes = NoAttributes
 	public typealias Relationships = NoRelationships

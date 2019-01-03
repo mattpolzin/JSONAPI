@@ -40,7 +40,7 @@ typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONA
 // MARK: Entity Definitions
 
 enum AuthorDescription: EntityDescription {
-	public static var type: String { return "authors" }
+	public static var jsonType: String { return "authors" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<String>
@@ -52,7 +52,7 @@ enum AuthorDescription: EntityDescription {
 typealias Author = JSONEntity<AuthorDescription>
 
 enum ArticleDescription: EntityDescription {
-	public static var type: String { return "articles" }
+	public static var jsonType: String { return "articles" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let title: Attribute<String>
