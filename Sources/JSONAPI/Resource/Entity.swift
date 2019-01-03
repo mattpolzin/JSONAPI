@@ -471,6 +471,15 @@ public extension EntityProxy {
 	}
 }
 
+// MARK: Meta-Attribute Access
+public extension EntityProxy {
+	/// Access an attribute requiring a transformation on the RawValue _and_
+	/// a secondary transformation on this entity (self).
+	subscript<T>(_ path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
+		return attributes[keyPath: path](self)
+	}
+}
+
 // MARK: Relationship Access
 public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.

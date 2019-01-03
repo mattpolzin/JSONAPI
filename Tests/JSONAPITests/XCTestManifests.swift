@@ -228,6 +228,7 @@ extension EntityTests {
         ("test_IntOver10_success", test_IntOver10_success),
         ("test_IntToString", test_IntToString),
         ("test_IntToString_encode", test_IntToString_encode),
+        ("test_MetaEntityAccessWorks", test_MetaEntityAccessWorks),
         ("test_NonNullOptionalNullableAttribute", test_NonNullOptionalNullableAttribute),
         ("test_NonNullOptionalNullableAttribute_encode", test_NonNullOptionalNullableAttribute_encode),
         ("test_nullableRelationshipIsNull", test_nullableRelationshipIsNull),
