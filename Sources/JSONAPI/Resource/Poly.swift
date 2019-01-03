@@ -17,14 +17,14 @@ public protocol Poly: PrimaryResource {}
 
 // MARK: - Generic Decoding
 
-private func decode<Entity: JSONAPI.EntityType>(_ type: Entity.Type, from container: SingleValueDecodingContainer) throws -> Result<Entity, DecodingError> {
-	let ret: Result<Entity, DecodingError>
+private func decode<Thing: Codable>(_ type: Thing.Type, from container: SingleValueDecodingContainer) throws -> Result<Thing, DecodingError> {
+	let ret: Result<Thing, DecodingError>
 	do {
-		ret = try .success(container.decode(Entity.self))
+		ret = try .success(container.decode(Thing.self))
 	} catch (let err as DecodingError) {
 		ret = .failure(err)
 	} catch (let err) {
-		ret = .failure(DecodingError.typeMismatch(Entity.Description.self,
+		ret = .failure(DecodingError.typeMismatch(Thing.self,
 												  .init(codingPath: container.codingPath,
 														debugDescription: String(describing: err),
 														underlyingError: err)))
@@ -47,9 +47,11 @@ public struct Poly0: _Poly0 {
 	}
 }
 
+public typealias PolyWrapped = Codable & Equatable
+
 // MARK: - 1 type
 public protocol _Poly1: _Poly0 {
-	associatedtype A: EntityType
+	associatedtype A: PolyWrapped
 	var a: A? { get }
 
 	init(_ a: A)
@@ -61,7 +63,7 @@ public extension _Poly1 {
 	}
 }
 
-public enum Poly1<A: EntityType>: _Poly1 {
+public enum Poly1<A: PolyWrapped>: _Poly1 {
 	case a(A)
 
 	public var a: A? {
@@ -102,7 +104,7 @@ extension Poly1: CustomStringConvertible {
 
 // MARK: - 2 types
 public protocol _Poly2: _Poly1 {
-	associatedtype B: EntityType
+	associatedtype B: PolyWrapped
 	var b: B? { get }
 
 	init(_ b: B)
@@ -114,7 +116,9 @@ public extension _Poly2 {
 	}
 }
 
-public enum Poly2<A: EntityType, B: EntityType>: _Poly2 {
+public typealias Either = Poly2
+
+public enum Poly2<A: PolyWrapped, B: PolyWrapped>: _Poly2 {
 	case a(A)
 	case b(B)
 
@@ -181,7 +185,7 @@ extension Poly2: CustomStringConvertible {
 
 // MARK: - 3 types
 public protocol _Poly3: _Poly2 {
-	associatedtype C: EntityType
+	associatedtype C: PolyWrapped
 	var c: C? { get }
 
 	init(_ c: C)
@@ -193,7 +197,7 @@ public extension _Poly3 {
 	}
 }
 
-public enum Poly3<A: EntityType, B: EntityType, C: EntityType>: _Poly3 {
+public enum Poly3<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped>: _Poly3 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -275,7 +279,7 @@ extension Poly3: CustomStringConvertible {
 
 // MARK: - 4 types
 public protocol _Poly4: _Poly3 {
-	associatedtype D: EntityType
+	associatedtype D: PolyWrapped
 	var d: D? { get }
 
 	init(_ d: D)
@@ -287,7 +291,7 @@ public extension _Poly4 {
 	}
 }
 
-public enum Poly4<A: EntityType, B: EntityType, C: EntityType, D: EntityType>: _Poly4 {
+public enum Poly4<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped>: _Poly4 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -384,7 +388,7 @@ extension Poly4: CustomStringConvertible {
 
 // MARK: - 5 types
 public protocol _Poly5: _Poly4 {
-	associatedtype E: EntityType
+	associatedtype E: PolyWrapped
 	var e: E? { get }
 
 	init(_ e: E)
@@ -396,7 +400,7 @@ public extension _Poly5 {
 	}
 }
 
-public enum Poly5<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType>: _Poly5 {
+public enum Poly5<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped>: _Poly5 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -508,7 +512,7 @@ extension Poly5: CustomStringConvertible {
 
 // MARK: - 6 types
 public protocol _Poly6: _Poly5 {
-	associatedtype F: EntityType
+	associatedtype F: PolyWrapped
 	var f: F? { get }
 
 	init(_ f: F)
@@ -520,7 +524,7 @@ public extension _Poly6 {
 	}
 }
 
-public enum Poly6<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType>: _Poly6 {
+public enum Poly6<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped>: _Poly6 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -647,7 +651,7 @@ extension Poly6: CustomStringConvertible {
 
 // MARK: - 7 types
 public protocol _Poly7: _Poly6 {
-	associatedtype G: EntityType
+	associatedtype G: PolyWrapped
 	var g: G? { get }
 
 	init(_ g: G)
@@ -659,7 +663,7 @@ public extension _Poly7 {
 	}
 }
 
-public enum Poly7<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType, G: EntityType>: _Poly7 {
+public enum Poly7<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped>: _Poly7 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -802,7 +806,7 @@ extension Poly7: CustomStringConvertible {
 
 // MARK: - 8 types
 public protocol _Poly8: _Poly7 {
-	associatedtype H: EntityType
+	associatedtype H: PolyWrapped
 	var h: H? { get }
 
 	init(_ h: H)
@@ -814,7 +818,7 @@ public extension _Poly8 {
 	}
 }
 
-public enum Poly8<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType, G: EntityType, H: EntityType>: _Poly8 {
+public enum Poly8<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped>: _Poly8 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -973,7 +977,7 @@ extension Poly8: CustomStringConvertible {
 
 // MARK: - 9 types
 public protocol _Poly9: _Poly8 {
-	associatedtype I: EntityType
+	associatedtype I: PolyWrapped
 	var i: I? { get }
 
 	init(_ i: I)
@@ -985,7 +989,7 @@ public extension _Poly9 {
 	}
 }
 
-public enum Poly9<A: EntityType, B: EntityType, C: EntityType, D: EntityType, E: EntityType, F: EntityType, G: EntityType, H: EntityType, I: EntityType>: _Poly9 {
+public enum Poly9<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped>: _Poly9 {
 	case a(A)
 	case b(B)
 	case c(C)

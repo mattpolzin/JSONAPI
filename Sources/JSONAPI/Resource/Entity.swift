@@ -20,10 +20,18 @@ public struct NoRelationships: Relationships {
 	public static var none: NoRelationships { return .init() }
 }
 
+extension NoRelationships: CustomStringConvertible {
+	public var description: String { return "No Relationships" }
+}
+
 /// Can be used as `Attributes` Type for Entities that do not
 /// have any Attributes.
 public struct NoAttributes: Attributes {
 	public static var none: NoAttributes { return .init() }
+}
+
+extension NoAttributes: CustomStringConvertible {
+	public var description: String { return "No Attributes" }
 }
 
 /// Something that is JSONTyped provides a String representation

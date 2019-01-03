@@ -88,6 +88,42 @@ extension DocumentTests {
 		XCTAssertEqual(errors.meta, NoMetadata())
 	}
 
+	func test_unknownErrorDocumentAddIncludingType() {
+		let author = Author(id: "1",
+							attributes: .none,
+							relationships: .none,
+							meta: .none,
+							links: .none)
+
+		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_no_metadata)
+
+		let documentWithIncludes = document.including(Includes<Include1<Author>>(values: [.init(author)]))
+
+		XCTAssertEqual(document.body.errors, documentWithIncludes.body.errors)
+		XCTAssertEqual(document.body.meta, documentWithIncludes.body.meta)
+		XCTAssertEqual(document.body.links, documentWithIncludes.body.links)
+		XCTAssertNil(documentWithIncludes.body.includes)
+	}
+
+	func test_unknownErrorDocumentAddIncludes() {
+		let author = Author(id: "1",
+							attributes: .none,
+							relationships: .none,
+							meta: .none,
+							links: .none)
+
+		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
+							   data: error_document_no_metadata)
+
+		let documentWithIncludes = document.including(.init(values: [.init(author)]))
+
+		XCTAssertEqual(document.body.errors, documentWithIncludes.body.errors)
+		XCTAssertEqual(document.body.meta, documentWithIncludes.body.meta)
+		XCTAssertEqual(document.body.links, documentWithIncludes.body.links)
+		XCTAssertNil(documentWithIncludes.body.includes)
+	}
+
 	func test_unknownErrorDocumentNoMeta_encode() {
 		test_DecodeEncodeEquality(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 								  data: error_document_no_metadata)
@@ -536,6 +572,25 @@ extension DocumentTests {
 							   data: single_document_no_includes)
 	}
 
+	func test_singleDocumentNoIncludesAddIncludingType() {
+		let author = Author(id: "1",
+							attributes: .none,
+							relationships: .none,
+							meta: .none,
+							links: .none)
+
+		let document = decoded(type: Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_no_includes)
+
+		let documentWithIncludes = document.including(Includes<Include1<Author>>(values: [.init(author)]))
+
+		XCTAssertEqual(document.body.errors, documentWithIncludes.body.errors)
+		XCTAssertEqual(document.body.meta, documentWithIncludes.body.meta)
+		XCTAssertEqual(document.body.links, documentWithIncludes.body.links)
+		XCTAssertEqual(document.body.includes, Includes<NoIncludes>.none)
+		XCTAssertEqual(documentWithIncludes.body.includes?[Author.self], [author])
+	}
+
 	func test_singleDocumentNoIncludesWithAPIDescription() {
 		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, TestAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_no_includes_with_api_description)
@@ -738,6 +793,30 @@ extension DocumentTests {
 	func test_singleDocumentSomeIncludes_encode() {
 		test_DecodeEncodeEquality(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_some_includes)
+	}
+
+	func test_singleDocumentSomeIncludesAddIncludes() {
+		let existingAuthor = Author(id: "33",
+									attributes: .none,
+									relationships: .none,
+									meta: .none,
+									links: .none)
+
+		let newAuthor = Author(id: "1",
+							attributes: .none,
+							relationships: .none,
+							meta: .none,
+							links: .none)
+
+		let document = decoded(type: Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
+							   data: single_document_some_includes)
+
+		let documentWithIncludes = document.including(.init(values: [.init(newAuthor)]))
+
+		XCTAssertEqual(document.body.errors, documentWithIncludes.body.errors)
+		XCTAssertEqual(document.body.meta, documentWithIncludes.body.meta)
+		XCTAssertEqual(document.body.links, documentWithIncludes.body.links)
+		XCTAssertEqual(documentWithIncludes.body.includes?[Author.self], [existingAuthor, newAuthor])
 	}
 
 	func test_singleDocumentSomeIncludesWithAPIDescription() {

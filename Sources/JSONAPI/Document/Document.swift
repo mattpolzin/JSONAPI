@@ -110,11 +110,16 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 		self.apiDescription = apiDescription
 	}
 
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+	public init(apiDescription: APIDescription,
+				body: PrimaryResourceBody,
+				includes: Includes<Include>,
+				meta: MetaType,
+				links: LinksType) {
 		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
 		self.apiDescription = apiDescription
 	}
 }
+
 /*
 extension Document where IncludeType == NoIncludes {
 	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
@@ -205,6 +210,54 @@ extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody, 
 		return merging(other,
 					   combiningMetaWith: { _, _ in .none },
 					   combiningLinksWith: { _, _ in .none })
+	}
+}
+
+extension Document where IncludeType == NoIncludes {
+	/// Create a new Document with the given includes.
+	public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error> {
+		// Note that if IncludeType is NoIncludes, then we allow anything
+		// to be included, but if IncludeType already specifies a type
+		// of thing to be expected then we lock that down.
+		// See: Document.including() where IncludeType: _Poly1
+		switch body {
+		case .data(let data):
+			return .init(apiDescription: apiDescription,
+						 body: data.primary,
+						 includes: includes,
+						 meta: data.meta,
+						 links: data.links)
+		case .errors(let errors, meta: let meta, links: let links):
+			return .init(apiDescription: apiDescription,
+						 errors: errors,
+						 meta: meta,
+						 links: links)
+		}
+	}
+}
+
+// extending where _Poly1 means all non-zero _Poly arities are included
+extension Document where IncludeType: _Poly1 {
+	/// Create a new Document adding the given includes. This does not
+	/// remove existing includes; it is additive.
+	public func including(_ includes: Includes<IncludeType>) -> Document {
+		// Note that if IncludeType is NoIncludes, then we allow anything
+		// to be included, but if IncludeType already specifies a type
+		// of thing to be expected then we lock that down.
+		// See: Document.including() where IncludeType == NoIncludes
+		switch body {
+		case .data(let data):
+			return .init(apiDescription: apiDescription,
+						 body: data.primary,
+						 includes: data.includes + includes,
+						 meta: data.meta,
+						 links: data.links)
+		case .errors(let errors, meta: let meta, links: let links):
+			return .init(apiDescription: apiDescription,
+						 errors: errors,
+						 meta: meta,
+						 links: links)
+		}
 	}
 }
 

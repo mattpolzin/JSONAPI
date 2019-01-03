@@ -4,5 +4,6 @@
         <page name='Test Library'/>
         <page name='Usage'/>
         <page name='Full Document Verbose Generation'/>
+        <page name='Full Client &amp; Server Example'/>
     </pages>
 </playground>

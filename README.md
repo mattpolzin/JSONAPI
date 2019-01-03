@@ -5,6 +5,61 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
+## Table of Contents
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Table of Contents](#table-of-contents)
+- [Primary Goals](#primary-goals)
+	- [Caveat](#caveat)
+- [Dev Environment](#dev-environment)
+	- [Prerequisites](#prerequisites)
+	- [Xcode project](#xcode-project)
+	- [Running the Playground](#running-the-playground)
+- [Project Status](#project-status)
+	- [Encoding/Decoding](#encodingdecoding)
+		- [Document](#document)
+		- [Resource Object](#resource-object)
+		- [Relationship Object](#relationship-object)
+		- [Links Object](#links-object)
+	- [Misc](#misc)
+	- [JSONAPITestLib](#jsonapitestlib)
+		- [Entity Validator](#entity-validator)
+	- [Potential Improvements](#potential-improvements)
+- [Usage](#usage)
+	- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
+	- [`JSONAPI.Entity`](#jsonapientity)
+		- [`Meta`](#meta)
+		- [`Links`](#links)
+		- [`IdType`](#idtype)
+		- [`MaybeRawId`](#mayberawid)
+		- [Convenient `typealiases`](#convenient-typealiases)
+	- [`JSONAPI.Relationships`](#jsonapirelationships)
+	- [`JSONAPI.Attributes`](#jsonapiattributes)
+		- [`Transformer`](#transformer)
+		- [`Validator`](#validator)
+		- [Computed `Attribute`](#computed-attribute)
+	- [Copying `Entities`](#copying-entities)
+	- [`JSONAPI.Document`](#jsonapidocument)
+		- [`ResourceBody`](#resourcebody)
+			- [nullable `PrimaryResource`](#nullable-primaryresource)
+		- [`MetaType`](#metatype)
+		- [`LinksType`](#linkstype)
+		- [`IncludeType`](#includetype)
+		- [`APIDescriptionType`](#apidescriptiontype)
+		- [`Error`](#error)
+	- [`JSONAPI.Meta`](#jsonapimeta)
+	- [`JSONAPI.Links`](#jsonapilinks)
+	- [`JSONAPI.RawIdType`](#jsonapirawidtype)
+	- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
+	- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
+- [Example](#example)
+	- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
+	- [Server Pseudo-example](#server-pseudo-example)
+	- [Client Pseudo-example](#client-pseudo-example)
+- [JSONAPITestLib](#jsonapitestlib)
+
+<!-- /TOC -->
+
 ## Primary Goals
 
 The primary goals of this framework are:
@@ -62,6 +117,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support validation on `Attributes`.
+- [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
 ### JSONAPITestLib
@@ -73,6 +129,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 ### Potential Improvements
 - [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
 - [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
+- [ ] Support sideposting. JSONAPI spec might become opinionated in the future (https://github.com/json-api/json-api/pull/1197, https://github.com/json-api/json-api/issues/1215, https://github.com/json-api/json-api/issues/1216) but there is also an existing implementation to consider (https://jsonapi-suite.github.io/jsonapi_suite/ruby/writes/nested-writes). At this time, any sidepost implementation would be an awesome tertiary library to be used alongside the primary JSONAPI library. Maybe `JSONAPISideloading`.
 - [ ] Property-based testing (using `SwiftCheck`).
 - [ ] Error or warning if an included entity is not related to a primary entity or another included entity (Turned off or at least not throwing by default).
 
@@ -469,5 +526,178 @@ extension EntityDescription1.Attributes {
 }
 ```
 
-# JSONAPITestLib
+## Example
+The following serves as a sort of pseudo-example. It skips server/client implementation details not related to JSON:API but still gives a more complete picture of what an implementation using this framework might look like. You can play with this example code in the Playground provided with this repo.
+
+### Preamble (Setup shared by server and client)
+```
+// We make String a CreatableRawIdType.
+var GlobalStringId: Int = 0
+extension String: CreatableRawIdType {
+	public static func unique() -> String {
+		GlobalStringId += 1
+		return String(GlobalStringId)
+	}
+}
+
+// We create a typealias given that we do not expect JSON:API Resource
+// Objects for this particular API to have Metadata or Links associated
+// with them. We also expect them to have String Identifiers.
+typealias JSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, String>
+
+// Similarly, we create a typealias for unidentified entities. JSON:API
+// only allows unidentified entities (i.e. no "id" field) for client
+// requests that create new entities. In these situations, the server
+// is expected to assign the new entity a unique ID.
+typealias UnidentifiedJSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, Unidentified>
+
+// We create typealiases given that we do not expect JSON:API Relationships
+// for this particular API to have Metadata or Links associated
+// with them.
+typealias ToOneRelationship<Entity: Identifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
+typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Entity, NoMetadata, NoLinks>
+
+// We create a typealias for a Document given that we do not expect
+// JSON:API Documents for this particular API to have Metadata, Links,
+// useful Errors, or a JSON:API Object (i.e. APIDescription).
+typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+
+// MARK: Entity Definitions
+
+enum AuthorDescription: EntityDescription {
+	public static var type: String { return "authors" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let name: Attribute<String>
+	}
+
+	public typealias Relationships = NoRelationships
+}
+
+typealias Author = JSONEntity<AuthorDescription>
+
+enum ArticleDescription: EntityDescription {
+	public static var type: String { return "articles" }
+
+	public struct Attributes: JSONAPI.Attributes {
+		public let title: Attribute<String>
+		public let abstract: Attribute<String>
+	}
+
+	public struct Relationships: JSONAPI.Relationships {
+		public let author: ToOneRelationship<Author>
+	}
+}
+
+typealias Article = JSONEntity<ArticleDescription>
+
+// MARK: Document Definitions
+
+// We create a typealias to represent a document containing one Article
+// and including its Author
+typealias SingleArticleDocumentWithIncludes = Document<SingleResourceBody<Article>, Include1<Author>>
+
+// ... and a typealias to represent a document containing one Article and
+// not including any related entities.
+typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoIncludes>
+```
+### Server Pseudo-example
+```
+// Skipping over all the API and database stuff, here's a chunk of code
+// that creates a document. Note that this document is the entirety
+// of a JSON:API response body.
+func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, SingleArticleDocumentWithIncludes> {
+	// Let's pretend all of this is coming from a database:
+
+	let authorId = Author.Identifier(rawValue: "1234")
+
+	let article = Article(id: .init(rawValue: "5678"),
+						  attributes: .init(title: .init(value: "JSON:API in Swift"),
+											abstract: .init(value: "Not yet written")),
+						  relationships: .init(author: .init(id: authorId)),
+						  meta: .none,
+						  links: .none)
+
+	let document = SingleArticleDocument(apiDescription: .none,
+										 body: .init(entity: article),
+										 includes: .none,
+										 meta: .none,
+										 links: .none)
+
+	switch includeAuthor {
+	case false:
+		return .a(document)
+
+	case true:
+		let author = Author(id: authorId,
+							attributes: .init(name: .init(value: "Janice Bluff")),
+							relationships: .none,
+							meta: .none,
+							links: .none)
+
+		let includes: Includes<SingleArticleDocumentWithIncludes.Include> = .init(values: [.init(author)])
+
+		return .b(document.including(.init(values: [.init(author)])))
+	}
+}
+
+let encoder = JSONEncoder()
+encoder.keyEncodingStrategy = .convertToSnakeCase
+encoder.outputFormatting = .prettyPrinted
+
+let responseBody = articleDocument(includeAuthor: true)
+let responseData = try! encoder.encode(responseBody)
+
+// Next step would be encoding and setting as the HTTP body of a response.
+// we will just print it out instead:
+print("-----")
+print(String(data: responseData, encoding: .utf8)!)
+
+// ... and if we had received a request for an article without
+// including the author:
+let otherResponseBody = articleDocument(includeAuthor: false)
+let otherResponseData = try! encoder.encode(otherResponseBody)
+print("-----")
+print(String(data: otherResponseData, encoding: .utf8)!)
+```
+
+### Client Pseudo-example
+```
+enum NetworkError: Swift.Error {
+	case serverError
+	case quantityMismatch
+}
+
+// Skipping over all the API stuff, here's a chunk of code that will
+// decode a document. We will assume we have made a request for a
+// single article including the author.
+func docode(articleResponseData: Data) throws -> (article: Article, author: Author) {
+	let decoder = JSONDecoder()
+	decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+	let articleDocument = try decoder.decode(SingleArticleDocumentWithIncludes.self, from: articleResponseData)
+
+	switch articleDocument.body {
+	case .data(let data):
+		let authors = data.includes[Author.self]
+
+		guard authors.count == 1 else {
+			throw NetworkError.quantityMismatch
+		}
+
+		return (article: data.primary.value, author: authors[0])
+	case .errors(let errors, meta: _, links: _):
+		throw NetworkError.serverError
+	}
+}
+
+let response = try! docode(articleResponseData: responseData)
+
+// Next step would be to do something useful with the article and author but we will print them instead.
+print("-----")
+print(response.article)
+print(response.author)
+```
+
+## JSONAPITestLib
 The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITestLib` in action in the Playground included with the `JSONAPI` repository.
