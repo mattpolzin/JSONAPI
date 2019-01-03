@@ -143,7 +143,7 @@ An `EntityDescription` is the `JSONAPI` framework's representation of what the *
 
 ```
 enum PersonDescription: IdentifiedEntityDescription {
-	static var type: String { return "people" }
+	static var jsonType: String { return "people" }
 
 	struct Attributes: JSONAPI.Attributes {
 		let name: Attribute<[String]>
@@ -157,7 +157,7 @@ enum PersonDescription: IdentifiedEntityDescription {
 ```
 
 The requirements of an `EntityDescription` are:
-1. A static `var` "type" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
+1. A static `var` "jsonType" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
 
@@ -460,7 +460,7 @@ extension String: CreatableRawIdType {
 There is not anything special going on at the `JSONAPI.Attributes` and `JSONAPI.Relationships` levels, so you can easily provide custom key mappings by taking advantage of `Codable`'s `CodingKeys` pattern. Here are two models that will encode/decode equivalently but offer different naming in your codebase:
 ```
 public enum EntityDescription1: JSONAPI.EntityDescription {
-	public static var type: String { return "entity" }
+	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let coolProperty: Attribute<String>
@@ -470,7 +470,7 @@ public enum EntityDescription1: JSONAPI.EntityDescription {
 }
 
 public enum EntityDescription2: JSONAPI.EntityDescription {
-	public static var type: String { return "entity" }
+	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let wholeOtherThing: Attribute<String>
@@ -486,7 +486,7 @@ public enum EntityDescription2: JSONAPI.EntityDescription {
 You can safely provide your own encoding or decoding functions for your Attributes struct if you need to as long as you are careful that your encode operation correctly reverses your decode operation. Although this is generally not necessary, `AttributeType` provides a convenience method to make your decoding a bit less boilerplate ridden. This is what it looks like:
 ```
 public enum EntityDescription1: JSONAPI.EntityDescription {
-	public static var type: String { return "entity" }
+	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let property1: Attribute<String>
@@ -565,7 +565,7 @@ typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONA
 // MARK: Entity Definitions
 
 enum AuthorDescription: EntityDescription {
-	public static var type: String { return "authors" }
+	public static var jsonType: String { return "authors" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let name: Attribute<String>
@@ -577,7 +577,7 @@ enum AuthorDescription: EntityDescription {
 typealias Author = JSONEntity<AuthorDescription>
 
 enum ArticleDescription: EntityDescription {
-	public static var type: String { return "articles" }
+	public static var jsonType: String { return "articles" }
 
 	public struct Attributes: JSONAPI.Attributes {
 		public let title: Attribute<String>
