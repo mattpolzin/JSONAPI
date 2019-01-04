@@ -5,6 +5,8 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
+:warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating entities in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+
 ## Table of Contents
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
