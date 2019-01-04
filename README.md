@@ -383,7 +383,7 @@ You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody`
 #### `MetaType`
 
 The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
-```swift
+```
 {
 	"meta": {
 		"total": 100,
