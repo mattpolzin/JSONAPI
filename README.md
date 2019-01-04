@@ -144,7 +144,7 @@ In this documentation, in order to draw attention to the difference between the 
 
 An `EntityDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
 
-```
+```swift
 enum PersonDescription: IdentifiedEntityDescription {
 	static var jsonType: String { return "people" }
 
@@ -227,14 +227,14 @@ A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This 
 #### Convenient `typealiases`
 
 Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using `typealias`es like the following:
-```
+```swift
 public typealias Entity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, String>
 
 public typealias NewEntity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, Unidentified>
 ```
 
 It can also be nice to create a `typealias` for each type of entity you want to work with:
-```
+```swift
 typealias Person = Entity<PersonDescription, NoMetadata, NoLinks>
 
 typealias NewPerson = NewEntity<PersonDescription, NoMetadata, NoLinks>
@@ -249,17 +249,17 @@ There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelations
 In addition to identifying entities by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
 
 To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
-```
+```swift
 let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
 ```
 
 An entity that does not have relationships can be described by adding the following to an `EntityDescription`:
-```
+```swift
 typealias Relationships = NoRelationships
 ```
 
 `Relationship` values boil down to `Ids` of other entities. To access the `Id` of a related `Entity`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `Entity` can be accessed as follows (type annotations for clarity):
-```
+```swift
 let friendIds: [Person.Identifier] = person ~> \.friends
 ```
 
@@ -268,27 +268,27 @@ let friendIds: [Person.Identifier] = person ~> \.friends
 The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
 
 To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
-```
+```swift
 let optionalAttribute: Attribute<String>?
 ```
 
 To describe an attribute that is expected to exist but might have a `null` value, you make the value within the `Attribute` optional:
-```
+```swift
 let nullableAttribute: Attribute<String?>
 ```
 
 An entity that does not have attributes can be described by adding the following to an `EntityDescription`:
-```
+```swift
 typealias Attributes = NoAttributes
 ```
 
 `Attributes` can be accessed via the `subscript` operator of the `Entity` type as follows:
-```
+```swift
 let favoriteColor: String = person[\.favoriteColor]
 ```
 
 NOTE: Because of support for computed properties that are not wrapped in `Attribute`, `TransformedAttribute`, or `ValidatedAttribute`, the compiler cannot always infer the type of thing you want back when using subscript attribute access. The following code is ambiguous about whether it should return a `String` or an `Attribute<String>`:
-```
+```swift
 let favoriteColor = person[\.favoriteColor]
 ```
 
@@ -297,7 +297,7 @@ let favoriteColor = person[\.favoriteColor]
 Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. The Foundation library `JSONDecoder` has a setting to make this adjustment, but for the sake of an example, you could create a `Transformer`.
 
 A `Transformer` just provides one static function that transforms one type to another. You might define one for an ISO 8601 compliant `Date` like this:
-```
+```swift
 enum ISODateTransformer: Transformer {
 	public static func transform(_ value: String) throws -> Date {
 		// parse Date out of input and return
@@ -306,14 +306,14 @@ enum ISODateTransformer: Transformer {
 ```
 
 Then you define the attribute as a `TransformedAttribute` instead of an `Attribute`:
-```
+```swift
 let date: TransformedAttribute<String, ISODateTransformer>
 ```
 
 Note that the first generic parameter of `TransformAttribute` is the type you expect to decode from JSON, not the type you want to end up with after transformation.
 
 If you make your `Transformer` a `ReversibleTransformer` then your life will be a bit easier when you construct `TransformedAttributes` because you have access to initializers for both the pre- and post-transformed value types. Continuing with the above example of a `ISODateTransformer`:
-```
+```swift
 extension ISODateTransformer: ReversibleTransformer {
 	public static func reverse(_ value: Date) throws -> String {
 		// serialize Date to a String
@@ -332,7 +332,7 @@ You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is ju
 
 You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `Person[\.name]` attribute from the example above and create a `fullName` computed property.
 
-```
+```swift
 public var fullName: Attribute<String> {
 	return name.map { $0.joined(separator: " ") }
 }
@@ -345,7 +345,7 @@ public var fullName: Attribute<String> {
 
 The above can be accomplished with code like the following:
 
-```
+```swift
 // use case 1
 let person1 = person.withNewIdentifier()
 
@@ -358,7 +358,7 @@ let newlyIdentifiedPerson2 = unidentifiedPerson.identified(by: "2232")
 ### `JSONAPI.Document`
 
 The entirety of a JSON API request or response is encoded or decoded from- or to a `Document`. As an example, a JSON API response containing one `Person` and no included entities could be decoded as follows:
-```
+```swift
 let decoder = JSONDecoder()
 
 let responseStructure = JSONAPI.Document<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self
@@ -383,7 +383,7 @@ You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody`
 #### `MetaType`
 
 The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
-```
+```swift
 {
 	"meta": {
 		"total": 100,
@@ -394,7 +394,7 @@ The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows 
 ```
 
 You would then create the following `Meta` type:
-```
+```swift
 struct PageMetadata: JSONAPI.Meta {
 	let total: Int
 	let limit: Int
@@ -445,7 +445,7 @@ You can specify `NoLinks` if the part of the document being described should not
 ### `JSONAPI.RawIdType`
 
 If you want to create new `JSONAPI.Entity` values and assign them Ids then you will need to conform at least one type to `CreatableRawIdType`. Doing so is easy; here are two example conformances for `UUID` and `String` (via `UUID`):
-```
+```swift
 extension UUID: CreatableRawIdType {
 	public static func unique() -> UUID {
 		return UUID()
@@ -461,7 +461,7 @@ extension String: CreatableRawIdType {
 
 ### Custom Attribute or Relationship Key Mapping
 There is not anything special going on at the `JSONAPI.Attributes` and `JSONAPI.Relationships` levels, so you can easily provide custom key mappings by taking advantage of `Codable`'s `CodingKeys` pattern. Here are two models that will encode/decode equivalently but offer different naming in your codebase:
-```
+```swift
 public enum EntityDescription1: JSONAPI.EntityDescription {
 	public static var jsonType: String { return "entity" }
 
@@ -487,7 +487,7 @@ public enum EntityDescription2: JSONAPI.EntityDescription {
 
 ### Custom Attribute Encode/Decode
 You can safely provide your own encoding or decoding functions for your Attributes struct if you need to as long as you are careful that your encode operation correctly reverses your decode operation. Although this is generally not necessary, `AttributeType` provides a convenience method to make your decoding a bit less boilerplate ridden. This is what it looks like:
-```
+```swift
 public enum EntityDescription1: JSONAPI.EntityDescription {
 	public static var jsonType: String { return "entity" }
 
@@ -534,7 +534,7 @@ This advanced feature may not ever be useful, but if you find yourself in the si
 
 Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an entity. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, this code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
 
-```
+```swift
 enum UserDescription: EntityDescription {
 	public static var jsonType: String { return "users" }
 
@@ -568,7 +568,7 @@ typealias User = JSONAPI.Entity<UserDescription, NoMetadata, NoLinks, String>
 
 Given a value `user` of the above entity type, you can access the `createdAt` attribute just like you would any other:
 
-```
+```swift
 let createdAt = user[\.createdAt]
 ```
 
@@ -578,7 +578,7 @@ This works because `createdAt` is defined in the form: `var {name}: ({Entity}) -
 The following serves as a sort of pseudo-example. It skips server/client implementation details not related to JSON:API but still gives a more complete picture of what an implementation using this framework might look like. You can play with this example code in the Playground provided with this repo.
 
 ### Preamble (Setup shared by server and client)
-```
+```swift
 // We make String a CreatableRawIdType.
 var GlobalStringId: Int = 0
 extension String: CreatableRawIdType {
@@ -650,7 +650,7 @@ typealias SingleArticleDocumentWithIncludes = Document<SingleResourceBody<Articl
 typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoIncludes>
 ```
 ### Server Pseudo-example
-```
+```swift
 // Skipping over all the API and database stuff, here's a chunk of code
 // that creates a document. Note that this document is the entirety
 // of a JSON:API response body.
@@ -710,7 +710,7 @@ print(String(data: otherResponseData, encoding: .utf8)!)
 ```
 
 ### Client Pseudo-example
-```
+```swift
 enum NetworkError: Swift.Error {
 	case serverError
 	case quantityMismatch
