@@ -52,7 +52,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 	- [`JSONAPI.RawIdType`](#jsonapirawidtype)
 	- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
 	- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
-	- [Meta-attributes](#meta-attributes)
+	- [Meta-Attributes](#meta-attributes)
 - [Example](#example)
 	- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
 	- [Server Pseudo-example](#server-pseudo-example)
@@ -527,7 +527,7 @@ extension EntityDescription1.Attributes {
 }
 ```
 
-### Meta-attributes
+### Meta-Attributes
 This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-attributes are just the thing to make your entities more natural to work with.
 
 Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an entity. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, this code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
