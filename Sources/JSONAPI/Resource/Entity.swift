@@ -397,20 +397,20 @@ public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 	/// An Entity.Pointer is a `ToOneRelationship` with no metadata or links.
 	/// This is just a convenient way to reference an Entity so that
 	/// other Entities' Relationships can be built up from it.
-	public typealias Pointer = ToOneRelationship<Entity, NoMetadata, NoLinks>
+	typealias Pointer = ToOneRelationship<Entity, NoMetadata, NoLinks>
 
 	/// Entity.Pointers is a `ToManyRelationship` with no metadata or links.
 	/// This is just a convenient way to reference a bunch of Entities so
 	/// that other Entities' Relationships can be built up from them.
-	public typealias Pointers = ToManyRelationship<Entity, NoMetadata, NoLinks>
+	typealias Pointers = ToManyRelationship<Entity, NoMetadata, NoLinks>
 
 	/// Get a pointer to this entity that can be used as a
 	/// relationship to another entity.
-	public var pointer: Pointer {
+	var pointer: Pointer {
 		return Pointer(entity: self)
 	}
 
-	public func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {
+	func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {
 		return ToOneRelationship(entity: self, meta: meta, links: links)
 	}
 }
@@ -419,19 +419,19 @@ public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
 public extension Entity where EntityRawIdType == Unidentified {
 	/// Create a new Entity from this one with a newly created
 	/// unique Id of the given type.
-	public func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> Entity<Description, MetaType, LinksType, RawIdType> {
+	func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> Entity<Description, MetaType, LinksType, RawIdType> {
 		return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 
 	/// Create a new Entity from this one with the given Id.
-	public func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> Entity<Description, MetaType, LinksType, RawIdType> {
+	func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> Entity<Description, MetaType, LinksType, RawIdType> {
 		return .init(id: Entity<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 
 public extension Entity where EntityRawIdType: CreatableRawIdType {
 	/// Create a copy of this Entity with a new unique Id.
-	public func withNewIdentifier() -> Entity {
+	func withNewIdentifier() -> Entity {
 		return Entity(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
@@ -485,14 +485,14 @@ public extension EntityProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
-	public static func ~><OtherEntity: Identifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.Identifier {
+	static func ~><OtherEntity: Identifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier {
+	static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier {
 		// Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
 		// whereas the one below applies to `ToOneRelationship<E, _, _>?`
 		return entity.relationships[keyPath: path]?.id
@@ -501,7 +501,7 @@ public extension EntityProxy {
 	/// Access to an Id of an optional `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other?.id`.
-	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? {
+	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? {
 		// Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
 		// whereas the one above applies to `ToOneRelationship<E?, _, _>?`
 		return entity.relationships[keyPath: path]?.id
@@ -510,14 +510,14 @@ public extension EntityProxy {
 	/// Access to all Ids of a `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others.ids`.
-	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
+	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 
 	/// Access to all Ids of an optional `ToManyRelationship`.
 	/// This allows you to write `entity ~> \.others` instead
 	/// of `entity.relationships.others?.ids`.
-	public static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.Identifier]? {
+	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.Identifier]? {
 		return entity.relationships[keyPath: path]?.ids
 	}
 }
@@ -535,7 +535,7 @@ private enum ResourceObjectCodingKeys: String, CodingKey {
 }
 
 public extension Entity {
-	public func encode(to encoder: Encoder) throws {
+	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
 		
 		try container.encode(Entity.jsonType, forKey: .type)
@@ -561,7 +561,7 @@ public extension Entity {
 		}
 	}
 
-	public init(from decoder: Decoder) throws {
+	init(from decoder: Decoder) throws {
 		
 		let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 		

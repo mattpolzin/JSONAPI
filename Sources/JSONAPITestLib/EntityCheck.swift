@@ -55,7 +55,7 @@ extension TransformedAttribute: _AttributeType {}
 extension Attribute: _AttributeType {}
 
 public extension Entity {
-	public static func check(_ entity: Entity) throws {
+	static func check(_ entity: Entity) throws {
 		var problems = [EntityCheckError]()
 
 		let attributesMirror = Mirror(reflecting: entity.attributes)
