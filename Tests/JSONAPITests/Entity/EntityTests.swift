@@ -612,7 +612,7 @@ extension EntityTests {
 // MARK: With a Meta Attribute
 
 extension EntityTests {
-	func test_MetaEntityAccessWorks() {
+	func test_MetaEntityAttributeAccessWorks() {
 		let entity1 = TestEntityWithMetaAttribute(id: "even",
 												  attributes: .init(),
 												  relationships: .none,
@@ -626,6 +626,20 @@ extension EntityTests {
 
 		XCTAssertEqual(entity1[\.metaAttribute], true)
 		XCTAssertEqual(entity2[\.metaAttribute], false)
+	}
+}
+
+// MARK: With a Meta Relationship
+
+extension EntityTests {
+	func test_MetaEntityRelationshipAccessWorks() {
+		let entity1 = TestEntityWithMetaRelationship(id: "even",
+												  attributes: .none,
+												  relationships: .init(),
+												  meta: .none,
+												  links: .none)
+
+		XCTAssertEqual(entity1 ~> \.metaRelationship, "hello")
 	}
 }
 
@@ -825,6 +839,22 @@ extension EntityTests {
 	}
 
 	typealias TestEntityWithMetaAttribute = BasicEntity<TestEntityWithMetaAttributeDescription>
+
+	enum TestEntityWithMetaRelationshipDescription: EntityDescription {
+		public static var jsonType: String { return "meta_relationship_entity" }
+
+		typealias Attributes = NoAttributes
+
+		struct Relationships: JSONAPI.Relationships {
+			var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.Identifier {
+				return { entity in
+					return TestEntity1.Identifier(rawValue: "hello")
+				}
+			}
+		}
+	}
+
+	typealias TestEntityWithMetaRelationship = BasicEntity<TestEntityWithMetaRelationshipDescription>
 
 	enum IntToString: Transformer {
 		public static func transform(_ from: Int) -> String {

@@ -55,6 +55,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 	- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
 	- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
 	- [Meta-Attributes](#meta-attributes)
+	- [Meta-Relationships](#meta-relationships)
 - [Example](#example)
 	- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
 	- [Server Pseudo-example](#server-pseudo-example)
@@ -573,6 +574,39 @@ let createdAt = user[\.createdAt]
 ```
 
 This works because `createdAt` is defined in the form: `var {name}: ({Entity}) -> {Value}` where `{Entity}` is the `JSONAPI.Entity` described by the `EntityDescription` containing the meta-attribute.
+
+### Meta-Relationships
+This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-relationships are just the thing to make your entities more natural to work with.
+
+Similarly to Meta-Attributes, Meta-Relationships allow you to represent non-compliant relationships as computed relationship properties. In the following example, a relationship is created from some attributes on the JSON model.
+
+```swift
+enum UserDescription: EntityDescription {
+	public static var jsonType: String { return "users" }
+
+	struct Attributes: JSONAPI.Attributes {
+		let friend_id: Attribute<String>
+	}
+
+	struct Relationships: JSONAPI.Relationships {
+		public var friend: (User) -> User.Identifier {
+			return { user in
+				return User.Identifier(rawValue: user[\.friend_id])
+			}
+		}
+	}
+}
+
+typealias User = JSONAPI.Entity<UserDescription, NoMetadata, NoLinks, String>
+```
+
+Given a value `user` of the above entity type, you can access the `friend` relationship just like you would any other:
+
+```swift
+let friendId = user ~> \.friend
+```
+
+This works because `friend` is defined in the form: `var {name}: ({Entity}) -> {Identifier}` where `{Entity}` is the `JSONAPI.Entity` described by the `EntityDescription` containing the meta-relationship.
 
 ## Example
 The following serves as a sort of pseudo-example. It skips server/client implementation details not related to JSON:API but still gives a more complete picture of what an implementation using this framework might look like. You can play with this example code in the Playground provided with this repo.
