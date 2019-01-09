@@ -522,6 +522,23 @@ public extension EntityProxy {
 	}
 }
 
+// MARK: Meta-Relationship Access
+public extension EntityProxy {
+	/// Access to an Id of a `ToOneRelationship`.
+	/// This allows you to write `entity ~> \.other` instead
+	/// of `entity.relationships.other.id`.
+	public static func ~><Identifier: IdType>(entity: Self, path: KeyPath<Description.Relationships, (Self) -> Identifier>) -> Identifier {
+		return entity.relationships[keyPath: path](entity)
+	}
+
+	/// Access to all Ids of a `ToManyRelationship`.
+	/// This allows you to write `entity ~> \.others` instead
+	/// of `entity.relationships.others.ids`.
+	public static func ~><Identifier: IdType>(entity: Self, path: KeyPath<Description.Relationships, (Self) -> [Identifier]>) -> [Identifier] {
+		return entity.relationships[keyPath: path](entity)
+	}
+}
+
 infix operator ~>
 
 // MARK: - Codable
