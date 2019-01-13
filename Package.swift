@@ -20,12 +20,15 @@ let package = Package(
         .target(
             name: "JSONAPI",
             dependencies: ["Poly"]),
-		.target(
-			name: "JSONAPITestLib",
-			dependencies: ["JSONAPI"]),
+    		.target(
+            name: "JSONAPITestLib",
+            dependencies: ["JSONAPI"]),
         .testTarget(
             name: "JSONAPITests",
-            dependencies: ["JSONAPITestLib"])
+            dependencies: ["JSONAPI", "JSONAPITestLib"]),
+        .testTarget(
+            name: "JSONAPITestLibTests",
+            dependencies: ["JSONAPI", "JSONAPITestLib"])
     ],
   	swiftLanguageVersions: [.v4_2]
 )
