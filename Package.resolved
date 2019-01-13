@@ -1,7 +1,15 @@
 {
   "object": {
     "pins": [
-
+      {
+        "package": "Poly",
+        "repositoryURL": "https://github.com/mattpolzin/Poly.git",
+        "state": {
+          "branch": "master",
+          "revision": "92d889c2cdc027bb94814187e84d34783ae159ae",
+          "version": null
+        }
+      }
     ]
   },
   "version": 1

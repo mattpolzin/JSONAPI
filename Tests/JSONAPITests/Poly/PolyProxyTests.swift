@@ -7,6 +7,7 @@
 
 import XCTest
 import JSONAPI
+import Poly
 
 public class PolyProxyTests: XCTestCase {
 	func test_generalReasonableness() {

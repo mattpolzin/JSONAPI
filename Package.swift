@@ -14,11 +14,12 @@ let package = Package(
 			targets: ["JSONAPITestLib"])
     ],
     dependencies: [
+		.package(url: "https://github.com/mattpolzin/Poly.git", .branch("master"))
     ],
     targets: [
         .target(
             name: "JSONAPI",
-            dependencies: []),
+            dependencies: ["Poly"]),
 		.target(
 			name: "JSONAPITestLib",
 			dependencies: ["JSONAPI"]),
