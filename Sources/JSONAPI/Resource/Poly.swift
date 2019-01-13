@@ -5,6 +5,8 @@
 //  Created by Mathew Polzin on 11/22/18.
 //
 
+public protocol Poly {}
+
 /// Poly is a protocol to which types that
 /// are polymorphic belong to. Specifically,
 /// Poly1, Poly2, Poly3, etc. types conform
@@ -13,7 +15,7 @@
 /// disparate types under one roof for
 /// the purposes of JSON API compliant
 /// encoding or decoding.
-public protocol Poly: PrimaryResource {}
+public typealias JSONPoly = Poly & PrimaryResource
 
 // MARK: - Generic Decoding
 
@@ -32,12 +34,16 @@ private func decode<Thing: Codable>(_ type: Thing.Type, from container: SingleVa
 	return ret
 }
 
+public typealias PolyWrapped = Codable & Equatable
+
 // MARK: - 0 types
 public protocol _Poly0: Poly { }
 public struct Poly0: _Poly0 {
 
 	public init() {}
+}
 
+extension Poly0: PrimaryResource {
 	public init(from decoder: Decoder) throws {
 		throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.")
 	}
@@ -47,11 +53,9 @@ public struct Poly0: _Poly0 {
 	}
 }
 
-public typealias PolyWrapped = Codable & Equatable
-
 // MARK: - 1 type
 public protocol _Poly1: _Poly0 {
-	associatedtype A: PolyWrapped
+	associatedtype A
 	var a: A? { get }
 
 	init(_ a: A)
@@ -63,7 +67,7 @@ public extension _Poly1 {
 	}
 }
 
-public enum Poly1<A: PolyWrapped>: _Poly1 {
+public enum Poly1<A>: _Poly1 {
 	case a(A)
 
 	public var a: A? {
@@ -74,7 +78,11 @@ public enum Poly1<A: PolyWrapped>: _Poly1 {
 	public init(_ a: A) {
 		self = .a(a)
 	}
+}
 
+extension Poly1: Equatable where A: Equatable {}
+
+extension Poly1: Codable where A: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -102,9 +110,11 @@ extension Poly1: CustomStringConvertible {
 	}
 }
 
+extension Poly1: PrimaryResource, MaybePrimaryResource where A: Codable & Equatable {}
+
 // MARK: - 2 types
 public protocol _Poly2: _Poly1 {
-	associatedtype B: PolyWrapped
+	associatedtype B
 	var b: B? { get }
 
 	init(_ b: B)
@@ -118,7 +128,7 @@ public extension _Poly2 {
 
 public typealias Either = Poly2
 
-public enum Poly2<A: PolyWrapped, B: PolyWrapped>: _Poly2 {
+public enum Poly2<A, B>: _Poly2 {
 	case a(A)
 	case b(B)
 
@@ -139,7 +149,11 @@ public enum Poly2<A: PolyWrapped, B: PolyWrapped>: _Poly2 {
 	public init(_ b: B) {
 		self = .b(b)
 	}
+}
 
+extension Poly2: Equatable where A: Equatable, B: Equatable {}
+
+extension Poly2: Codable where A: Codable, B: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -183,9 +197,11 @@ extension Poly2: CustomStringConvertible {
 	}
 }
 
+extension Poly2: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped {}
+
 // MARK: - 3 types
 public protocol _Poly3: _Poly2 {
-	associatedtype C: PolyWrapped
+	associatedtype C
 	var c: C? { get }
 
 	init(_ c: C)
@@ -197,7 +213,7 @@ public extension _Poly3 {
 	}
 }
 
-public enum Poly3<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped>: _Poly3 {
+public enum Poly3<A, B, C>: _Poly3 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -228,7 +244,11 @@ public enum Poly3<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped>: _Poly3 {
 	public init(_ c: C) {
 		self = .c(c)
 	}
+}
 
+extension Poly3: Equatable where A: Equatable, B: Equatable, C:Equatable {}
+
+extension Poly3: Codable where A: Codable, B: Codable, C: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -277,9 +297,11 @@ extension Poly3: CustomStringConvertible {
 	}
 }
 
+extension Poly3: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped {}
+
 // MARK: - 4 types
 public protocol _Poly4: _Poly3 {
-	associatedtype D: PolyWrapped
+	associatedtype D
 	var d: D? { get }
 
 	init(_ d: D)
@@ -291,7 +313,7 @@ public extension _Poly4 {
 	}
 }
 
-public enum Poly4<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped>: _Poly4 {
+public enum Poly4<A, B, C, D>: _Poly4 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -332,7 +354,11 @@ public enum Poly4<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ d: D) {
 		self = .d(d)
 	}
+}
 
+extension Poly4: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable {}
+
+extension Poly4: Codable where A: Codable, B: Codable, C: Codable, D: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -386,9 +412,11 @@ extension Poly4: CustomStringConvertible {
 	}
 }
 
+extension Poly4: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped {}
+
 // MARK: - 5 types
 public protocol _Poly5: _Poly4 {
-	associatedtype E: PolyWrapped
+	associatedtype E
 	var e: E? { get }
 
 	init(_ e: E)
@@ -400,7 +428,7 @@ public extension _Poly5 {
 	}
 }
 
-public enum Poly5<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped>: _Poly5 {
+public enum Poly5<A, B, C, D, E>: _Poly5 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -451,7 +479,11 @@ public enum Poly5<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ e: E) {
 		self = .e(e)
 	}
+}
 
+extension Poly5: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable, E: Equatable {}
+
+extension Poly5: Codable where A: Codable, B: Codable, C: Codable, D: Codable, E: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -510,9 +542,11 @@ extension Poly5: CustomStringConvertible {
 	}
 }
 
+extension Poly5: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped {}
+
 // MARK: - 6 types
 public protocol _Poly6: _Poly5 {
-	associatedtype F: PolyWrapped
+	associatedtype F
 	var f: F? { get }
 
 	init(_ f: F)
@@ -524,7 +558,7 @@ public extension _Poly6 {
 	}
 }
 
-public enum Poly6<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped>: _Poly6 {
+public enum Poly6<A, B, C, D, E, F>: _Poly6 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -585,7 +619,11 @@ public enum Poly6<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ f: F) {
 		self = .f(f)
 	}
+}
 
+extension Poly6: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable, E: Equatable, F: Equatable {}
+
+extension Poly6: Codable where A: Codable, B: Codable, C: Codable, D: Codable, E: Codable, F: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -649,9 +687,11 @@ extension Poly6: CustomStringConvertible {
 	}
 }
 
+extension Poly6: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped {}
+
 // MARK: - 7 types
 public protocol _Poly7: _Poly6 {
-	associatedtype G: PolyWrapped
+	associatedtype G
 	var g: G? { get }
 
 	init(_ g: G)
@@ -663,7 +703,7 @@ public extension _Poly7 {
 	}
 }
 
-public enum Poly7<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped>: _Poly7 {
+public enum Poly7<A, B, C, D, E, F, G>: _Poly7 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -734,7 +774,11 @@ public enum Poly7<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ g: G) {
 		self = .g(g)
 	}
+}
 
+extension Poly7: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable, E: Equatable, F: Equatable, G: Equatable {}
+
+extension Poly7: Codable where A: Codable, B: Codable, C: Codable, D: Codable, E: Codable, F: Codable, G: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -804,9 +848,11 @@ extension Poly7: CustomStringConvertible {
 	}
 }
 
+extension Poly7: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped {}
+
 // MARK: - 8 types
 public protocol _Poly8: _Poly7 {
-	associatedtype H: PolyWrapped
+	associatedtype H
 	var h: H? { get }
 
 	init(_ h: H)
@@ -818,7 +864,7 @@ public extension _Poly8 {
 	}
 }
 
-public enum Poly8<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped>: _Poly8 {
+public enum Poly8<A, B, C, D, E, F, G, H>: _Poly8 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -899,7 +945,11 @@ public enum Poly8<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ h: H) {
 		self = .h(h)
 	}
+}
 
+extension Poly8: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable, E: Equatable, F: Equatable, G: Equatable, H: Equatable {}
+
+extension Poly8: Codable where A: Codable, B: Codable, C: Codable, D: Codable, E: Codable, F: Codable, G: Codable, H: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -975,9 +1025,11 @@ extension Poly8: CustomStringConvertible {
 	}
 }
 
+extension Poly8: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped {}
+
 // MARK: - 9 types
 public protocol _Poly9: _Poly8 {
-	associatedtype I: PolyWrapped
+	associatedtype I
 	var i: I? { get }
 
 	init(_ i: I)
@@ -989,7 +1041,7 @@ public extension _Poly9 {
 	}
 }
 
-public enum Poly9<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped>: _Poly9 {
+public enum Poly9<A, B, C, D, E, F, G, H, I>: _Poly9 {
 	case a(A)
 	case b(B)
 	case c(C)
@@ -1080,7 +1132,11 @@ public enum Poly9<A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped
 	public init(_ i: I) {
 		self = .i(i)
 	}
+}
 
+extension Poly9: Equatable where A: Equatable, B: Equatable, C: Equatable, D: Equatable, E: Equatable, F: Equatable, G: Equatable, H: Equatable, I: Equatable {}
+
+extension Poly9: Codable where A: Codable, B: Codable, C: Codable, D: Codable, E: Codable, F: Codable, G: Codable, H: Codable, I: Codable {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.singleValueContainer()
 
@@ -1160,3 +1216,5 @@ extension Poly9: CustomStringConvertible {
 		return "Poly(\(str))"
 	}
 }
+
+extension Poly9: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped {}
