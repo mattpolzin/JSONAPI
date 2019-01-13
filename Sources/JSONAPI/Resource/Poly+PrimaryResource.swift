@@ -17,6 +17,8 @@ import Poly
 /// encoding or decoding.
 public typealias JSONPoly = Poly & PrimaryResource
 
+public typealias PolyWrapped = Codable & Equatable
+
 extension Poly0: PrimaryResource {
 	public init(from decoder: Decoder) throws {
 		throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.")
@@ -28,7 +30,7 @@ extension Poly0: PrimaryResource {
 }
 
 // MARK: - 1 type
-extension Poly1: PrimaryResource, MaybePrimaryResource where A: Codable & Equatable {}
+extension Poly1: PrimaryResource, MaybePrimaryResource where A: PolyWrapped {}
 
 // MARK: - 2 types
 extension Poly2: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped {}
