@@ -7,7 +7,7 @@
 
 import XCTest
 @testable import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 class CustomAttributesTests: XCTestCase {
 	func test_customDecode() {

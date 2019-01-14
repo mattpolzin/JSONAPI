@@ -7,7 +7,7 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 class Attribute_FunctorTests: XCTestCase {
 	func test_mapGuaranteed() {
