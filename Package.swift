@@ -11,7 +11,7 @@ let package = Package(
             targets: ["JSONAPI"]),
     		.library(
       			name: "JSONAPITesting",
-      			targets: ["JSONAPITestLib"]),
+      			targets: ["JSONAPITesting"]),
         .library(
             name: "JSONAPIOpenAPI",
             targets: ["JSONAPIOpenAPI"])
@@ -24,7 +24,7 @@ let package = Package(
             name: "JSONAPI",
             dependencies: ["Poly"]),
     		.target(
-            name: "JSONAPITestLib",
+            name: "JSONAPITesting",
             dependencies: ["JSONAPI"]),
         .target(
             name: "JSONAPIOpenAPI",
@@ -33,7 +33,7 @@ let package = Package(
             name: "JSONAPITests",
             dependencies: ["JSONAPI", "JSONAPITesting"]),
         .testTarget(
-            name: "JSONAPITestLibTests",
+            name: "JSONAPITestingTests",
             dependencies: ["JSONAPI", "JSONAPITesting"]),
         .testTarget(
             name: "JSONAPIOpenAPITests",
