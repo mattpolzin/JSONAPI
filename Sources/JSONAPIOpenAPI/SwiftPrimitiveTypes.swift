@@ -24,9 +24,6 @@ RFC3339 date-time:
 A hint to UIs to obscure input:
 .string(.password)
 
-An object:
-.object(.generic)
-
 **/
 
 extension String: OpenAPITyped {
