@@ -9,9 +9,12 @@ let package = Package(
         .library(
             name: "JSONAPI",
             targets: ["JSONAPI"]),
-		.library(
-			name: "JSONAPITestLib",
-			targets: ["JSONAPITestLib"])
+    		.library(
+      			name: "JSONAPITesting",
+      			targets: ["JSONAPITestLib"]),
+        .library(
+            name: "JSONAPIOpenAPI",
+            targets: ["JSONAPIOpenAPI"])
     ],
     dependencies: [
 		.package(url: "https://github.com/mattpolzin/Poly.git", .branch("master"))
@@ -23,12 +26,18 @@ let package = Package(
     		.target(
             name: "JSONAPITestLib",
             dependencies: ["JSONAPI"]),
+        .target(
+            name: "JSONAPIOpenAPI",
+            dependencies: ["JSONAPI"]),
         .testTarget(
             name: "JSONAPITests",
-            dependencies: ["JSONAPI", "JSONAPITestLib"]),
+            dependencies: ["JSONAPI", "JSONAPITesting"]),
         .testTarget(
             name: "JSONAPITestLibTests",
-            dependencies: ["JSONAPI", "JSONAPITestLib"])
+            dependencies: ["JSONAPI", "JSONAPITesting"]),
+        .testTarget(
+            name: "JSONAPIOpenAPITests",
+            dependencies: ["JSONAPI", "JSONAPIOpenAPI"])
     ],
   	swiftLanguageVersions: [.v4_2]
 )
