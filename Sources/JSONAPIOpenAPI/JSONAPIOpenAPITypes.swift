@@ -11,7 +11,7 @@ private protocol _Optional {}
 extension Optional: _Optional {}
 
 extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
-	static public var openAPINode: OpenAPI.JSONNode {
+	static public var openAPINode: JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
@@ -23,7 +23,7 @@ extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 }
 
 extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType {
-	static public var openAPINode: OpenAPI.JSONNode {
+	static public var openAPINode: JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
@@ -37,7 +37,7 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 extension ToOneRelationship: OpenAPINodeType {
 	// TODO: const for json `type`
 	// TODO: metadata & links
-	static public var openAPINode: OpenAPI.JSONNode {
+	static public var openAPINode: JSONNode {
 		let nullable = Identifiable.self is _Optional.Type
 		return .object(.init(format: .generic,
 							 required: true),
@@ -60,7 +60,7 @@ extension ToOneRelationship: OpenAPINodeType {
 extension ToManyRelationship: OpenAPINodeType {
 	// TODO: const for json `type`
 	// TODO: metadata & links
-	static public var openAPINode: OpenAPI.JSONNode {
+	static public var openAPINode: JSONNode {
 		return .object(.init(format: .generic,
 							 required: true),
 					   .init(properties: [

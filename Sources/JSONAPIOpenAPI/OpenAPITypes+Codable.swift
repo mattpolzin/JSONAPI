@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 1/14/19.
 //
 
-extension OpenAPI.JSONNode.Context: Encodable {
+extension JSONNode.Context: Encodable {
 
 	private enum CodingKeys: String, CodingKey {
 		case type
@@ -31,7 +31,7 @@ extension OpenAPI.JSONNode.Context: Encodable {
 	}
 }
 
-extension OpenAPI.JSONNode.NumericContext: Encodable {
+extension JSONNode.NumericContext: Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case multipleOf
 		case maximum
@@ -65,7 +65,7 @@ extension OpenAPI.JSONNode.NumericContext: Encodable {
 	}
 }
 
-extension OpenAPI.JSONNode.StringContext: Encodable {
+extension JSONNode.StringContext: Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case maxLength
 		case minLength
@@ -87,7 +87,7 @@ extension OpenAPI.JSONNode.StringContext: Encodable {
 	}
 }
 
-extension OpenAPI.JSONNode.ArrayContext: Encodable {
+extension JSONNode.ArrayContext: Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case items
 		case maxItems
@@ -110,7 +110,7 @@ extension OpenAPI.JSONNode.ArrayContext: Encodable {
 	}
 }
 
-extension OpenAPI.JSONNode.ObjectContext : Encodable{
+extension JSONNode.ObjectContext : Encodable{
 	private enum CodingKeys: String, CodingKey {
 		case maxProperties
 		case minProperties
@@ -142,7 +142,7 @@ extension OpenAPI.JSONNode.ObjectContext : Encodable{
 	}
 }
 
-extension OpenAPI.JSONNode: Encodable {
+extension JSONNode: Encodable {
 	public func encode(to encoder: Encoder) throws {
 		switch self {
 		case .boolean(let context):

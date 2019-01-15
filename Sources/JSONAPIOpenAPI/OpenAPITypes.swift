@@ -8,7 +8,7 @@
 import AnyCodable
 
 public protocol OpenAPINodeType {
-	static var openAPINode: OpenAPI.JSONNode { get }
+	static var openAPINode: JSONNode { get }
 }
 
 public protocol SwiftTyped {
@@ -18,49 +18,30 @@ public protocol SwiftTyped {
 public protocol OpenAPIFormat: SwiftTyped, Codable, Equatable {
 	static var unspecified: Self { get }
 
-	var jsonType: OpenAPI.JSONType { get }
+	var jsonType: JSONType { get }
 }
 
 public protocol JSONNodeContext {
 	var required: Bool { get }
 }
 
-public extension OpenAPI {
-	enum JSONType: String, Codable {
-		case boolean = "boolean"
-		case object = "object"
-		case array = "array"
-		case number = "number"
-		case integer = "integer"
-		case string = "string"
-	}
-
-	enum JSONTypeFormat: Equatable {
-		case boolean(BooleanFormat)
-		case object(ObjectFormat)
-		case array(ArrayFormat)
-		case number(NumberFormat)
-		case integer(IntegerFormat)
-		case string(StringFormat)
-	}
-
-	/// A JSON Node is what OpenAPI calls a
-	/// "Schema Object"
-	enum JSONNode {
-		case boolean(Context<JSONTypeFormat.BooleanFormat>)
-		indirect case object(Context<JSONTypeFormat.ObjectFormat>, ObjectContext)
-		indirect case array(Context<JSONTypeFormat.ArrayFormat>, ArrayContext)
-		case number(Context<JSONTypeFormat.NumberFormat>, NumericContext)
-		case integer(Context<JSONTypeFormat.IntegerFormat>, NumericContext)
-		case string(Context<JSONTypeFormat.StringFormat>, StringContext)
-		indirect case allOf([JSONNode])
-		indirect case oneOf([JSONNode])
-		indirect case anyOf([JSONNode])
-		indirect case not(JSONNode)
-	}
+public enum JSONType: String, Codable {
+	case boolean = "boolean"
+	case object = "object"
+	case array = "array"
+	case number = "number"
+	case integer = "integer"
+	case string = "string"
 }
 
-public extension OpenAPI.JSONTypeFormat {
+public enum JSONTypeFormat: Equatable {
+	case boolean(BooleanFormat)
+	case object(ObjectFormat)
+	case array(ArrayFormat)
+	case number(NumberFormat)
+	case integer(IntegerFormat)
+	case string(StringFormat)
+
 	public enum BooleanFormat: String, Equatable, OpenAPIFormat {
 		case generic = ""
 
@@ -70,7 +51,7 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .boolean
 		}
 	}
@@ -84,7 +65,7 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .object
 		}
 	}
@@ -98,7 +79,7 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .array
 		}
 	}
@@ -114,7 +95,7 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .number
 		}
 	}
@@ -130,7 +111,7 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .integer
 		}
 	}
@@ -149,12 +130,12 @@ public extension OpenAPI.JSONTypeFormat {
 			return .generic
 		}
 
-		public var jsonType: OpenAPI.JSONType {
+		public var jsonType: JSONType {
 			return .string
 		}
 	}
 
-	public var jsonType: OpenAPI.JSONType {
+	public var jsonType: JSONType {
 		switch self {
 		case .boolean:
 			return .boolean
@@ -172,7 +153,20 @@ public extension OpenAPI.JSONTypeFormat {
 	}
 }
 
-extension OpenAPI.JSONNode {
+/// A JSON Node is what OpenAPI calls a
+/// "Schema Object"
+public enum JSONNode {
+	case boolean(Context<JSONTypeFormat.BooleanFormat>)
+	indirect case object(Context<JSONTypeFormat.ObjectFormat>, ObjectContext)
+	indirect case array(Context<JSONTypeFormat.ArrayFormat>, ArrayContext)
+	case number(Context<JSONTypeFormat.NumberFormat>, NumericContext)
+	case integer(Context<JSONTypeFormat.IntegerFormat>, NumericContext)
+	case string(Context<JSONTypeFormat.StringFormat>, StringContext)
+	indirect case allOf([JSONNode])
+	indirect case oneOf([JSONNode])
+	indirect case anyOf([JSONNode])
+	indirect case not(JSONNode)
+
 	public struct Context<Format: OpenAPIFormat>: JSONNodeContext, Equatable {
 		public let format: Format
 		public let required: Bool
@@ -258,7 +252,7 @@ extension OpenAPI.JSONNode {
 	public struct ArrayContext {
 		/// A JSON Type Node that describes
 		/// the type of each element in the array.
-		public let items: OpenAPI.JSONNode
+		public let items: JSONNode
 
 		/// Maximum number of items in array.
 		public let maxItems: Int?
@@ -272,7 +266,7 @@ extension OpenAPI.JSONNode {
 		/// to be unique. Defaults to false.
 		public let uniqueItems: Bool
 
-		public init(items: OpenAPI.JSONNode,
+		public init(items: JSONNode,
 					maxItems: Int? = nil,
 					minItems: Int = 0,
 					uniqueItems: Bool = false) {
@@ -286,8 +280,8 @@ extension OpenAPI.JSONNode {
 	public struct ObjectContext {
 		public let maxProperties: Int?
 		public let minProperties: Int
-		public let properties: [String: OpenAPI.JSONNode]
-		public let additionalProperties: [String: OpenAPI.JSONNode]?
+		public let properties: [String: JSONNode]
+		public let additionalProperties: [String: JSONNode]?
 
 		/*
 		// NOTE that an object's required properties
@@ -296,8 +290,8 @@ extension OpenAPI.JSONNode {
 		public let required: [String]
 		*/
 
-		public init(properties: [String: OpenAPI.JSONNode],
-					additionalProperties: [String: OpenAPI.JSONNode]? = nil,
+		public init(properties: [String: JSONNode],
+					additionalProperties: [String: JSONNode]? = nil,
 					maxProperties: Int? = nil,
 					minProperties: Int = 0) {
 			self.properties = properties
@@ -307,7 +301,7 @@ extension OpenAPI.JSONNode {
 		}
 	}
 
-	public var jsonTypeFormat: OpenAPI.JSONTypeFormat? {
+	public var jsonTypeFormat: JSONTypeFormat? {
 		switch self {
 		case .boolean(let context):
 			return .boolean(context.format)
@@ -341,7 +335,7 @@ extension OpenAPI.JSONNode {
 	}
 
 	/// Return the optional version of this JSONNode
-	public func optionalNode() -> OpenAPI.JSONNode {
+	public func optionalNode() -> JSONNode {
 		switch self {
 		case .boolean(let context):
 			return .boolean(context.optionalContext())
@@ -361,7 +355,7 @@ extension OpenAPI.JSONNode {
 	}
 
 	/// Return the required version of this JSONNode
-	public func requiredNode() -> OpenAPI.JSONNode {
+	public func requiredNode() -> JSONNode {
 		switch self {
 		case .boolean(let context):
 			return .boolean(context.requiredContext())
@@ -381,7 +375,7 @@ extension OpenAPI.JSONNode {
 	}
 
 	/// Return the nullable version of this JSONNode
-	public func nullableNode() -> OpenAPI.JSONNode {
+	public func nullableNode() -> JSONNode {
 		switch self {
 		case .boolean(let context):
 			return .boolean(context.nullableContext())
