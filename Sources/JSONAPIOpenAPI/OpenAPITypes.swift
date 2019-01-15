@@ -12,7 +12,7 @@ public protocol OpenAPINodeType {
 }
 
 public protocol SwiftTyped {
-	associatedtype SwiftType: Codable
+	associatedtype SwiftType: Codable, Equatable
 }
 
 public protocol OpenAPIFormat: SwiftTyped, Codable, Equatable {
@@ -173,7 +173,7 @@ public extension OpenAPI.JSONTypeFormat {
 }
 
 extension OpenAPI.JSONNode {
-	public struct Context<Format: OpenAPIFormat>: JSONNodeContext {
+	public struct Context<Format: OpenAPIFormat>: JSONNodeContext, Equatable {
 		public let format: Format
 		public let required: Bool
 		public let nullable: Bool
@@ -197,6 +197,7 @@ extension OpenAPI.JSONNode {
 		public func optionalContext() -> Context {
 			return .init(format: format,
 						 required: false,
+						 nullable: nullable,
 						 allowedValues: allowedValues)
 		}
 
@@ -204,6 +205,15 @@ extension OpenAPI.JSONNode {
 		public func requiredContext() -> Context {
 			return .init(format: format,
 						 required: true,
+						 nullable: nullable,
+						 allowedValues: allowedValues)
+		}
+
+		/// Return the nullable version of this context
+		public func nullableContext() -> Context {
+			return .init(format: format,
+						 required: required,
+						 nullable: true,
 						 allowedValues: allowedValues)
 		}
 	}
@@ -365,6 +375,26 @@ extension OpenAPI.JSONNode {
 			return .integer(context.requiredContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.requiredContext(), contextB)
+		case .allOf, .oneOf, .anyOf, .not:
+			return self
+		}
+	}
+
+	/// Return the nullable version of this JSONNode
+	public func nullableNode() -> OpenAPI.JSONNode {
+		switch self {
+		case .boolean(let context):
+			return .boolean(context.nullableContext())
+		case .object(let contextA, let contextB):
+			return .object(contextA.nullableContext(), contextB)
+		case .array(let contextA, let contextB):
+			return .array(contextA.nullableContext(), contextB)
+		case .number(let context, let contextB):
+			return .number(context.nullableContext(), contextB)
+		case .integer(let context, let contextB):
+			return .integer(context.nullableContext(), contextB)
+		case .string(let context, let contextB):
+			return .string(context.nullableContext(), contextB)
 		case .allOf, .oneOf, .anyOf, .not:
 			return self
 		}

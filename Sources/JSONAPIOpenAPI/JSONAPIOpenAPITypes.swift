@@ -7,20 +7,32 @@
 
 import JSONAPI
 
+private protocol _Optional {}
+extension Optional: _Optional {}
+
 extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 	static public var openAPINode: OpenAPI.JSONNode {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
+		if !RawValue.openAPINode.required {
+			return RawValue.openAPINode.requiredNode().nullableNode()
+		}
 		return RawValue.openAPINode
 	}
 }
 
 extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 	static public var openAPINode: OpenAPI.JSONNode {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
+		if !RawValue.openAPINode.required {
+			return RawValue.openAPINode.requiredNode().nullableNode()
+		}
 		return RawValue.openAPINode
 	}
 }
-
-private protocol _Optional {}
-extension Optional: _Optional {}
 
 extension ToOneRelationship: OpenAPINodeType {
 	// TODO: const for json `type`
