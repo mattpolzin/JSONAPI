@@ -26,50 +26,71 @@ A hint to UIs to obscure input:
 
 **/
 
-extension String: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .string(.generic)
+extension Optional: OpenAPINodeType where Wrapped: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return Wrapped.openAPINode.optionalNode()
 	}
 }
 
-extension Bool: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .boolean(.generic)
+extension String: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .string(.init(format: .generic,
+							 required: true),
+					   .init())
 	}
 }
 
-extension Array: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .array(.generic)
+extension Bool: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .boolean(.init(format: .generic,
+							  required: true))
 	}
 }
 
-extension Double: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .number(.double)
+extension Array: OpenAPINodeType where Element: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .array(.init(format: .generic,
+							required: true),
+					  .init(items: Element.openAPINode))
 	}
 }
 
-extension Float: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .number(.float)
+extension Double: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .number(.init(format: .double,
+							 required: true),
+					   .init())
 	}
 }
 
-extension Int: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .integer(.generic)
+extension Float: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .number(.init(format: .float,
+							 required: true),
+					   .init())
 	}
 }
 
-extension Int32: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .integer(.int32)
+extension Int: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .integer(.init(format: .generic,
+							  required: true),
+						.init())
 	}
 }
 
-extension Int64: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .integer(.int64)
+extension Int32: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .integer(.init(format: .int32,
+							  required: true),
+						.init())
+	}
+}
+
+extension Int64: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .integer(.init(format: .int64,
+							  required: true),
+						.init())
 	}
 }

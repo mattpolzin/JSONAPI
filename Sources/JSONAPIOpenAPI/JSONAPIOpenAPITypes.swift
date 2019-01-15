@@ -7,26 +7,61 @@
 
 import JSONAPI
 
-extension Attribute: OpenAPITyped where RawValue: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return value.openAPIType
+extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return RawValue.openAPINode
 	}
 }
 
-extension TransformedAttribute: OpenAPITyped where RawValue: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return rawValue.openAPIType
+extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType {
+	static public var openAPINode: OpenAPI.JSONNode {
+		return RawValue.openAPINode
 	}
 }
 
-extension ToOneRelationship: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .object(.generic)
+private protocol _Optional {}
+extension Optional: _Optional {}
+
+extension ToOneRelationship: OpenAPINodeType {
+	// TODO: const for json `type`
+	static public var openAPINode: OpenAPI.JSONNode {
+		let nullable = Identifiable.self is _Optional.Type
+		return .object(.init(format: .generic,
+							 required: true),
+					   .init(properties: [
+						"data": .object(.init(format: .generic,
+											  required: true,
+											  nullable: nullable),
+										.init(properties: [
+											"id": .string(.init(format: .generic,
+																required: true),
+														  .init()),
+											"type": .string(.init(format: .generic,
+																  required: true),
+															.init())
+											]))
+						]))
 	}
 }
 
-extension ToManyRelationship: OpenAPITyped {
-	public var openAPIType: OpenAPI.JSONTypeFormat {
-		return .object(.generic)
+extension ToManyRelationship: OpenAPINodeType {
+	// TODO: const for json `type`
+	static public var openAPINode: OpenAPI.JSONNode {
+		return .object(.init(format: .generic,
+							 required: true),
+					   .init(properties: [
+						"data": .array(.init(format: .generic,
+											 required: true),
+									   .init(items: .object(.init(format: .generic,
+																  required: true),
+															.init(properties: [
+																"id": .string(.init(format: .generic,
+																					required: true),
+																			  .init()),
+																"type": .string(.init(format: .generic,
+																					  required: true),
+																				.init())
+																]))))
+						]))
 	}
 }

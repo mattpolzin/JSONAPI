@@ -17,7 +17,8 @@ let package = Package(
             targets: ["JSONAPIOpenAPI"])
     ],
     dependencies: [
-		.package(url: "https://github.com/mattpolzin/Poly.git", .branch("master"))
+		    .package(url: "https://github.com/mattpolzin/Poly.git", .branch("master")),
+        .package(url: "https://github.com/Flight-School/AnyCodable.git", from: "0.1.0")
     ],
     targets: [
         .target(
@@ -28,7 +29,7 @@ let package = Package(
             dependencies: ["JSONAPI"]),
         .target(
             name: "JSONAPIOpenAPI",
-            dependencies: ["JSONAPI"]),
+            dependencies: ["JSONAPI", "AnyCodable"]),
         .testTarget(
             name: "JSONAPITests",
             dependencies: ["JSONAPI", "JSONAPITesting"]),
