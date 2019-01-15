@@ -8,59 +8,60 @@ See the JSON API Spec here: https://jsonapi.org/format/
 :warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating entities in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
 ## Table of Contents
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Table of Contents](#table-of-contents)
-- [Primary Goals](#primary-goals)
-	- [Caveat](#caveat)
-- [Dev Environment](#dev-environment)
-	- [Prerequisites](#prerequisites)
-	- [Xcode project](#xcode-project)
-	- [Running the Playground](#running-the-playground)
-- [Project Status](#project-status)
-	- [Encoding/Decoding](#encodingdecoding)
-		- [Document](#document)
-		- [Resource Object](#resource-object)
-		- [Relationship Object](#relationship-object)
-		- [Links Object](#links-object)
-	- [Misc](#misc)
+- [JSONAPI](#jsonapi)
+	- [Table of Contents](#table-of-contents)
+	- [Primary Goals](#primary-goals)
+		- [Caveat](#caveat)
+	- [Dev Environment](#dev-environment)
+		- [Prerequisites](#prerequisites)
+		- [Xcode project](#xcode-project)
+		- [Running the Playground](#running-the-playground)
+	- [Project Status](#project-status)
+		- [JSON:API](#jsonapi)
+			- [Document](#document)
+			- [Resource Object](#resource-object)
+			- [Relationship Object](#relationship-object)
+			- [Links Object](#links-object)
+		- [Misc](#misc)
+		- [JSONAPITestLib](#jsonapitestlib)
+			- [Entity Validator](#entity-validator)
+		- [Potential Improvements](#potential-improvements)
+	- [Usage](#usage)
+		- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
+		- [`JSONAPI.Entity`](#jsonapientity)
+			- [`Meta`](#meta)
+			- [`Links`](#links)
+			- [`IdType`](#idtype)
+			- [`MaybeRawId`](#mayberawid)
+			- [Convenient `typealiases`](#convenient-typealiases)
+		- [`JSONAPI.Relationships`](#jsonapirelationships)
+		- [`JSONAPI.Attributes`](#jsonapiattributes)
+			- [`Transformer`](#transformer)
+			- [`Validator`](#validator)
+			- [Computed `Attribute`](#computed-attribute)
+		- [Copying `Entities`](#copying-entities)
+		- [`JSONAPI.Document`](#jsonapidocument)
+			- [`ResourceBody`](#resourcebody)
+				- [nullable `PrimaryResource`](#nullable-primaryresource)
+			- [`MetaType`](#metatype)
+			- [`LinksType`](#linkstype)
+			- [`IncludeType`](#includetype)
+			- [`APIDescriptionType`](#apidescriptiontype)
+			- [`Error`](#error)
+		- [`JSONAPI.Meta`](#jsonapimeta)
+		- [`JSONAPI.Links`](#jsonapilinks)
+		- [`JSONAPI.RawIdType`](#jsonapirawidtype)
+		- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
+		- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
+		- [Meta-Attributes](#meta-attributes)
+		- [Meta-Relationships](#meta-relationships)
+	- [Example](#example)
+		- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
+		- [Server Pseudo-example](#server-pseudo-example)
+		- [Client Pseudo-example](#client-pseudo-example)
 	- [JSONAPITestLib](#jsonapitestlib)
-		- [Entity Validator](#entity-validator)
-	- [Potential Improvements](#potential-improvements)
-- [Usage](#usage)
-	- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
-	- [`JSONAPI.Entity`](#jsonapientity)
-		- [`Meta`](#meta)
-		- [`Links`](#links)
-		- [`IdType`](#idtype)
-		- [`MaybeRawId`](#mayberawid)
-		- [Convenient `typealiases`](#convenient-typealiases)
-	- [`JSONAPI.Relationships`](#jsonapirelationships)
-	- [`JSONAPI.Attributes`](#jsonapiattributes)
-		- [`Transformer`](#transformer)
-		- [`Validator`](#validator)
-		- [Computed `Attribute`](#computed-attribute)
-	- [Copying `Entities`](#copying-entities)
-	- [`JSONAPI.Document`](#jsonapidocument)
-		- [`ResourceBody`](#resourcebody)
-			- [nullable `PrimaryResource`](#nullable-primaryresource)
-		- [`MetaType`](#metatype)
-		- [`LinksType`](#linkstype)
-		- [`IncludeType`](#includetype)
-		- [`APIDescriptionType`](#apidescriptiontype)
-		- [`Error`](#error)
-	- [`JSONAPI.Meta`](#jsonapimeta)
-	- [`JSONAPI.Links`](#jsonapilinks)
-	- [`JSONAPI.RawIdType`](#jsonapirawidtype)
-	- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
-	- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
-	- [Meta-Attributes](#meta-attributes)
-	- [Meta-Relationships](#meta-relationships)
-- [Example](#example)
-	- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
-	- [Server Pseudo-example](#server-pseudo-example)
-	- [Client Pseudo-example](#client-pseudo-example)
-- [JSONAPITestLib](#jsonapitestlib)
 
 <!-- /TOC -->
 
@@ -92,31 +93,82 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ## Project Status
 
-### Encoding/Decoding
+### JSON:API
 #### Document
-- [x] `data`
-- [x] `included`
-- [x] `errors`
-- [x] `meta`
-- [x] `jsonapi`
-- [x] `links`
+- `data`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `included`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `errors`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `jsonapi` (i.e. API Information)
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 #### Resource Object
-- [x] `id`
-- [x] `type`
-- [x] `attributes`
-- [x] `relationships`
-- [x] `links`
-- [x] `meta`
+- `id`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `type`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `attributes`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `relationships`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 #### Relationship Object
-- [x] `data`
-- [x] `links`
-- [x] `meta`
+- `data`
+	- [x] Encoding/Decoding
+	- [x] Arbitrary
+	- [x] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 #### Links Object
-- [x] `href`
-- [x] `meta`
+- `href`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
