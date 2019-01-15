@@ -36,6 +36,7 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 
 extension ToOneRelationship: OpenAPINodeType {
 	// TODO: const for json `type`
+	// TODO: metadata & links
 	static public var openAPINode: OpenAPI.JSONNode {
 		let nullable = Identifiable.self is _Optional.Type
 		return .object(.init(format: .generic,
@@ -58,6 +59,7 @@ extension ToOneRelationship: OpenAPINodeType {
 
 extension ToManyRelationship: OpenAPINodeType {
 	// TODO: const for json `type`
+	// TODO: metadata & links
 	static public var openAPINode: OpenAPI.JSONNode {
 		return .object(.init(format: .generic,
 							 required: true),
