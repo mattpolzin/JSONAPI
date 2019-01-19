@@ -7,8 +7,39 @@
 
 import AnyCodable
 
+// MARK: Node (i.e. schema) Protocols
+
+/// Anything conforming to `OpenAPINodeType` can provide an
+/// OpenAPI schema representing itself.
 public protocol OpenAPINodeType {
-	static var openAPINode: JSONNode { get }
+	static func openAPINode() throws -> JSONNode
+}
+
+/// Anything conforming to `RawOpenAPINodeType` can provide an
+/// OpenAPI schema representing itself. This second protocol is
+/// necessary so that one type can conditionally provide a
+/// schema and then (under different conditions) provide a
+/// different schema. The "different" conditions have to do
+/// with Raw Representability, hence the name of this protocol.
+public protocol RawOpenAPINodeType {
+	static func openAPINode() throws -> JSONNode
+}
+
+/// Anything conforming to `AnyJSONCaseIterable` can provide a
+/// list of its possible values.
+public protocol AnyJSONCaseIterable {
+	static var allCases: [Any] { get }
+}
+
+/// Anything conforming to `AnyJSONCaseIterable` can provide a
+/// list of its possible values. This second protocol is
+/// necessary so that one type can conditionally provide a
+/// list of possible values and then (under different conditions)
+/// provide a different list of possible values.
+/// The "different" conditions have to do
+/// with Optionality, hence the name of this protocol.
+public protocol AnyWrappedJSONCaseIterable {
+	static var allCases: [Any] { get }
 }
 
 public protocol SwiftTyped {
@@ -210,6 +241,14 @@ public enum JSONNode {
 						 nullable: true,
 						 allowedValues: allowedValues)
 		}
+
+		/// Return this context with the given list of possible values
+		public func with(allowedValues: [Format.SwiftType]?) -> Context {
+			return .init(format: format,
+						 required: required,
+						 nullable: nullable,
+						 allowedValues: allowedValues)
+		}
 	}
 
 	public struct NumericContext {
@@ -392,5 +431,65 @@ public enum JSONNode {
 		case .allOf, .oneOf, .anyOf, .not:
 			return self
 		}
+	}
+
+	public func with<T>(allowedValues: [T]) throws -> JSONNode where T: RawRepresentable, T.RawValue == String {
+		return try with(allowedValues: allowedValues.map { $0.rawValue })
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.BooleanFormat.SwiftType]) throws -> JSONNode {
+		guard case let .boolean(contextA) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.BooleanFormat.SwiftType.self)
+		}
+		return .boolean(contextA.with(allowedValues: allowedValues))
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.ObjectFormat.SwiftType]) throws -> JSONNode {
+		guard case let .object(contextA, contextB) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.ObjectFormat.SwiftType.self)
+		}
+		return .object(contextA.with(allowedValues: allowedValues), contextB)
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.ArrayFormat.SwiftType]) throws -> JSONNode {
+		guard case let .array(contextA, contextB) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.ArrayFormat.SwiftType.self)
+		}
+		return .array(contextA.with(allowedValues: allowedValues), contextB)
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.NumberFormat.SwiftType]) throws -> JSONNode {
+		guard case let .number(contextA, contextB) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.NumberFormat.SwiftType.self)
+		}
+		return .number(contextA.with(allowedValues: allowedValues), contextB)
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.IntegerFormat.SwiftType]) throws -> JSONNode {
+		guard case let .integer(contextA, contextB) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.IntegerFormat.SwiftType.self)
+		}
+		return .integer(contextA.with(allowedValues: allowedValues), contextB)
+	}
+
+	public func with(allowedValues: [JSONTypeFormat.StringFormat.SwiftType]) throws -> JSONNode {
+		guard case let .string(contextA, contextB) = self else {
+			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.StringFormat.SwiftType.self)
+		}
+		return .string(contextA.with(allowedValues: allowedValues), contextB)
+	}
+}
+
+public struct AllowedValueError: Swift.Error, CustomStringConvertible {
+	public let expectation: JSONType?
+	public let receivedType: Any.Type
+
+	public init(expectation: JSONType?, receivedType: Any.Type) {
+		self.expectation = expectation
+		self.receivedType = receivedType
+	}
+
+	public var description: String {
+		return "Expected type compatible with JSON Type \(String(describing: expectation)) but found \(receivedType)"
 	}
 }

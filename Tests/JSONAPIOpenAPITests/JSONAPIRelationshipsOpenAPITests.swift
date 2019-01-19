@@ -14,7 +14,7 @@ import JSONAPIOpenAPI
 class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 
 	func test_ToOne() {
-		let node = ToOneRelationship<TestEntity1, NoMetadata, NoLinks>.openAPINode
+		let node = try! ToOneRelationship<TestEntity1, NoMetadata, NoLinks>.openAPINode()
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -47,7 +47,7 @@ class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 	}
 
 	func test_OptionalToOne() {
-		let node = ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?.openAPINode
+		let node = try! ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?.openAPINode()
 
 		XCTAssertFalse(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -80,7 +80,7 @@ class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 	}
 
 	func test_NullableToOne() {
-		let node = ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>.openAPINode
+		let node = try! ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>.openAPINode()
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -113,7 +113,7 @@ class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 	}
 
 	func test_OptionalNullableToOne() {
-		let node = ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?.openAPINode
+		let node = try! ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?.openAPINode()
 
 		XCTAssertFalse(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -146,7 +146,7 @@ class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 	}
 
 	func test_ToMany() {
-		let node = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>.openAPINode
+		let node = try! ToManyRelationship<TestEntity1, NoMetadata, NoLinks>.openAPINode()
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -189,7 +189,7 @@ class JSONAPIRelationshipsOpenAPITests: XCTestCase {
 	}
 
 	func test_OptionalToMany() {
-		let node = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?.openAPINode
+		let node = try! ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?.openAPINode()
 
 		XCTAssertFalse(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
