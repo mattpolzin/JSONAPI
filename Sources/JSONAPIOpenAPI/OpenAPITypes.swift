@@ -33,13 +33,22 @@ public protocol AnyJSONCaseIterable {
 }
 
 extension AnyJSONCaseIterable {
+	/// Given an array of Codable values, retrieve an array of AnyCodables.
 	static func allCases<T: Codable>(from input: [T]) throws -> [AnyCodable] {
 		if let alreadyGoodToGo = input as? [AnyCodable] {
 			return alreadyGoodToGo
 		}
 
+		// The following is messy, but it does get us the intended result:
+		// Given any array of things that can be encoded, we want
+		// to map to an array of AnyCodable so we can store later. We need to
+		// muck with JSONSerialization because something like an `enum` may
+		// very well be encoded as a string, and therefore representable
+		// by AnyCodable, but AnyCodable wants it to actually BE a String
+		// upon initialization.
+
 		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: JSONEncoder().encode(input), options: []) as? [Any] else {
-			throw CodableError.allCasesArrayNotCodable
+			throw OpenAPICodableError.allCasesArrayNotCodable
 		}
 		return arrayOfCodables.map(AnyCodable.init)
 	}
@@ -220,6 +229,13 @@ public enum JSONNode {
 		/// The OpenAPI spec calls this "enum"
 		/// If not specified, it is assumed that any
 		/// value of the given format is allowed.
+		/// NOTE: I would like the array of allowed
+		/// values to have the type `Format.SwiftType`
+		/// but this is not tractable because I also
+		/// want to be able to automatically turn any
+		/// Swift type that will get _encoded as
+		/// something compatible with_ `Format.SwiftType`
+		/// into an allowed value.
 		public let allowedValues: [AnyCodable]?
 
 		public init(format: Format,
@@ -468,21 +484,6 @@ public enum JSONNode {
 	}
 }
 
-public struct AllowedValueError: Swift.Error, CustomStringConvertible {
-	public let expectation: JSONType?
-	public let receivedType: Any.Type
-
-	public init(expectation: JSONType?, receivedType: Any.Type) {
-		self.expectation = expectation
-		self.receivedType = receivedType
-	}
-
-	public var description: String {
-		return "Expected type compatible with JSON Type \(String(describing: expectation)) but found \(receivedType)"
-	}
-}
-
-public enum CodableError: Swift.Error {
-	case codableNotAnyCodable(Any.Type)
+public enum OpenAPICodableError: Swift.Error {
 	case allCasesArrayNotCodable
 }
