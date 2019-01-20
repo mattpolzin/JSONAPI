@@ -6,6 +6,7 @@
 //
 
 import JSONAPI
+import AnyCodable
 
 private protocol _Optional {}
 extension Optional: _Optional {}
@@ -32,14 +33,14 @@ extension Attribute: RawOpenAPINodeType where RawValue: RawRepresentable, RawVal
 	}
 }
 
-extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable {
-	public static var allCases: [Any] {
-		return Array(RawValue.allCases)
+extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable, RawValue: Codable {
+	public static var allCases: [AnyCodable] {
+		return (try? allCases(from: Array(RawValue.allCases))) ?? []
 	}
 }
 
 extension Attribute: AnyWrappedJSONCaseIterable where RawValue: AnyJSONCaseIterable {
-	public static var allCases: [Any] {
+	public static var allCases: [AnyCodable] {
 		return RawValue.allCases
 	}
 }

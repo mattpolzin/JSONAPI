@@ -22,17 +22,6 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 	}
 
 	func test_AttributesEntity() {
-
-		let tmp = ["hello"] as [Any]
-		let tmp2 = tmp as! [String]
-		let tmp3 = tmp as? RawStringArrayRepresentable
-		let tmp4 = tmp2 as? RawStringArrayRepresentable
-
-		let y = TestType2Description.EnumType.one
-		let z = y as Any
-
-		let x = [y as? TestType2Description.EnumType]
-
 		let node = try! TestType2.openAPINode()
 
 		// TODO: Write test

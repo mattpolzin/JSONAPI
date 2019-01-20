@@ -5,6 +5,8 @@
 //  Created by Mathew Polzin on 01/13/19.
 //
 
+import AnyCodable
+
 /**
 
 Notable omissions in this library's default offerings:
@@ -41,9 +43,9 @@ extension Optional: RawOpenAPINodeType where Wrapped: RawRepresentable, Wrapped.
 	}
 }
 
-extension Optional: AnyJSONCaseIterable where Wrapped: CaseIterable {
-	public static var allCases: [Any] {
-		return Array(Wrapped.allCases)
+extension Optional: AnyJSONCaseIterable where Wrapped: CaseIterable, Wrapped: Codable {
+	public static var allCases: [AnyCodable] {
+		return (try? allCases(from: Array(Wrapped.allCases))) ?? []
 	}
 }
 

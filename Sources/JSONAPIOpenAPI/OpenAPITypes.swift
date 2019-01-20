@@ -6,6 +6,7 @@
 //
 
 import AnyCodable
+import Foundation
 
 // MARK: Node (i.e. schema) Protocols
 
@@ -28,7 +29,20 @@ public protocol RawOpenAPINodeType {
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
 /// list of its possible values.
 public protocol AnyJSONCaseIterable {
-	static var allCases: [Any] { get }
+	static var allCases: [AnyCodable] { get }
+}
+
+extension AnyJSONCaseIterable {
+	static func allCases<T: Codable>(from input: [T]) throws -> [AnyCodable] {
+		if let alreadyGoodToGo = input as? [AnyCodable] {
+			return alreadyGoodToGo
+		}
+
+		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: JSONEncoder().encode(input), options: []) as? [Any] else {
+			throw CodableError.allCasesArrayNotCodable
+		}
+		return arrayOfCodables.map(AnyCodable.init)
+	}
 }
 
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
@@ -39,7 +53,7 @@ public protocol AnyJSONCaseIterable {
 /// The "different" conditions have to do
 /// with Optionality, hence the name of this protocol.
 public protocol AnyWrappedJSONCaseIterable {
-	static var allCases: [Any] { get }
+	static var allCases: [AnyCodable] { get }
 }
 
 public protocol SwiftTyped {
@@ -206,12 +220,12 @@ public enum JSONNode {
 		/// The OpenAPI spec calls this "enum"
 		/// If not specified, it is assumed that any
 		/// value of the given format is allowed.
-		public let allowedValues: [Format.SwiftType]?
+		public let allowedValues: [AnyCodable]?
 
 		public init(format: Format,
 					required: Bool,
 					nullable: Bool = false,
-					allowedValues: [Format.SwiftType]? = nil) {
+					allowedValues: [AnyCodable]? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
@@ -243,7 +257,7 @@ public enum JSONNode {
 		}
 
 		/// Return this context with the given list of possible values
-		public func with(allowedValues: [Format.SwiftType]?) -> Context {
+		public func with(allowedValues: [AnyCodable]?) -> Context {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
@@ -433,50 +447,24 @@ public enum JSONNode {
 		}
 	}
 
-	public func with<T>(allowedValues: [T]) throws -> JSONNode where T: RawRepresentable, T.RawValue == String {
-		return try with(allowedValues: allowedValues.map { $0.rawValue })
-	}
+	public func with(allowedValues: [AnyCodable]) throws -> JSONNode {
 
-	public func with(allowedValues: [JSONTypeFormat.BooleanFormat.SwiftType]) throws -> JSONNode {
-		guard case let .boolean(contextA) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.BooleanFormat.SwiftType.self)
+		switch self {
+		case .boolean(let context):
+			return .boolean(context.with(allowedValues: allowedValues))
+		case .object(let contextA, let contextB):
+			return .object(contextA.with(allowedValues: allowedValues), contextB)
+		case .array(let contextA, let contextB):
+			return .array(contextA.with(allowedValues: allowedValues), contextB)
+		case .number(let context, let contextB):
+			return .number(context.with(allowedValues: allowedValues), contextB)
+		case .integer(let context, let contextB):
+			return .integer(context.with(allowedValues: allowedValues), contextB)
+		case .string(let context, let contextB):
+			return .string(context.with(allowedValues: allowedValues), contextB)
+		case .allOf, .oneOf, .anyOf, .not:
+			return self
 		}
-		return .boolean(contextA.with(allowedValues: allowedValues))
-	}
-
-	public func with(allowedValues: [JSONTypeFormat.ObjectFormat.SwiftType]) throws -> JSONNode {
-		guard case let .object(contextA, contextB) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.ObjectFormat.SwiftType.self)
-		}
-		return .object(contextA.with(allowedValues: allowedValues), contextB)
-	}
-
-	public func with(allowedValues: [JSONTypeFormat.ArrayFormat.SwiftType]) throws -> JSONNode {
-		guard case let .array(contextA, contextB) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.ArrayFormat.SwiftType.self)
-		}
-		return .array(contextA.with(allowedValues: allowedValues), contextB)
-	}
-
-	public func with(allowedValues: [JSONTypeFormat.NumberFormat.SwiftType]) throws -> JSONNode {
-		guard case let .number(contextA, contextB) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.NumberFormat.SwiftType.self)
-		}
-		return .number(contextA.with(allowedValues: allowedValues), contextB)
-	}
-
-	public func with(allowedValues: [JSONTypeFormat.IntegerFormat.SwiftType]) throws -> JSONNode {
-		guard case let .integer(contextA, contextB) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.IntegerFormat.SwiftType.self)
-		}
-		return .integer(contextA.with(allowedValues: allowedValues), contextB)
-	}
-
-	public func with(allowedValues: [JSONTypeFormat.StringFormat.SwiftType]) throws -> JSONNode {
-		guard case let .string(contextA, contextB) = self else {
-			throw AllowedValueError(expectation: jsonTypeFormat?.jsonType, receivedType: JSONTypeFormat.StringFormat.SwiftType.self)
-		}
-		return .string(contextA.with(allowedValues: allowedValues), contextB)
 	}
 }
 
@@ -492,4 +480,9 @@ public struct AllowedValueError: Swift.Error, CustomStringConvertible {
 	public var description: String {
 		return "Expected type compatible with JSON Type \(String(describing: expectation)) but found \(receivedType)"
 	}
+}
+
+public enum CodableError: Swift.Error {
+	case codableNotAnyCodable(Any.Type)
+	case allCasesArrayNotCodable
 }
