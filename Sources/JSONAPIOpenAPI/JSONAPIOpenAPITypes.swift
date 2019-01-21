@@ -104,6 +104,7 @@ extension ToManyRelationship: OpenAPINodeType {
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode() throws -> JSONNode {
+		// TODO: Id, type, metadata, links
 		let attributesNode: JSONNode? = Description.Attributes.self == NoAttributes.self
 			? nil
 			: try Description.Attributes.genericObjectOpenAPINode()

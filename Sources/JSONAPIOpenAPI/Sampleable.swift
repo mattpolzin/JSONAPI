@@ -49,32 +49,7 @@ extension Sampleable {
 			let newNode: JSONNode?
 			if let allCases = maybeAllCases,
 				let openAPINode = maybeOpenAPINode {
-				newNode = try openAPINode.with(allowedValues: allCases) // try {
-//					if let cases = allCases as? [JSONTypeFormat.BooleanFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					}  else if let cases = allCases as? [JSONTypeFormat.ArrayFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					} else if let cases = allCases as? [JSONTypeFormat.ObjectFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					} else if let cases = allCases as?  [JSONTypeFormat.NumberFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					} else if let cases = allCases as?  [JSONTypeFormat.IntegerFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					} else if let cases = allCases as?  [JSONTypeFormat.StringFormat.SwiftType] {
-//						return try openAPINode.with(allowedValues: cases)
-//
-//					} else if allCases.compactMap({ $0 as? RawStringRepresentable }).count == allCases.count {
-//						return try openAPINode.with(allowedValues: allCases.compactMap { ($0 as? RawStringRepresentable)?.rawValue })
-//
-//					} else {
-//						throw SampleableError.allowedValuesNotOfExpectedType(forNode: openAPINode, allowedValues: allCases)
-//					}
-//				}()
+				newNode = try openAPINode.with(allowedValues: allCases)
 			} else {
 				newNode = maybeOpenAPINode
 			}

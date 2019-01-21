@@ -3,5 +3,8 @@
     <pages>
         <page name='Test Library'/>
         <page name='Usage'/>
+        <page name='Full Client &amp; Server Example'/>
+        <page name='Full Document Verbose Generation'/>
+        <page name='OpenAPI Documentation'/>
     </pages>
 </playground>
