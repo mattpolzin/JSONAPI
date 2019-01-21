@@ -123,20 +123,17 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 #### Resource Object
 - `id`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
+	- [x] Arbitrary
+	- [x] OpenAPI
 - `type`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
+	- [x] OpenAPI
 - `attributes`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
+	- [x] OpenAPI
 - `relationships`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
+	- [x] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
 	- [ ] Arbitrary
