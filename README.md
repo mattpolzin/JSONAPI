@@ -25,7 +25,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [Relationship Object](#relationship-object)
 			- [Links Object](#links-object)
 		- [Misc](#misc)
-		- [JSONAPITestLib](#jsonapitestlib)
+		- [JSONAPI+Testing](#jsonapitesting)
 			- [Entity Validator](#entity-validator)
 		- [Potential Improvements](#potential-improvements)
 	- [Usage](#usage)
@@ -61,7 +61,9 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
 		- [Server Pseudo-example](#server-pseudo-example)
 		- [Client Pseudo-example](#client-pseudo-example)
-	- [JSONAPITestLib](#jsonapitestlib)
+- [JSONAPI+Testing](#jsonapitesting)
+- [JSONAPI+Arbitrary](#jsonapiarbitrary)
+- [JSONAPI+OpenAPI](#jsonapiopenapi)
 
 <!-- /TOC -->
 
@@ -173,7 +175,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
-### JSONAPITestLib
+### JSONAPI+Testing
 #### Entity Validator
 - [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
 - [x] Only allow `TransformedAttribute` and its derivatives as stored properties within `Attributes` struct. Computed properties can still be any type because they do not get encoded or decoded.
@@ -830,5 +832,15 @@ print(response.article)
 print(response.author)
 ```
 
-## JSONAPITestLib
-The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITestLib` in action in the Playground included with the `JSONAPI` repository.
+# JSONAPI+Testing
+The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
+
+# JSONAPI+Arbitrary
+The `JSONAPIArbitrary` framework adds `Arbitrary` support via `SwiftCheck`. With a little extra work on your part, this framework will allow you to create "arbitrary" (i.e. randomly generated) instances of your JSONAPI entities, includes, documents, etc.
+
+This library does not offer full support of all `JSONAPI` types yet. The documentation will grow as the framework becomes more complete.
+
+# JSONAPI+OpenAPI
+The `JSONAPIOpenAPI` framework adds the ability to generate OpenAPI compliant JSON documentation of a JSONAPI Document.
+
+This library is in its infancy. The documentation will grow as the framework becomes more complete.

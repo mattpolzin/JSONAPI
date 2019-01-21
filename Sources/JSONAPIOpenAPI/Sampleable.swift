@@ -46,6 +46,9 @@ extension Sampleable {
 				case let valType as WrappedRawOpenAPIType.Type:
 					return try valType.wrappedOpenAPINode()
 
+				case let valType as DoubleWrappedRawOpenAPIType.Type:
+					return try valType.wrappedOpenAPINode()
+
 				default:
 					return nil
 				}
