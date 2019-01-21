@@ -110,7 +110,7 @@ extension JSONNode.ArrayContext: Encodable {
 	}
 }
 
-extension JSONNode.ObjectContext : Encodable{
+extension JSONNode.ObjectContext : Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case maxProperties
 		case minProperties
@@ -132,13 +132,9 @@ extension JSONNode.ObjectContext : Encodable{
 			try container.encode(additionalProperties, forKey: .additionalProperties)
 		}
 
-		let required = properties.filter { (name, node) in
-			node.required
-		}.keys
+		try container.encode(requiredProperties, forKey: .required)
 
-		try container.encode(Array(required), forKey: .required)
-
-		try container.encode(max(minProperties, required.count), forKey: .minProperties)
+		try container.encode(minProperties, forKey: .minProperties)
 	}
 }
 

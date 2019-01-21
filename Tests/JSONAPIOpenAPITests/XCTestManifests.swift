@@ -32,8 +32,10 @@ extension JSONAPIAttributeOpenAPITests {
 
 extension JSONAPIEntityOpenAPITests {
     static let __allTests = [
+        ("test_AttributesAndRelationshipsEntity", test_AttributesAndRelationshipsEntity),
         ("test_AttributesEntity", test_AttributesEntity),
         ("test_EmptyEntity", test_EmptyEntity),
+        ("test_RelationshipsEntity", test_RelationshipsEntity),
     ]
 }
 

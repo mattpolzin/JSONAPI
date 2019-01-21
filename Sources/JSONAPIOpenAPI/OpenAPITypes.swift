@@ -371,7 +371,7 @@ public enum JSONNode: Equatable {
 
 	public struct ObjectContext: Equatable {
 		public let maxProperties: Int?
-		public let minProperties: Int
+		let _minProperties: Int
 		public let properties: [String: JSONNode]
 		public let additionalProperties: [String: JSONNode]?
 
@@ -379,8 +379,16 @@ public enum JSONNode: Equatable {
 		// NOTE that an object's required properties
 		// array is determined by looking at its properties'
 		// required Bool.
-		public let required: [String]
 		*/
+		public var requiredProperties: [String] {
+			return Array(properties.filter { (name, node) in
+				node.required
+			}.keys)
+		}
+
+		public var minProperties: Int {
+			return max(_minProperties, requiredProperties.count)
+		}
 
 		public init(properties: [String: JSONNode],
 					additionalProperties: [String: JSONNode]? = nil,
@@ -389,7 +397,7 @@ public enum JSONNode: Equatable {
 			self.properties = properties
 			self.additionalProperties = additionalProperties
 			self.maxProperties = maxProperties
-			self.minProperties = minProperties
+			self._minProperties = minProperties
 		}
 	}
 
