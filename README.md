@@ -99,27 +99,27 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 #### Document
 - `data`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `included`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `errors`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `jsonapi` (i.e. API Information)
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 
 #### Resource Object
@@ -838,7 +838,7 @@ The `JSONAPI` framework is packaged with a test library to help you test your `J
 # JSONAPI+Arbitrary
 The `JSONAPIArbitrary` framework adds `Arbitrary` support via `SwiftCheck`. With a little extra work on your part, this framework will allow you to create "arbitrary" (i.e. randomly generated) instances of your JSONAPI entities, includes, documents, etc.
 
-This library does not offer full support of all `JSONAPI` types yet. The documentation will grow as the framework becomes more complete.
+This Framework is currently undocumented, but familiarity with `SwiftCheck` will likely afford the user enough information to use this library to aid in the generation of arbitrary JSONAPI Documents for testing purposes.
 
 # JSONAPI+OpenAPI
 The `JSONAPIOpenAPI` framework adds the ability to generate OpenAPI compliant JSON documentation of a JSONAPI Document.
