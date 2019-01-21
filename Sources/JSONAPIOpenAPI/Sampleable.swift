@@ -11,6 +11,9 @@ import AnyCodable
 /// A Sampleable type can provide a sample value.
 /// This is useful for reflection.
 public protocol Sampleable {
+	/// Get a sample value of type Self. This can be the
+	/// same value every time, or it can be an arbitrarily random
+	/// value each time.
 	static var sample: Self { get }
 }
 
@@ -93,8 +96,4 @@ extension NoLinks: Sampleable {
 	public static var sample: NoLinks {
 		return .none
 	}
-}
-
-public enum SampleableError: Swift.Error {
-	case allowedValuesNotOfExpectedType(forNode: JSONNode, allowedValues: [Any])
 }
