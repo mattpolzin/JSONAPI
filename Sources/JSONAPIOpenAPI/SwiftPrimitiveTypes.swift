@@ -38,8 +38,20 @@ extension Optional: OpenAPINodeType where Wrapped: OpenAPINodeType {
 }
 
 extension Optional: RawOpenAPINodeType where Wrapped: RawRepresentable, Wrapped.RawValue: OpenAPINodeType {
-	static public func openAPINode() throws -> JSONNode {
+	static public func rawOpenAPINode() throws -> JSONNode {
 		return try Wrapped.RawValue.openAPINode().optionalNode()
+	}
+}
+
+extension Optional: WrappedRawOpenAPIType where Wrapped: RawOpenAPINodeType {
+	static public func wrappedOpenAPINode() throws -> JSONNode {
+		return try Wrapped.rawOpenAPINode().optionalNode()
+	}
+}
+
+extension Optional: DoubleWrappedRawOpenAPIType where Wrapped: WrappedRawOpenAPIType {
+	static public func wrappedOpenAPINode() throws -> JSONNode {
+		return try Wrapped.wrappedOpenAPINode().optionalNode()
 	}
 }
 

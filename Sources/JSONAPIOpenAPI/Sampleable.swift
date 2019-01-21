@@ -38,7 +38,10 @@ extension Sampleable {
 					return try valType.openAPINode()
 
 				case let valType as RawOpenAPINodeType.Type:
-					return try valType.openAPINode()
+					return try valType.rawOpenAPINode()
+
+				case let valType as WrappedRawOpenAPIType.Type:
+					return try valType.wrappedOpenAPINode()
 
 				default:
 					return nil

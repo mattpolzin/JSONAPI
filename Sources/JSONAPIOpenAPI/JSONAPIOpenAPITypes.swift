@@ -24,12 +24,26 @@ extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 }
 
 extension Attribute: RawOpenAPINodeType where RawValue: RawRepresentable, RawValue.RawValue: OpenAPINodeType {
-	static public func openAPINode() throws -> JSONNode {
-
+	static public func rawOpenAPINode() throws -> JSONNode {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
 		if try !RawValue.RawValue.openAPINode().required {
 			return try RawValue.RawValue.openAPINode().requiredNode().nullableNode()
 		}
 		return try RawValue.RawValue.openAPINode()
+	}
+}
+
+extension Attribute: WrappedRawOpenAPIType where RawValue: RawOpenAPINodeType {
+	public static func wrappedOpenAPINode() throws -> JSONNode {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
+		if try !RawValue.rawOpenAPINode().required {
+			return try RawValue.rawOpenAPINode().requiredNode().nullableNode()
+		}
+		return try RawValue.rawOpenAPINode()
 	}
 }
 

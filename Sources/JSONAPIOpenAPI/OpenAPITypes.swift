@@ -23,7 +23,30 @@ public protocol OpenAPINodeType {
 /// different schema. The "different" conditions have to do
 /// with Raw Representability, hence the name of this protocol.
 public protocol RawOpenAPINodeType {
-	static func openAPINode() throws -> JSONNode
+	static func rawOpenAPINode() throws -> JSONNode
+}
+
+/// Anything conforming to `RawOpenAPINodeType` can provide an
+/// OpenAPI schema representing itself. This third protocol is
+/// necessary so that one type can conditionally provide a
+/// schema and then (under different conditions) provide a
+/// different schema. The "different" conditions have to do
+/// with Optionality, hence the name of this protocol.
+public protocol WrappedRawOpenAPIType {
+	static func wrappedOpenAPINode() throws -> JSONNode
+}
+
+/// Anything conforming to `RawOpenAPINodeType` can provide an
+/// OpenAPI schema representing itself. This third protocol is
+/// necessary so that one type can conditionally provide a
+/// schema and then (under different conditions) provide a
+/// different schema. The "different" conditions have to do
+/// with Optionality, hence the name of this protocol.
+public protocol DoubleWrappedRawOpenAPIType {
+	// NOTE: This is definitely a rabbit hole... hopefully I
+	// will realize I've been missing something obvious
+	// and dig my way back out at some point...
+	static func wrappedOpenAPINode() throws -> JSONNode
 }
 
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
@@ -209,7 +232,7 @@ public enum JSONTypeFormat: Equatable {
 
 /// A JSON Node is what OpenAPI calls a
 /// "Schema Object"
-public enum JSONNode {
+public enum JSONNode: Equatable {
 	case boolean(Context<JSONTypeFormat.BooleanFormat>)
 	indirect case object(Context<JSONTypeFormat.ObjectFormat>, ObjectContext)
 	indirect case array(Context<JSONTypeFormat.ArrayFormat>, ArrayContext)
@@ -281,7 +304,7 @@ public enum JSONNode {
 		}
 	}
 
-	public struct NumericContext {
+	public struct NumericContext: Equatable {
 		/// A numeric instance is valid only if division by this keyword's value results in an integer. Defaults to nil.
 		public let multipleOf: Double?
 		public let maximum: Double?
@@ -302,7 +325,7 @@ public enum JSONNode {
 		}
 	}
 
-	public struct StringContext {
+	public struct StringContext: Equatable {
 		public let maxLength: Int?
 		public let minLength: Int
 
@@ -318,7 +341,7 @@ public enum JSONNode {
 		}
 	}
 
-	public struct ArrayContext {
+	public struct ArrayContext: Equatable {
 		/// A JSON Type Node that describes
 		/// the type of each element in the array.
 		public let items: JSONNode
@@ -346,7 +369,7 @@ public enum JSONNode {
 		}
 	}
 
-	public struct ObjectContext {
+	public struct ObjectContext: Equatable {
 		public let maxProperties: Int?
 		public let minProperties: Int
 		public let properties: [String: JSONNode]
