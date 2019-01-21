@@ -136,11 +136,11 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 	- [x] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
+	- [x] Arbitrary
 	- [ ] OpenAPI
 
 #### Relationship Object

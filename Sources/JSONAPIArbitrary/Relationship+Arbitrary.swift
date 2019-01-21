@@ -19,6 +19,10 @@ extension ToOneRelationship: Arbitrary where Identifiable.Identifier: Arbitrary,
 }
 
 extension ToOneRelationship where MetaType: Arbitrary, LinksType: Arbitrary {
+	/// Create a generator of arbitrary ToOneRelationships that will all
+	/// point to one of the given entities. This allows you to create
+	/// arbitrary relationships that make sense in a broader context where
+	/// the relationship must actually point to another entity.
 	public static func arbitrary<E: EntityType>(givenEntities: [E]) -> Gen<ToOneRelationship<Identifiable, MetaType, LinksType>> where E.Id == Identifiable.Identifier {
 
 		return Gen.compose { c in
@@ -41,6 +45,10 @@ extension ToManyRelationship: Arbitrary where Relatable.Identifier: Arbitrary, M
 }
 
 extension ToManyRelationship where MetaType: Arbitrary, LinksType: Arbitrary {
+	/// Create a generator of arbitrary ToManyRelationships that will all
+	/// point to some number of the given entities. This allows you to create
+	/// arbitrary relationships that make sense in a broader context where
+	/// the relationship must actually point to other existing entities.
 	public static func arbitrary<E: EntityType>(givenEntities: [E]) -> Gen<ToManyRelationship<Relatable, MetaType, LinksType>> where E.Id == Relatable.Identifier {
 		return Gen.compose { c in
 			let idsGen = Gen.fromElements(of: givenEntities).map { $0.id }.proliferate
