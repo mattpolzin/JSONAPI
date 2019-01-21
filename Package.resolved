@@ -2,12 +2,39 @@
   "object": {
     "pins": [
       {
+        "package": "AnyCodable",
+        "repositoryURL": "https://github.com/Flight-School/AnyCodable.git",
+        "state": {
+          "branch": null,
+          "revision": "396ccc3dba5bdee04c1e742e7fab40582861401e",
+          "version": "0.1.0"
+        }
+      },
+      {
+        "package": "FileCheck",
+        "repositoryURL": "https://github.com/llvm-swift/FileCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "89b8480055f9adf8ce2f9ad5e2fac7ac1076242e",
+          "version": "0.0.8"
+        }
+      },
+      {
         "package": "Poly",
         "repositoryURL": "https://github.com/mattpolzin/Poly.git",
         "state": {
           "branch": "master",
-          "revision": "e03e896e23315525702334cfb552bb947d085ae5",
+          "revision": "77f45b8963a51c02d71fc4075eba5cff47ff0d07",
           "version": null
+        }
+      },
+      {
+        "package": "SwiftCheck",
+        "repositoryURL": "https://github.com/typelift/SwiftCheck.git",
+        "state": {
+          "branch": null,
+          "revision": "cf9958085b2ee1643e541e407c3233d1b76c18ff",
+          "version": "0.11.0"
         }
       }
     ]

@@ -7,7 +7,7 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 class EntityTests: XCTestCase {
 	

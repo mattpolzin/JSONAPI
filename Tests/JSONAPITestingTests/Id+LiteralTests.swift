@@ -7,7 +7,7 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 extension Int: RawIdType {}
 

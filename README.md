@@ -8,59 +8,62 @@ See the JSON API Spec here: https://jsonapi.org/format/
 :warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating entities in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
 ## Table of Contents
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Table of Contents](#table-of-contents)
-- [Primary Goals](#primary-goals)
-	- [Caveat](#caveat)
-- [Dev Environment](#dev-environment)
-	- [Prerequisites](#prerequisites)
-	- [Xcode project](#xcode-project)
-	- [Running the Playground](#running-the-playground)
-- [Project Status](#project-status)
-	- [Encoding/Decoding](#encodingdecoding)
-		- [Document](#document)
-		- [Resource Object](#resource-object)
-		- [Relationship Object](#relationship-object)
-		- [Links Object](#links-object)
-	- [Misc](#misc)
-	- [JSONAPITestLib](#jsonapitestlib)
-		- [Entity Validator](#entity-validator)
-	- [Potential Improvements](#potential-improvements)
-- [Usage](#usage)
-	- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
-	- [`JSONAPI.Entity`](#jsonapientity)
-		- [`Meta`](#meta)
-		- [`Links`](#links)
-		- [`IdType`](#idtype)
-		- [`MaybeRawId`](#mayberawid)
-		- [Convenient `typealiases`](#convenient-typealiases)
-	- [`JSONAPI.Relationships`](#jsonapirelationships)
-	- [`JSONAPI.Attributes`](#jsonapiattributes)
-		- [`Transformer`](#transformer)
-		- [`Validator`](#validator)
-		- [Computed `Attribute`](#computed-attribute)
-	- [Copying `Entities`](#copying-entities)
-	- [`JSONAPI.Document`](#jsonapidocument)
-		- [`ResourceBody`](#resourcebody)
-			- [nullable `PrimaryResource`](#nullable-primaryresource)
-		- [`MetaType`](#metatype)
-		- [`LinksType`](#linkstype)
-		- [`IncludeType`](#includetype)
-		- [`APIDescriptionType`](#apidescriptiontype)
-		- [`Error`](#error)
-	- [`JSONAPI.Meta`](#jsonapimeta)
-	- [`JSONAPI.Links`](#jsonapilinks)
-	- [`JSONAPI.RawIdType`](#jsonapirawidtype)
-	- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
-	- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
-	- [Meta-Attributes](#meta-attributes)
-	- [Meta-Relationships](#meta-relationships)
-- [Example](#example)
-	- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
-	- [Server Pseudo-example](#server-pseudo-example)
-	- [Client Pseudo-example](#client-pseudo-example)
-- [JSONAPITestLib](#jsonapitestlib)
+- [JSONAPI](#jsonapi)
+	- [Table of Contents](#table-of-contents)
+	- [Primary Goals](#primary-goals)
+		- [Caveat](#caveat)
+	- [Dev Environment](#dev-environment)
+		- [Prerequisites](#prerequisites)
+		- [Xcode project](#xcode-project)
+		- [Running the Playground](#running-the-playground)
+	- [Project Status](#project-status)
+		- [JSON:API](#jsonapi)
+			- [Document](#document)
+			- [Resource Object](#resource-object)
+			- [Relationship Object](#relationship-object)
+			- [Links Object](#links-object)
+		- [Misc](#misc)
+		- [JSONAPI+Testing](#jsonapitesting)
+			- [Entity Validator](#entity-validator)
+		- [Potential Improvements](#potential-improvements)
+	- [Usage](#usage)
+		- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
+		- [`JSONAPI.Entity`](#jsonapientity)
+			- [`Meta`](#meta)
+			- [`Links`](#links)
+			- [`IdType`](#idtype)
+			- [`MaybeRawId`](#mayberawid)
+			- [Convenient `typealiases`](#convenient-typealiases)
+		- [`JSONAPI.Relationships`](#jsonapirelationships)
+		- [`JSONAPI.Attributes`](#jsonapiattributes)
+			- [`Transformer`](#transformer)
+			- [`Validator`](#validator)
+			- [Computed `Attribute`](#computed-attribute)
+		- [Copying `Entities`](#copying-entities)
+		- [`JSONAPI.Document`](#jsonapidocument)
+			- [`ResourceBody`](#resourcebody)
+				- [nullable `PrimaryResource`](#nullable-primaryresource)
+			- [`MetaType`](#metatype)
+			- [`LinksType`](#linkstype)
+			- [`IncludeType`](#includetype)
+			- [`APIDescriptionType`](#apidescriptiontype)
+			- [`Error`](#error)
+		- [`JSONAPI.Meta`](#jsonapimeta)
+		- [`JSONAPI.Links`](#jsonapilinks)
+		- [`JSONAPI.RawIdType`](#jsonapirawidtype)
+		- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
+		- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
+		- [Meta-Attributes](#meta-attributes)
+		- [Meta-Relationships](#meta-relationships)
+	- [Example](#example)
+		- [Preamble (Setup shared by server and client)](#preamble-setup-shared-by-server-and-client)
+		- [Server Pseudo-example](#server-pseudo-example)
+		- [Client Pseudo-example](#client-pseudo-example)
+- [JSONAPI+Testing](#jsonapitesting)
+- [JSONAPI+Arbitrary](#jsonapiarbitrary)
+- [JSONAPI+OpenAPI](#jsonapiopenapi)
 
 <!-- /TOC -->
 
@@ -92,31 +95,79 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ## Project Status
 
-### Encoding/Decoding
+### JSON:API
 #### Document
-- [x] `data`
-- [x] `included`
-- [x] `errors`
-- [x] `meta`
-- [x] `jsonapi`
-- [x] `links`
+- `data`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `included`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `errors`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `jsonapi` (i.e. API Information)
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 #### Resource Object
-- [x] `id`
-- [x] `type`
-- [x] `attributes`
-- [x] `relationships`
-- [x] `links`
-- [x] `meta`
+- `id`
+	- [x] Encoding/Decoding
+	- [x] Arbitrary
+	- [x] OpenAPI
+- `type`
+	- [x] Encoding/Decoding
+	- [x] OpenAPI
+- `attributes`
+	- [x] Encoding/Decoding
+	- [x] OpenAPI
+- `relationships`
+	- [x] Encoding/Decoding
+	- [x] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [x] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [x] Arbitrary
+	- [ ] OpenAPI
 
 #### Relationship Object
-- [x] `data`
-- [x] `links`
-- [x] `meta`
+- `data`
+	- [x] Encoding/Decoding
+	- [x] Arbitrary
+	- [x] OpenAPI
+- `links`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 #### Links Object
-- [x] `href`
-- [x] `meta`
+- `href`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
+- `meta`
+	- [x] Encoding/Decoding
+	- [ ] Arbitrary
+	- [ ] OpenAPI
 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
@@ -124,7 +175,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
-### JSONAPITestLib
+### JSONAPI+Testing
 #### Entity Validator
 - [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
 - [x] Only allow `TransformedAttribute` and its derivatives as stored properties within `Attributes` struct. Computed properties can still be any type because they do not get encoded or decoded.
@@ -781,5 +832,15 @@ print(response.article)
 print(response.author)
 ```
 
-## JSONAPITestLib
-The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITestLib`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITestLib` in action in the Playground included with the `JSONAPI` repository.
+# JSONAPI+Testing
+The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
+
+# JSONAPI+Arbitrary
+The `JSONAPIArbitrary` framework adds `Arbitrary` support via `SwiftCheck`. With a little extra work on your part, this framework will allow you to create "arbitrary" (i.e. randomly generated) instances of your JSONAPI entities, includes, documents, etc.
+
+This library does not offer full support of all `JSONAPI` types yet. The documentation will grow as the framework becomes more complete.
+
+# JSONAPI+OpenAPI
+The `JSONAPIOpenAPI` framework adds the ability to generate OpenAPI compliant JSON documentation of a JSONAPI Document.
+
+This library is in its infancy. The documentation will grow as the framework becomes more complete.

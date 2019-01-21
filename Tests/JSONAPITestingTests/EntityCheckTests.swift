@@ -7,7 +7,7 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 // Successes are fairly well-checked by the EntityTests in the JSONAPITests target.
 // We will confirm failure cases are working in this file.
