@@ -14,7 +14,7 @@ extension Attribute: Arbitrary where RawValue: Arbitrary {
 	}
 }
 
-// Cannot extend TransformedAttribute here
+// Cannot conform TransformedAttribute to Arbitrary here
 // because there is no way to guarantee that an arbitrary
 // RawValue will successfully transform or that an
 // arbitrary Value will successfully reverse-transform.
