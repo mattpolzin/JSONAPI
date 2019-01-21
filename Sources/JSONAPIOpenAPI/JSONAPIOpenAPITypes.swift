@@ -104,7 +104,18 @@ extension ToManyRelationship: OpenAPINodeType {
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode() throws -> JSONNode {
-		// TODO: Id, type, metadata, links
+		// TODO: metadata, links
+
+		let idNode = JSONNode.string(.init(format: .generic,
+										   required: true),
+									 .init())
+		let idProperty = ("id", idNode)
+
+		let typeNode = JSONNode.string(.init(format: .generic,
+											 required: true),
+									   .init())
+		let typeProperty = ("type", typeNode)
+
 		let attributesNode: JSONNode? = Description.Attributes.self == NoAttributes.self
 			? nil
 			: try Description.Attributes.genericObjectOpenAPINode()
@@ -118,6 +129,8 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 		let relationshipsProperty = relationshipsNode.map { ("relationships", $0) }
 
 		let propertiesDict = Dictionary([
+			idProperty,
+			typeProperty,
 			attributesProperty,
 			relationshipsProperty
 			].compactMap { $0 }) { _, value in value	}
