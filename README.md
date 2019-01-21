@@ -25,7 +25,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [Relationship Object](#relationship-object)
 			- [Links Object](#links-object)
 		- [Misc](#misc)
-		- [JSONAPI+Testing](#jsonapitesting)
+		- [Testing](#testing)
 			- [Entity Validator](#entity-validator)
 		- [Potential Improvements](#potential-improvements)
 	- [Usage](#usage)
@@ -175,7 +175,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
-### JSONAPI+Testing
+### Testing
 #### Entity Validator
 - [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
 - [x] Only allow `TransformedAttribute` and its derivatives as stored properties within `Attributes` struct. Computed properties can still be any type because they do not get encoded or decoded.
