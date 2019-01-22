@@ -16,6 +16,12 @@ public protocol OpenAPINodeType {
 	static func openAPINode() throws -> JSONNode
 }
 
+extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
+	public static func openAPINodeWithExample() throws -> JSONNode {
+		return try openAPINode().with(example: Self.successSample ?? Self.sample)
+	}
+}
+
 /// Anything conforming to `RawOpenAPINodeType` can provide an
 /// OpenAPI schema representing itself. This second protocol is
 /// necessary so that one type can conditionally provide a
@@ -249,6 +255,10 @@ public enum JSONNode: Equatable {
 		public let required: Bool
 		public let nullable: Bool
 
+		// NOTE: "const" is supported by the newest JSON Schema spec but not
+		// yet by OpenAPI. Instead, will use "enum" with one possible value for now.
+//		public let constantValue: Format.SwiftType?
+
 		/// The OpenAPI spec calls this "enum"
 		/// If not specified, it is assumed that any
 		/// value of the given format is allowed.
@@ -261,14 +271,26 @@ public enum JSONNode: Equatable {
 		/// into an allowed value.
 		public let allowedValues: [AnyCodable]?
 
+		// I wanted example to be AnyCodable, but alas that causes
+		// runtime problems when encoding in a very strange way.
+		// For now, a String (which is OK by the OpenAPI spec) will
+		// have to do.
+		public let example: String?
+
 		public init(format: Format,
 					required: Bool,
 					nullable: Bool = false,
-					allowedValues: [AnyCodable]? = nil) {
+//					constantValue: Format.SwiftType? = nil,
+					allowedValues: [AnyCodable]? = nil,
+					example: AnyCodable? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
+//			self.constantValue = constantValue
 			self.allowedValues = allowedValues
+			self.example = example
+				.flatMap { try? JSONEncoder().encode($0)}
+				.flatMap { String(data: $0, encoding: .utf8) }
 		}
 
 		/// Return the optional version of this Context
@@ -276,6 +298,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: false,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -284,6 +307,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: true,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -292,15 +316,27 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: required,
 						 nullable: true,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
 		/// Return this context with the given list of possible values
-		public func with(allowedValues: [AnyCodable]?) -> Context {
+		public func with(allowedValues: [AnyCodable]) -> Context {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
+		}
+
+		/// Return this context with the given example
+		public func with(example: AnyCodable) -> Context {
+			return .init(format: format,
+						 required: required,
+						 nullable: nullable,
+//						 constantValue: constantValue,
+						 allowedValues: allowedValues,
+						 example: example)
 		}
 	}
 
@@ -371,7 +407,7 @@ public enum JSONNode: Equatable {
 
 	public struct ObjectContext: Equatable {
 		public let maxProperties: Int?
-		public let minProperties: Int
+		let _minProperties: Int
 		public let properties: [String: JSONNode]
 		public let additionalProperties: [String: JSONNode]?
 
@@ -379,8 +415,16 @@ public enum JSONNode: Equatable {
 		// NOTE that an object's required properties
 		// array is determined by looking at its properties'
 		// required Bool.
-		public let required: [String]
 		*/
+		public var requiredProperties: [String] {
+			return Array(properties.filter { (name, node) in
+				node.required
+			}.keys)
+		}
+
+		public var minProperties: Int {
+			return max(_minProperties, requiredProperties.count)
+		}
 
 		public init(properties: [String: JSONNode],
 					additionalProperties: [String: JSONNode]? = nil,
@@ -389,7 +433,7 @@ public enum JSONNode: Equatable {
 			self.properties = properties
 			self.additionalProperties = additionalProperties
 			self.maxProperties = maxProperties
-			self.minProperties = minProperties
+			self._minProperties = minProperties
 		}
 	}
 
@@ -505,8 +549,35 @@ public enum JSONNode: Equatable {
 			return self
 		}
 	}
+
+	public func with<T: Encodable>(example codableExample: T) throws -> JSONNode {
+		let example: AnyCodable
+		if let goodToGo = codableExample as? AnyCodable {
+			example = goodToGo
+		} else {
+			example = AnyCodable(try JSONSerialization.jsonObject(with: JSONEncoder().encode(codableExample), options: []))
+		}
+
+		switch self {
+		case .boolean(let context):
+			return .boolean(context.with(example: example))
+		case .object(let contextA, let contextB):
+			return .object(contextA.with(example: example), contextB)
+		case .array(let contextA, let contextB):
+			return .array(contextA.with(example: example), contextB)
+		case .number(let context, let contextB):
+			return .number(context.with(example: example), contextB)
+		case .integer(let context, let contextB):
+			return .integer(context.with(example: example), contextB)
+		case .string(let context, let contextB):
+			return .string(context.with(example: example), contextB)
+		case .allOf, .oneOf, .anyOf, .not:
+			return self
+		}
+	}
 }
 
 public enum OpenAPICodableError: Swift.Error {
 	case allCasesArrayNotCodable
+	case exampleNotCodable
 }

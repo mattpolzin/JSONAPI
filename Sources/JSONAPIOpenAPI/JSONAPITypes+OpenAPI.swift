@@ -72,13 +72,14 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 }
 
 extension RelationshipType {
-	static func relationshipNode(nullable: Bool) -> JSONNode {
+	static func relationshipNode(nullable: Bool, jsonType: String) -> JSONNode {
 		let propertiesDict: [String: JSONNode] = [
 			"id": .string(.init(format: .generic,
 								required: true),
 						  .init()),
 			"type": .string(.init(format: .generic,
-								  required: true),
+								  required: true,
+								  allowedValues: [.init(jsonType)]),
 							.init())
 		]
 
@@ -90,20 +91,24 @@ extension RelationshipType {
 }
 
 extension ToOneRelationship: OpenAPINodeType {
-	// TODO: const for json `type`
+	// NOTE: const for json `type` not supported by OpenAPI 3.0
+	//		Will use "enum" with one possible value for now.
+
 	// TODO: metadata & links
 	static public func openAPINode() throws -> JSONNode {
 		let nullable = Identifiable.self is _Optional.Type
 		return .object(.init(format: .generic,
 							 required: true),
 					   .init(properties: [
-						"data": ToOneRelationship.relationshipNode(nullable: nullable)
+						"data": ToOneRelationship.relationshipNode(nullable: nullable, jsonType: Identifiable.jsonType)
 						]))
 	}
 }
 
 extension ToManyRelationship: OpenAPINodeType {
-	// TODO: const for json `type`
+	// NOTE: const for json `type` not supported by OpenAPI 3.0
+	//		Will use "enum" with one possible value for now.
+
 	// TODO: metadata & links
 	static public func openAPINode() throws -> JSONNode {
 		return .object(.init(format: .generic,
@@ -111,13 +116,16 @@ extension ToManyRelationship: OpenAPINodeType {
 					   .init(properties: [
 						"data": .array(.init(format: .generic,
 											 required: true),
-									   .init(items: ToManyRelationship.relationshipNode(nullable: false)))
+									   .init(items: ToManyRelationship.relationshipNode(nullable: false, jsonType: Relatable.jsonType)))
 						]))
 	}
 }
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode() throws -> JSONNode {
+		// NOTE: const for json `type` not supported by OpenAPI 3.0
+		//		Will use "enum" with one possible value for now.
+
 		// TODO: metadata, links
 
 		let idNode = JSONNode.string(.init(format: .generic,
@@ -126,7 +134,8 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 		let idProperty = ("id", idNode)
 
 		let typeNode = JSONNode.string(.init(format: .generic,
-											 required: true),
+											 required: true,
+											 allowedValues: [.init(Entity.jsonType)]),
 									   .init())
 		let typeProperty = ("type", typeNode)
 
@@ -147,7 +156,40 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 			typeProperty,
 			attributesProperty,
 			relationshipsProperty
-			].compactMap { $0 }) { _, value in value	}
+			].compactMap { $0 }) { _, value in value }
+
+		return .object(.init(format: .generic,
+							 required: true),
+					   .init(properties: propertiesDict))
+	}
+}
+
+extension SingleResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		return try Entity.openAPINode()
+	}
+}
+
+extension ManyResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		return .array(.init(format: .generic,
+							required: true),
+					  .init(items: try Entity.openAPINode()))
+	}
+}
+
+extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		// TODO: metadata, links, api description, includes, errors
+		// TODO: represent data and errors as the two distinct possible outcomes
+
+		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode()
+
+		let primaryDataProperty = primaryDataNode.map { ("data", $0) }
+
+		let propertiesDict = Dictionary([
+			primaryDataProperty
+			].compactMap { $0 }) { _, value in value }
 
 		return .object(.init(format: .generic,
 							 required: true),

@@ -429,7 +429,7 @@ extension JSONAPIAttributeOpenAPITests {
 extension JSONAPIAttributeOpenAPITests {
 	func test_EnumAttribute() {
 		let node = try! Attribute<EnumAttribute>.rawOpenAPINode()
-		print(EnumAttribute.allCases)
+
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
 
