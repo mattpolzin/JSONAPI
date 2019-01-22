@@ -118,6 +118,7 @@ extension ToManyRelationship: OpenAPINodeType {
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode() throws -> JSONNode {
+		// TODO: const for json `type`
 		// TODO: metadata, links
 
 		let idNode = JSONNode.string(.init(format: .generic,
@@ -147,7 +148,40 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 			typeProperty,
 			attributesProperty,
 			relationshipsProperty
-			].compactMap { $0 }) { _, value in value	}
+			].compactMap { $0 }) { _, value in value }
+
+		return .object(.init(format: .generic,
+							 required: true),
+					   .init(properties: propertiesDict))
+	}
+}
+
+extension SingleResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		return try Entity.openAPINode()
+	}
+}
+
+extension ManyResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		return .array(.init(format: .generic,
+							required: true),
+					  .init(items: try Entity.openAPINode()))
+	}
+}
+
+extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType {
+	public static func openAPINode() throws -> JSONNode {
+		// TODO: metadata, links, api description, includes, errors
+		// TODO: represent data and errors as the two distinct possible outcomes
+
+		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode()
+
+		let primaryDataProperty = primaryDataNode.map { ("data", $0) }
+
+		let propertiesDict = Dictionary([
+			primaryDataProperty
+			].compactMap { $0 }) { _, value in value }
 
 		return .object(.init(format: .generic,
 							 required: true),

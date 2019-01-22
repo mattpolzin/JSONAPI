@@ -16,6 +16,12 @@ public protocol OpenAPINodeType {
 	static func openAPINode() throws -> JSONNode
 }
 
+extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
+	public static func openAPINodeWithExample() throws -> JSONNode {
+		return try openAPINode().with(example: Self.sample)
+	}
+}
+
 /// Anything conforming to `RawOpenAPINodeType` can provide an
 /// OpenAPI schema representing itself. This second protocol is
 /// necessary so that one type can conditionally provide a
@@ -261,14 +267,18 @@ public enum JSONNode: Equatable {
 		/// into an allowed value.
 		public let allowedValues: [AnyCodable]?
 
+		public let example: AnyCodable?
+
 		public init(format: Format,
 					required: Bool,
 					nullable: Bool = false,
-					allowedValues: [AnyCodable]? = nil) {
+					allowedValues: [AnyCodable]? = nil,
+					example: AnyCodable? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
 			self.allowedValues = allowedValues
+			self.example = example
 		}
 
 		/// Return the optional version of this Context
@@ -296,11 +306,20 @@ public enum JSONNode: Equatable {
 		}
 
 		/// Return this context with the given list of possible values
-		public func with(allowedValues: [AnyCodable]?) -> Context {
+		public func with(allowedValues: [AnyCodable]) -> Context {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
 						 allowedValues: allowedValues)
+		}
+
+		/// Return this context with the given example
+		public func with(example: AnyCodable) -> Context {
+			return .init(format: format,
+						 required: required,
+						 nullable: nullable,
+						 allowedValues: allowedValues,
+						 example: example)
 		}
 	}
 
@@ -513,8 +532,35 @@ public enum JSONNode: Equatable {
 			return self
 		}
 	}
+
+	public func with<T: Encodable>(example codableExample: T) throws -> JSONNode {
+		let example: AnyCodable
+		if let goodToGo = codableExample as? AnyCodable {
+			example = goodToGo
+		} else {
+			example = AnyCodable(try JSONSerialization.jsonObject(with: JSONEncoder().encode(codableExample), options: []))
+		}
+
+		switch self {
+		case .boolean(let context):
+			return .boolean(context.with(example: example))
+		case .object(let contextA, let contextB):
+			return .object(contextA.with(example: example), contextB)
+		case .array(let contextA, let contextB):
+			return .array(contextA.with(example: example), contextB)
+		case .number(let context, let contextB):
+			return .number(context.with(example: example), contextB)
+		case .integer(let context, let contextB):
+			return .integer(context.with(example: example), contextB)
+		case .string(let context, let contextB):
+			return .string(context.with(example: example), contextB)
+		case .allOf, .oneOf, .anyOf, .not:
+			return self
+		}
+	}
 }
 
 public enum OpenAPICodableError: Swift.Error {
 	case allCasesArrayNotCodable
+	case exampleNotCodable
 }
