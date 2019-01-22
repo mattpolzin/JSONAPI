@@ -5,13 +5,28 @@ import JSONAPIOpenAPI
 import SwiftCheck
 import JSONAPIArbitrary
 
-extension PersonDescription.Attributes: Sampleable {
+extension PersonDescription.Attributes: Arbitrary, Sampleable {
+	public static var arbitrary: Gen<PersonDescription.Attributes> {
+		return Gen.compose { c in
+			return PersonDescription.Attributes(name: c.generate(),
+												favoriteColor: c.generate())
+		}
+	}
+
 	public static var sample: PersonDescription.Attributes {
 		return .init(name: ["Abbie", "Eibba"], favoriteColor: "Blue")
 	}
 }
 
-extension PersonDescription.Relationships: Sampleable {
+extension PersonDescription.Relationships: Arbitrary, Sampleable {
+	public static var arbitrary: Gen<PersonDescription.Relationships> {
+		return Gen.compose { c in
+			return PersonDescription.Relationships(friends: c.generate(),
+												   dogs: c.generate(),
+												   home: c.generate())
+		}
+	}
+
 	public static var sample: PersonDescription.Relationships {
 		return .init(friends: ["1", "2"], dogs: ["2"], home: "1")
 	}

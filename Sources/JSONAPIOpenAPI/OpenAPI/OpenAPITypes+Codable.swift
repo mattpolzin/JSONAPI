@@ -149,6 +149,14 @@ extension JSONNode.ObjectContext : Encodable {
 }
 
 extension JSONNode: Encodable {
+
+	private enum SubschemaCodingKeys: String, CodingKey {
+		case allOf
+		case oneOf
+		case anyOf
+		case not
+	}
+
 	public func encode(to encoder: Encoder) throws {
 		switch self {
 		case .boolean(let context):
@@ -162,21 +170,25 @@ extension JSONNode: Encodable {
 			try contextA.encode(to: encoder)
 			try contextB.encode(to: encoder)
 
-		case .allOf(let nodes):
-			// TODO
-			print("TODO")
+		case .all(let nodes):
+			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
 
-		case .oneOf(let nodes):
-			// TODO
-			print("TODO")
+			try container.encode(nodes, forKey: .allOf)
 
-		case .anyOf(let nodes):
-			// TODO
-			print("TODO")
+		case .one(let nodes):
+			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
+
+			try container.encode(nodes, forKey: .oneOf)
+
+		case .any(let nodes):
+			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
+
+			try container.encode(nodes, forKey: .anyOf)
 
 		case .not(let node):
-			// TODO
-			print("TODO")
+			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
+
+			try container.encode(node, forKey: .not)
 		}
 	}
 }

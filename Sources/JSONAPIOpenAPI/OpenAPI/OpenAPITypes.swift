@@ -245,9 +245,9 @@ public enum JSONNode: Equatable {
 	case number(Context<JSONTypeFormat.NumberFormat>, NumericContext)
 	case integer(Context<JSONTypeFormat.IntegerFormat>, NumericContext)
 	case string(Context<JSONTypeFormat.StringFormat>, StringContext)
-	indirect case allOf([JSONNode])
-	indirect case oneOf([JSONNode])
-	indirect case anyOf([JSONNode])
+	indirect case all(of: [JSONNode])
+	indirect case one(of: [JSONNode])
+	indirect case any(of: [JSONNode])
 	indirect case not(JSONNode)
 
 	public struct Context<Format: OpenAPIFormat>: JSONNodeContext, Equatable {
@@ -451,7 +451,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.format)
 		case .string(let context, _):
 			return .string(context.format)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return nil
 		}
 	}
@@ -465,7 +465,7 @@ public enum JSONNode: Equatable {
 			 .integer(let contextA as JSONNodeContext, _),
 			 .string(let contextA as JSONNodeContext, _):
 			return contextA.required
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return true
 		}
 	}
@@ -485,7 +485,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.optionalContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.optionalContext(), contextB)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return self
 		}
 	}
@@ -505,7 +505,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.requiredContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.requiredContext(), contextB)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return self
 		}
 	}
@@ -525,7 +525,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.nullableContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.nullableContext(), contextB)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return self
 		}
 	}
@@ -545,7 +545,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.with(allowedValues: allowedValues), contextB)
 		case .string(let context, let contextB):
 			return .string(context.with(allowedValues: allowedValues), contextB)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return self
 		}
 	}
@@ -571,13 +571,17 @@ public enum JSONNode: Equatable {
 			return .integer(context.with(example: example), contextB)
 		case .string(let context, let contextB):
 			return .string(context.with(example: example), contextB)
-		case .allOf, .oneOf, .anyOf, .not:
+		case .all, .one, .any, .not:
 			return self
 		}
 	}
 }
 
-public enum OpenAPICodableError: Swift.Error {
+public enum OpenAPICodableError: Swift.Error, Equatable {
 	case allCasesArrayNotCodable
 	case exampleNotCodable
+}
+
+public enum OpenAPITypeError: Swift.Error, Equatable {
+	case invalidNode
 }
