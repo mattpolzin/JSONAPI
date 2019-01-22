@@ -30,6 +30,12 @@ extension JSONAPIAttributeOpenAPITests {
     ]
 }
 
+extension JSONAPIDocumentOpenAPITests {
+    static let __allTests = [
+        ("test_SingleResourceDocument", test_SingleResourceDocument),
+    ]
+}
+
 extension JSONAPIEntityOpenAPITests {
     static let __allTests = [
         ("test_AttributesAndRelationshipsEntity", test_AttributesAndRelationshipsEntity),
@@ -54,6 +60,7 @@ extension JSONAPIRelationshipsOpenAPITests {
 public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(JSONAPIAttributeOpenAPITests.__allTests),
+        testCase(JSONAPIDocumentOpenAPITests.__allTests),
         testCase(JSONAPIEntityOpenAPITests.__allTests),
         testCase(JSONAPIRelationshipsOpenAPITests.__allTests),
     ]
