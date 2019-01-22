@@ -104,7 +104,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - `included`
 	- [x] Encoding/Decoding
 	- [x] Arbitrary
-	- [ ] OpenAPI
+	- [x] OpenAPI
 - `errors`
 	- [x] Encoding/Decoding
 	- [x] Arbitrary

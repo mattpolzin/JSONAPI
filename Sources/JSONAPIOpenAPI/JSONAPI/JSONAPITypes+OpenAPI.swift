@@ -178,17 +178,30 @@ extension ManyResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
 	}
 }
 
-extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType {
+extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType, IncludeType: OpenAPINodeType {
 	public static func openAPINode() throws -> JSONNode {
-		// TODO: metadata, links, api description, includes, errors
+		// TODO: metadata, links, api description, errors
 		// TODO: represent data and errors as the two distinct possible outcomes
 
 		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode()
 
 		let primaryDataProperty = primaryDataNode.map { ("data", $0) }
 
+		let includeNode: JSONNode?
+		do {
+			includeNode = try Includes<Include>.openAPINode()
+		} catch let err as OpenAPITypeError {
+			guard err == .invalidNode else {
+				throw err
+			}
+			includeNode = nil
+		}
+
+		let includeProperty = includeNode.map { ("included", $0) }
+
 		let propertiesDict = Dictionary([
-			primaryDataProperty
+			primaryDataProperty,
+			includeProperty
 			].compactMap { $0 }) { _, value in value }
 
 		return .object(.init(format: .generic,
