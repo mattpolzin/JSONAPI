@@ -18,7 +18,7 @@ public protocol OpenAPINodeType {
 
 extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
 	public static func openAPINodeWithExample() throws -> JSONNode {
-		return try openAPINode().with(example: Self.sample)
+		return try openAPINode().with(example: Self.successSample ?? Self.sample)
 	}
 }
 
@@ -255,6 +255,10 @@ public enum JSONNode: Equatable {
 		public let required: Bool
 		public let nullable: Bool
 
+		// NOTE: "const" is supported by the newest JSON Schema spec but not
+		// yet by OpenAPI. Instead, will use "enum" with one possible value for now.
+//		public let constantValue: Format.SwiftType?
+
 		/// The OpenAPI spec calls this "enum"
 		/// If not specified, it is assumed that any
 		/// value of the given format is allowed.
@@ -276,11 +280,13 @@ public enum JSONNode: Equatable {
 		public init(format: Format,
 					required: Bool,
 					nullable: Bool = false,
+//					constantValue: Format.SwiftType? = nil,
 					allowedValues: [AnyCodable]? = nil,
 					example: AnyCodable? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
+//			self.constantValue = constantValue
 			self.allowedValues = allowedValues
 			self.example = example
 				.flatMap { try? JSONEncoder().encode($0)}
@@ -292,6 +298,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: false,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -300,6 +307,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: true,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -308,6 +316,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: required,
 						 nullable: true,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -316,6 +325,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues)
 		}
 
@@ -324,6 +334,7 @@ public enum JSONNode: Equatable {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
+//						 constantValue: constantValue,
 						 allowedValues: allowedValues,
 						 example: example)
 		}

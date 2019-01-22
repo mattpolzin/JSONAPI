@@ -34,7 +34,8 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 																	  required: true),
 																.init()))
 		XCTAssertEqual(objectContext1.properties["type"], .string(.init(format: .generic,
-																	  required: true),
+																	  required: true,
+																	  allowedValues: [.init(TestType1.jsonType)]),
 																.init()))
 	}
 
@@ -62,7 +63,8 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 																	  required: true),
 																.init()))
 		XCTAssertEqual(objectContext1.properties["type"], .string(.init(format: .generic,
-																		required: true),
+																		required: true,
+																		allowedValues: [.init(TestType2.jsonType)]),
 																  .init()))
 
 		let attributesNode = objectContext1.properties["attributes"]
@@ -143,7 +145,8 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 																	  required: true),
 																.init()))
 		XCTAssertEqual(objectContext1.properties["type"], .string(.init(format: .generic,
-																		required: true),
+																		required: true,
+																		allowedValues: [.init(TestType3.jsonType)]),
 																  .init()))
 
 		let relationshipsNode = objectContext1.properties["relationships"]
@@ -170,7 +173,8 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 																						 required: true),
 																				   .init()),
 																	 "type": .string(.init(format: .generic,
-																						   required: true),
+																						   required: true,
+																						   allowedValues: [.init(TestType1.jsonType)]),
 																					 .init())])
 
 		let pointerContext = JSONNode.ObjectContext(properties: ["data": .object(.init(format: .generic,
@@ -225,8 +229,6 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 									 nullable: false,
 									 allowedValues: nil),
 							   manyPointerContext))
-
-		let tmpData = try! JSONEncoder().encode(node)
 	}
 
 	func test_AttributesAndRelationshipsEntity() {

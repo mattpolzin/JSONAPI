@@ -15,6 +15,20 @@ public protocol Sampleable {
 	/// same value every time, or it can be an arbitrarily random
 	/// value each time.
 	static var sample: Self { get }
+
+	/// Get an example of success, if that is meaningful and
+	/// available. If not, will be nil.
+	static var successSample: Self? { get }
+
+	/// Get an example of failure, if that is meaningful and
+	/// available. If not, will be nil.
+	static var failureSample: Self? { get }
+}
+
+public extension Sampleable {
+	public static var successSample: Self? { return nil }
+
+	public static var failureSample: Self? { return nil }
 }
 
 extension Sampleable {

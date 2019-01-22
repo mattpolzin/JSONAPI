@@ -45,4 +45,12 @@ extension Document: Sampleable where PrimaryResourceBody: Arbitrary, IncludeType
 	public static var sample: Document {
 		return Document.arbitrary.generate
 	}
+
+	public static var successSample: Document? {
+		return Document.arbitraryData.generate
+	}
+
+	public static var failureSample: Document? {
+		return Document.arbitraryErrors.generate
+	}
 }

@@ -72,13 +72,14 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 }
 
 extension RelationshipType {
-	static func relationshipNode(nullable: Bool) -> JSONNode {
+	static func relationshipNode(nullable: Bool, jsonType: String) -> JSONNode {
 		let propertiesDict: [String: JSONNode] = [
 			"id": .string(.init(format: .generic,
 								required: true),
 						  .init()),
 			"type": .string(.init(format: .generic,
-								  required: true),
+								  required: true,
+								  allowedValues: [.init(jsonType)]),
 							.init())
 		]
 
@@ -97,7 +98,7 @@ extension ToOneRelationship: OpenAPINodeType {
 		return .object(.init(format: .generic,
 							 required: true),
 					   .init(properties: [
-						"data": ToOneRelationship.relationshipNode(nullable: nullable)
+						"data": ToOneRelationship.relationshipNode(nullable: nullable, jsonType: Identifiable.jsonType)
 						]))
 	}
 }
@@ -111,14 +112,16 @@ extension ToManyRelationship: OpenAPINodeType {
 					   .init(properties: [
 						"data": .array(.init(format: .generic,
 											 required: true),
-									   .init(items: ToManyRelationship.relationshipNode(nullable: false)))
+									   .init(items: ToManyRelationship.relationshipNode(nullable: false, jsonType: Relatable.jsonType)))
 						]))
 	}
 }
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode() throws -> JSONNode {
-		// TODO: const for json `type`
+		// NOTE: const for json `type` not supported by OpenAPI 3.0
+		//		Will use "enum" with one possible value for now.
+
 		// TODO: metadata, links
 
 		let idNode = JSONNode.string(.init(format: .generic,
@@ -127,7 +130,8 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 		let idProperty = ("id", idNode)
 
 		let typeNode = JSONNode.string(.init(format: .generic,
-											 required: true),
+											 required: true,
+											 allowedValues: [.init(Entity.jsonType)]),
 									   .init())
 		let typeProperty = ("type", typeNode)
 

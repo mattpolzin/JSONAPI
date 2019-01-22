@@ -13,6 +13,7 @@ extension JSONNode.Context: Encodable {
 		case allowedValues = "enum"
 		case nullable
 		case example
+//		case constantValue = "const"
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -27,6 +28,10 @@ extension JSONNode.Context: Encodable {
 		if allowedValues != nil {
 			try container.encode(allowedValues, forKey: .allowedValues)
 		}
+
+//		if constantValue != nil {
+//			try container.encode(constantValue, forKey: .constantValue)
+//		}
 
 		try container.encode(nullable, forKey: .nullable)
 
