@@ -170,17 +170,17 @@ extension JSONNode: Encodable {
 			try contextA.encode(to: encoder)
 			try contextB.encode(to: encoder)
 
-		case .all(let nodes):
+		case .all(of: let nodes):
 			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
 
 			try container.encode(nodes, forKey: .allOf)
 
-		case .one(let nodes):
+		case .one(of: let nodes):
 			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
 
 			try container.encode(nodes, forKey: .oneOf)
 
-		case .any(let nodes):
+		case .any(of: let nodes):
 			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
 
 			try container.encode(nodes, forKey: .anyOf)
