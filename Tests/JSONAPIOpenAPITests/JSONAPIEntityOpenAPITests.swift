@@ -117,11 +117,6 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 									 nullable: true,
 									 allowedValues: nil),
 							   .init()))
-
-		let encoder = JSONEncoder()
-		encoder.outputFormatting = .prettyPrinted
-		let string = String(data: try! encoder.encode(node), encoding: .utf8)!
-		print(string)
 	}
 
 	func test_RelationshipsEntity() {
@@ -230,6 +225,8 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 									 nullable: false,
 									 allowedValues: nil),
 							   manyPointerContext))
+
+		let tmpData = try! JSONEncoder().encode(node)
 	}
 
 	func test_AttributesAndRelationshipsEntity() {

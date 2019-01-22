@@ -267,7 +267,11 @@ public enum JSONNode: Equatable {
 		/// into an allowed value.
 		public let allowedValues: [AnyCodable]?
 
-		public let example: AnyCodable?
+		// I wanted example to be AnyCodable, but alas that causes
+		// runtime problems when encoding in a very strange way.
+		// For now, a String (which is OK by the OpenAPI spec) will
+		// have to do.
+		public let example: String?
 
 		public init(format: Format,
 					required: Bool,
@@ -279,6 +283,8 @@ public enum JSONNode: Equatable {
 			self.nullable = nullable
 			self.allowedValues = allowedValues
 			self.example = example
+				.flatMap { try? JSONEncoder().encode($0)}
+				.flatMap { String(data: $0, encoding: .utf8) }
 		}
 
 		/// Return the optional version of this Context
