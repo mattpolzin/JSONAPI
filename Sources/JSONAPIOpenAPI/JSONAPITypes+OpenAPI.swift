@@ -91,7 +91,9 @@ extension RelationshipType {
 }
 
 extension ToOneRelationship: OpenAPINodeType {
-	// TODO: const for json `type`
+	// NOTE: const for json `type` not supported by OpenAPI 3.0
+	//		Will use "enum" with one possible value for now.
+
 	// TODO: metadata & links
 	static public func openAPINode() throws -> JSONNode {
 		let nullable = Identifiable.self is _Optional.Type
@@ -104,7 +106,9 @@ extension ToOneRelationship: OpenAPINodeType {
 }
 
 extension ToManyRelationship: OpenAPINodeType {
-	// TODO: const for json `type`
+	// NOTE: const for json `type` not supported by OpenAPI 3.0
+	//		Will use "enum" with one possible value for now.
+
 	// TODO: metadata & links
 	static public func openAPINode() throws -> JSONNode {
 		return .object(.init(format: .generic,
