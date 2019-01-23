@@ -155,6 +155,7 @@ extension JSONNode: Encodable {
 		case oneOf
 		case anyOf
 		case not
+		case reference = "$ref"
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -189,6 +190,27 @@ extension JSONNode: Encodable {
 			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
 
 			try container.encode(node, forKey: .not)
+
+		case .reference(let reference):
+			var container = encoder.container(keyedBy: SubschemaCodingKeys.self)
+
+			try container.encode(reference, forKey: .reference)
 		}
+	}
+}
+
+extension JSONReference: Encodable {
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		try container.encode("#/\(Root.refName)/\(refName)/\(selector)")
+	}
+}
+
+extension RefDict: Encodable {
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+
+		try container.encode(dict)
 	}
 }

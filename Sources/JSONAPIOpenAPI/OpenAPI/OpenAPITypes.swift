@@ -7,6 +7,7 @@
 
 import AnyCodable
 import Foundation
+import Poly
 
 // MARK: Node (i.e. schema) Protocols
 
@@ -249,6 +250,7 @@ public enum JSONNode: Equatable {
 	indirect case one(of: [JSONNode])
 	indirect case any(of: [JSONNode])
 	indirect case not(JSONNode)
+	case reference(JSONReference<OpenAPIComponents>)
 
 	public struct Context<Format: OpenAPIFormat>: JSONNodeContext, Equatable {
 		public let format: Format
@@ -451,7 +453,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.format)
 		case .string(let context, _):
 			return .string(context.format)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return nil
 		}
 	}
@@ -465,7 +467,7 @@ public enum JSONNode: Equatable {
 			 .integer(let contextA as JSONNodeContext, _),
 			 .string(let contextA as JSONNodeContext, _):
 			return contextA.required
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return true
 		}
 	}
@@ -485,7 +487,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.optionalContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.optionalContext(), contextB)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return self
 		}
 	}
@@ -505,7 +507,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.requiredContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.requiredContext(), contextB)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return self
 		}
 	}
@@ -525,7 +527,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.nullableContext(), contextB)
 		case .string(let context, let contextB):
 			return .string(context.nullableContext(), contextB)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return self
 		}
 	}
@@ -545,7 +547,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.with(allowedValues: allowedValues), contextB)
 		case .string(let context, let contextB):
 			return .string(context.with(allowedValues: allowedValues), contextB)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return self
 		}
 	}
@@ -571,7 +573,7 @@ public enum JSONNode: Equatable {
 			return .integer(context.with(example: example), contextB)
 		case .string(let context, let contextB):
 			return .string(context.with(example: example), contextB)
-		case .all, .one, .any, .not:
+		case .all, .one, .any, .not, .reference:
 			return self
 		}
 	}
@@ -584,4 +586,70 @@ public enum OpenAPICodableError: Swift.Error, Equatable {
 
 public enum OpenAPITypeError: Swift.Error, Equatable {
 	case invalidNode
+}
+
+/// Anything conforming to RefName knows what to call itself
+/// in the context of JSON References.
+public protocol RefName {
+	static var refName: String { get }
+}
+
+public protocol ReferenceRoot: RefName {}
+
+public protocol ReferenceDict: RefName {}
+
+/// A RefDict knows what to call itself (Name) and where to
+/// look for itself (Root) and it stores a dictionary of
+/// JSONNodes (some of which might be other references).
+public struct RefDict<Root: ReferenceRoot, Name: RefName>: ReferenceDict, Equatable {
+	public static var refName: String { return Name.refName }
+
+	public typealias RefType = JSONNode
+
+	let dict: [String: RefType]
+
+	public init(_ dict: [String: RefType]) {
+		self.dict = dict
+	}
+
+	public subscript(_ key: String) -> RefType? {
+		return dict[key]
+	}
+}
+
+/// A Reference is the combination of
+/// a path to a reference dictionary
+/// and a selector that the dictionary is keyed off of.
+public struct JSONReference<Root: ReferenceRoot>: Equatable {
+	public let path: PartialKeyPath<Root>
+	public let selector: String
+
+	public var refName: String {
+		return (type(of: path).valueType as! ReferenceDict.Type).refName
+	}
+
+	public init<RD: ReferenceDict>(type: KeyPath<Root, RD>,
+									selector: String) {
+		self.path = type
+		self.selector = selector
+	}
+}
+
+/// What the spec calls the "Components Object".
+/// This is a place to put reusable components to
+/// be referenced from other parts of the spec.
+public struct OpenAPIComponents: Equatable, Encodable, ReferenceRoot {
+	public static var refName: String { return "components" }
+
+	public let schemas: SchemasDict
+
+	public init(schemas: [String: SchemasDict.RefType]) {
+		self.schemas = SchemasDict(schemas)
+	}
+
+	public enum SchemasName: RefName {
+		public static var refName: String { return "schemas" }
+	}
+
+	public typealias SchemasDict = RefDict<OpenAPIComponents, SchemasName>
 }
