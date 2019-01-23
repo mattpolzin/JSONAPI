@@ -18,17 +18,33 @@ public protocol Sampleable {
 
 	/// Get an example of success, if that is meaningful and
 	/// available. If not, will be nil.
+	///
+	/// The default implementation returns `nil`.
 	static var successSample: Self? { get }
 
 	/// Get an example of failure, if that is meaningful and
 	/// available. If not, will be nil.
+	///
+	/// The default implementation returns `nil`.
 	static var failureSample: Self? { get }
+
+	/// An array of samples of this Type.
+	///
+	/// The default implementation returns
+	/// an array with just the result of
+	/// `Self.sample` in it.
+	static var samples: [Self] { get }
 }
 
 public extension Sampleable {
+	// default implementation:
 	public static var successSample: Self? { return nil }
 
+	// default implementation:
 	public static var failureSample: Self? { return nil }
+
+	// default implementation:
+	public static var samples: [Self] { return [Self.sample] }
 }
 
 extension Sampleable {
@@ -112,5 +128,11 @@ extension NoMetadata: Sampleable {
 extension NoLinks: Sampleable {
 	public static var sample: NoLinks {
 		return .none
+	}
+}
+
+extension UnknownJSONAPIError: Sampleable {
+	public static var sample: UnknownJSONAPIError {
+		return .unknownError
 	}
 }
