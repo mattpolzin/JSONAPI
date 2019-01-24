@@ -6,68 +6,69 @@
 //
 
 import JSONAPI
+import Foundation
 import AnyCodable
 
 private protocol _Optional {}
 extension Optional: _Optional {}
 
 extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
-	static public func openAPINode() throws -> JSONNode {
+	static public func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
-		if try !RawValue.openAPINode().required {
-			return try RawValue.openAPINode().requiredNode().nullableNode()
+		if try !RawValue.openAPINode(using: encoder).required {
+			return try RawValue.openAPINode(using: encoder).requiredNode().nullableNode()
 		}
-		return try RawValue.openAPINode()
+		return try RawValue.openAPINode(using: encoder)
 	}
 }
 
 extension Attribute: RawOpenAPINodeType where RawValue: RawRepresentable, RawValue.RawValue: OpenAPINodeType {
-	static public func rawOpenAPINode() throws -> JSONNode {
+	static public func rawOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
-		if try !RawValue.RawValue.openAPINode().required {
-			return try RawValue.RawValue.openAPINode().requiredNode().nullableNode()
+		if try !RawValue.RawValue.openAPINode(using: encoder).required {
+			return try RawValue.RawValue.openAPINode(using: encoder).requiredNode().nullableNode()
 		}
-		return try RawValue.RawValue.openAPINode()
+		return try RawValue.RawValue.openAPINode(using: encoder)
 	}
 }
 
 extension Attribute: WrappedRawOpenAPIType where RawValue: RawOpenAPINodeType {
-	public static func wrappedOpenAPINode() throws -> JSONNode {
+	public static func wrappedOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
-		if try !RawValue.rawOpenAPINode().required {
-			return try RawValue.rawOpenAPINode().requiredNode().nullableNode()
+		if try !RawValue.rawOpenAPINode(using: encoder).required {
+			return try RawValue.rawOpenAPINode(using: encoder).requiredNode().nullableNode()
 		}
-		return try RawValue.rawOpenAPINode()
+		return try RawValue.rawOpenAPINode(using: encoder)
 	}
 }
 
 extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable, RawValue: Codable {
-	public static var allCases: [AnyCodable] {
-		return (try? allCases(from: Array(RawValue.allCases))) ?? []
+	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
+		return (try? allCases(from: Array(RawValue.allCases), using: encoder)) ?? []
 	}
 }
 
 extension Attribute: AnyWrappedJSONCaseIterable where RawValue: AnyJSONCaseIterable {
-	public static var allCases: [AnyCodable] {
-		return RawValue.allCases
+	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
+		return RawValue.allCases(using: encoder)
 	}
 }
 
 extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType {
-	static public func openAPINode() throws -> JSONNode {
+	static public func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
 		// nullable. To be not required is for the Attribute itself
 		// to be optional.
-		if try !RawValue.openAPINode().required {
-			return try RawValue.openAPINode().requiredNode().nullableNode()
+		if try !RawValue.openAPINode(using: encoder).required {
+			return try RawValue.openAPINode(using: encoder).requiredNode().nullableNode()
 		}
-		return try RawValue.openAPINode()
+		return try RawValue.openAPINode(using: encoder)
 	}
 }
 
@@ -95,7 +96,7 @@ extension ToOneRelationship: OpenAPINodeType {
 	//		Will use "enum" with one possible value for now.
 
 	// TODO: metadata & links
-	static public func openAPINode() throws -> JSONNode {
+	static public func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		let nullable = Identifiable.self is _Optional.Type
 		return .object(.init(format: .generic,
 							 required: true),
@@ -110,7 +111,7 @@ extension ToManyRelationship: OpenAPINodeType {
 	//		Will use "enum" with one possible value for now.
 
 	// TODO: metadata & links
-	static public func openAPINode() throws -> JSONNode {
+	static public func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		return .object(.init(format: .generic,
 							 required: true),
 					   .init(properties: [
@@ -122,7 +123,7 @@ extension ToManyRelationship: OpenAPINodeType {
 }
 
 extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
-	public static func openAPINode() throws -> JSONNode {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// NOTE: const for json `type` not supported by OpenAPI 3.0
 		//		Will use "enum" with one possible value for now.
 
@@ -141,13 +142,13 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 
 		let attributesNode: JSONNode? = Description.Attributes.self == NoAttributes.self
 			? nil
-			: try Description.Attributes.genericObjectOpenAPINode()
+			: try Description.Attributes.genericObjectOpenAPINode(using: encoder)
 
 		let attributesProperty = attributesNode.map { ("attributes", $0) }
 
 		let relationshipsNode: JSONNode? = Description.Relationships.self == NoRelationships.self
 			? nil
-			: try Description.Relationships.genericObjectOpenAPINode()
+			: try Description.Relationships.genericObjectOpenAPINode(using: encoder)
 
 		let relationshipsProperty = relationshipsNode.map { ("relationships", $0) }
 
@@ -165,31 +166,31 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 }
 
 extension SingleResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
-		return try Entity.openAPINode()
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+		return try Entity.openAPINode(using: encoder)
 	}
 }
 
 extension ManyResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		return .array(.init(format: .generic,
 							required: true),
-					  .init(items: try Entity.openAPINode()))
+					  .init(items: try Entity.openAPINode(using: encoder)))
 	}
 }
 
 extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType, IncludeType: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// TODO: metadata, links, api description, errors
 		// TODO: represent data and errors as the two distinct possible outcomes
 
-		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode()
+		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode(using: encoder)
 
 		let primaryDataProperty = primaryDataNode.map { ("data", $0) }
 
 		let includeNode: JSONNode?
 		do {
-			includeNode = try Includes<Include>.openAPINode()
+			includeNode = try Includes<Include>.openAPINode(using: encoder)
 		} catch let err as OpenAPITypeError {
 			guard err == .invalidNode else {
 				throw err

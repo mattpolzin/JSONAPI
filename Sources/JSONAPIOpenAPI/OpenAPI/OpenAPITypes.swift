@@ -13,12 +13,12 @@ import Foundation
 /// Anything conforming to `OpenAPINodeType` can provide an
 /// OpenAPI schema representing itself.
 public protocol OpenAPINodeType {
-	static func openAPINode() throws -> JSONNode
+	static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
 extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
-	public static func openAPINodeWithExample() throws -> JSONNode {
-		return try openAPINode().with(example: Self.successSample ?? Self.sample)
+	public static func openAPINodeWithExample(using encoder: JSONEncoder = JSONEncoder()) throws -> JSONNode {
+		return try openAPINode(using: encoder).with(example: Self.successSample ?? Self.sample, using: encoder)
 	}
 }
 
@@ -29,7 +29,7 @@ extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
 /// different schema. The "different" conditions have to do
 /// with Raw Representability, hence the name of this protocol.
 public protocol RawOpenAPINodeType {
-	static func rawOpenAPINode() throws -> JSONNode
+	static func rawOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
 /// Anything conforming to `RawOpenAPINodeType` can provide an
@@ -39,7 +39,7 @@ public protocol RawOpenAPINodeType {
 /// different schema. The "different" conditions have to do
 /// with Optionality, hence the name of this protocol.
 public protocol WrappedRawOpenAPIType {
-	static func wrappedOpenAPINode() throws -> JSONNode
+	static func wrappedOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
 /// Anything conforming to `RawOpenAPINodeType` can provide an
@@ -52,18 +52,18 @@ public protocol DoubleWrappedRawOpenAPIType {
 	// NOTE: This is definitely a rabbit hole... hopefully I
 	// will realize I've been missing something obvious
 	// and dig my way back out at some point...
-	static func wrappedOpenAPINode() throws -> JSONNode
+	static func wrappedOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
 /// list of its possible values.
 public protocol AnyJSONCaseIterable {
-	static var allCases: [AnyCodable] { get }
+	static func allCases(using encoder: JSONEncoder) -> [AnyCodable]
 }
 
 extension AnyJSONCaseIterable {
 	/// Given an array of Codable values, retrieve an array of AnyCodables.
-	static func allCases<T: Codable>(from input: [T]) throws -> [AnyCodable] {
+	static func allCases<T: Codable>(from input: [T], using encoder: JSONEncoder) throws -> [AnyCodable] {
 		if let alreadyGoodToGo = input as? [AnyCodable] {
 			return alreadyGoodToGo
 		}
@@ -76,7 +76,7 @@ extension AnyJSONCaseIterable {
 		// by AnyCodable, but AnyCodable wants it to actually BE a String
 		// upon initialization.
 
-		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: JSONEncoder().encode(input), options: []) as? [Any] else {
+		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: encoder.encode(input), options: []) as? [Any] else {
 			throw OpenAPICodableError.allCasesArrayNotCodable
 		}
 		return arrayOfCodables.map(AnyCodable.init)
@@ -91,7 +91,7 @@ extension AnyJSONCaseIterable {
 /// The "different" conditions have to do
 /// with Optionality, hence the name of this protocol.
 public protocol AnyWrappedJSONCaseIterable {
-	static var allCases: [AnyCodable] { get }
+	static func allCases(using encoder: JSONEncoder) -> [AnyCodable]
 }
 
 public protocol SwiftTyped {
@@ -282,14 +282,15 @@ public enum JSONNode: Equatable {
 					nullable: Bool = false,
 //					constantValue: Format.SwiftType? = nil,
 					allowedValues: [AnyCodable]? = nil,
-					example: AnyCodable? = nil) {
+					example: AnyCodable? = nil,
+					using encoder: JSONEncoder = JSONEncoder()) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
 //			self.constantValue = constantValue
 			self.allowedValues = allowedValues
 			self.example = example
-				.flatMap { try? JSONEncoder().encode($0)}
+				.flatMap { try? encoder.encode($0)}
 				.flatMap { String(data: $0, encoding: .utf8) }
 		}
 
@@ -550,12 +551,13 @@ public enum JSONNode: Equatable {
 		}
 	}
 
-	public func with<T: Encodable>(example codableExample: T) throws -> JSONNode {
+	public func with<T: Encodable>(example codableExample: T,
+								   using encoder: JSONEncoder) throws -> JSONNode {
 		let example: AnyCodable
 		if let goodToGo = codableExample as? AnyCodable {
 			example = goodToGo
 		} else {
-			example = AnyCodable(try JSONSerialization.jsonObject(with: JSONEncoder().encode(codableExample), options: []))
+			example = AnyCodable(try JSONSerialization.jsonObject(with: encoder.encode(codableExample), options: []))
 		}
 
 		switch self {

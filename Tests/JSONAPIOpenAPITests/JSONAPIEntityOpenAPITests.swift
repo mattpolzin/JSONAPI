@@ -12,7 +12,7 @@ import AnyCodable
 
 class JSONAPIEntityOpenAPITests: XCTestCase {
 	func test_EmptyEntity() {
-		let node = try! TestType1.openAPINode()
+		let node = try! TestType1.openAPINode(using: JSONEncoder())
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -40,7 +40,7 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 	}
 
 	func test_AttributesEntity() {
-		let node = try! TestType2.openAPINode()
+		let node = try! TestType2.openAPINode(using: JSONEncoder())
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -122,7 +122,7 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 	}
 
 	func test_RelationshipsEntity() {
-		let node = try! TestType3.openAPINode()
+		let node = try! TestType3.openAPINode(using: JSONEncoder())
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
