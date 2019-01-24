@@ -68,6 +68,12 @@ public protocol DoubleWrappedRawOpenAPIType {
 	static func wrappedOpenAPINode() throws -> JSONNode
 }
 
+/// A GenericOpenAPINodeType can take a stab at
+/// determining its OpenAPINode because it is sampleable.
+public protocol GenericOpenAPINodeType {
+	static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
+}
+
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
 /// list of its possible values.
 public protocol AnyJSONCaseIterable {
@@ -594,6 +600,7 @@ public enum JSONNode: Equatable {
 public enum OpenAPICodableError: Swift.Error, Equatable {
 	case allCasesArrayNotCodable
 	case exampleNotCodable
+	case primitiveGuessFailed
 }
 
 public enum OpenAPITypeError: Swift.Error, Equatable {

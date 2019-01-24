@@ -12,6 +12,11 @@ import AnyCodable
 private protocol _Optional {}
 extension Optional: _Optional {}
 
+private protocol Wrapper {
+	associatedtype Wrapped
+}
+extension Optional: Wrapper {}
+
 extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 	static public func openAPINode() throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
@@ -71,6 +76,8 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 		return try RawValue.openAPINode()
 	}
 }
+
+// TODO: conform TransformedAttribute to all of the above protocols that Attribute conforms to.
 
 extension RelationshipType {
 	static func relationshipNode(nullable: Bool, jsonType: String) -> JSONNode {
@@ -142,13 +149,13 @@ extension Entity: OpenAPIEncodedNodeType, OpenAPINodeType where Description.Attr
 
 		let attributesNode: JSONNode? = Description.Attributes.self == NoAttributes.self
 			? nil
-			: try Description.Attributes.genericObjectOpenAPINode(using: encoder)
+			: try Description.Attributes.genericOpenAPINode(using: encoder)
 
 		let attributesProperty = attributesNode.map { ("attributes", $0) }
 
 		let relationshipsNode: JSONNode? = Description.Relationships.self == NoRelationships.self
 			? nil
-			: try Description.Relationships.genericObjectOpenAPINode(using: encoder)
+			: try Description.Relationships.genericOpenAPINode(using: encoder)
 
 		let relationshipsProperty = relationshipsNode.map { ("relationships", $0) }
 

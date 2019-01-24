@@ -8,6 +8,7 @@
 import XCTest
 import JSONAPI
 import JSONAPIOpenAPI
+import SwiftCheck
 import AnyCodable
 
 class JSONAPIAttributeOpenAPITests: XCTestCase {
@@ -504,10 +505,134 @@ extension JSONAPIAttributeOpenAPITests {
 	}
 }
 
+// MARK: - Date
+extension JSONAPIAttributeOpenAPITests {
+	func test_DateStringAttribute() {
+
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateStyle = .medium
+		dateFormatter.timeStyle = .none
+		dateFormatter.locale = Locale(identifier: "en_US")
+
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
+		encoder.dateEncodingStrategy = .formatted(dateFormatter)
+
+		let node = try! Attribute<Date>.genericOpenAPINode(using: encoder)
+
+		XCTAssertTrue(node.required)
+		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
+
+		guard case .string(let contextA, let stringContext) = node else {
+			XCTFail("Expected string Node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .generic,
+									   required: true,
+									   nullable: false,
+									   allowedValues: nil))
+
+		XCTAssertEqual(stringContext, .init())
+	}
+
+	func test_DateNumberAttribute() {
+
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateStyle = .medium
+		dateFormatter.timeStyle = .none
+		dateFormatter.locale = Locale(identifier: "en_US")
+
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
+		encoder.dateEncodingStrategy = .secondsSince1970
+
+		let node = try! Attribute<Date>.genericOpenAPINode(using: encoder)
+
+		XCTAssertTrue(node.required)
+		XCTAssertEqual(node.jsonTypeFormat, .number(.double))
+
+		guard case .number(let contextA, let numberContext) = node else {
+			XCTFail("Expected string Node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .double,
+									   required: true,
+									   nullable: false,
+									   allowedValues: nil))
+
+		XCTAssertEqual(numberContext, .init())
+	}
+
+//	func test_NullableEnumAttribute() {
+//		let node = try! Attribute<EnumAttribute?>.wrappedOpenAPINode()
+//
+//		XCTAssertTrue(node.required)
+//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
+//
+//		guard case .string(let contextA, let stringContext) = node else {
+//			XCTFail("Expected string Node")
+//			return
+//		}
+//
+//		XCTAssertEqual(contextA, .init(format: .generic,
+//									   required: true,
+//									   nullable: true,
+//									   allowedValues: nil))
+//
+//		XCTAssertEqual(stringContext, .init())
+//	}
+//
+//	func test_OptionalEnumAttribute() {
+//		let node = try! Attribute<EnumAttribute>?.wrappedOpenAPINode()
+//
+//		XCTAssertFalse(node.required)
+//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
+//
+//		guard case .string(let contextA, let stringContext) = node else {
+//			XCTFail("Expected string Node")
+//			return
+//		}
+//
+//		XCTAssertEqual(contextA, .init(format: .generic,
+//									   required: false,
+//									   nullable: false,
+//									   allowedValues: nil))
+//
+//		XCTAssertEqual(stringContext, .init())
+//	}
+//
+//	func test_OptionalNullableEnumAttribute() {
+//		let node = try! Attribute<EnumAttribute?>?.wrappedOpenAPINode()
+//
+//		XCTAssertFalse(node.required)
+//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
+//
+//		guard case .string(let contextA, let stringContext) = node else {
+//			XCTFail("Expected string Node")
+//			return
+//		}
+//
+//		XCTAssertEqual(contextA, .init(format: .generic,
+//									   required: false,
+//									   nullable: true,
+//									   allowedValues: nil))
+//
+//		XCTAssertEqual(stringContext, .init())
+//	}
+}
+
 // MARK: - Test Types
 extension JSONAPIAttributeOpenAPITests {
 	enum EnumAttribute: String, Codable, CaseIterable {
 		case one
 		case two
+	}
+}
+
+extension Date: Sampleable {
+	public static var sample: Date {
+		return TimeInterval.arbitrary.map { Date(timeIntervalSince1970: $0) }.generate
 	}
 }

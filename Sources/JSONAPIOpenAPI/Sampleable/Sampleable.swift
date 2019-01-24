@@ -37,6 +37,8 @@ public protocol Sampleable {
 	static var samples: [Self] { get }
 }
 
+public typealias SampleableOpenAPIType = Sampleable & GenericOpenAPINodeType
+
 public extension Sampleable {
 	// default implementation:
 	public static var successSample: Self? { return nil }
@@ -48,8 +50,8 @@ public extension Sampleable {
 	public static var samples: [Self] { return [Self.sample] }
 }
 
-extension Sampleable {
-	public static func genericObjectOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+extension Sampleable where Self: Encodable {
+	public static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		let mirror = Mirror(reflecting: Self.sample)
 		let properties: [(String, JSONNode)] = try mirror.children.compactMap { child in
 
@@ -80,6 +82,9 @@ extension Sampleable {
 				case let valType as DoubleWrappedRawOpenAPIType.Type:
 					return try valType.wrappedOpenAPINode()
 
+				case let valType as GenericOpenAPINodeType.Type:
+					return try valType.genericOpenAPINode(using: encoder)
+
 				default:
 					return nil
 				}
@@ -97,6 +102,13 @@ extension Sampleable {
 			return zip(child.label, newNode) { ($0, $1) }
 		}
 
+		// if there are no properties, let's see if we are dealing
+		// with a primitive.
+		if properties.count == 0,
+			let primitive = try primitiveGuess(using: encoder) {
+			return primitive
+		}
+
 		// There should not be any duplication of keys since these are
 		// property names, but rather than risk runtime exception, we just
 		// fail to the newer value arbitrarily
@@ -106,6 +118,71 @@ extension Sampleable {
 							 required: true),
 					   .init(properties: propertiesDict))
 	}
+
+	private static func primitiveGuess(using encoder: JSONEncoder) throws -> JSONNode? {
+		let data = try encoder.encode(PrimitiveWrapper(primitive: Self.sample))
+		let wrappedValue = try JSONSerialization.jsonObject(with: data, options: [.allowFragments])
+
+		guard let wrapperDict = wrappedValue as? [String: Any],
+			wrapperDict.contains(where: { $0.key == "primitive" }) else {
+			throw OpenAPICodableError.primitiveGuessFailed
+		}
+
+		let value = (wrappedValue as! [String: Any])["primitive"]!
+
+		return try {
+			switch type(of: value) {
+			case let valType as OpenAPINodeType.Type:
+				return try valType.openAPINode()
+
+			case let valType as RawOpenAPINodeType.Type:
+				return try valType.rawOpenAPINode()
+
+			case let valType as WrappedRawOpenAPIType.Type:
+				return try valType.wrappedOpenAPINode()
+
+			case let valType as DoubleWrappedRawOpenAPIType.Type:
+				return try valType.wrappedOpenAPINode()
+
+			case let valType as GenericOpenAPINodeType.Type:
+				return try valType.genericOpenAPINode(using: encoder)
+
+			default:
+				return nil
+			}
+		}() ?? {
+			switch value {
+			case is String:
+				return .string(.init(format: .generic,
+									 required: true),
+							   .init())
+
+			case is Int:
+				return .integer(.init(format: .generic,
+									  required: true),
+								.init())
+
+			case is Double:
+				return .number(.init(format: .double,
+									 required: true),
+							   .init())
+
+			case is Bool:
+				return .boolean(.init(format: .generic,
+									  required: true))
+
+			default:
+				return nil
+			}
+		}()
+	}
+}
+
+// The following wrapper is only needed because JSONEncoder cannot yet encode
+// JSON fragments. It is a very unfortunate limitation that requires silly
+// workarounds in edge cases like this.
+private struct PrimitiveWrapper<Wrapped: Encodable>: Encodable {
+	let primitive: Wrapped
 }
 
 extension Sampleable {
@@ -196,6 +273,12 @@ extension NoAPIDescription: Sampleable {
 extension UnknownJSONAPIError: Sampleable {
 	public static var sample: UnknownJSONAPIError {
 		return .unknownError
+	}
+}
+
+extension Attribute: Sampleable where RawValue: Sampleable {
+	public static var sample: Attribute<RawValue> {
+		return .init(value: RawValue.sample)
 	}
 }
 
