@@ -13,12 +13,25 @@ import Foundation
 /// Anything conforming to `OpenAPINodeType` can provide an
 /// OpenAPI schema representing itself.
 public protocol OpenAPINodeType {
-	static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode
+	static func openAPINode() throws -> JSONNode
 }
 
 extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
 	public static func openAPINodeWithExample(using encoder: JSONEncoder = JSONEncoder()) throws -> JSONNode {
-		return try openAPINode(using: encoder).with(example: Self.successSample ?? Self.sample, using: encoder)
+		return try openAPINode().with(example: Self.successSample ?? Self.sample, using: encoder)
+	}
+}
+
+/// Anything conforming to `OpenAPIEncodedNodeType` can provide an
+/// OpenAPI schema representing itself but it may need an Encoder
+/// to do its job.
+public protocol OpenAPIEncodedNodeType: OpenAPINodeType {
+	static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode
+}
+
+extension OpenAPIEncodedNodeType {
+	public static func openAPINode() throws -> JSONNode {
+		return try openAPINode(using: JSONEncoder())
 	}
 }
 
@@ -29,7 +42,7 @@ extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
 /// different schema. The "different" conditions have to do
 /// with Raw Representability, hence the name of this protocol.
 public protocol RawOpenAPINodeType {
-	static func rawOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
+	static func rawOpenAPINode() throws -> JSONNode
 }
 
 /// Anything conforming to `RawOpenAPINodeType` can provide an
@@ -39,7 +52,7 @@ public protocol RawOpenAPINodeType {
 /// different schema. The "different" conditions have to do
 /// with Optionality, hence the name of this protocol.
 public protocol WrappedRawOpenAPIType {
-	static func wrappedOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
+	static func wrappedOpenAPINode() throws -> JSONNode
 }
 
 /// Anything conforming to `RawOpenAPINodeType` can provide an
@@ -52,7 +65,7 @@ public protocol DoubleWrappedRawOpenAPIType {
 	// NOTE: This is definitely a rabbit hole... hopefully I
 	// will realize I've been missing something obvious
 	// and dig my way back out at some point...
-	static func wrappedOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
+	static func wrappedOpenAPINode() throws -> JSONNode
 }
 
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
@@ -282,15 +295,14 @@ public enum JSONNode: Equatable {
 					nullable: Bool = false,
 //					constantValue: Format.SwiftType? = nil,
 					allowedValues: [AnyCodable]? = nil,
-					example: AnyCodable? = nil,
-					using encoder: JSONEncoder = JSONEncoder()) {
+					example: (codable: AnyCodable, encoder: JSONEncoder)? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
 //			self.constantValue = constantValue
 			self.allowedValues = allowedValues
 			self.example = example
-				.flatMap { try? encoder.encode($0)}
+				.flatMap { try? $0.encoder.encode($0.codable)}
 				.flatMap { String(data: $0, encoding: .utf8) }
 		}
 
@@ -331,13 +343,13 @@ public enum JSONNode: Equatable {
 		}
 
 		/// Return this context with the given example
-		public func with(example: AnyCodable) -> Context {
+		public func with(example: AnyCodable, using encoder: JSONEncoder) -> Context {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
 //						 constantValue: constantValue,
 						 allowedValues: allowedValues,
-						 example: example)
+						 example: (codable: example, encoder: encoder))
 		}
 	}
 
@@ -562,17 +574,17 @@ public enum JSONNode: Equatable {
 
 		switch self {
 		case .boolean(let context):
-			return .boolean(context.with(example: example))
+			return .boolean(context.with(example: example, using: encoder))
 		case .object(let contextA, let contextB):
-			return .object(contextA.with(example: example), contextB)
+			return .object(contextA.with(example: example, using: encoder), contextB)
 		case .array(let contextA, let contextB):
-			return .array(contextA.with(example: example), contextB)
+			return .array(contextA.with(example: example, using: encoder), contextB)
 		case .number(let context, let contextB):
-			return .number(context.with(example: example), contextB)
+			return .number(context.with(example: example, using: encoder), contextB)
 		case .integer(let context, let contextB):
-			return .integer(context.with(example: example), contextB)
+			return .integer(context.with(example: example, using: encoder), contextB)
 		case .string(let context, let contextB):
-			return .string(context.with(example: example), contextB)
+			return .string(context.with(example: example, using: encoder), contextB)
 		case .all, .one, .any, .not:
 			return self
 		}

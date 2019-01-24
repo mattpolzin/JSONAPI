@@ -69,16 +69,16 @@ extension Sampleable {
 			let maybeOpenAPINode: JSONNode? = try {
 				switch type(of: child.value) {
 				case let valType as OpenAPINodeType.Type:
-					return try valType.openAPINode(using: encoder)
+					return try valType.openAPINode()
 
 				case let valType as RawOpenAPINodeType.Type:
-					return try valType.rawOpenAPINode(using: encoder)
+					return try valType.rawOpenAPINode()
 
 				case let valType as WrappedRawOpenAPIType.Type:
-					return try valType.wrappedOpenAPINode(using: encoder)
+					return try valType.wrappedOpenAPINode()
 
 				case let valType as DoubleWrappedRawOpenAPIType.Type:
-					return try valType.wrappedOpenAPINode(using: encoder)
+					return try valType.wrappedOpenAPINode()
 
 				default:
 					return nil
