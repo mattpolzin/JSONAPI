@@ -203,7 +203,16 @@ extension JSONReference: Encodable {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.singleValueContainer()
 
-		try container.encode("#/\(Root.refName)/\(refName)/\(selector)")
+		let referenceString: String = {
+			switch self {
+			case .file(let reference):
+				return reference
+			case .node(let reference):
+				return "#/\(Root.refName)/\(reference.refName)/\(reference.selector)"
+			}
+		}()
+
+		try container.encode(referenceString)
 	}
 }
 

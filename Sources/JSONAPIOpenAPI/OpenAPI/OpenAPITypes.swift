@@ -645,28 +645,36 @@ public struct RefDict<Root: ReferenceRoot, Name: RefName, RefType: Equatable & E
 /// A Reference is the combination of
 /// a path to a reference dictionary
 /// and a selector that the dictionary is keyed off of.
-public struct JSONReference<Root: ReferenceRoot, RefType: Equatable>: Equatable {
-	public let path: PartialKeyPath<Root>
-	public let selector: String
+public enum JSONReference<Root: ReferenceRoot, RefType: Equatable>: Equatable {
 
-	public var refName: String {
-		// we require RD be a RefName in the initializer
-		// so it is safe to force cast here.
-		return (type(of: path).valueType as! RefName.Type).refName
-	}
+	case node(InternalReference)
+	case file(FileReference)
 
-	public init<RD: RefName & ReferenceDict>(type: KeyPath<Root, RD>,
-									selector: String) where RD.Value == RefType {
-		self.path = type
-		self.selector = selector
+	public typealias FileReference = String
+
+	public struct InternalReference: Equatable {
+		public let path: PartialKeyPath<Root>
+		public let selector: String
+
+		public var refName: String {
+			// we require RD be a RefName in the initializer
+			// so it is safe to force cast here.
+			return (type(of: path).valueType as! RefName.Type).refName
+		}
+
+		public init<RD: RefName & ReferenceDict>(type: KeyPath<Root, RD>,
+										selector: String) where RD.Value == RefType {
+			self.path = type
+			self.selector = selector
+		}
 	}
 }
 
 /// An OpenAPI Path Item
 /// This type describes the endpoints a server has
 /// bound to a particular path.
-public enum JSONPathItem: Equatable {
-	case reference(JSONReference<OpenAPIComponents, JSONPathItem>)
+public enum OpenAPIPathItem: Equatable {
+	case reference(JSONReference<OpenAPIComponents, OpenAPIPathItem>)
 	case operations(PathProperties)
 
 	public struct PathProperties: Equatable {
@@ -752,13 +760,29 @@ public enum JSONPathItem: Equatable {
 			public let operationId: String
 			public let parameters: ParameterArray
 //			public let requestBody:
-			public let responses: ResponseArray
+			public let responses: ResponseMap
 //			public let callbacks:
 			public let deprecated: Bool // default is false
 //			public let security:
 //			public let servers:
 
-			public typealias ResponseArray = [OpenAPIResponse.Code: Either<OpenAPIResponse, JSONReference<OpenAPIComponents, OpenAPIResponse>>]
+			public init(tags: [String]? = nil,
+						summary: String? = nil,
+						description: String? = nil,
+						operationId: String,
+						parameters: ParameterArray,
+						responses: ResponseMap,
+						deprecated: Bool = false) {
+				self.tags = tags
+				self.summary = summary
+				self.description = description
+				self.operationId = operationId
+				self.parameters = parameters
+				self.responses = responses
+				self.deprecated = deprecated
+			}
+
+			public typealias ResponseMap = [OpenAPIResponse.Code: Either<OpenAPIResponse, JSONReference<OpenAPIComponents, OpenAPIResponse>>]
 		}
 	}
 }
@@ -769,11 +793,21 @@ public struct OpenAPIResponse: Equatable {
 	public let content: ContentMap
 //	public let links:
 
-	public typealias ContentMap = [String: Content]
+	public init(description: String,
+				content: ContentMap) {
+		self.description = description
+		self.content = content
+	}
+
+	public typealias ContentMap = [ContentType: Content]
 
 	public enum Code: Equatable, Hashable {
 		case `default`
 		case status(code: Int)
+	}
+
+	public enum ContentType: String, Equatable, Hashable {
+		case json = "application/json"
 	}
 
 	public struct Content: Equatable {
@@ -781,6 +815,10 @@ public struct OpenAPIResponse: Equatable {
 //		public let example:
 //		public let examples:
 //		public let encoding:
+
+		public init(schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>) {
+			self.schema = schema
+		}
 	}
 }
 
@@ -816,7 +854,7 @@ public struct OpenAPIComponents: Equatable, Encodable, ReferenceRoot {
 		public static var refName: String { return "parameters" }
 	}
 
-	public typealias ParametersDict = RefDict<OpenAPIComponents, ParametersName, JSONPathItem.PathProperties.Parameter>
+	public typealias ParametersDict = RefDict<OpenAPIComponents, ParametersName, OpenAPIPathItem.PathProperties.Parameter>
 }
 
 /// The root of an OpenAPI 3.0 document.
@@ -824,13 +862,14 @@ public struct OpenAPISchema: Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case openAPIVersion = "openapi"
 		case info
+		case paths
 		case components
 	}
 
 	public let openAPIVersion: Version
 	public let info: Info
 //	public let servers:
-	public let paths: [PathComponents: JSONPathItem]
+	public let paths: [PathComponents: OpenAPIPathItem]
 	public let components: OpenAPIComponents
 //	public let security:
 //	public let tags:
@@ -838,7 +877,7 @@ public struct OpenAPISchema: Encodable {
 
 	public init(openAPIVersion: Version = .v3_0_0,
 				info: Info,
-				paths: [PathComponents: JSONPathItem],
+				paths: [PathComponents: OpenAPIPathItem],
 				components: OpenAPIComponents) {
 		self.openAPIVersion = openAPIVersion
 		self.info = info
@@ -869,5 +908,17 @@ public struct OpenAPISchema: Encodable {
 		}
 	}
 
-	public typealias PathComponents = [String]
+	public struct PathComponents: Encodable, Equatable, Hashable {
+		public let components: [String]
+
+		public init(_ components: [String]) {
+			self.components = components
+		}
+
+		public func encode(to encoder: Encoder) throws {
+			var container = encoder.singleValueContainer()
+
+			try container.encode(components.joined(separator: "/"))
+		}
+	}
 }
