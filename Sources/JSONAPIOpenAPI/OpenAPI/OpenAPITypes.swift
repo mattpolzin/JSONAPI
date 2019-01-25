@@ -19,19 +19,13 @@ public protocol OpenAPINodeType {
 /// Anything conforming to `OpenAPIEncodedNodeType` can provide an
 /// OpenAPI schema representing itself but it may need an Encoder
 /// to do its job.
-public protocol OpenAPIEncodedNodeType: OpenAPINodeType {
+public protocol OpenAPIEncodedNodeType {
 	static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
 extension OpenAPIEncodedNodeType where Self: Sampleable, Self: Encodable {
 	public static func openAPINodeWithExample(using encoder: JSONEncoder = JSONEncoder()) throws -> JSONNode {
 		return try openAPINode(using: encoder).with(example: Self.successSample ?? Self.sample, using: encoder)
-	}
-}
-
-extension OpenAPIEncodedNodeType {
-	public static func openAPINode() throws -> JSONNode {
-		return try openAPINode(using: JSONEncoder())
 	}
 }
 

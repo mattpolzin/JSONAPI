@@ -141,7 +141,7 @@ extension ToManyRelationship: OpenAPINodeType {
 	}
 }
 
-extension Entity: OpenAPIEncodedNodeType, OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
+extension Entity: OpenAPIEncodedNodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
 	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// NOTE: const for json `type` not supported by OpenAPI 3.0
 		//		Will use "enum" with one possible value for now.
@@ -184,13 +184,13 @@ extension Entity: OpenAPIEncodedNodeType, OpenAPINodeType where Description.Attr
 	}
 }
 
-extension SingleResourceBody: OpenAPIEncodedNodeType, OpenAPINodeType where Entity: OpenAPIEncodedNodeType {
+extension SingleResourceBody: OpenAPIEncodedNodeType where Entity: OpenAPIEncodedNodeType {
 	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		return try Entity.openAPINode(using: encoder)
 	}
 }
 
-extension ManyResourceBody: OpenAPIEncodedNodeType, OpenAPINodeType where Entity: OpenAPIEncodedNodeType {
+extension ManyResourceBody: OpenAPIEncodedNodeType where Entity: OpenAPIEncodedNodeType {
 	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		return .array(.init(format: .generic,
 							required: true),
@@ -198,7 +198,7 @@ extension ManyResourceBody: OpenAPIEncodedNodeType, OpenAPINodeType where Entity
 	}
 }
 
-extension Document: OpenAPIEncodedNodeType, OpenAPINodeType where PrimaryResourceBody: OpenAPIEncodedNodeType, IncludeType: OpenAPINodeType {
+extension Document: OpenAPIEncodedNodeType where PrimaryResourceBody: OpenAPIEncodedNodeType, IncludeType: OpenAPINodeType {
 	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// TODO: metadata, links, api description, errors
 		// TODO: represent data and errors as the two distinct possible outcomes
