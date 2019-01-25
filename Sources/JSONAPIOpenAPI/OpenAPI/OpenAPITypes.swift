@@ -74,6 +74,12 @@ public protocol GenericOpenAPINodeType {
 	static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
 }
 
+/// Anything conforming to `DateOpenAPINodeType` is
+/// able to attempt to represent itself as a date OpenAPINode
+public protocol DateOpenAPINodeType {
+	static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode?
+}
+
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
 /// list of its possible values.
 public protocol AnyJSONCaseIterable {
@@ -603,6 +609,7 @@ public enum OpenAPICodableError: Swift.Error, Equatable {
 	case primitiveGuessFailed
 }
 
-public enum OpenAPITypeError: Swift.Error, Equatable {
+public enum OpenAPITypeError: Swift.Error {
 	case invalidNode
+	case unknownNodeType(Any.Type)
 }

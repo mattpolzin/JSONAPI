@@ -65,6 +65,18 @@ extension Attribute: AnyWrappedJSONCaseIterable where RawValue: AnyJSONCaseItera
 	}
 }
 
+extension Attribute: GenericOpenAPINodeType where RawValue: GenericOpenAPINodeType {
+	public static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+		return try RawValue.genericOpenAPINode(using: encoder)
+	}
+}
+
+extension Attribute: DateOpenAPINodeType where RawValue: DateOpenAPINodeType {
+	public static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode? {
+		return RawValue.dateOpenAPINodeGuess(using: encoder)
+	}
+}
+
 extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 	static public func openAPINode() throws -> JSONNode {
 		// If the RawValue is not required, we actually consider it
@@ -199,7 +211,7 @@ extension Document: OpenAPIEncodedNodeType, OpenAPINodeType where PrimaryResourc
 		do {
 			includeNode = try Includes<Include>.openAPINode()
 		} catch let err as OpenAPITypeError {
-			guard err == .invalidNode else {
+			guard case .invalidNode = err else {
 				throw err
 			}
 			includeNode = nil
