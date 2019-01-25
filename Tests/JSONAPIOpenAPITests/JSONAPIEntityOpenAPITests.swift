@@ -40,7 +40,16 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 	}
 
 	func test_AttributesEntity() {
-		let node = try! TestType2.openAPINode(using: JSONEncoder())
+
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateStyle = .medium
+		dateFormatter.timeStyle = .short
+		dateFormatter.locale = Locale(identifier: "en_US")
+
+		let encoder = JSONEncoder()
+		encoder.dateEncodingStrategy = .formatted(dateFormatter)
+
+		let node = try! TestType2.openAPINode(using: encoder)
 
 		XCTAssertTrue(node.required)
 		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
@@ -83,9 +92,9 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 									   nullable: false,
 									   allowedValues: nil))
 
-		XCTAssertEqual(attributesContext.minProperties, 3)
-		XCTAssertEqual(Set(attributesContext.requiredProperties), Set(["stringProperty", "enumProperty", "nullableProperty"]))
-		XCTAssertEqual(Set(attributesContext.properties.keys), Set(["stringProperty", "enumProperty", "optionalProperty", "nullableProperty", "nullableOptionalProperty"]))
+		XCTAssertEqual(attributesContext.minProperties, 4)
+		XCTAssertEqual(Set(attributesContext.requiredProperties), Set(["stringProperty", "enumProperty", "dateProperty", "nullableProperty"]))
+		XCTAssertEqual(Set(attributesContext.properties.keys), Set(["stringProperty", "enumProperty", "dateProperty", "optionalProperty", "nullableProperty", "nullableOptionalProperty"]))
 
 		XCTAssertEqual(attributesContext.properties["stringProperty"],
 					   .string(.init(format: .generic,
@@ -97,6 +106,13 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 									 required: true,
 									 nullable: false,
 									 allowedValues: ["one", "two"].map(AnyCodable.init)),
+							   .init()))
+
+		XCTAssertEqual(attributesContext.properties["dateProperty"],
+					   .string(.init(format: .dateTime,
+									 required: true,
+									 nullable: false,
+									 allowedValues: nil),
 							   .init()))
 
 		XCTAssertEqual(attributesContext.properties["optionalProperty"],
@@ -268,6 +284,7 @@ extension JSONAPIEntityOpenAPITests {
 		public struct Attributes: JSONAPI.Attributes, Sampleable {
 			let stringProperty: Attribute<String>
 			let enumProperty: Attribute<EnumType>
+			let dateProperty: Attribute<Date>
 			let optionalProperty: Attribute<String>?
 			let nullableProperty: Attribute<String?>
 			let nullableOptionalProperty: Attribute<String?>?
@@ -278,6 +295,7 @@ extension JSONAPIEntityOpenAPITests {
 			public static var sample: Attributes {
 				return Attributes(stringProperty: .init(value: "hello"),
 								  enumProperty: .init(value: .one),
+								  dateProperty: .init(value: Date()),
 								  optionalProperty: nil,
 								  nullableProperty: .init(value: nil),
 								  nullableOptionalProperty: nil)
