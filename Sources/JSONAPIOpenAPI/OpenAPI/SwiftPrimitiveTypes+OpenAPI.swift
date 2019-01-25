@@ -6,6 +6,7 @@
 //
 
 import AnyCodable
+import Foundation
 
 /**
 
@@ -56,8 +57,8 @@ extension Optional: DoubleWrappedRawOpenAPIType where Wrapped: WrappedRawOpenAPI
 }
 
 extension Optional: AnyJSONCaseIterable where Wrapped: CaseIterable, Wrapped: Codable {
-	public static var allCases: [AnyCodable] {
-		return (try? allCases(from: Array(Wrapped.allCases))) ?? []
+	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
+		return (try? allCases(from: Array(Wrapped.allCases), using: encoder)) ?? []
 	}
 }
 

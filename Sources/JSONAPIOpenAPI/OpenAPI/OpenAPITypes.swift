@@ -17,9 +17,16 @@ public protocol OpenAPINodeType {
 	static func openAPINode() throws -> JSONNode
 }
 
-extension OpenAPINodeType where Self: Sampleable, Self: Encodable {
-	public static func openAPINodeWithExample() throws -> JSONNode {
-		return try openAPINode().with(example: Self.successSample ?? Self.sample)
+/// Anything conforming to `OpenAPIEncodedNodeType` can provide an
+/// OpenAPI schema representing itself but it may need an Encoder
+/// to do its job.
+public protocol OpenAPIEncodedNodeType {
+	static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode
+}
+
+extension OpenAPIEncodedNodeType where Self: Sampleable, Self: Encodable {
+	public static func openAPINodeWithExample(using encoder: JSONEncoder = JSONEncoder()) throws -> JSONNode {
+		return try openAPINode(using: encoder).with(example: Self.successSample ?? Self.sample, using: encoder)
 	}
 }
 
@@ -56,15 +63,27 @@ public protocol DoubleWrappedRawOpenAPIType {
 	static func wrappedOpenAPINode() throws -> JSONNode
 }
 
+/// A GenericOpenAPINodeType can take a stab at
+/// determining its OpenAPINode because it is sampleable.
+public protocol GenericOpenAPINodeType {
+	static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode
+}
+
+/// Anything conforming to `DateOpenAPINodeType` is
+/// able to attempt to represent itself as a date OpenAPINode
+public protocol DateOpenAPINodeType {
+	static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode?
+}
+
 /// Anything conforming to `AnyJSONCaseIterable` can provide a
 /// list of its possible values.
 public protocol AnyJSONCaseIterable {
-	static var allCases: [AnyCodable] { get }
+	static func allCases(using encoder: JSONEncoder) -> [AnyCodable]
 }
 
 extension AnyJSONCaseIterable {
 	/// Given an array of Codable values, retrieve an array of AnyCodables.
-	static func allCases<T: Codable>(from input: [T]) throws -> [AnyCodable] {
+	static func allCases<T: Codable>(from input: [T], using encoder: JSONEncoder) throws -> [AnyCodable] {
 		if let alreadyGoodToGo = input as? [AnyCodable] {
 			return alreadyGoodToGo
 		}
@@ -77,7 +96,7 @@ extension AnyJSONCaseIterable {
 		// by AnyCodable, but AnyCodable wants it to actually BE a String
 		// upon initialization.
 
-		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: JSONEncoder().encode(input), options: []) as? [Any] else {
+		guard let arrayOfCodables = try JSONSerialization.jsonObject(with: encoder.encode(input), options: []) as? [Any] else {
 			throw OpenAPICodableError.allCasesArrayNotCodable
 		}
 		return arrayOfCodables.map(AnyCodable.init)
@@ -92,7 +111,7 @@ extension AnyJSONCaseIterable {
 /// The "different" conditions have to do
 /// with Optionality, hence the name of this protocol.
 public protocol AnyWrappedJSONCaseIterable {
-	static var allCases: [AnyCodable] { get }
+	static func allCases(using encoder: JSONEncoder) -> [AnyCodable]
 }
 
 public protocol SwiftTyped {
@@ -284,14 +303,14 @@ public enum JSONNode: Equatable {
 					nullable: Bool = false,
 //					constantValue: Format.SwiftType? = nil,
 					allowedValues: [AnyCodable]? = nil,
-					example: AnyCodable? = nil) {
+					example: (codable: AnyCodable, encoder: JSONEncoder)? = nil) {
 			self.format = format
 			self.required = required
 			self.nullable = nullable
 //			self.constantValue = constantValue
 			self.allowedValues = allowedValues
 			self.example = example
-				.flatMap { try? JSONEncoder().encode($0)}
+				.flatMap { try? $0.encoder.encode($0.codable)}
 				.flatMap { String(data: $0, encoding: .utf8) }
 		}
 
@@ -332,13 +351,13 @@ public enum JSONNode: Equatable {
 		}
 
 		/// Return this context with the given example
-		public func with(example: AnyCodable) -> Context {
+		public func with(example: AnyCodable, using encoder: JSONEncoder) -> Context {
 			return .init(format: format,
 						 required: required,
 						 nullable: nullable,
 //						 constantValue: constantValue,
 						 allowedValues: allowedValues,
-						 example: example)
+						 example: (codable: example, encoder: encoder))
 		}
 	}
 
@@ -552,27 +571,28 @@ public enum JSONNode: Equatable {
 		}
 	}
 
-	public func with<T: Encodable>(example codableExample: T) throws -> JSONNode {
+	public func with<T: Encodable>(example codableExample: T,
+								   using encoder: JSONEncoder) throws -> JSONNode {
 		let example: AnyCodable
 		if let goodToGo = codableExample as? AnyCodable {
 			example = goodToGo
 		} else {
-			example = AnyCodable(try JSONSerialization.jsonObject(with: JSONEncoder().encode(codableExample), options: []))
+			example = AnyCodable(try JSONSerialization.jsonObject(with: encoder.encode(codableExample), options: []))
 		}
 
 		switch self {
 		case .boolean(let context):
-			return .boolean(context.with(example: example))
+			return .boolean(context.with(example: example, using: encoder))
 		case .object(let contextA, let contextB):
-			return .object(contextA.with(example: example), contextB)
+			return .object(contextA.with(example: example, using: encoder), contextB)
 		case .array(let contextA, let contextB):
-			return .array(contextA.with(example: example), contextB)
+			return .array(contextA.with(example: example, using: encoder), contextB)
 		case .number(let context, let contextB):
-			return .number(context.with(example: example), contextB)
+			return .number(context.with(example: example, using: encoder), contextB)
 		case .integer(let context, let contextB):
-			return .integer(context.with(example: example), contextB)
+			return .integer(context.with(example: example, using: encoder), contextB)
 		case .string(let context, let contextB):
-			return .string(context.with(example: example), contextB)
+			return .string(context.with(example: example, using: encoder), contextB)
 		case .all, .one, .any, .not, .reference:
 			return self
 		}
@@ -582,10 +602,12 @@ public enum JSONNode: Equatable {
 public enum OpenAPICodableError: Swift.Error, Equatable {
 	case allCasesArrayNotCodable
 	case exampleNotCodable
+	case primitiveGuessFailed
 }
 
-public enum OpenAPITypeError: Swift.Error, Equatable {
+public enum OpenAPITypeError: Swift.Error {
 	case invalidNode
+	case unknownNodeType(Any.Type)
 }
 
 /// Anything conforming to RefName knows what to call itself

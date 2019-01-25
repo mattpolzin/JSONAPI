@@ -6,6 +6,7 @@
 //
 
 import JSONAPI
+import Foundation
 
 extension Includes: OpenAPINodeType where I: OpenAPINodeType {
 	public static func openAPINode() throws -> JSONNode {

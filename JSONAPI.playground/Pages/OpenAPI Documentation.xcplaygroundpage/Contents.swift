@@ -16,14 +16,14 @@ print("====")
 print(personSchemaData.map { String(data: $0, encoding: .utf8)! } ?? "Schema Construction Failed")
 print("====")
 
-let dogDocumentSchemaData = try? encoder.encode(SingleDogDocument.openAPINodeWithExample())
+let dogDocumentSchemaData = try? encoder.encode(SingleDogDocument.openAPINodeWithExample(using: encoder))
 
 print("Dog Document Schema")
 print("====")
 print(dogDocumentSchemaData.map { String(data: $0, encoding: .utf8)! } ?? "Schema Construction Failed")
 print("====")
 
-let batchPersonSchemaData = try? encoder.encode(BatchPeopleDocument.openAPINodeWithExample())
+let batchPersonSchemaData = try? encoder.encode(BatchPeopleDocument.openAPINodeWithExample(using: encoder))
 
 print("Batch Person Document Schema")
 print("====")

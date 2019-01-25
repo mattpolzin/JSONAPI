@@ -6,10 +6,16 @@
 //
 
 import JSONAPI
+import Foundation
 import AnyCodable
 
 private protocol _Optional {}
 extension Optional: _Optional {}
+
+private protocol Wrapper {
+	associatedtype Wrapped
+}
+extension Optional: Wrapper {}
 
 extension Attribute: OpenAPINodeType where RawValue: OpenAPINodeType {
 	static public func openAPINode() throws -> JSONNode {
@@ -48,14 +54,26 @@ extension Attribute: WrappedRawOpenAPIType where RawValue: RawOpenAPINodeType {
 }
 
 extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable, RawValue: Codable {
-	public static var allCases: [AnyCodable] {
-		return (try? allCases(from: Array(RawValue.allCases))) ?? []
+	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
+		return (try? allCases(from: Array(RawValue.allCases), using: encoder)) ?? []
 	}
 }
 
 extension Attribute: AnyWrappedJSONCaseIterable where RawValue: AnyJSONCaseIterable {
-	public static var allCases: [AnyCodable] {
-		return RawValue.allCases
+	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
+		return RawValue.allCases(using: encoder)
+	}
+}
+
+extension Attribute: GenericOpenAPINodeType where RawValue: GenericOpenAPINodeType {
+	public static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+		return try RawValue.genericOpenAPINode(using: encoder)
+	}
+}
+
+extension Attribute: DateOpenAPINodeType where RawValue: DateOpenAPINodeType {
+	public static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode? {
+		return RawValue.dateOpenAPINodeGuess(using: encoder)
 	}
 }
 
@@ -70,6 +88,8 @@ extension TransformedAttribute: OpenAPINodeType where RawValue: OpenAPINodeType 
 		return try RawValue.openAPINode()
 	}
 }
+
+// TODO: conform TransformedAttribute to all of the above protocols that Attribute conforms to.
 
 extension RelationshipType {
 	static func relationshipNode(nullable: Bool, jsonType: String) -> JSONNode {
@@ -121,8 +141,8 @@ extension ToManyRelationship: OpenAPINodeType {
 	}
 }
 
-extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
-	public static func openAPINode() throws -> JSONNode {
+extension Entity: OpenAPIEncodedNodeType where Description.Attributes: Sampleable, Description.Relationships: Sampleable {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// NOTE: const for json `type` not supported by OpenAPI 3.0
 		//		Will use "enum" with one possible value for now.
 
@@ -141,13 +161,13 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 
 		let attributesNode: JSONNode? = Description.Attributes.self == NoAttributes.self
 			? nil
-			: try Description.Attributes.genericObjectOpenAPINode()
+			: try Description.Attributes.genericOpenAPINode(using: encoder)
 
 		let attributesProperty = attributesNode.map { ("attributes", $0) }
 
 		let relationshipsNode: JSONNode? = Description.Relationships.self == NoRelationships.self
 			? nil
-			: try Description.Relationships.genericObjectOpenAPINode()
+			: try Description.Relationships.genericOpenAPINode(using: encoder)
 
 		let relationshipsProperty = relationshipsNode.map { ("relationships", $0) }
 
@@ -164,26 +184,26 @@ extension Entity: OpenAPINodeType where Description.Attributes: Sampleable, Desc
 	}
 }
 
-extension SingleResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
-		return try Entity.openAPINode()
+extension SingleResourceBody: OpenAPIEncodedNodeType where Entity: OpenAPIEncodedNodeType {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+		return try Entity.openAPINode(using: encoder)
 	}
 }
 
-extension ManyResourceBody: OpenAPINodeType where Entity: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
+extension ManyResourceBody: OpenAPIEncodedNodeType where Entity: OpenAPIEncodedNodeType {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		return .array(.init(format: .generic,
 							required: true),
-					  .init(items: try Entity.openAPINode()))
+					  .init(items: try Entity.openAPINode(using: encoder)))
 	}
 }
 
-extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType, IncludeType: OpenAPINodeType {
-	public static func openAPINode() throws -> JSONNode {
+extension Document: OpenAPIEncodedNodeType where PrimaryResourceBody: OpenAPIEncodedNodeType, IncludeType: OpenAPINodeType {
+	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// TODO: metadata, links, api description, errors
 		// TODO: represent data and errors as the two distinct possible outcomes
 
-		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode()
+		let primaryDataNode: JSONNode? = try PrimaryResourceBody.openAPINode(using: encoder)
 
 		let primaryDataProperty = primaryDataNode.map { ("data", $0) }
 
@@ -191,7 +211,7 @@ extension Document: OpenAPINodeType where PrimaryResourceBody: OpenAPINodeType, 
 		do {
 			includeNode = try Includes<Include>.openAPINode()
 		} catch let err as OpenAPITypeError {
-			guard err == .invalidNode else {
+			guard case .invalidNode = err else {
 				throw err
 			}
 			includeNode = nil

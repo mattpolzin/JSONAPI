@@ -23,9 +23,9 @@
         "package": "Poly",
         "repositoryURL": "https://github.com/mattpolzin/Poly.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "77f45b8963a51c02d71fc4075eba5cff47ff0d07",
-          "version": null
+          "version": "1.0.0"
         }
       },
       {
