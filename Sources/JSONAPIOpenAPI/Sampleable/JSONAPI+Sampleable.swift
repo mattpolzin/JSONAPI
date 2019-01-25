@@ -1,5 +1,5 @@
 //
-//  Sampleable+JSONAPI.swift
+//  JSONAPI+Sampleable.swift
 //  JSONAPIOpenAPI
 //
 //  Created by Mathew Polzin on 1/24/19.
@@ -40,6 +40,12 @@ extension NoAPIDescription: Sampleable {
 extension UnknownJSONAPIError: Sampleable {
 	public static var sample: UnknownJSONAPIError {
 		return .unknownError
+	}
+}
+
+extension Unidentified: Sampleable {
+	public static var sample: Unidentified {
+		return Unidentified()
 	}
 }
 
