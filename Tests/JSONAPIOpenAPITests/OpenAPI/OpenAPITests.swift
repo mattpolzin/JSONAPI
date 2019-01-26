@@ -36,7 +36,7 @@ class OpenAPITests: XCTestCase {
 			)
 		]
 
-		let schemaComponents = OpenAPIComponents(schemas: ["person": .reference(.file("filename"))],
+		let schemaComponents = OpenAPIComponents(schemas: ["person": .reference(.file("person.json"))],
 												 parameters: [:])
 
 		let openAPISchema = OpenAPISchema(info: schemaInfo,
