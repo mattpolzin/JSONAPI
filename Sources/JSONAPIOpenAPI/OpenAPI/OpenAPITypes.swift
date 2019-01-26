@@ -787,7 +787,7 @@ public enum OpenAPIPathItem: Equatable {
 	}
 }
 
-public struct OpenAPIResponse: Equatable {
+public struct OpenAPIResponse: Encodable, Equatable {
 	public let description: String
 //	public let headers:
 	public let content: ContentMap
@@ -806,11 +806,11 @@ public struct OpenAPIResponse: Equatable {
 		case status(code: Int)
 	}
 
-	public enum ContentType: String, Equatable, Hashable {
+	public enum ContentType: String, Encodable, Equatable, Hashable {
 		case json = "application/json"
 	}
 
-	public struct Content: Equatable {
+	public struct Content: Encodable, Equatable {
 		public let schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>
 //		public let example:
 //		public let examples:
