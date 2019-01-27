@@ -933,7 +933,7 @@ public struct OpenAPISchema {
 		}
 
 		public var rawValue: String {
-			return components.joined(separator: "/")
+			return "/\(components.joined(separator: "/"))"
 		}
 
 		public func encode(to encoder: Encoder) throws {
