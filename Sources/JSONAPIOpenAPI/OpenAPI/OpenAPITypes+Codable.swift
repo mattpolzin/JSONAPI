@@ -276,7 +276,13 @@ extension OpenAPIPathItem.PathProperties.Operation: Encodable {
 
 		try container.encode(parameters, forKey: .parameters)
 
-		try container.encode(responses, forKey: .responses)
+		// Hack to work around Dictionary encoding
+		// itself as an array in this case:
+		let stringKeyedDict = Dictionary(
+			responses.map { ($0.key.rawValue, $0.value) },
+			uniquingKeysWith: { $1 }
+		)
+		try container.encode(stringKeyedDict, forKey: .responses)
 
 		try container.encode(deprecated, forKey: .deprecated)
 	}
@@ -343,6 +349,29 @@ extension OpenAPIPathItem.PathProperties: Encodable {
 		if trace != nil {
 			try container.encode(trace, forKey: .trace)
 		}
+	}
+}
+
+extension OpenAPIResponse: Encodable {
+	private enum CodingKeys: String, CodingKey {
+		case description
+		case headers
+		case content
+		case links
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+
+		try container.encode(description, forKey: .description)
+
+		// Hack to work around Dictionary encoding
+		// itself as an array in this case:
+		let stringKeyedDict = Dictionary(
+			content.map { ($0.key.rawValue, $0.value) },
+			uniquingKeysWith: { $1 }
+		)
+		try container.encode(stringKeyedDict, forKey: .content)
 	}
 }
 

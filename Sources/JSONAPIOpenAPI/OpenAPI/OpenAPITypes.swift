@@ -787,7 +787,7 @@ public enum OpenAPIPathItem: Equatable {
 	}
 }
 
-public struct OpenAPIResponse: Encodable, Equatable {
+public struct OpenAPIResponse: Equatable {
 	public let description: String
 //	public let headers:
 	public let content: ContentMap
@@ -801,9 +801,29 @@ public struct OpenAPIResponse: Encodable, Equatable {
 
 	public typealias ContentMap = [ContentType: Content]
 
-	public enum Code: Equatable, Hashable {
+	public enum Code: RawRepresentable, Equatable, Hashable {
+		public typealias RawValue = String
+
 		case `default`
 		case status(code: Int)
+
+		public var rawValue: String {
+			switch self {
+			case .default:
+				return "default"
+
+			case .status(code: let code):
+				return String(code)
+			}
+		}
+
+		public init?(rawValue: String) {
+			if let val = Int(rawValue) {
+				self = .status(code: val)
+			} else {
+				self = .default
+			}
+		}
 	}
 
 	public enum ContentType: String, Encodable, Equatable, Hashable {

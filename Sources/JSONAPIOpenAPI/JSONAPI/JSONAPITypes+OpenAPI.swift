@@ -148,10 +148,12 @@ extension Entity: OpenAPIEncodedNodeType where Description.Attributes: Sampleabl
 
 		// TODO: metadata, links
 
-		let idNode = JSONNode.string(.init(format: .generic,
-										   required: true),
-									 .init())
-		let idProperty = ("id", idNode)
+		let idNode: JSONNode? = Id.RawType.self != Unidentified.self
+			? JSONNode.string(.init(format: .generic,
+									required: true),
+							  .init())
+			: nil
+		let idProperty = idNode.map { ("id", $0) }
 
 		let typeNode = JSONNode.string(.init(format: .generic,
 											 required: true,
