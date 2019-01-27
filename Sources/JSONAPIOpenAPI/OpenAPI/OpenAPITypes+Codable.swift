@@ -388,3 +388,34 @@ extension OpenAPIPathItem: Encodable {
 		}
 	}
 }
+
+extension OpenAPISchema: Encodable {
+	private enum CodingKeys: String, CodingKey {
+		case openAPIVersion = "openapi"
+		case info
+		case servers
+		case paths
+		case components
+		case security
+		case tags
+		case externalDocs
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+
+		try container.encode(openAPIVersion, forKey: .openAPIVersion)
+
+		try container.encode(info, forKey: .info)
+
+		// Hack to work around Dictionary encoding
+		// itself as an array in this case:
+		let stringKeyedDict = Dictionary(
+			paths.map { ($0.key.rawValue, $0.value) },
+			uniquingKeysWith: { $1 }
+		)
+		try container.encode(stringKeyedDict, forKey: .paths)
+
+		try container.encode(components, forKey: .components)
+	}
+}

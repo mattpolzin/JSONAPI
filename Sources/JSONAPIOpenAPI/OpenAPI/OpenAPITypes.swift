@@ -878,14 +878,7 @@ public struct OpenAPIComponents: Equatable, Encodable, ReferenceRoot {
 }
 
 /// The root of an OpenAPI 3.0 document.
-public struct OpenAPISchema: Encodable {
-	private enum CodingKeys: String, CodingKey {
-		case openAPIVersion = "openapi"
-		case info
-		case paths
-		case components
-	}
-
+public struct OpenAPISchema {
 	public let openAPIVersion: Version
 	public let info: Info
 //	public let servers:
@@ -928,17 +921,25 @@ public struct OpenAPISchema: Encodable {
 		}
 	}
 
-	public struct PathComponents: Encodable, Equatable, Hashable {
+	public struct PathComponents: RawRepresentable, Encodable, Equatable, Hashable {
 		public let components: [String]
 
 		public init(_ components: [String]) {
 			self.components = components
 		}
 
+		public init?(rawValue: String) {
+			components = rawValue.split(separator: "/").map(String.init)
+		}
+
+		public var rawValue: String {
+			return components.joined(separator: "/")
+		}
+
 		public func encode(to encoder: Encoder) throws {
 			var container = encoder.singleValueContainer()
 
-			try container.encode(components.joined(separator: "/"))
+			try container.encode(rawValue)
 		}
 	}
 }
