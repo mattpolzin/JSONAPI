@@ -39,6 +39,31 @@ class JSONAPIEntityOpenAPITests: XCTestCase {
 																.init()))
 	}
 
+	func test_UnidentifiedEmptyEntity() {
+		let node = try! UnidentifiedTestType1.openAPINode(using: JSONEncoder())
+
+		XCTAssertTrue(node.required)
+		XCTAssertEqual(node.jsonTypeFormat, .object(.generic))
+
+		guard case let .object(contextA, objectContext1) = node else {
+			XCTFail("Expected Object node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .generic,
+									   required: true,
+									   nullable: false,
+									   allowedValues: nil))
+
+		XCTAssertEqual(objectContext1.minProperties, 1)
+		XCTAssertEqual(Set(objectContext1.requiredProperties), Set(["type"]))
+		XCTAssertEqual(Set(objectContext1.properties.keys), Set(["type"]))
+		XCTAssertEqual(objectContext1.properties["type"], .string(.init(format: .generic,
+																		required: true,
+																		allowedValues: [.init(TestType1.jsonType)]),
+																  .init()))
+	}
+
 	func test_AttributesEntity() {
 
 		let dateFormatter = DateFormatter()
@@ -272,6 +297,7 @@ extension JSONAPIEntityOpenAPITests {
 	}
 
 	typealias TestType1 = BasicEntity<TestType1Description>
+	typealias UnidentifiedTestType1 = JSONAPI.Entity<TestType1Description, NoMetadata, NoLinks, Unidentified>
 
 	enum TestType2Description: EntityDescription {
 		public static var jsonType: String { return "test2" }
