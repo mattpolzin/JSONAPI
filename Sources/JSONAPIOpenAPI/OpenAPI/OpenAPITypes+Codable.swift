@@ -244,6 +244,32 @@ extension OpenAPIResponse.Code: Encodable {
 	}
 }
 
+extension OpenAPIRequestBody: Encodable {
+	private enum CodingKeys: String, CodingKey {
+		case description
+		case content
+		case required
+	}
+
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+
+		if description != nil {
+			try container.encode(description, forKey: .description)
+		}
+
+		// Hack to work around Dictionary encoding
+		// itself as an array in this case:
+		let stringKeyedDict = Dictionary(
+			content.map { ($0.key.rawValue, $0.value) },
+			uniquingKeysWith: { $1 }
+		)
+		try container.encode(stringKeyedDict, forKey: .content)
+
+		try container.encode(required, forKey: .required)
+	}
+}
+
 extension OpenAPIPathItem.PathProperties.Operation: Encodable {
 	private enum CodingKeys: String, CodingKey {
 		case tags
@@ -278,6 +304,10 @@ extension OpenAPIPathItem.PathProperties.Operation: Encodable {
 		try container.encode(operationId, forKey: .operationId)
 
 		try container.encode(parameters, forKey: .parameters)
+
+		if requestBody != nil {
+			try container.encode(requestBody, forKey: .requestBody)
+		}
 
 		// Hack to work around Dictionary encoding
 		// itself as an array in this case:

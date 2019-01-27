@@ -759,7 +759,7 @@ public enum OpenAPIPathItem: Equatable {
 //			public let externalDocs:
 			public let operationId: String
 			public let parameters: ParameterArray
-//			public let requestBody:
+			public let requestBody: OpenAPIRequestBody?
 			public let responses: ResponseMap
 //			public let callbacks:
 			public let deprecated: Bool // default is false
@@ -771,6 +771,7 @@ public enum OpenAPIPathItem: Equatable {
 						description: String? = nil,
 						operationId: String,
 						parameters: ParameterArray,
+						requestBody: OpenAPIRequestBody? = nil,
 						responses: ResponseMap,
 						deprecated: Bool = false) {
 				self.tags = tags
@@ -778,28 +779,43 @@ public enum OpenAPIPathItem: Equatable {
 				self.description = description
 				self.operationId = operationId
 				self.parameters = parameters
+				self.requestBody = requestBody
 				self.responses = responses
 				self.deprecated = deprecated
 			}
 
 			public typealias ResponseMap = [OpenAPIResponse.Code: Either<OpenAPIResponse, JSONReference<OpenAPIComponents, OpenAPIResponse>>]
+
+			public typealias ContentMap = [OpenAPIContentType: OpenAPIContent]
 		}
+	}
+}
+
+public struct OpenAPIRequestBody: Equatable {
+	public let description: String?
+	public let content: OpenAPIPathItem.PathProperties.Operation.ContentMap
+	public let required: Bool
+
+	public init(description: String? = nil,
+				content: OpenAPIPathItem.PathProperties.Operation.ContentMap,
+				required: Bool = true) {
+		self.description = description
+		self.content = content
+		self.required = required
 	}
 }
 
 public struct OpenAPIResponse: Equatable {
 	public let description: String
 //	public let headers:
-	public let content: ContentMap
+	public let content: OpenAPIPathItem.PathProperties.Operation.ContentMap
 //	public let links:
 
 	public init(description: String,
-				content: ContentMap) {
+				content: OpenAPIPathItem.PathProperties.Operation.ContentMap) {
 		self.description = description
 		self.content = content
 	}
-
-	public typealias ContentMap = [ContentType: Content]
 
 	public enum Code: RawRepresentable, Equatable, Hashable {
 		public typealias RawValue = String
@@ -825,20 +841,20 @@ public struct OpenAPIResponse: Equatable {
 			}
 		}
 	}
+}
 
-	public enum ContentType: String, Encodable, Equatable, Hashable {
-		case json = "application/json"
-	}
+public enum OpenAPIContentType: String, Encodable, Equatable, Hashable {
+	case json = "application/json"
+}
 
-	public struct Content: Encodable, Equatable {
-		public let schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>
-//		public let example:
-//		public let examples:
-//		public let encoding:
+public struct OpenAPIContent: Encodable, Equatable {
+	public let schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>
+	//		public let example:
+	//		public let examples:
+	//		public let encoding:
 
-		public init(schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>) {
-			self.schema = schema
-		}
+	public init(schema: Either<JSONNode, JSONReference<OpenAPIComponents, JSONNode>>) {
+		self.schema = schema
 	}
 }
 
