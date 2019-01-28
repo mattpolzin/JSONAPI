@@ -213,7 +213,7 @@ extension ManyResourceBody: OpenAPIEncodedNodeType where Entity: OpenAPIEncodedN
 	}
 }
 
-extension Document: OpenAPIEncodedNodeType where PrimaryResourceBody: OpenAPIEncodedNodeType, IncludeType: OpenAPINodeType {
+extension Document: OpenAPIEncodedNodeType where PrimaryResourceBody: OpenAPIEncodedNodeType, IncludeType: OpenAPIEncodedNodeType {
 	public static func openAPINode(using encoder: JSONEncoder) throws -> JSONNode {
 		// TODO: metadata, links, api description, errors
 		// TODO: represent data and errors as the two distinct possible outcomes
@@ -224,7 +224,7 @@ extension Document: OpenAPIEncodedNodeType where PrimaryResourceBody: OpenAPIEnc
 
 		let includeNode: JSONNode?
 		do {
-			includeNode = try Includes<Include>.openAPINode()
+			includeNode = try Includes<Include>.openAPINode(using: encoder)
 		} catch let err as OpenAPITypeError {
 			guard case .invalidNode = err else {
 				throw err
