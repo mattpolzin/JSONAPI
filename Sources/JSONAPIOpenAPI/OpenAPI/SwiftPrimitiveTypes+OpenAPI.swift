@@ -62,6 +62,12 @@ extension Optional: AnyJSONCaseIterable where Wrapped: CaseIterable, Wrapped: Co
 	}
 }
 
+extension Optional: DateOpenAPINodeType where Wrapped: DateOpenAPINodeType {
+	static public func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode? {
+		return Wrapped.dateOpenAPINodeGuess(using: encoder)?.optionalNode()
+	}
+}
+
 extension String: OpenAPINodeType {
 	static public func openAPINode() throws -> JSONNode {
 		return .string(.init(format: .generic,

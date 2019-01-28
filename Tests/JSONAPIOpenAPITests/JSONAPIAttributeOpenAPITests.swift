@@ -802,62 +802,80 @@ extension JSONAPIAttributeOpenAPITests {
 		XCTAssertEqual(numberContext, .init())
 	}
 
-//	func test_NullableEnumAttribute() {
-//		let node = try! Attribute<EnumAttribute?>.wrappedOpenAPINode()
-//
-//		XCTAssertTrue(node.required)
-//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
-//
-//		guard case .string(let contextA, let stringContext) = node else {
-//			XCTFail("Expected string Node")
-//			return
-//		}
-//
-//		XCTAssertEqual(contextA, .init(format: .generic,
-//									   required: true,
-//									   nullable: true,
-//									   allowedValues: nil))
-//
-//		XCTAssertEqual(stringContext, .init())
-//	}
-//
-//	func test_OptionalEnumAttribute() {
-//		let node = try! Attribute<EnumAttribute>?.wrappedOpenAPINode()
-//
-//		XCTAssertFalse(node.required)
-//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
-//
-//		guard case .string(let contextA, let stringContext) = node else {
-//			XCTFail("Expected string Node")
-//			return
-//		}
-//
-//		XCTAssertEqual(contextA, .init(format: .generic,
-//									   required: false,
-//									   nullable: false,
-//									   allowedValues: nil))
-//
-//		XCTAssertEqual(stringContext, .init())
-//	}
-//
-//	func test_OptionalNullableEnumAttribute() {
-//		let node = try! Attribute<EnumAttribute?>?.wrappedOpenAPINode()
-//
-//		XCTAssertFalse(node.required)
-//		XCTAssertEqual(node.jsonTypeFormat, .string(.generic))
-//
-//		guard case .string(let contextA, let stringContext) = node else {
-//			XCTFail("Expected string Node")
-//			return
-//		}
-//
-//		XCTAssertEqual(contextA, .init(format: .generic,
-//									   required: false,
-//									   nullable: true,
-//									   allowedValues: nil))
-//
-//		XCTAssertEqual(stringContext, .init())
-//	}
+	func test_NullableDateAttribute() {
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
+		encoder.dateEncodingStrategy = .secondsSince1970
+
+		let node = Attribute<Date?>.dateOpenAPINodeGuess(using: encoder)
+
+		XCTAssertNotNil(node)
+
+		XCTAssertTrue(node?.required ?? false)
+		XCTAssertEqual(node?.jsonTypeFormat, .number(.double))
+
+		guard case .number(let contextA, let numberContext)? = node else {
+			XCTFail("Expected string Node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .double,
+									   required: true,
+									   nullable: true,
+									   allowedValues: nil))
+
+		XCTAssertEqual(numberContext, .init())
+	}
+
+	func test_OptionalDateAttribute() {
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
+		encoder.dateEncodingStrategy = .secondsSince1970
+
+		let node = Attribute<Date>?.dateOpenAPINodeGuess(using: encoder)
+
+		XCTAssertNotNil(node)
+
+		XCTAssertFalse(node?.required ?? true)
+		XCTAssertEqual(node?.jsonTypeFormat, .number(.double))
+
+		guard case .number(let contextA, let numberContext)? = node else {
+			XCTFail("Expected string Node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .double,
+									   required: false,
+									   nullable: false,
+									   allowedValues: nil))
+
+		XCTAssertEqual(numberContext, .init())
+	}
+
+	func test_OptionalNullableDateAttribute() {
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
+		encoder.dateEncodingStrategy = .secondsSince1970
+
+		let node = Attribute<Date?>?.dateOpenAPINodeGuess(using: encoder)
+
+		XCTAssertNotNil(node)
+
+		XCTAssertFalse(node?.required ?? true)
+		XCTAssertEqual(node?.jsonTypeFormat, .number(.double))
+
+		guard case .number(let contextA, let numberContext)? = node else {
+			XCTFail("Expected string Node")
+			return
+		}
+
+		XCTAssertEqual(contextA, .init(format: .double,
+									   required: false,
+									   nullable: true,
+									   allowedValues: nil))
+
+		XCTAssertEqual(numberContext, .init())
+	}
 }
 
 // MARK: - Test Types

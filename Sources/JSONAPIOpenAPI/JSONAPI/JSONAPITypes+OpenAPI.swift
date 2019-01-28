@@ -53,6 +53,31 @@ extension Attribute: WrappedRawOpenAPIType where RawValue: RawOpenAPINodeType {
 	}
 }
 
+extension Attribute: GenericOpenAPINodeType where RawValue: GenericOpenAPINodeType {
+	public static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
+		if try !RawValue.genericOpenAPINode(using: encoder).required {
+			return try RawValue.genericOpenAPINode(using: encoder).requiredNode().nullableNode()
+		}
+		return try RawValue.genericOpenAPINode(using: encoder)
+	}
+}
+
+extension Attribute: DateOpenAPINodeType where RawValue: DateOpenAPINodeType {
+	public static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode? {
+		// If the RawValue is not required, we actually consider it
+		// nullable. To be not required is for the Attribute itself
+		// to be optional.
+		if
+			!(RawValue.dateOpenAPINodeGuess(using: encoder)?.required ?? true) {
+			return RawValue.dateOpenAPINodeGuess(using: encoder)?.requiredNode().nullableNode()
+		}
+		return RawValue.dateOpenAPINodeGuess(using: encoder)
+	}
+}
+
 extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable, RawValue: Codable {
 	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
 		return (try? allCases(from: Array(RawValue.allCases), using: encoder)) ?? []
@@ -62,18 +87,6 @@ extension Attribute: AnyJSONCaseIterable where RawValue: CaseIterable, RawValue:
 extension Attribute: AnyWrappedJSONCaseIterable where RawValue: AnyJSONCaseIterable {
 	public static func allCases(using encoder: JSONEncoder) -> [AnyCodable] {
 		return RawValue.allCases(using: encoder)
-	}
-}
-
-extension Attribute: GenericOpenAPINodeType where RawValue: GenericOpenAPINodeType {
-	public static func genericOpenAPINode(using encoder: JSONEncoder) throws -> JSONNode {
-		return try RawValue.genericOpenAPINode(using: encoder)
-	}
-}
-
-extension Attribute: DateOpenAPINodeType where RawValue: DateOpenAPINodeType {
-	public static func dateOpenAPINodeGuess(using encoder: JSONEncoder) -> JSONNode? {
-		return RawValue.dateOpenAPINodeGuess(using: encoder)
 	}
 }
 
