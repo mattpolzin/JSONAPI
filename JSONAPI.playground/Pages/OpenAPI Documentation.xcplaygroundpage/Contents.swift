@@ -9,7 +9,7 @@ import Poly
 let encoder = JSONEncoder()
 encoder.outputFormatting = .prettyPrinted
 
-let personSchemaData = try? encoder.encode(Person.openAPINode())
+let personSchemaData = try? encoder.encode(Person.openAPINode(using: encoder))
 
 print("Person Schema")
 print("====")
@@ -30,13 +30,13 @@ print("====")
 print(batchPersonSchemaData.map { String(data: $0, encoding: .utf8)! } ?? "Schema Construction Failed")
 print("====")
 
-let tmp: [String: OpenAPIComponents.SchemasDict.RefType] = [
-	"BatchPerson": try! BatchPeopleDocument.openAPINodeWithExample()
+let tmp: [String: JSONNode] = [
+	"BatchPerson": try! BatchPeopleDocument.openAPINodeWithExample(using: encoder)
 ]
 
-let components = OpenAPIComponents(schemas: tmp)
+let components = OpenAPIComponents(schemas: tmp, parameters: [:])
 
-let batchPeopleRef = JSONReference(type: \OpenAPIComponents.schemas, selector: "BatchPerson")
+let batchPeopleRef = JSONReference.node(.init(type: \OpenAPIComponents.schemas, selector: "BatchPerson"))
 
 let tmp2 = JSONNode.reference(batchPeopleRef)
 
