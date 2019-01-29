@@ -18,16 +18,22 @@ public protocol Sampleable {
 	/// Get an example of success, if that is meaningful and
 	/// available. If not, will be nil.
 	///
+	/// (optional)
+	///
 	/// The default implementation returns `nil`.
 	static var successSample: Self? { get }
 
 	/// Get an example of failure, if that is meaningful and
 	/// available. If not, will be nil.
 	///
+	/// (optional)
+	///
 	/// The default implementation returns `nil`.
 	static var failureSample: Self? { get }
 
 	/// An array of samples of this Type.
+	///
+	/// (optional)
 	///
 	/// The default implementation returns
 	/// an array with just the result of
