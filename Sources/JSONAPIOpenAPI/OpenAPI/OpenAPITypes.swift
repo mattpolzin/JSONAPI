@@ -8,6 +8,7 @@
 import AnyCodable
 import Foundation
 import Poly
+import Sampleable
 
 // MARK: Node (i.e. schema) Protocols
 

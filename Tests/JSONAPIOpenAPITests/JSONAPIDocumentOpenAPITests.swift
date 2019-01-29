@@ -9,6 +9,7 @@ import XCTest
 import SwiftCheck
 import JSONAPI
 import JSONAPIOpenAPI
+import Sampleable
 
 class JSONAPIDocumentOpenAPITests: XCTestCase {
 	func test_SingleResourceDocument() {

@@ -6,6 +6,7 @@
 //
 
 import JSONAPI
+import Sampleable
 
 extension Includes: Sampleable where I: Sampleable {
 	public static var sample: Includes<I> {

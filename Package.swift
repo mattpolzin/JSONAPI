@@ -21,7 +21,8 @@ let package = Package(
     ],
     dependencies: [
 		.package(url: "https://github.com/mattpolzin/Poly.git", from: "1.0.0"),
-        .package(url: "https://github.com/Flight-School/AnyCodable.git", from: "0.1.0"),
+    .package(url: "https://github.com/mattpolzin/Sampleable.git", from: "1.0.0"),
+    .package(url: "https://github.com/Flight-School/AnyCodable.git", from: "0.1.0"),
 		.package(url: "https://github.com/typelift/SwiftCheck.git", from: "0.11.0")
     ],
     targets: [
@@ -36,7 +37,7 @@ let package = Package(
 			dependencies: ["JSONAPI", "SwiftCheck"]),
         .target(
             name: "JSONAPIOpenAPI",
-            dependencies: ["JSONAPI", "AnyCodable", "JSONAPIArbitrary"]),
+            dependencies: ["JSONAPI", "AnyCodable", "JSONAPIArbitrary", "Sampleable"]),
         .testTarget(
             name: "JSONAPITests",
             dependencies: ["JSONAPI", "JSONAPITesting"]),

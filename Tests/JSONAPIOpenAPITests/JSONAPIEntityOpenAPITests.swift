@@ -9,6 +9,7 @@ import XCTest
 import JSONAPI
 import JSONAPIOpenAPI
 import AnyCodable
+import Sampleable
 
 class JSONAPIEntityOpenAPITests: XCTestCase {
 	func test_EmptyEntity() {

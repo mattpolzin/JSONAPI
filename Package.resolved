@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "Sampleable",
+        "repositoryURL": "https://github.com/mattpolzin/Sampleable.git",
+        "state": {
+          "branch": null,
+          "revision": "6572998ac30685d8bb73e6b725596d07d891a75a",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "SwiftCheck",
         "repositoryURL": "https://github.com/typelift/SwiftCheck.git",
         "state": {

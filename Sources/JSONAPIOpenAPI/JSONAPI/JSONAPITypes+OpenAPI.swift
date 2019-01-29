@@ -8,6 +8,7 @@
 import JSONAPI
 import Foundation
 import AnyCodable
+import Sampleable
 
 private protocol _Optional {}
 extension Optional: _Optional {}

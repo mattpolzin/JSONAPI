@@ -6,6 +6,7 @@
 //
 
 import JSONAPI
+import Sampleable
 
 extension NoAttributes: Sampleable {
 	public static var sample: NoAttributes {
