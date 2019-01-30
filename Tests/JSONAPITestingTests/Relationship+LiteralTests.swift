@@ -7,7 +7,7 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
 class Relationship_LiteralTests: XCTestCase {
 

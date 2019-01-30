@@ -1,6 +1,6 @@
 //
 //  Optional+Literal.swift
-//  JSONAPITestLib
+//  JSONAPITesting
 //
 //  Created by Mathew Polzin on 11/29/18.
 //

@@ -7,6 +7,7 @@
 
 import XCTest
 import JSONAPI
+import Poly
 
 class DocumentTests: XCTestCase {
 

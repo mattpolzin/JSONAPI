@@ -7,10 +7,10 @@
 
 import XCTest
 import JSONAPI
-import JSONAPITestLib
+import JSONAPITesting
 
-// Successes are fairly well-checked by the EntityTests. We will confirm failure cases are working
-// in this file.
+// Successes are fairly well-checked by the EntityTests in the JSONAPITests target.
+// We will confirm failure cases are working in this file.
 class EntityCheckTests: XCTestCase {
 	func test_failsWithEnumAttributes() {
 		let entity = EnumAttributesEntity(attributes: .hello, relationships: .none, meta: .none, links: .none)

@@ -10,21 +10,46 @@ let package = Package(
             name: "JSONAPI",
             targets: ["JSONAPI"]),
 		.library(
-			name: "JSONAPITestLib",
-			targets: ["JSONAPITestLib"])
+			name: "JSONAPITesting",
+			targets: ["JSONAPITesting"]),
+		.library(
+			name: "JSONAPIArbitrary",
+			targets: ["JSONAPIArbitrary"]),
+        .library(
+            name: "JSONAPIOpenAPI",
+            targets: ["JSONAPIOpenAPI"])
     ],
     dependencies: [
+		.package(url: "https://github.com/mattpolzin/Poly.git", from: "1.0.0"),
+    .package(url: "https://github.com/mattpolzin/Sampleable.git", from: "1.0.0"),
+    .package(url: "https://github.com/Flight-School/AnyCodable.git", from: "0.1.0"),
+		.package(url: "https://github.com/typelift/SwiftCheck.git", from: "0.11.0")
     ],
     targets: [
         .target(
             name: "JSONAPI",
-            dependencies: []),
+            dependencies: ["Poly"]),
 		.target(
-			name: "JSONAPITestLib",
+			name: "JSONAPITesting",
 			dependencies: ["JSONAPI"]),
+		.target(
+			name: "JSONAPIArbitrary",
+			dependencies: ["JSONAPI", "SwiftCheck"]),
+        .target(
+            name: "JSONAPIOpenAPI",
+            dependencies: ["JSONAPI", "AnyCodable", "JSONAPIArbitrary", "Sampleable"]),
         .testTarget(
             name: "JSONAPITests",
-            dependencies: ["JSONAPITestLib"])
+            dependencies: ["JSONAPI", "JSONAPITesting"]),
+        .testTarget(
+            name: "JSONAPITestingTests",
+            dependencies: ["JSONAPI", "JSONAPITesting"]),
+		.testTarget(
+			name: "JSONAPIArbitraryTests",
+			dependencies: ["JSONAPI", "SwiftCheck", "JSONAPIArbitrary"]),
+        .testTarget(
+            name: "JSONAPIOpenAPITests",
+            dependencies: ["JSONAPI", "JSONAPIOpenAPI"])
     ],
   	swiftLanguageVersions: [.v4_2]
 )

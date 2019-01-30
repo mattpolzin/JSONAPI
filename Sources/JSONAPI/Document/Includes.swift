@@ -5,7 +5,9 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-public typealias Include = Poly
+import Poly
+
+public typealias Include = JSONPoly
 
 public struct Includes<I: Include>: Codable, Equatable {
 	public static var none: Includes { return .init(values: []) }

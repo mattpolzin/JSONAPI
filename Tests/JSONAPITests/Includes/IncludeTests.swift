@@ -4,8 +4,6 @@ import XCTest
 
 class IncludedTests: XCTestCase {
 
-	let decoder = JSONDecoder()
-
 	func test_zeroIncludes_init() {
 		let includes = Includes()
 		XCTAssertEqual(includes.count, 0)

@@ -1,5 +1,5 @@
 //
-//  Entity+Id.swift
+//  EntityTestTypes.swift
 //  JSONAPITests
 //
 //  Created by Mathew Polzin on 11/15/18.

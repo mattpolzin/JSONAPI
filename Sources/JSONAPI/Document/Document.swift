@@ -5,6 +5,8 @@
 //  Created by Mathew Polzin on 11/5/18.
 //
 
+import Poly
+
 public protocol JSONAPIDocument: Codable, Equatable {
 	associatedtype PrimaryResourceBody: JSONAPI.ResourceBody
 	associatedtype MetaType: JSONAPI.Meta

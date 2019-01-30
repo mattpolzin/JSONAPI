@@ -1,6 +1,6 @@
 //
 //  Relationship+Literal.swift
-//  JSONAPITestLib
+//  JSONAPITesting
 //
 //  Created by Mathew Polzin on 11/27/18.
 //
