@@ -836,11 +836,7 @@ print(response.author)
 The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
 
 # JSONAPI+Arbitrary
-The `JSONAPIArbitrary` framework adds `Arbitrary` support via `SwiftCheck`. With a little extra work on your part, this framework will allow you to create "arbitrary" (i.e. randomly generated) instances of your JSONAPI entities, includes, documents, etc.
-
-This Framework is currently undocumented, but familiarity with `SwiftCheck` will likely afford the user enough information to use this library to aid in the generation of arbitrary JSONAPI Documents for testing purposes.
+This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-Arbitrary
 
 # JSONAPI+OpenAPI
-The `JSONAPIOpenAPI` framework adds the ability to generate OpenAPI compliant JSON documentation of a JSONAPI Document.
-
-*This library is in its infancy. The documentation will grow as the framework becomes more complete.*
+This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-OpenAPI
