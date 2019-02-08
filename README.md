@@ -266,9 +266,9 @@ The third generic specialization on `Entity` is `Links`. This is described in it
 
 #### `IdType`
 
- The second is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, RawIdType>>`.
+ The last generic specialization on `Entity` is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, Meta, Links, RawIdType>>`.
 
-Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers.
+Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers. This encapsulation provides some type safety because the Ids of two `Entities` with the "raw ID" of `"1"` but different types will not compare as equal.
 
 A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
 
