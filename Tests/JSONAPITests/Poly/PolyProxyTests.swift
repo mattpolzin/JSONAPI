@@ -65,7 +65,7 @@ public class PolyProxyTests: XCTestCase {
 
 // MARK: - Test types
 public extension PolyProxyTests {
-	public enum UserDescription1: EntityDescription {
+	enum UserDescription1: EntityDescription {
 		public static var jsonType: String { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
@@ -76,7 +76,7 @@ public extension PolyProxyTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public enum UserDescription2: EntityDescription {
+	enum UserDescription2: EntityDescription {
 		public static var jsonType: String { return "users" }
 
 		public struct Attributes: JSONAPI.Attributes {
