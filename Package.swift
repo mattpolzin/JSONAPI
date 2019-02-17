@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "JSONAPI",
+    platforms: [
+      .macOS(.v10_10),
+      .iOS(.v10)
+    ],
     products: [
         .library(
             name: "JSONAPI",
@@ -30,5 +34,5 @@ let package = Package(
             name: "JSONAPITestingTests",
             dependencies: ["JSONAPI", "JSONAPITesting"])
     ],
-  	swiftLanguageVersions: [.v4_2]
+  	swiftLanguageVersions: [.v5]
 )
