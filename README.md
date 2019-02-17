@@ -258,23 +258,23 @@ An `Entity` needs to be specialized on four generic types. The first is the `Ent
 
 #### `Meta`
 
-The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules.
+The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules. You can use `NoMetadata` if you do not need to package any metadata with the `Entity`.
 
 #### `Links`
 
-The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document.
-
-#### `IdType`
-
- The second is the raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, RawIdType>>`.
-
-Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers.
-
-A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
+The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document. You can use `NoLinks` if you do not need to package any links with the `Entity`.
 
 #### `MaybeRawId`
 
-`MaybeRawId` is either a `RawIdType` that can be used to uniquely identify `Entities` or it is `Unidentified` which is used to indicate an `Entity` does not have an `Id` (which is useful when a client is requesting that the server create an `Entity` and assign it a new `Id`).
+The last generic specialization on `Entity` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `Entities` or it is `Unidentified` which is used to indicate an `Entity` does not have an `Id` (which is useful when a client is requesting that the server create an `Entity` and assign it a new `Id`).
+
+##### `RawIdType`
+
+The raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, Meta, Links, RawIdType>>`.
+
+Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers. This encapsulation provides some type safety because the Ids of two `Entities` with the "raw ID" of `"1"` but different types will not compare as equal.
+
+A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
 
 #### Convenient `typealiases`
 
@@ -836,11 +836,7 @@ print(response.author)
 The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
 
 # JSONAPI+Arbitrary
-The `JSONAPIArbitrary` framework adds `Arbitrary` support via `SwiftCheck`. With a little extra work on your part, this framework will allow you to create "arbitrary" (i.e. randomly generated) instances of your JSONAPI entities, includes, documents, etc.
-
-This Framework is currently undocumented, but familiarity with `SwiftCheck` will likely afford the user enough information to use this library to aid in the generation of arbitrary JSONAPI Documents for testing purposes.
+This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-Arbitrary
 
 # JSONAPI+OpenAPI
-The `JSONAPIOpenAPI` framework adds the ability to generate OpenAPI compliant JSON documentation of a JSONAPI Document.
-
-*This library is in its infancy. The documentation will grow as the framework becomes more complete.*
+This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-OpenAPI
