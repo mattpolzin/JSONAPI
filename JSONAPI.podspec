@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "JSONAPI"
-  spec.version      = "0.18.2"
+  spec.version      = "0.19.0"
   spec.summary      = "Swift Codable JSON API framework."
 
   # This description is used to generate tags and improve search results.
