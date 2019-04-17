@@ -16,6 +16,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [Caveat](#caveat)
 	- [Dev Environment](#dev-environment)
 		- [Prerequisites](#prerequisites)
+		- [CocoaPods](#cocoapods)
 		- [Xcode project](#xcode-project)
 		- [Running the Playground](#running-the-playground)
 	- [Project Status](#project-status)
@@ -33,8 +34,8 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [`JSONAPI.Entity`](#jsonapientity)
 			- [`Meta`](#meta)
 			- [`Links`](#links)
-			- [`IdType`](#idtype)
 			- [`MaybeRawId`](#mayberawid)
+				- [`RawIdType`](#rawidtype)
 			- [Convenient `typealiases`](#convenient-typealiases)
 		- [`JSONAPI.Relationships`](#jsonapirelationships)
 		- [`JSONAPI.Attributes`](#jsonapiattributes)
@@ -82,7 +83,15 @@ If you find something wrong with this library and it isn't already mentioned und
 
 ## Dev Environment
 ### Prerequisites
-1. Swift 4.2+ and Swift Package Manager
+1. Swift 4.2+
+2. Swift Package Manager *OR* Cocoapods
+
+### CocoaPods
+To use this framework in your project via Cocoapods instead of Swift Package Manager, add the following dependencies to your Podfile.
+```
+	pod 'Poly', :git => 'https://github.com/mattpolzin/Poly.git'
+	pod 'JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
+```
 
 ### Xcode project
 To create an Xcode project for JSONAPI, run
