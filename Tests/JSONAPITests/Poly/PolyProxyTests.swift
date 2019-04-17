@@ -86,10 +86,10 @@ public extension PolyProxyTests {
 		public typealias Relationships = NoRelationships
 	}
 
-	public typealias UserA = BasicEntity<UserDescription1>
-	public typealias UserB = BasicEntity<UserDescription2>
+	typealias UserA = BasicEntity<UserDescription1>
+	typealias UserB = BasicEntity<UserDescription2>
 
-	public typealias User = Poly2<UserA, UserB>
+	typealias User = Poly2<UserA, UserB>
 }
 
 extension Poly2: EntityProxy, JSONTyped where A == PolyProxyTests.UserA, B == PolyProxyTests.UserB {
