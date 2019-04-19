@@ -440,31 +440,34 @@ public extension Entity where EntityRawIdType: CreatableRawIdType {
 public extension EntityProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.relationships.propertyName`.
+	/// of `entity.attributes.propertyName`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
 		return attributes[keyPath: path].value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.relationships.propertyName`.
+	/// of `entity.attributes.propertyName`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
 		return attributes[keyPath: path]?.value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.relationships.propertyName`.
+	/// of `entity.attributes.propertyName`.
 	subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
 		// Implementation Note: Handles Transform that returns optional
 		// type.
 		return attributes[keyPath: path].flatMap { $0.value }
 	}
 
-	/// Access the computed attribute at the given keypath. This just
+	/// Access the storage of the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.relationships.propertyName`.
-	subscript<T>(_ path: KeyPath<Description.Attributes, T>) -> T {
+	/// of `entity.attributes.propertyName`.
+    /// Most of the subscripts dig into an `AttributeType`. This subscript
+    /// returns the `AttributeType` (or another type, if you are accessing
+    /// an attribute that is not stored in an `AttributeType`).
+	subscript<T>(direct path: KeyPath<Description.Attributes, T>) -> T {
 		// Implementation Note: Handles attributes that are not
 		// AttributeType. These should only exist as computed properties.
 		return attributes[keyPath: path]

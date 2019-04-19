@@ -24,7 +24,7 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserA[\.name], "Ken Moore")
 		XCTAssertEqual(polyUserA.id, "1")
 		XCTAssertEqual(polyUserA.relationships, .none)
-		XCTAssertEqual(polyUserA[\.x], .init(x: "y"))
+        XCTAssertEqual(polyUserA[direct: \.x], .init(x: "y"))
 	}
 
 	func test_UserAAndBEncodeEquality() {
@@ -59,7 +59,7 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserB[\.name], "Ken Less")
 		XCTAssertEqual(polyUserB.id, "2")
 		XCTAssertEqual(polyUserB.relationships, .none)
-		XCTAssertEqual(polyUserB[\.x], .init(x: "y"))
+        XCTAssertEqual(polyUserB[direct: \.x], .init(x: "y"))
 	}
 }
 
