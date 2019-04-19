@@ -27,13 +27,13 @@ class ComputedPropertiesTests: XCTestCase {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)
 
 		XCTAssertEqual(entity[\.computed], "Sarah2")
-        XCTAssertEqual(entity[direct: \.secretsOut], "shhhh")
+        XCTAssertEqual(entity[direct: \.directSecretsOut], "shhhh")
 	}
 
 	func test_ComputedNonAttributeAccess() {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)
 
-        XCTAssertEqual(entity[direct: \.computed2], "Sarah2")
+        XCTAssertEqual(entity[direct: \.directComputed], "Sarah2")
 	}
 
 	func test_ComputedRelationshipAccess() {
@@ -56,11 +56,11 @@ extension ComputedPropertiesTests {
 				return name.map { $0 + "2" }
 			}
 
-			public var computed2: String {
+			public var directComputed: String {
 				return computed.value
 			}
 
-			public var secretsOut: String {
+			public var directSecretsOut: String {
 				return secret.value
 			}
 		}

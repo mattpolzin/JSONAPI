@@ -348,11 +348,6 @@ typealias Attributes = NoAttributes
 let favoriteColor: String = person[\.favoriteColor]
 ```
 
-NOTE: Because of support for computed properties that are not wrapped in `Attribute`, `TransformedAttribute`, or `ValidatedAttribute`, the compiler cannot always infer the type of thing you want back when using subscript attribute access. The following code is ambiguous about whether it should return a `String` or an `Attribute<String>`:
-```swift
-let favoriteColor = person[\.favoriteColor]
-```
-
 #### `Transformer`
 
 Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. The Foundation library `JSONDecoder` has a setting to make this adjustment, but for the sake of an example, you could create a `Transformer`.
@@ -391,13 +386,15 @@ You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is ju
 
 #### Computed `Attribute`
 
-You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `Person[\.name]` attribute from the example above and create a `fullName` computed property.
+You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `person[\.name]` attribute from the example above and create a `fullName` computed property.
 
 ```swift
 public var fullName: Attribute<String> {
 	return name.map { $0.joined(separator: " ") }
 }
 ```
+
+If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person[\.fullName]` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
 
 ### Copying `Entities`
 `Entity` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying an `Entity`:
@@ -593,7 +590,7 @@ extension EntityDescription1.Attributes {
 ### Meta-Attributes
 This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-attributes are just the thing to make your entities more natural to work with.
 
-Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an entity. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, this code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
+Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an entity. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, the following example code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
 
 ```swift
 enum UserDescription: EntityDescription {
