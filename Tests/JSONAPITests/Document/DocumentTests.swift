@@ -1094,7 +1094,7 @@ extension DocumentTests {
 
 // MARK: - Test Types
 extension DocumentTests {
-	enum AuthorType: EntityDescription {
+	enum AuthorType: ResourceObjectDescription {
 		static var jsonType: String { return "authors" }
 
 		typealias Attributes = NoAttributes
@@ -1103,7 +1103,7 @@ extension DocumentTests {
 
 	typealias Author = BasicEntity<AuthorType>
 	
-	enum ArticleType: EntityDescription {
+	enum ArticleType: ResourceObjectDescription {
 		static var jsonType: String { return "articles" }
 		
 		typealias Attributes = NoAttributes

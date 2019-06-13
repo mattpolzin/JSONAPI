@@ -27,7 +27,7 @@ class Relationship_LiteralTests: XCTestCase {
 
 // MARK: - Test types
 extension Relationship_LiteralTests {
-	enum TestDescription: EntityDescription {
+	enum TestDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test" }
 
 		public typealias Attributes = NoAttributes

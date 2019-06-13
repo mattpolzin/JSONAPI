@@ -37,7 +37,7 @@ class Attribute_FunctorTests: XCTestCase {
 
 // MARK: Test types
 extension Attribute_FunctorTests {
-	enum TestTypeDescription: EntityDescription {
+	enum TestTypeDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test" }
 
 		public struct Attributes: JSONAPI.Attributes {

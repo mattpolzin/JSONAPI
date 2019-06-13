@@ -172,7 +172,7 @@ extension RelationshipTests {
 
 // MARK: - Test types
 extension RelationshipTests {
-	enum TestEntityType1: EntityDescription {
+	enum TestEntityType1: ResourceObjectDescription {
 		typealias Attributes = NoAttributes
 
 		typealias Relationships = NoRelationships

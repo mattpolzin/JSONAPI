@@ -52,7 +52,7 @@ class NonJSONAPIRelatableTests: XCTestCase {
 
 // MARK: - Test Types
 extension NonJSONAPIRelatableTests {
-	enum TestEntityDescription: EntityDescription {
+	enum TestEntityDescription: ResourceObjectDescription {
 		static var jsonType: String { return "test" }
 
 		typealias Attributes = NoAttributes
@@ -65,7 +65,7 @@ extension NonJSONAPIRelatableTests {
 
 	typealias TestEntity = JSONAPI.Entity<TestEntityDescription, NoMetadata, NoLinks, String>
 
-	enum TestEntity2Description: EntityDescription {
+	enum TestEntity2Description: ResourceObjectDescription {
 		static var jsonType: String { return "test" }
 
 		typealias Attributes = NoAttributes

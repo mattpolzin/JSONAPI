@@ -16,7 +16,7 @@ public protocol RelationshipType {
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `One<EntityDescription>`
+/// A convenient typealias might make your code much more legible: `One<ResourceObjectDescription>`
 public struct ToOneRelationship<Identifiable: JSONAPI.Identifiable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
 	public let id: Identifiable.Identifier
@@ -64,7 +64,7 @@ extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == N
 /// An Entity relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
+/// A convenient typealias might make your code much more legible: `Many<ResourceObjectDescription>`
 public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
 	public let ids: [Relatable.Identifier]

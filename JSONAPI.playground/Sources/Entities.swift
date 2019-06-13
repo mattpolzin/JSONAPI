@@ -24,12 +24,12 @@ extension String: CreatableRawIdType {
 }
 
 // MARK: - typealiases for convenience
-public typealias ExampleEntity<Description: EntityDescription> = Entity<Description, NoMetadata, NoLinks, String>
+public typealias ExampleEntity<Description: ResourceObjectDescription> = Entity<Description, NoMetadata, NoLinks, String>
 public typealias ToOne<E: Identifiable> = ToOneRelationship<E, NoMetadata, NoLinks>
 public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoMetadata, NoLinks>
 
 // MARK: - A few resource objects (entities)
-public enum PersonDescription: EntityDescription {
+public enum PersonDescription: ResourceObjectDescription {
 
 	public static var jsonType: String { return "people" }
 	
@@ -68,7 +68,7 @@ public extension Entity where Description == PersonDescription, MetaType == NoMe
 	}
 }
 
-public enum DogDescription: EntityDescription {
+public enum DogDescription: ResourceObjectDescription {
 
 	public static var jsonType: String { return "dogs" }
 
@@ -91,7 +91,7 @@ public enum DogDescription: EntityDescription {
 
 public typealias Dog = ExampleEntity<DogDescription>
 
-public enum AlternativeDogDescription: EntityDescription {
+public enum AlternativeDogDescription: ResourceObjectDescription {
 
 	public static var jsonType: String { return "dogs" }
 
@@ -129,7 +129,7 @@ public extension Entity where Description == DogDescription, MetaType == NoMetad
 	}
 }
 
-public enum HouseDescription: EntityDescription {
+public enum HouseDescription: ResourceObjectDescription {
 
 	public static var jsonType: String { return "houses" }
 

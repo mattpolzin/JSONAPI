@@ -101,7 +101,7 @@ class ResourceBodyTests: XCTestCase {
 		XCTAssertEqual(combined.values, body1.values + body2.values)
 	}
 
-	enum ArticleType: EntityDescription {
+	enum ArticleType: ResourceObjectDescription {
 		public static var jsonType: String { return "articles" }
 
 		typealias Relationships = NoRelationships

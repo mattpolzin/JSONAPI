@@ -40,25 +40,25 @@ public protocol JSONTyped {
 	static var jsonType: String { get }
 }
 
-/// An `EntityProxyDescription` is an `EntityDescription`
+/// A `ResourceObjectProxyDescription` is an `ResourceObjectDescription`
 /// without Codable conformance.
-public protocol EntityProxyDescription: JSONTyped {
+public protocol ResourceObjectProxyDescription: JSONTyped {
 	associatedtype Attributes: Equatable
 	associatedtype Relationships: Equatable
 }
 
-/// An `EntityDescription` describes a JSON API
+/// An `ResourceObjectDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
 /// `Entity`, which gets specialized on an
-/// `EntityDescription`.
-public protocol EntityDescription: EntityProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
+/// `ResourceObjectDescription`.
+public protocol ResourceObjectDescription: ResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
 
 /// EntityProxy is a protocol that can be used to create
 /// types that _act_ like Entities but cannot be encoded
 /// or decoded as Entities.
 public protocol EntityProxy: Equatable, JSONTyped {
-	associatedtype Description: EntityProxyDescription
+	associatedtype Description: ResourceObjectProxyDescription
 	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
 	typealias Id = JSONAPI.Id<EntityRawIdType, Self>
@@ -87,7 +87,7 @@ extension EntityProxy {
 /// EntityType is the protocol that Entity conforms to. This
 /// protocol lets other types accept any Entity as a generic
 /// specialization.
-public protocol EntityType: EntityProxy, PrimaryResource where Description: EntityDescription {
+public protocol EntityType: EntityProxy, PrimaryResource where Description: ResourceObjectDescription {
 	associatedtype Meta: JSONAPI.Meta
 	associatedtype Links: JSONAPI.Links
 }
@@ -98,7 +98,7 @@ public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdT
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<Description: JSONAPI.EntityDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
+public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
 
 	public typealias Meta = MetaType
 	public typealias Links = LinksType

@@ -24,7 +24,7 @@ class Id_LiteralTests: XCTestCase {
 
 // MARK: - Test types
 extension Id_LiteralTests {
-	enum TestDescription: EntityDescription {
+	enum TestDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test" }
 
 		public typealias Attributes = NoAttributes

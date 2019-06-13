@@ -45,7 +45,7 @@ class ComputedPropertiesTests: XCTestCase {
 
 // MARK: Test types
 extension ComputedPropertiesTests {
-	public enum TestTypeDescription: EntityDescription {
+	public enum TestTypeDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test" }
 
 		public struct Attributes: JSONAPI.Attributes {
