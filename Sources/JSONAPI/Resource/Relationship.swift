@@ -38,25 +38,25 @@ extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
 }
 
 extension ToOneRelationship {
-	public init<E: EntityType>(entity: E, meta: MetaType, links: LinksType) where E.Id == Identifiable.Identifier {
+	public init<E: ResourceObjectType>(entity: E, meta: MetaType, links: LinksType) where E.Id == Identifiable.Identifier {
 		self.init(id: entity.id, meta: meta, links: links)
 	}
 }
 
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-	public init<E: EntityType>(entity: E) where E.Id == Identifiable.Identifier {
+	public init<E: ResourceObjectType>(entity: E) where E.Id == Identifiable.Identifier {
 		self.init(id: entity.id, meta: .none, links: .none)
 	}
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable {
-	public init<E: EntityType>(entity: E?, meta: MetaType, links: LinksType) where E.Id == Identifiable.Wrapped.Identifier {
+	public init<E: ResourceObjectType>(entity: E?, meta: MetaType, links: LinksType) where E.Id == Identifiable.Wrapped.Identifier {
 		self.init(id: entity?.id, meta: meta, links: links)
 	}
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == NoMetadata, LinksType == NoLinks {
-	public init<E: EntityType>(entity: E?) where E.Id == Identifiable.Wrapped.Identifier {
+	public init<E: ResourceObjectType>(entity: E?) where E.Id == Identifiable.Wrapped.Identifier {
 		self.init(id: entity?.id, meta: .none, links: .none)
 	}
 }
@@ -84,7 +84,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
 		self.links = links
 	}
 
-	public init<E: EntityType>(entities: [E], meta: MetaType, links: LinksType) where E.Id == Relatable.Identifier {
+	public init<E: ResourceObjectType>(entities: [E], meta: MetaType, links: LinksType) where E.Id == Relatable.Identifier {
 		self.init(ids: entities.map { $0.id }, meta: meta, links: links)
 	}
 
@@ -111,7 +111,7 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
 		return .none(withMeta: .none, links: .none)
 	}
 
-	public init<E: EntityType>(entities: [E]) where E.Id == Relatable.Identifier {
+	public init<E: ResourceObjectType>(entities: [E]) where E.Id == Relatable.Identifier {
 		self.init(entities: entities, meta: .none, links: .none)
 	}
 }

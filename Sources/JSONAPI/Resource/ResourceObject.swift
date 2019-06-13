@@ -54,10 +54,10 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
 /// `ResourceObjectDescription`.
 public protocol ResourceObjectDescription: ResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
 
-/// EntityProxy is a protocol that can be used to create
+/// ResourceObjectProxy is a protocol that can be used to create
 /// types that _act_ like Entities but cannot be encoded
 /// or decoded as Entities.
-public protocol EntityProxy: Equatable, JSONTyped {
+public protocol ResourceObjectProxy: Equatable, JSONTyped {
 	associatedtype Description: ResourceObjectProxyDescription
 	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
@@ -79,26 +79,26 @@ public protocol EntityProxy: Equatable, JSONTyped {
 	var relationships: Relationships { get }
 }
 
-extension EntityProxy {
+extension ResourceObjectProxy {
 	/// The JSON API compliant "type" of this `Entity`.
 	public static var jsonType: String { return Description.jsonType }
 }
 
-/// EntityType is the protocol that Entity conforms to. This
+/// ResourceObjectType is the protocol that Entity conforms to. This
 /// protocol lets other types accept any Entity as a generic
 /// specialization.
-public protocol EntityType: EntityProxy, PrimaryResource where Description: ResourceObjectDescription {
+public protocol ResourceObjectType: ResourceObjectProxy, PrimaryResource where Description: ResourceObjectDescription {
 	associatedtype Meta: JSONAPI.Meta
 	associatedtype Links: JSONAPI.Links
 }
 
-public protocol IdentifiableEntityType: EntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
+public protocol IdentifiableEntityType: ResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
 
 /// An `Entity` is a single model type that can be
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: EntityType {
+public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
 
 	public typealias Meta = MetaType
 	public typealias Links = LinksType
@@ -437,7 +437,7 @@ public extension Entity where EntityRawIdType: CreatableRawIdType {
 }
 
 // MARK: Attribute Access
-public extension EntityProxy {
+public extension ResourceObjectProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `entity[\.propertyName]` instead
 	/// of `entity.attributes.propertyName`.
@@ -475,7 +475,7 @@ public extension EntityProxy {
 }
 
 // MARK: Meta-Attribute Access
-public extension EntityProxy {
+public extension ResourceObjectProxy {
 	/// Access an attribute requiring a transformation on the RawValue _and_
 	/// a secondary transformation on this entity (self).
 	subscript<T>(_ path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
@@ -484,7 +484,7 @@ public extension EntityProxy {
 }
 
 // MARK: Relationship Access
-public extension EntityProxy {
+public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.
@@ -526,7 +526,7 @@ public extension EntityProxy {
 }
 
 // MARK: Meta-Relationship Access
-public extension EntityProxy {
+public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `entity ~> \.other` instead
 	/// of `entity.relationships.other.id`.

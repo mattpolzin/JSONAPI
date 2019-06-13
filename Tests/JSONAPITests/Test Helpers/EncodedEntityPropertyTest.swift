@@ -10,7 +10,7 @@ import XCTest
 import JSONAPI
 import JSONAPITesting
 
-func testEncoded<E: EntityType>(entity: E) {
+func testEncoded<E: ResourceObjectType>(entity: E) {
 	let encodedEntityData = encoded(value: entity)
 	let jsonObject = try! JSONSerialization.jsonObject(with: encodedEntityData, options: [])
 	let jsonDict = jsonObject as? [String: Any]
