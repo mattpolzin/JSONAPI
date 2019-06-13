@@ -69,7 +69,7 @@ public protocol CreatableIdType: IdType {
 	init()
 }
 
-/// An Entity ID. These IDs can be encoded to or decoded from
+/// An ResourceObject ID. These IDs can be encoded to or decoded from
 /// JSON API IDs.
 public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equatable, OptionalId {
 

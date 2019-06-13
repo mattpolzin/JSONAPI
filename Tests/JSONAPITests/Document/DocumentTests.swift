@@ -1049,11 +1049,11 @@ extension DocumentTests {
 		let entity1 = Article(attributes: .none, relationships: .init(author: "2"), meta: .none, links: .none)
 		let entity2 = Article(attributes: .none, relationships: .init(author: "3"), meta: .none, links: .none)
 
-		let bodyData1 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [entity1]),
+		let bodyData1 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [entity1]),
 																																			  includes: .none,
 																																			  meta: .none,
 																																			  links: .none)
-		let bodyData2 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [entity2]),
+		let bodyData2 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [entity2]),
 																																			  includes: .none,
 																																			  meta: .none,
 																																			  links: .none)
@@ -1068,11 +1068,11 @@ extension DocumentTests {
 		let article2 = Article(attributes: .none, relationships: .init(author: "3"), meta: .none, links: .none)
 		let author2 = Author(id: "3", attributes: .none, relationships: .none, meta: .none, links: .none)
 
-		let bodyData1 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [article1]),
+		let bodyData1 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [article1]),
 																																						  includes: .init(values: [.init(author1)]),
 																																						  meta: .init(total: 50, limit: 5, offset: 5),
 																																						  links: .none)
-		let bodyData2 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(entities: [article2]),
+		let bodyData2 = Document<ManyResourceBody<Article>, TestPageMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [article2]),
 																																						  includes: .init(values: [.init(author2)]),
 																																						  meta: .init(total: 60, limit: 5, offset: 5),
 																																						  links: .none)

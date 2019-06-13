@@ -1,16 +1,16 @@
 //
-//  Entity.swift
+//  ResourceObject.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 7/24/18.
 //
 
-/// A JSON API structure within an Entity that contains
+/// A JSON API structure within an ResourceObject that contains
 /// named properties of types `ToOneRelationship` and
 /// `ToManyRelationship`.
 public protocol Relationships: Codable & Equatable {}
 
-/// A JSON API structure within an Entity that contains
+/// A JSON API structure within an ResourceObject that contains
 /// properties of any types that are JSON encodable.
 public protocol Attributes: Codable & Equatable {}
 
@@ -50,7 +50,7 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
 /// An `ResourceObjectDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
-/// `Entity`, which gets specialized on an
+/// `ResourceObject`, which gets specialized on an
 /// `ResourceObjectDescription`.
 public protocol ResourceObjectDescription: ResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
 
@@ -84,35 +84,35 @@ extension ResourceObjectProxy {
 	public static var jsonType: String { return Description.jsonType }
 }
 
-/// ResourceObjectType is the protocol that Entity conforms to. This
-/// protocol lets other types accept any Entity as a generic
+/// ResourceObjectType is the protocol that ResourceObject conforms to. This
+/// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
 public protocol ResourceObjectType: ResourceObjectProxy, PrimaryResource where Description: ResourceObjectDescription {
 	associatedtype Meta: JSONAPI.Meta
 	associatedtype Links: JSONAPI.Links
 }
 
-public protocol IdentifiableEntityType: ResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
+public protocol IdentifiableResourceObjectType: ResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
 
-/// An `Entity` is a single model type that can be
+/// An `ResourceObject` is a single model type that can be
 /// encoded to or decoded from a JSON API
 /// "Resource Object."
 /// See https://jsonapi.org/format/#document-resource-objects
-public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
+public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
 
 	public typealias Meta = MetaType
 	public typealias Links = LinksType
 
-	/// The `Entity`'s Id. This can be of type `Unidentified` if
+	/// The `ResourceObject`'s Id. This can be of type `Unidentified` if
 	/// the entity is being created clientside and the
 	/// server is being asked to create a unique Id. Otherwise,
 	/// this should be of a type conforming to `IdType`.
-	public let id: Entity.Id
+	public let id: ResourceObject.Id
 	
-	/// The JSON API compliant attributes of this `Entity`.
+	/// The JSON API compliant attributes of this `ResourceObject`.
 	public let attributes: Description.Attributes
 	
-	/// The JSON API compliant relationships of this `Entity`.
+	/// The JSON API compliant relationships of this `ResourceObject`.
 	public let relationships: Description.Relationships
 
 	/// Any additional metadata packaged with the entity.
@@ -121,7 +121,7 @@ public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: J
 	/// Links related to the entity.
 	public let links: LinksType
 	
-	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = id
 		self.attributes = attributes
 		self.relationships = relationships
@@ -130,20 +130,20 @@ public struct Entity<Description: JSONAPI.ResourceObjectDescription, MetaType: J
 	}
 }
 
-extension Entity: Identifiable, IdentifiableEntityType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
-	public typealias Identifier = Entity.Id
+extension ResourceObject: Identifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
+	public typealias Identifier = ResourceObject.Id
 }
 
-extension Entity: CustomStringConvertible {
+extension ResourceObject: CustomStringConvertible {
 	public var description: String {
-		return "Entity<\(Entity.jsonType)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
+		return "ResourceObject<\(ResourceObject.jsonType)>(id: \(String(describing: id)), attributes: \(String(describing: attributes)), relationships: \(String(describing: relationships)))"
 	}
 }
 
 // MARK: Convenience initializers
-extension Entity where EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-		self.id = Entity.Id()
+		self.id = ResourceObject.Id()
 		self.attributes = attributes
 		self.relationships = relationships
 		self.meta = meta
@@ -151,7 +151,7 @@ extension Entity where EntityRawIdType: CreatableRawIdType {
 	}
 }
 
-extension Entity where EntityRawIdType == Unidentified {
+extension ResourceObject where EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = .unidentified
 		self.attributes = attributes
@@ -162,229 +162,229 @@ extension Entity where EntityRawIdType == Unidentified {
 }
 
 /*
-extension Entity where Description.Attributes == NoAttributes {
-	public init(id: Entity.Id, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+extension ResourceObject where Description.Attributes == NoAttributes {
+	public init(id: ResourceObject.Id, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.init(id: id, attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata {
-	public init(id: Entity.Id, relationships: Description.Relationships, links: LinksType) {
+extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata {
+	public init(id: ResourceObject.Id, relationships: Description.Relationships, links: LinksType) {
 		self.init(id: id, relationships: relationships, meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, LinksType == NoLinks {
-	public init(id: Entity.Id, relationships: Description.Relationships, meta: MetaType) {
+extension ResourceObject where Description.Attributes == NoAttributes, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, relationships: Description.Relationships, meta: MetaType) {
 		self.init(id: id, relationships: relationships, meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: Entity.Id, relationships: Description.Relationships) {
+extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, relationships: Description.Relationships) {
 		self.init(id: id, relationships: relationships, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships, links: LinksType) {
 		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships, meta: MetaType) {
 		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(relationships: Description.Relationships) {
 		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, EntityRawIdType == Unidentified {
+extension ResourceObject where Description.Attributes == NoAttributes, EntityRawIdType == Unidentified {
 	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships {
-	public init(id: Entity.Id, attributes: Description.Attributes, meta: MetaType, links: LinksType) {
+extension ResourceObject where Description.Relationships == NoRelationships {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, meta: MetaType, links: LinksType) {
 		self.init(id: id, attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata {
-	public init(id: Entity.Id, attributes: Description.Attributes, links: LinksType) {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, links: LinksType) {
 		self.init(id: id, attributes: attributes, meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks {
-	public init(id: Entity.Id, attributes: Description.Attributes, meta: MetaType) {
+extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, meta: MetaType) {
 		self.init(id: id, attributes: attributes, meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: Entity.Id, attributes: Description.Attributes) {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes) {
 		self.init(id: id, attributes: attributes, meta: .none, links: .none)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, links: LinksType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, meta: MetaType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, EntityRawIdType == Unidentified {
+extension ResourceObject where Description.Relationships == NoRelationships, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType == Unidentified {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, links: LinksType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType == Unidentified {
+extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, meta: MetaType) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
+extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes) {
 		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
-	public init(id: Entity.Id, meta: MetaType, links: LinksType) {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
+	public init(id: ResourceObject.Id, meta: MetaType, links: LinksType) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata {
-	public init(id: Entity.Id, links: LinksType) {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata {
+	public init(id: ResourceObject.Id, links: LinksType) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks {
-	public init(id: Entity.Id, meta: MetaType) {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, meta: MetaType) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: Entity.Id) {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
+	public init(id: ResourceObject.Id) {
 		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
 	public init(meta: MetaType, links: LinksType) {
 		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
 	public init(links: LinksType) {
 		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(meta: MetaType) {
 		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
 	}
 }
 
-extension Entity where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init() {
 		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
 	}
 }
 
-extension Entity where MetaType == NoMetadata {
-	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
+extension ResourceObject where MetaType == NoMetadata {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
 		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: links)
 	}
 }
 
-extension Entity where MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: links)
 	}
 }
 
-extension Entity where MetaType == NoMetadata, EntityRawIdType == Unidentified {
+extension ResourceObject where MetaType == NoMetadata, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: links)
 	}
 }
 
-extension Entity where LinksType == NoLinks {
-	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
+extension ResourceObject where LinksType == NoLinks {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
 		self.init(id: id, attributes: attributes, relationships: relationships, meta: meta, links: .none)
 	}
 }
 
-extension Entity where LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
 		self.init(attributes: attributes, relationships: relationships, meta: meta, links: .none)
 	}
 }
 
-extension Entity where LinksType == NoLinks, EntityRawIdType == Unidentified {
+extension ResourceObject where LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
 		self.init(attributes: attributes, relationships: relationships, meta: meta, links: .none)
 	}
 }
 
-extension Entity where MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: Entity.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
+extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks {
+	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
 }
 
-extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
+extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
 }
 
-extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
+extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
 		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
 	}
@@ -392,69 +392,69 @@ extension Entity where MetaType == NoMetadata, LinksType == NoLinks, EntityRawId
 */
 
 // MARK: Pointer for Relationships use.
-public extension Entity where EntityRawIdType: JSONAPI.RawIdType {
+public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
-	/// An Entity.Pointer is a `ToOneRelationship` with no metadata or links.
-	/// This is just a convenient way to reference an Entity so that
+	/// An ResourceObject.Pointer is a `ToOneRelationship` with no metadata or links.
+	/// This is just a convenient way to reference an ResourceObject so that
 	/// other Entities' Relationships can be built up from it.
-	typealias Pointer = ToOneRelationship<Entity, NoMetadata, NoLinks>
+	typealias Pointer = ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
 
-	/// Entity.Pointers is a `ToManyRelationship` with no metadata or links.
+	/// ResourceObject.Pointers is a `ToManyRelationship` with no metadata or links.
 	/// This is just a convenient way to reference a bunch of Entities so
 	/// that other Entities' Relationships can be built up from them.
-	typealias Pointers = ToManyRelationship<Entity, NoMetadata, NoLinks>
+	typealias Pointers = ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
 
-	/// Get a pointer to this entity that can be used as a
-	/// relationship to another entity.
+	/// Get a pointer to this resource object that can be used as a
+	/// relationship to another resource object.
 	var pointer: Pointer {
-		return Pointer(entity: self)
+		return Pointer(resourceObject: self)
 	}
 
-	func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<Entity, MType, LType> {
-		return ToOneRelationship(entity: self, meta: meta, links: links)
+	func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, MType, LType> {
+		return ToOneRelationship(resourceObject: self, meta: meta, links: links)
 	}
 }
 
 // MARK: Identifying Unidentified Entities
-public extension Entity where EntityRawIdType == Unidentified {
-	/// Create a new Entity from this one with a newly created
+public extension ResourceObject where EntityRawIdType == Unidentified {
+	/// Create a new ResourceObject from this one with a newly created
 	/// unique Id of the given type.
-	func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> Entity<Description, MetaType, LinksType, RawIdType> {
+	func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
 		return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 
-	/// Create a new Entity from this one with the given Id.
-	func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> Entity<Description, MetaType, LinksType, RawIdType> {
-		return .init(id: Entity<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
+	/// Create a new ResourceObject from this one with the given Id.
+	func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
+		return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 
-public extension Entity where EntityRawIdType: CreatableRawIdType {
-	/// Create a copy of this Entity with a new unique Id.
-	func withNewIdentifier() -> Entity {
-		return Entity(attributes: attributes, relationships: relationships, meta: meta, links: links)
+public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
+	/// Create a copy of this ResourceObject with a new unique Id.
+	func withNewIdentifier() -> ResourceObject {
+		return ResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 
 // MARK: Attribute Access
 public extension ResourceObjectProxy {
 	/// Access the attribute at the given keypath. This just
-	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.attributes.propertyName`.
+	/// allows you to write `resourceObject[\.propertyName]` instead
+	/// of `resourceObject.attributes.propertyName`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
 		return attributes[keyPath: path].value
 	}
 
 	/// Access the attribute at the given keypath. This just
-	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.attributes.propertyName`.
+	/// allows you to write `resourceObject[\.propertyName]` instead
+	/// of `resourceObject.attributes.propertyName`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
 		return attributes[keyPath: path]?.value
 	}
 
 	/// Access the attribute at the given keypath. This just
-	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.attributes.propertyName`.
+	/// allows you to write `resourceObject[\.propertyName]` instead
+	/// of `resourceObject.attributes.propertyName`.
 	subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
 		// Implementation Note: Handles Transform that returns optional
 		// type.
@@ -462,8 +462,8 @@ public extension ResourceObjectProxy {
 	}
 
 	/// Access the storage of the attribute at the given keypath. This just
-	/// allows you to write `entity[\.propertyName]` instead
-	/// of `entity.attributes.propertyName`.
+    /// allows you to write `resourceObject[direct: \.propertyName]` instead
+	/// of `resourceObject.attributes.propertyName`.
     /// Most of the subscripts dig into an `AttributeType`. This subscript
     /// returns the `AttributeType` (or another type, if you are accessing
     /// an attribute that is not stored in an `AttributeType`).
@@ -486,15 +486,15 @@ public extension ResourceObjectProxy {
 // MARK: Relationship Access
 public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
-	/// This allows you to write `entity ~> \.other` instead
-	/// of `entity.relationships.other.id`.
+	/// This allows you to write `resourceObject ~> \.other` instead
+	/// of `resourceObject.relationships.other.id`.
 	static func ~><OtherEntity: Identifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.Identifier {
 		return entity.relationships[keyPath: path].id
 	}
 
 	/// Access to an Id of an optional `ToOneRelationship`.
-	/// This allows you to write `entity ~> \.other` instead
-	/// of `entity.relationships.other?.id`.
+	/// This allows you to write `resourceObject ~> \.other` instead
+	/// of `resourceObject.relationships.other?.id`.
 	static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier {
 		// Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
 		// whereas the one below applies to `ToOneRelationship<E, _, _>?`
@@ -502,8 +502,8 @@ public extension ResourceObjectProxy {
 	}
 
 	/// Access to an Id of an optional `ToOneRelationship`.
-	/// This allows you to write `entity ~> \.other` instead
-	/// of `entity.relationships.other?.id`.
+	/// This allows you to write `resourceObject ~> \.other` instead
+	/// of `resourceObject.relationships.other?.id`.
 	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? {
 		// Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
 		// whereas the one above applies to `ToOneRelationship<E?, _, _>?`
@@ -511,15 +511,15 @@ public extension ResourceObjectProxy {
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
-	/// This allows you to write `entity ~> \.others` instead
-	/// of `entity.relationships.others.ids`.
+	/// This allows you to write `resourceObject ~> \.others` instead
+	/// of `resourceObject.relationships.others.ids`.
 	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
 		return entity.relationships[keyPath: path].ids
 	}
 
 	/// Access to all Ids of an optional `ToManyRelationship`.
-	/// This allows you to write `entity ~> \.others` instead
-	/// of `entity.relationships.others?.ids`.
+	/// This allows you to write `resourceObject ~> \.others` instead
+	/// of `resourceObject.relationships.others?.ids`.
 	static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.Identifier]? {
 		return entity.relationships[keyPath: path]?.ids
 	}
@@ -528,15 +528,15 @@ public extension ResourceObjectProxy {
 // MARK: Meta-Relationship Access
 public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
-	/// This allows you to write `entity ~> \.other` instead
-	/// of `entity.relationships.other.id`.
+	/// This allows you to write `resourceObject ~> \.other` instead
+	/// of `resourceObject.relationships.other.id`.
 	static func ~><Identifier: IdType>(entity: Self, path: KeyPath<Description.Relationships, (Self) -> Identifier>) -> Identifier {
 		return entity.relationships[keyPath: path](entity)
 	}
 
 	/// Access to all Ids of a `ToManyRelationship`.
-	/// This allows you to write `entity ~> \.others` instead
-	/// of `entity.relationships.others.ids`.
+	/// This allows you to write `resourceObject ~> \.others` instead
+	/// of `resourceObject.relationships.others.ids`.
 	static func ~><Identifier: IdType>(entity: Self, path: KeyPath<Description.Relationships, (Self) -> [Identifier]>) -> [Identifier] {
 		return entity.relationships[keyPath: path](entity)
 	}
@@ -554,11 +554,11 @@ private enum ResourceObjectCodingKeys: String, CodingKey {
 	case links = "links"
 }
 
-public extension Entity {
+public extension ResourceObject {
 	func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
 		
-		try container.encode(Entity.jsonType, forKey: .type)
+		try container.encode(ResourceObject.jsonType, forKey: .type)
 		
 		if EntityRawIdType.self != Unidentified.self {
 			try container.encode(id, forKey: .id)
@@ -587,12 +587,12 @@ public extension Entity {
 		
 		let type = try container.decode(String.self, forKey: .type)
 		
-		guard Entity.jsonType == type else {
+		guard ResourceObject.jsonType == type else {
 			throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
 		}
 
 		let maybeUnidentified = Unidentified() as? EntityRawIdType
-		id = try maybeUnidentified.map { Entity.Id(rawValue: $0) } ?? container.decode(Entity.Id.self, forKey: .id)
+		id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
 
 		attributes = try (NoAttributes() as? Description.Attributes) ??
 			container.decode(Description.Attributes.self, forKey: .attributes)

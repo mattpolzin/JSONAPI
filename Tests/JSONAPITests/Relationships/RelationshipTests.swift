@@ -15,7 +15,7 @@ class RelationshipTests: XCTestCase {
 		let entity2 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity3 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity4 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(entities: [entity1, entity2, entity3, entity4])
+		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(resourceObjects: [entity1, entity2, entity3, entity4])
 
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
@@ -143,7 +143,7 @@ extension RelationshipTests {
 // MARK: Nullable
 extension RelationshipTests {
 	func test_ToOneNullableIsNullIfNil() {
-		let relationship = ToOneNullable(entity: nil)
+		let relationship = ToOneNullable(resourceObject: nil)
 		let relationshipData = try! JSONEncoder().encode(relationship)
 		let relationshipString = String(data: relationshipData, encoding: .utf8)!
 
@@ -152,8 +152,8 @@ extension RelationshipTests {
 
 	func test_ToOneNullableIsEqualToNonNullableIfNotNil() {
 		let entity = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let relationship1 = ToOneNonNullable(entity: entity)
-		let relationship2 = ToOneNullable(entity: entity)
+		let relationship1 = ToOneNonNullable(resourceObject: entity)
+		let relationship2 = ToOneNullable(resourceObject: entity)
 
 		XCTAssertEqual(encoded(value: relationship1), encoded(value: relationship2))
 	}

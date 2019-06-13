@@ -54,8 +54,8 @@ private protocol _AttributeType {}
 extension TransformedAttribute: _AttributeType {}
 extension Attribute: _AttributeType {}
 
-public extension Entity {
-	static func check(_ entity: Entity) throws {
+public extension ResourceObject {
+	static func check(_ entity: ResourceObject) throws {
 		var problems = [EntityCheckError]()
 
 		let attributesMirror = Mirror(reflecting: entity.attributes)

@@ -63,7 +63,7 @@ extension NonJSONAPIRelatableTests {
 		}
 	}
 
-	typealias TestEntity = JSONAPI.Entity<TestEntityDescription, NoMetadata, NoLinks, String>
+	typealias TestEntity = JSONAPI.ResourceObject<TestEntityDescription, NoMetadata, NoLinks, String>
 
 	enum TestEntity2Description: ResourceObjectDescription {
 		static var jsonType: String { return "test" }
@@ -78,7 +78,7 @@ extension NonJSONAPIRelatableTests {
 		}
 	}
 
-	typealias TestEntity2 = JSONAPI.Entity<TestEntity2Description, NoMetadata, NoLinks, String>
+	typealias TestEntity2 = JSONAPI.ResourceObject<TestEntity2Description, NoMetadata, NoLinks, String>
 
 	struct NonJSONAPIEntity: Relatable, JSONTyped {
 		static var jsonType: String { return "other" }

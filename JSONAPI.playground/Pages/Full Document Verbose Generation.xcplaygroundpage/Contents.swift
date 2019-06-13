@@ -76,7 +76,7 @@ enum AuthorDescription: ResourceObjectDescription {
 	}
 }
 
-typealias Author = JSONAPI.Entity<AuthorDescription, EntityMetadata, EntityLinks, String>
+typealias Author = JSONAPI.ResourceObject<AuthorDescription, EntityMetadata, EntityLinks, String>
 
 /// Description of an Article entity.
 enum ArticleDescription: ResourceObjectDescription {
@@ -96,7 +96,7 @@ enum ArticleDescription: ResourceObjectDescription {
 	}
 }
 
-typealias Article = JSONAPI.Entity<ArticleDescription, EntityMetadata, EntityLinks, String>
+typealias Article = JSONAPI.ResourceObject<ArticleDescription, EntityMetadata, EntityLinks, String>
 
 /// Metadata associated with the API Description
 struct APIDescriptionMetadata: JSONAPI.Meta {
@@ -196,7 +196,7 @@ let documentLinks = SingleArticleDocumentLinks(otherArticlesByPrimaryAuthor: .in
 																				   meta: .init(expiry: tomorrow)))
 
 let singleArticleDocument = SingleArticleDocument(apiDescription: apiDescription,
-												  body: .init(entity: article),
+												  body: .init(resourceObject: article),
 												  includes: .init(values: [.init(author1), .init(author2), .init(author3)]),
 												  meta: documentMetadata,
 												  links: documentLinks)

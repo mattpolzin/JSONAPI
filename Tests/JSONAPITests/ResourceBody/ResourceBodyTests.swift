@@ -15,8 +15,8 @@ class ResourceBodyTests: XCTestCase {
 			Article(attributes: .init(title: "hello"), relationships: .none, meta: .none, links: .none),
 			Article(attributes: .init(title: "world"), relationships: .none, meta: .none, links: .none)
 		]
-		let _ = SingleResourceBody(entity: articles[0])
-		let _ = ManyResourceBody(entities: articles)
+		let _ = SingleResourceBody(resourceObject: articles[0])
+		let _ = ManyResourceBody(resourceObjects: articles)
 		let _: NoResourceBody = .none
 	}
 
@@ -77,7 +77,7 @@ class ResourceBodyTests: XCTestCase {
 	}
 
 	func test_manyResourceBodyMerge() {
-		let body1 = ManyResourceBody(entities: [
+		let body1 = ManyResourceBody(resourceObjects: [
 			Article(attributes: .init(title: "hello"),
 					relationships: .none,
 					meta: .none,
@@ -88,7 +88,7 @@ class ResourceBodyTests: XCTestCase {
 					links: .none)
 			])
 
-		let body2 = ManyResourceBody(entities: [
+		let body2 = ManyResourceBody(resourceObjects: [
 			Article(attributes: .init(title: "once more"),
 					relationships: .none,
 					meta: .none,

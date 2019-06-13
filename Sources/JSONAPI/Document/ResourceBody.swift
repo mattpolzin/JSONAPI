@@ -30,20 +30,20 @@ public func +<R: AppendableResourceBody>(_ left: R, right: R) -> R {
 public struct SingleResourceBody<Entity: JSONAPI.MaybePrimaryResource>: ResourceBody {
 	public let value: Entity
 
-	public init(entity: Entity) {
-		self.value = entity
+	public init(resourceObject: Entity) {
+		self.value = resourceObject
 	}
 }
 
 public struct ManyResourceBody<Entity: JSONAPI.PrimaryResource>: AppendableResourceBody {
 	public let values: [Entity]
 
-	public init(entities: [Entity]) {
-		values = entities
+	public init(resourceObjects: [Entity]) {
+		values = resourceObjects
 	}
 
 	public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
-		return ManyResourceBody(entities: values + other.values)
+		return ManyResourceBody(resourceObjects: values + other.values)
 	}
 }
 
