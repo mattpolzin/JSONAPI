@@ -1,5 +1,5 @@
 //
-//  EntityCheck.swift
+//  ResourceObjectCheck.swift
 //  JSONAPITesting
 //
 //  Created by Mathew Polzin on 11/27/18.
@@ -7,7 +7,7 @@
 
 import JSONAPI
 
-public enum EntityCheckError: Swift.Error {
+public enum ResourceObjectCheckError: Swift.Error {
 	/// The attributes should live in a struct, not
 	/// another type class.
 	case attributesNotStruct
@@ -29,8 +29,8 @@ public enum EntityCheckError: Swift.Error {
 	case nullArray(named: String)
 }
 
-public struct EntityCheckErrors: Swift.Error {
-	let problems: [EntityCheckError]
+public struct ResourceObjectCheckErrors: Swift.Error {
+	let problems: [ResourceObjectCheckError]
 }
 
 private protocol OptionalAttributeType {}
@@ -56,7 +56,7 @@ extension Attribute: _AttributeType {}
 
 public extension ResourceObject {
 	static func check(_ entity: ResourceObject) throws {
-		var problems = [EntityCheckError]()
+		var problems = [ResourceObjectCheckError]()
 
 		let attributesMirror = Mirror(reflecting: entity.attributes)
 
@@ -88,7 +88,7 @@ public extension ResourceObject {
 		}
 
 		guard problems.count == 0 else {
-			throw EntityCheckErrors(problems: problems)
+			throw ResourceObjectCheckErrors(problems: problems)
 		}
 	}
 }
