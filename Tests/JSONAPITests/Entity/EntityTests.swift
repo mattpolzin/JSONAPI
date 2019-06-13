@@ -27,7 +27,7 @@ class EntityTests: XCTestCase {
 
 	func test_optional_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: .init(entity: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(entities: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, entity1.id)
 	}
@@ -43,7 +43,7 @@ class EntityTests: XCTestCase {
 
 	func test_optionalToMany_relationship_opeartor_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(entities: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
@@ -73,9 +73,9 @@ class EntityTests: XCTestCase {
 
 	func test_initialization() {
 		let entity1 = TestEntity1(id: .init(rawValue: "wow"), attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity2 = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
-		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
-		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(entity: entity1)), meta: .none, links: .none)
+		let entity2 = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(resourceObject: entity1)), meta: .none, links: .none)
+		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(resourceObject: entity1)), meta: .none, links: .none)
+		let _ = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(resourceObject: entity1)), meta: .none, links: .none)
 		let _ = TestEntity3(id: .init(rawValue: "3"), attributes: .none, relationships: .init(others: .init(ids: [.init(rawValue: "10"), .init(rawValue: "20"), entity1.id])), meta: .none, links: .none)
 		let _ = TestEntity3(id: .init(rawValue: "3"), attributes: .none, relationships: .init(others: .none), meta: .none, links: .none)
 		let _ = TestEntity4(id: .init(rawValue: "4"), attributes: .init(word: .init(value: "hello"), number: .init(value: 10), array: .init(value: [10.2, 10.3])), relationships: .init(other: entity2.pointer), meta: .none, links: .none)
@@ -84,12 +84,12 @@ class EntityTests: XCTestCase {
 		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")), relationships: .none, meta: .none, links: .none)
 		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil)), relationships: .none, meta: .none, links: .none))
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(id: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(entity: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(entity: entity1, meta: .none, links: .none), optionalMany: .init(entities: [], meta: .none, links: .none)), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
 		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
@@ -646,7 +646,7 @@ extension EntityTests {
 // MARK: - Test Types
 extension EntityTests {
 
-	enum TestEntityType1: EntityDescription {
+	enum TestEntityType1: ResourceObjectDescription {
 		static var jsonType: String { return "test_entities"}
 
 		typealias Attributes = NoAttributes
@@ -655,7 +655,7 @@ extension EntityTests {
 
 	typealias TestEntity1 = BasicEntity<TestEntityType1>
 
-	enum TestEntityType2: EntityDescription {
+	enum TestEntityType2: ResourceObjectDescription {
 		static var jsonType: String { return "second_test_entities"}
 
 		typealias Attributes = NoAttributes
@@ -667,7 +667,7 @@ extension EntityTests {
 
 	typealias TestEntity2 = BasicEntity<TestEntityType2>
 
-	enum TestEntityType3: EntityDescription {
+	enum TestEntityType3: ResourceObjectDescription {
 		static var jsonType: String { return "third_test_entities"}
 
 		typealias Attributes = NoAttributes
@@ -679,7 +679,7 @@ extension EntityTests {
 
 	typealias TestEntity3 = BasicEntity<TestEntityType3>
 
-	enum TestEntityType4: EntityDescription {
+	enum TestEntityType4: ResourceObjectDescription {
 		static var jsonType: String { return "fourth_test_entities"}
 
 		struct Relationships: JSONAPI.Relationships {
@@ -701,7 +701,7 @@ extension EntityTests {
 
 	typealias TestEntity4WithMetaAndLinks = Entity<TestEntityType4, TestEntityMeta, TestEntityLinks>
 
-	enum TestEntityType5: EntityDescription {
+	enum TestEntityType5: ResourceObjectDescription {
 		static var jsonType: String { return "fifth_test_entities"}
 
 		typealias Relationships = NoRelationships
@@ -713,7 +713,7 @@ extension EntityTests {
 
 	typealias TestEntity5 = BasicEntity<TestEntityType5>
 
-	enum TestEntityType6: EntityDescription {
+	enum TestEntityType6: ResourceObjectDescription {
 		static var jsonType: String { return "sixth_test_entities" }
 
 		typealias Relationships = NoRelationships
@@ -727,7 +727,7 @@ extension EntityTests {
 
 	typealias TestEntity6 = BasicEntity<TestEntityType6>
 
-	enum TestEntityType7: EntityDescription {
+	enum TestEntityType7: ResourceObjectDescription {
 		static var jsonType: String { return "seventh_test_entities" }
 
 		typealias Relationships = NoRelationships
@@ -740,7 +740,7 @@ extension EntityTests {
 
 	typealias TestEntity7 = BasicEntity<TestEntityType7>
 
-	enum TestEntityType8: EntityDescription {
+	enum TestEntityType8: ResourceObjectDescription {
 		static var jsonType: String { return "eighth_test_entities" }
 
 		typealias Relationships = NoRelationships
@@ -758,7 +758,7 @@ extension EntityTests {
 	
 	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
-	enum TestEntityType9: EntityDescription {
+	enum TestEntityType9: ResourceObjectDescription {
 		public static var jsonType: String { return "ninth_test_entities" }
 
 		typealias Attributes = NoAttributes
@@ -781,7 +781,7 @@ extension EntityTests {
 
 	typealias TestEntity9 = BasicEntity<TestEntityType9>
 
-	enum TestEntityType10: EntityDescription {
+	enum TestEntityType10: ResourceObjectDescription {
 		public static var jsonType: String { return "tenth_test_entities" }
 
 		typealias Attributes = NoAttributes
@@ -794,7 +794,7 @@ extension EntityTests {
 
 	typealias TestEntity10 = BasicEntity<TestEntityType10>
 
-	enum TestEntityType11: EntityDescription {
+	enum TestEntityType11: ResourceObjectDescription {
 		public static var jsonType: String { return "eleventh_test_entities" }
 
 		public struct Attributes: JSONAPI.Attributes {
@@ -806,7 +806,7 @@ extension EntityTests {
 
 	typealias TestEntity11 = BasicEntity<TestEntityType11>
 
-	enum UnidentifiedTestEntityType: EntityDescription {
+	enum UnidentifiedTestEntityType: ResourceObjectDescription {
 		public static var jsonType: String { return "unidentified_test_entities" }
 
 		struct Attributes: JSONAPI.Attributes {
@@ -824,7 +824,7 @@ extension EntityTests {
 
 	typealias UnidentifiedTestEntityWithMetaAndLinks = NewEntity<UnidentifiedTestEntityType, TestEntityMeta, TestEntityLinks>
 
-	enum TestEntityWithMetaAttributeDescription: EntityDescription {
+	enum TestEntityWithMetaAttributeDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "meta_attribute_entity" }
 
 		struct Attributes: JSONAPI.Attributes {
@@ -840,7 +840,7 @@ extension EntityTests {
 
 	typealias TestEntityWithMetaAttribute = BasicEntity<TestEntityWithMetaAttributeDescription>
 
-	enum TestEntityWithMetaRelationshipDescription: EntityDescription {
+	enum TestEntityWithMetaRelationshipDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "meta_relationship_entity" }
 
 		typealias Attributes = NoAttributes

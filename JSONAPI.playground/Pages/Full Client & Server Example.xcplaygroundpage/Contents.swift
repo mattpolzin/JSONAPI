@@ -19,13 +19,13 @@ extension String: CreatableRawIdType {
 // We create a typealias given that we do not expect JSON:API Resource
 // Objects for this particular API to have Metadata or Links associated
 // with them. We also expect them to have String Identifiers.
-typealias JSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, String>
+typealias JSONEntity<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, String>
 
 // Similarly, we create a typealias for unidentified entities. JSON:API
 // only allows unidentified entities (i.e. no "id" field) for client
 // requests that create new entities. In these situations, the server
 // is expected to assign the new entity a unique ID.
-typealias UnidentifiedJSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, Unidentified>
+typealias UnidentifiedJSONEntity<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, Unidentified>
 
 // We create typealiases given that we do not expect JSON:API Relationships
 // for this particular API to have Metadata or Links associated
@@ -40,7 +40,7 @@ typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONA
 
 // MARK: Entity Definitions
 
-enum AuthorDescription: EntityDescription {
+enum AuthorDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "authors" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -52,7 +52,7 @@ enum AuthorDescription: EntityDescription {
 
 typealias Author = JSONEntity<AuthorDescription>
 
-enum ArticleDescription: EntityDescription {
+enum ArticleDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "articles" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -95,7 +95,7 @@ func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, Singl
 						  links: .none)
 
 	let document = SingleArticleDocument(apiDescription: .none,
-										 body: .init(entity: article),
+										 body: .init(resourceObject: article),
 										 includes: .none,
 										 meta: .none,
 										 links: .none)

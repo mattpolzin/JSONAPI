@@ -7,8 +7,8 @@
 
 import JSONAPI
 
-public typealias Entity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, String>
+public typealias Entity<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, String>
 
-public typealias BasicEntity<Description: JSONAPI.EntityDescription> = Entity<Description, NoMetadata, NoLinks>
+public typealias BasicEntity<Description: JSONAPI.ResourceObjectDescription> = Entity<Description, NoMetadata, NoLinks>
 
-public typealias NewEntity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, Unidentified>
+public typealias NewEntity<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, Unidentified>

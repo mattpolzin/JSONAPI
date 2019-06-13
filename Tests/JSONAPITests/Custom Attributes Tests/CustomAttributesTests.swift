@@ -39,7 +39,7 @@ class CustomAttributesTests: XCTestCase {
 
 // MARK: - Test Types
 extension CustomAttributesTests {
-	enum CustomAttributeEntityDescription: EntityDescription {
+	enum CustomAttributeEntityDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test1" }
 
 		public struct Attributes: JSONAPI.Attributes {
@@ -57,7 +57,7 @@ extension CustomAttributesTests {
 
 	typealias CustomAttributeEntity = BasicEntity<CustomAttributeEntityDescription>
 
-	enum CustomKeysEntityDescription: EntityDescription {
+	enum CustomKeysEntityDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "test1" }
 
 		public struct Attributes: JSONAPI.Attributes {

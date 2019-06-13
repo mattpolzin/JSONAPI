@@ -40,7 +40,7 @@ class EntityCheckTests: XCTestCase {
 
 // MARK: - Test types
 extension EntityCheckTests {
-	enum OkDescription: EntityDescription {
+	enum OkDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public typealias Attributes = NoAttributes
@@ -49,7 +49,7 @@ extension EntityCheckTests {
 
 	public typealias OkEntity = BasicEntity<OkDescription>
 
-	enum OtherOkDescription: EntityDescription {
+	enum OtherOkDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hmm" }
 
 		public typealias Attributes = NoAttributes
@@ -58,7 +58,7 @@ extension EntityCheckTests {
 
 	public typealias OtherOkEntity = BasicEntity<OtherOkDescription>
 
-	enum EnumAttributesDescription: EntityDescription {
+	enum EnumAttributesDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public enum Attributes: JSONAPI.Attributes {
@@ -77,7 +77,7 @@ extension EntityCheckTests {
 
 	public typealias EnumAttributesEntity = BasicEntity<EnumAttributesDescription>
 
-	enum EnumRelationshipsDescription: EntityDescription {
+	enum EnumRelationshipsDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public typealias Attributes = NoAttributes
@@ -96,7 +96,7 @@ extension EntityCheckTests {
 
 	public typealias EnumRelationshipsEntity = BasicEntity<EnumRelationshipsDescription>
 
-	enum BadAttributeDescription: EntityDescription {
+	enum BadAttributeDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public struct Attributes: JSONAPI.Attributes {
@@ -109,7 +109,7 @@ extension EntityCheckTests {
 
 	public typealias BadAttributeEntity = BasicEntity<BadAttributeDescription>
 
-	enum BadRelationshipDescription: EntityDescription {
+	enum BadRelationshipDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public typealias Attributes = NoAttributes
@@ -122,7 +122,7 @@ extension EntityCheckTests {
 
 	public typealias BadRelationshipEntity = BasicEntity<BadRelationshipDescription>
 
-	enum OptionalArrayAttributeDescription: EntityDescription {
+	enum OptionalArrayAttributeDescription: ResourceObjectDescription {
 		public static var jsonType: String { return "hello" }
 
 		public struct Attributes: JSONAPI.Attributes {

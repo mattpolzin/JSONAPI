@@ -64,7 +64,7 @@ struct ToManyRelationshipLinks: JSONAPI.Links {
 }
 
 /// Description of an Author entity.
-enum AuthorDescription: EntityDescription {
+enum AuthorDescription: ResourceObjectDescription {
 	static var jsonType: String { return "authors" }
 
 	struct Attributes: JSONAPI.Attributes {
@@ -76,10 +76,10 @@ enum AuthorDescription: EntityDescription {
 	}
 }
 
-typealias Author = JSONAPI.Entity<AuthorDescription, EntityMetadata, EntityLinks, String>
+typealias Author = JSONAPI.ResourceObject<AuthorDescription, EntityMetadata, EntityLinks, String>
 
 /// Description of an Article entity.
-enum ArticleDescription: EntityDescription {
+enum ArticleDescription: ResourceObjectDescription {
 	static var jsonType: String { return "articles" }
 
 	struct Attributes: JSONAPI.Attributes {
@@ -96,7 +96,7 @@ enum ArticleDescription: EntityDescription {
 	}
 }
 
-typealias Article = JSONAPI.Entity<ArticleDescription, EntityMetadata, EntityLinks, String>
+typealias Article = JSONAPI.ResourceObject<ArticleDescription, EntityMetadata, EntityLinks, String>
 
 /// Metadata associated with the API Description
 struct APIDescriptionMetadata: JSONAPI.Meta {
@@ -196,7 +196,7 @@ let documentLinks = SingleArticleDocumentLinks(otherArticlesByPrimaryAuthor: .in
 																				   meta: .init(expiry: tomorrow)))
 
 let singleArticleDocument = SingleArticleDocument(apiDescription: apiDescription,
-												  body: .init(entity: article),
+												  body: .init(resourceObject: article),
 												  includes: .init(values: [.init(author1), .init(author2), .init(author3)]),
 												  meta: documentMetadata,
 												  links: documentLinks)

@@ -13,10 +13,10 @@ public protocol RelationshipType {
 	var meta: MetaType { get }
 }
 
-/// An Entity relationship that can be encoded to or decoded from
+/// An ResourceObject relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `One<EntityDescription>`
+/// A convenient typealias might make your code much more legible: `One<ResourceObjectDescription>`
 public struct ToOneRelationship<Identifiable: JSONAPI.Identifiable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
 	public let id: Identifiable.Identifier
@@ -38,33 +38,33 @@ extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
 }
 
 extension ToOneRelationship {
-	public init<E: EntityType>(entity: E, meta: MetaType, links: LinksType) where E.Id == Identifiable.Identifier {
-		self.init(id: entity.id, meta: meta, links: links)
+	public init<T: ResourceObjectType>(resourceObject: T, meta: MetaType, links: LinksType) where T.Id == Identifiable.Identifier {
+		self.init(id: resourceObject.id, meta: meta, links: links)
 	}
 }
 
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-	public init<E: EntityType>(entity: E) where E.Id == Identifiable.Identifier {
-		self.init(id: entity.id, meta: .none, links: .none)
+	public init<T: ResourceObjectType>(resourceObject: T) where T.Id == Identifiable.Identifier {
+		self.init(id: resourceObject.id, meta: .none, links: .none)
 	}
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable {
-	public init<E: EntityType>(entity: E?, meta: MetaType, links: LinksType) where E.Id == Identifiable.Wrapped.Identifier {
-		self.init(id: entity?.id, meta: meta, links: links)
+	public init<T: ResourceObjectType>(resourceObject: T?, meta: MetaType, links: LinksType) where T.Id == Identifiable.Wrapped.Identifier {
+		self.init(id: resourceObject?.id, meta: meta, links: links)
 	}
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == NoMetadata, LinksType == NoLinks {
-	public init<E: EntityType>(entity: E?) where E.Id == Identifiable.Wrapped.Identifier {
-		self.init(id: entity?.id, meta: .none, links: .none)
+	public init<T: ResourceObjectType>(resourceObject: T?) where T.Id == Identifiable.Wrapped.Identifier {
+		self.init(id: resourceObject?.id, meta: .none, links: .none)
 	}
 }
 
-/// An Entity relationship that can be encoded to or decoded from
+/// An ResourceObject relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
-/// A convenient typealias might make your code much more legible: `Many<EntityDescription>`
+/// A convenient typealias might make your code much more legible: `Many<ResourceObjectDescription>`
 public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
 	public let ids: [Relatable.Identifier]
@@ -84,8 +84,8 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
 		self.links = links
 	}
 
-	public init<E: EntityType>(entities: [E], meta: MetaType, links: LinksType) where E.Id == Relatable.Identifier {
-		self.init(ids: entities.map { $0.id }, meta: meta, links: links)
+	public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.Id == Relatable.Identifier {
+		self.init(ids: resourceObjects.map { $0.id }, meta: meta, links: links)
 	}
 
 	private init(meta: MetaType, links: LinksType) {
@@ -111,8 +111,8 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
 		return .none(withMeta: .none, links: .none)
 	}
 
-	public init<E: EntityType>(entities: [E]) where E.Id == Relatable.Identifier {
-		self.init(entities: entities, meta: .none, links: .none)
+	public init<T: ResourceObjectType>(resourceObjects: [T]) where T.Id == Relatable.Identifier {
+		self.init(resourceObjects: resourceObjects, meta: .none, links: .none)
 	}
 }
 

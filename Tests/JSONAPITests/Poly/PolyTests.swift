@@ -569,7 +569,7 @@ extension PolyTests {
 
 // MARK: - Test types
 extension PolyTests {
-	enum TestEntityType: EntityDescription {
+	enum TestEntityType: ResourceObjectDescription {
 
 		typealias Relationships = NoRelationships
 
@@ -583,7 +583,7 @@ extension PolyTests {
 
 	typealias TestEntity = BasicEntity<TestEntityType>
 
-	enum TestEntityType2: EntityDescription {
+	enum TestEntityType2: ResourceObjectDescription {
 
 		public static var jsonType: String { return "test_entity2" }
 
@@ -599,7 +599,7 @@ extension PolyTests {
 
 	typealias TestEntity2 = BasicEntity<TestEntityType2>
 
-	enum TestEntityType3: EntityDescription {
+	enum TestEntityType3: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -613,7 +613,7 @@ extension PolyTests {
 
 	typealias TestEntity3 = BasicEntity<TestEntityType3>
 
-	enum TestEntityType4: EntityDescription {
+	enum TestEntityType4: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -624,7 +624,7 @@ extension PolyTests {
 
 	typealias TestEntity4 = BasicEntity<TestEntityType4>
 
-	enum TestEntityType5: EntityDescription {
+	enum TestEntityType5: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -635,7 +635,7 @@ extension PolyTests {
 
 	typealias TestEntity5 = BasicEntity<TestEntityType5>
 
-	enum TestEntityType6: EntityDescription {
+	enum TestEntityType6: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -648,7 +648,7 @@ extension PolyTests {
 
 	typealias TestEntity6 = BasicEntity<TestEntityType6>
 
-	enum TestEntityType7: EntityDescription {
+	enum TestEntityType7: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -659,7 +659,7 @@ extension PolyTests {
 
 	typealias TestEntity7 = BasicEntity<TestEntityType7>
 
-	enum TestEntityType8: EntityDescription {
+	enum TestEntityType8: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 
@@ -670,7 +670,7 @@ extension PolyTests {
 
 	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
-	enum TestEntityType9: EntityDescription {
+	enum TestEntityType9: ResourceObjectDescription {
 
 		typealias Attributes = NoAttributes
 

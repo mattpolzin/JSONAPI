@@ -5,7 +5,7 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
-:warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating entities in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+:warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating resource objects in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -27,11 +27,11 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [Links Object](#links-object)
 		- [Misc](#misc)
 		- [Testing](#testing)
-			- [Entity Validator](#entity-validator)
+			- [Resource Object Validator](#resource-object-validator)
 		- [Potential Improvements](#potential-improvements)
 	- [Usage](#usage)
-		- [`JSONAPI.EntityDescription`](#jsonapientitydescription)
-		- [`JSONAPI.Entity`](#jsonapientity)
+		- [`JSONAPI.ResourceObjectDescription`](#jsonapiresourceobjectdescription)
+		- [`JSONAPI.ResourceObject`](#jsonapiresourceobject)
 			- [`Meta`](#meta)
 			- [`Links`](#links)
 			- [`MaybeRawId`](#mayberawid)
@@ -42,7 +42,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [`Transformer`](#transformer)
 			- [`Validator`](#validator)
 			- [Computed `Attribute`](#computed-attribute)
-		- [Copying `Entities`](#copying-entities)
+		- [Copying `ResourceObjects`](#copying-resourceobjects)
 		- [`JSONAPI.Document`](#jsonapidocument)
 			- [`ResourceBody`](#resourcebody)
 				- [nullable `PrimaryResource`](#nullable-primaryresource)
@@ -185,7 +185,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
 ### Testing
-#### Entity Validator
+#### Resource Object Validator
 - [x] Disallow optional array in `Attribute` (should be empty array, not `null`).
 - [x] Only allow `TransformedAttribute` and its derivatives as stored properties within `Attributes` struct. Computed properties can still be any type because they do not get encoded or decoded.
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
@@ -195,18 +195,18 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
 - [ ] Support sideposting. JSONAPI spec might become opinionated in the future (https://github.com/json-api/json-api/pull/1197, https://github.com/json-api/json-api/issues/1215, https://github.com/json-api/json-api/issues/1216) but there is also an existing implementation to consider (https://jsonapi-suite.github.io/jsonapi_suite/ruby/writes/nested-writes). At this time, any sidepost implementation would be an awesome tertiary library to be used alongside the primary JSONAPI library. Maybe `JSONAPISideloading`.
 - [ ] Property-based testing (using `SwiftCheck`).
-- [ ] Error or warning if an included entity is not related to a primary entity or another included entity (Turned off or at least not throwing by default).
+- [ ] Error or warning if an included resource object is not related to a primary resource object or another included resource object (Turned off or at least not throwing by default).
 
 ## Usage
 
 In this documentation, in order to draw attention to the difference between the `JSONAPI` framework (this Swift library) and the **JSON API Spec** (the specification this library helps you follow), the specification will consistently be referred to below as simply the **SPEC**.
 
-### `JSONAPI.EntityDescription`
+### `JSONAPI.ResourceObjectDescription`
 
-An `EntityDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `EntityDescription` to represent a person in a network of friends:
+An `ResourceObjectDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
 
 ```swift
-enum PersonDescription: IdentifiedEntityDescription {
+enum PersonDescription: IdentifiedResourceObjectDescription {
 	static var jsonType: String { return "people" }
 
 	struct Attributes: JSONAPI.Attributes {
@@ -220,16 +220,16 @@ enum PersonDescription: IdentifiedEntityDescription {
 }
 ```
 
-The requirements of an `EntityDescription` are:
+The requirements of an `ResourceObjectDescription` are:
 1. A static `var` "jsonType" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
 
-Note that an `enum` type is used here for the `EntityDescription`; it could have been a `struct`, but `EntityDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
+Note that an `enum` type is used here for the `ResourceObjectDescription`; it could have been a `struct`, but `ResourceObjectDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
 
 This readme doesn't go into detail on the **SPEC**, but the following *Resource Object* would be described by the above `PersonDescription`:
 
-```
+```json
 {
   "type": "people",
   "id": "9",
@@ -257,76 +257,76 @@ This readme doesn't go into detail on the **SPEC**, but the following *Resource 
 }
 ```
 
-### `JSONAPI.Entity`
+### `JSONAPI.ResourceObject`
 
-Once you have an `EntityDescription`, you _create_, _encode_, and _decode_ `Entities` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `Entities` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with entities.
+Once you have an `ResourceObjectDescription`, you _create_, _encode_, and _decode_ `ResourceObjects` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `ResourceObjects` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with resource objects.
 
-The `Entity` and `EntityDescription` together with a `JSONAPI.Meta` type and a `JSONAPI.Links` type embody the rules and properties of a JSON API *Resource Object*.
+The `ResourceObject` and `ResourceObjectDescription` together with a `JSONAPI.Meta` type and a `JSONAPI.Links` type embody the rules and properties of a JSON API *Resource Object*.
 
-An `Entity` needs to be specialized on four generic types. The first is the `EntityDescription` described above. The others are a `Meta`, `Links`, and `MaybeRawId`.
+An `ResourceObject` needs to be specialized on four generic types. The first is the `ResourceObjectDescription` described above. The others are a `Meta`, `Links`, and `MaybeRawId`.
 
 #### `Meta`
 
-The second generic specialization on `Entity` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules. You can use `NoMetadata` if you do not need to package any metadata with the `Entity`.
+The second generic specialization on `ResourceObject` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules. You can use `NoMetadata` if you do not need to package any metadata with the `ResourceObject`.
 
 #### `Links`
 
-The third generic specialization on `Entity` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document. You can use `NoLinks` if you do not need to package any links with the `Entity`.
+The third generic specialization on `ResourceObject` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document. You can use `NoLinks` if you do not need to package any links with the `ResourceObject`.
 
 #### `MaybeRawId`
 
-The last generic specialization on `Entity` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `Entities` or it is `Unidentified` which is used to indicate an `Entity` does not have an `Id` (which is useful when a client is requesting that the server create an `Entity` and assign it a new `Id`).
+The last generic specialization on `ResourceObject` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `ResourceObjects` or it is `Unidentified` which is used to indicate an `ResourceObject` does not have an `Id` (which is useful when a client is requesting that the server create an `ResourceObject` and assign it a new `Id`).
 
 ##### `RawIdType`
 
-The raw type of `Id` to use for the `Entity`. The actual `Id` of the `Entity` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `Entity` type it identifies. This just looks like `Id<RawIdType, Entity<EntityDescription, Meta, Links, RawIdType>>`.
+The raw type of `Id` to use for the `ResourceObject`. The actual `Id` of the `ResourceObject` will not be a `RawIdType`, though. The `Id` will package a value of `RawIdType` with a specialized reference back to the `ResourceObject` type it identifies. This just looks like `Id<RawIdType, ResourceObject<ResourceObjectDescription, Meta, Links, RawIdType>>`.
 
-Having the `Entity` type associated with the `Id` makes it easy to store all of your entities in a hash broken out by `Entity` type; You can pass `Ids` around and always know where to look for the `Entity` to which the `Id` refers. This encapsulation provides some type safety because the Ids of two `Entities` with the "raw ID" of `"1"` but different types will not compare as equal.
+Having the `ResourceObject` type associated with the `Id` makes it easy to store all of your resource objects in a hash broken out by `ResourceObject` type; You can pass `Ids` around and always know where to look for the `ResourceObject` to which the `Id` refers. This encapsulation provides some type safety because the Ids of two `ResourceObjects` with the "raw ID" of `"1"` but different types will not compare as equal.
 
-A `RawIdType` is the underlying type that uniquely identifies an `Entity`. This is often a `String` or a `UUID`.
+A `RawIdType` is the underlying type that uniquely identifies an `ResourceObject`. This is often a `String` or a `UUID`.
 
 #### Convenient `typealiases`
 
-Often you can use one `RawIdType` for many if not all of your `Entities`. That means you can save yourself some boilerplate by using `typealias`es like the following:
+Often you can use one `RawIdType` for many if not all of your `ResourceObjects`. That means you can save yourself some boilerplate by using `typealias`es like the following:
 ```swift
-public typealias Entity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, String>
+public typealias ResourceObject<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, String>
 
-public typealias NewEntity<Description: JSONAPI.EntityDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.Entity<Description, Meta, Links, Unidentified>
+public typealias NewResourceObject<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, Unidentified>
 ```
 
-It can also be nice to create a `typealias` for each type of entity you want to work with:
+It can also be nice to create a `typealias` for each type of resource object you want to work with:
 ```swift
-typealias Person = Entity<PersonDescription, NoMetadata, NoLinks>
+typealias Person = ResourceObject<PersonDescription, NoMetadata, NoLinks>
 
-typealias NewPerson = NewEntity<PersonDescription, NoMetadata, NoLinks>
+typealias NewPerson = NewResourceObject<PersonDescription, NoMetadata, NoLinks>
 ```
 
 Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
 
 ### `JSONAPI.Relationships`
 
-There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. An `EntityDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of an `EntityDescription`.
+There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. An `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of an `ResourceObjectDescription`.
 
-In addition to identifying entities by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
+In addition to identifying resource objects by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
 
 To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
 ```swift
 let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
 ```
 
-An entity that does not have relationships can be described by adding the following to an `EntityDescription`:
+An resource object that does not have relationships can be described by adding the following to an `ResourceObjectDescription`:
 ```swift
 typealias Relationships = NoRelationships
 ```
 
-`Relationship` values boil down to `Ids` of other entities. To access the `Id` of a related `Entity`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `Entity` can be accessed as follows (type annotations for clarity):
+`Relationship` values boil down to `Ids` of other resource objects. To access the `Id` of a related `ResourceObject`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `ResourceObject` can be accessed as follows (type annotations for clarity):
 ```swift
 let friendIds: [Person.Identifier] = person ~> \.friends
 ```
 
 ### `JSONAPI.Attributes`
 
-The `Attributes` of an `EntityDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
+The `Attributes` of an `ResourceObjectDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
 
 To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
 ```swift
@@ -338,12 +338,12 @@ To describe an attribute that is expected to exist but might have a `null` value
 let nullableAttribute: Attribute<String?>
 ```
 
-An entity that does not have attributes can be described by adding the following to an `EntityDescription`:
+An resource object that does not have attributes can be described by adding the following to an `ResourceObjectDescription`:
 ```swift
 typealias Attributes = NoAttributes
 ```
 
-`Attributes` can be accessed via the `subscript` operator of the `Entity` type as follows:
+`Attributes` can be accessed via the `subscript` operator of the `ResourceObject` type as follows:
 ```swift
 let favoriteColor: String = person[\.favoriteColor]
 ```
@@ -386,7 +386,7 @@ You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is ju
 
 #### Computed `Attribute`
 
-You can add computed properties to your `EntityDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `person[\.name]` attribute from the example above and create a `fullName` computed property.
+You can add computed properties to your `ResourceObjectDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `person[\.name]` attribute from the example above and create a `fullName` computed property.
 
 ```swift
 public var fullName: Attribute<String> {
@@ -396,10 +396,10 @@ public var fullName: Attribute<String> {
 
 If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person[\.fullName]` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
 
-### Copying `Entities`
-`Entity` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying an `Entity`:
-1. Assigning a new `Identifier` to the copy of an identified `Entity`.
-2. Assigning a new `Identifier` to the copy of an unidentified `Entity`.
+### Copying `ResourceObjects`
+`ResourceObject` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying an `ResourceObject`:
+1. Assigning a new `Identifier` to the copy of an identified `ResourceObject`.
+2. Assigning a new `Identifier` to the copy of an unidentified `ResourceObject`.
 
 The above can be accomplished with code like the following:
 
@@ -415,7 +415,7 @@ let newlyIdentifiedPerson2 = unidentifiedPerson.identified(by: "2232")
 
 ### `JSONAPI.Document`
 
-The entirety of a JSON API request or response is encoded or decoded from- or to a `Document`. As an example, a JSON API response containing one `Person` and no included entities could be decoded as follows:
+The entirety of a JSON API request or response is encoded or decoded from- or to a `Document`. As an example, a JSON API response containing one `Person` and no included resource objects could be decoded as follows:
 ```swift
 let decoder = JSONDecoder()
 
@@ -428,7 +428,7 @@ A JSON API Document is guaranteed by the **SPEC** to be "data", "metadata", or "
 
 #### `ResourceBody`
 
-The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `Entity`. These `Poly` types work in the same way as the `Include` types described below.
+The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `ResourceObject`. These `Poly` types work in the same way as the `Include` types described below.
 
 If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
 
@@ -441,7 +441,7 @@ You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody`
 #### `MetaType`
 
 The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
-```
+```json
 {
 	"meta": {
 		"total": 100,
@@ -468,9 +468,9 @@ The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are d
 
 #### `IncludeType`
 
-The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `Entity` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included entities to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included entities. These are named `Include1`, `Include2`, `Include3`, and so on.
+The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
 
-**IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included entities, it indicates a number of _types_ of included entities. `Include1` can be used to decode any number of included entities as long as all the entities are of the same _type_.
+**IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included resource objects, it indicates a number of _types_ of included resource objects. `Include1` can be used to decode any number of included resource objects as long as all the resource objects are of the same _type_.
 
 To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<Person>` instead of `NoIncludes`.
 
@@ -502,7 +502,7 @@ You can specify `NoLinks` if the part of the document being described should not
 
 ### `JSONAPI.RawIdType`
 
-If you want to create new `JSONAPI.Entity` values and assign them Ids then you will need to conform at least one type to `CreatableRawIdType`. Doing so is easy; here are two example conformances for `UUID` and `String` (via `UUID`):
+If you want to create new `JSONAPI.ResourceObject` values and assign them Ids then you will need to conform at least one type to `CreatableRawIdType`. Doing so is easy; here are two example conformances for `UUID` and `String` (via `UUID`):
 ```swift
 extension UUID: CreatableRawIdType {
 	public static func unique() -> UUID {
@@ -520,7 +520,7 @@ extension String: CreatableRawIdType {
 ### Custom Attribute or Relationship Key Mapping
 There is not anything special going on at the `JSONAPI.Attributes` and `JSONAPI.Relationships` levels, so you can easily provide custom key mappings by taking advantage of `Codable`'s `CodingKeys` pattern. Here are two models that will encode/decode equivalently but offer different naming in your codebase:
 ```swift
-public enum EntityDescription1: JSONAPI.EntityDescription {
+public enum ResourceObjectDescription1: JSONAPI.ResourceObjectDescription {
 	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -530,7 +530,7 @@ public enum EntityDescription1: JSONAPI.EntityDescription {
 	public typealias Relationships = NoRelationships
 }
 
-public enum EntityDescription2: JSONAPI.EntityDescription {
+public enum ResourceObjectDescription2: JSONAPI.ResourceObjectDescription {
 	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -546,7 +546,7 @@ public enum EntityDescription2: JSONAPI.EntityDescription {
 ### Custom Attribute Encode/Decode
 You can safely provide your own encoding or decoding functions for your Attributes struct if you need to as long as you are careful that your encode operation correctly reverses your decode operation. Although this is generally not necessary, `AttributeType` provides a convenience method to make your decoding a bit less boilerplate ridden. This is what it looks like:
 ```swift
-public enum EntityDescription1: JSONAPI.EntityDescription {
+public enum ResourceObjectDescription1: JSONAPI.ResourceObjectDescription {
 	public static var jsonType: String { return "entity" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -566,7 +566,7 @@ public enum EntityDescription1: JSONAPI.EntityDescription {
 	public typealias Relationships = NoRelationships
 }
 
-extension EntityDescription1.Attributes {
+extension ResourceObjectDescription1.Attributes {
 	public init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -588,12 +588,12 @@ extension EntityDescription1.Attributes {
 ```
 
 ### Meta-Attributes
-This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-attributes are just the thing to make your entities more natural to work with.
+This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-attributes are just the thing to make your resource objects more natural to work with.
 
-Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an entity. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, the following example code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
+Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an resource object. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, the following example code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
 
 ```swift
-enum UserDescription: EntityDescription {
+enum UserDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "users" }
 
 	struct Attributes: JSONAPI.Attributes {
@@ -621,24 +621,24 @@ enum UserDescription: EntityDescription {
 	typealias Relationships = NoRelationships
 }
 
-typealias User = JSONAPI.Entity<UserDescription, NoMetadata, NoLinks, String>
+typealias User = JSONAPI.ResourceObject<UserDescription, NoMetadata, NoLinks, String>
 ```
 
-Given a value `user` of the above entity type, you can access the `createdAt` attribute just like you would any other:
+Given a value `user` of the above resource object type, you can access the `createdAt` attribute just like you would any other:
 
 ```swift
 let createdAt = user[\.createdAt]
 ```
 
-This works because `createdAt` is defined in the form: `var {name}: ({Entity}) -> {Value}` where `{Entity}` is the `JSONAPI.Entity` described by the `EntityDescription` containing the meta-attribute.
+This works because `createdAt` is defined in the form: `var {name}: ({ResourceObject}) -> {Value}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-attribute.
 
 ### Meta-Relationships
-This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-relationships are just the thing to make your entities more natural to work with.
+This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-relationships are just the thing to make your resource objects more natural to work with.
 
 Similarly to Meta-Attributes, Meta-Relationships allow you to represent non-compliant relationships as computed relationship properties. In the following example, a relationship is created from some attributes on the JSON model.
 
 ```swift
-enum UserDescription: EntityDescription {
+enum UserDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "users" }
 
 	struct Attributes: JSONAPI.Attributes {
@@ -654,16 +654,16 @@ enum UserDescription: EntityDescription {
 	}
 }
 
-typealias User = JSONAPI.Entity<UserDescription, NoMetadata, NoLinks, String>
+typealias User = JSONAPI.ResourceObject<UserDescription, NoMetadata, NoLinks, String>
 ```
 
-Given a value `user` of the above entity type, you can access the `friend` relationship just like you would any other:
+Given a value `user` of the above resource object type, you can access the `friend` relationship just like you would any other:
 
 ```swift
 let friendId = user ~> \.friend
 ```
 
-This works because `friend` is defined in the form: `var {name}: ({Entity}) -> {Identifier}` where `{Entity}` is the `JSONAPI.Entity` described by the `EntityDescription` containing the meta-relationship.
+This works because `friend` is defined in the form: `var {name}: ({ResourceObject}) -> {Identifier}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-relationship.
 
 ## Example
 The following serves as a sort of pseudo-example. It skips server/client implementation details not related to JSON:API but still gives a more complete picture of what an implementation using this framework might look like. You can play with this example code in the Playground provided with this repo.
@@ -682,28 +682,28 @@ extension String: CreatableRawIdType {
 // We create a typealias given that we do not expect JSON:API Resource
 // Objects for this particular API to have Metadata or Links associated
 // with them. We also expect them to have String Identifiers.
-typealias JSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, String>
+typealias JSONResourceObject<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, String>
 
-// Similarly, we create a typealias for unidentified entities. JSON:API
-// only allows unidentified entities (i.e. no "id" field) for client
-// requests that create new entities. In these situations, the server
-// is expected to assign the new entity a unique ID.
-typealias UnidentifiedJSONEntity<Description: EntityDescription> = JSONAPI.Entity<Description, NoMetadata, NoLinks, Unidentified>
+// Similarly, we create a typealias for unidentified resource objects. JSON:API
+// only allows unidentified resource objects (i.e. no "id" field) for client
+// requests that create new resource objects. In these situations, the server
+// is expected to assign the new resource object a unique ID.
+typealias UnidentifiedJSONResourceObject<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, Unidentified>
 
 // We create typealiases given that we do not expect JSON:API Relationships
 // for this particular API to have Metadata or Links associated
 // with them.
-typealias ToOneRelationship<Entity: Identifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
-typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Entity, NoMetadata, NoLinks>
+typealias ToOneRelationship<ResourceObject: Identifiable> = JSONAPI.ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
+typealias ToManyRelationship<ResourceObject: Relatable> = JSONAPI.ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
 
 // We create a typealias for a Document given that we do not expect
 // JSON:API Documents for this particular API to have Metadata, Links,
 // useful Errors, or a JSON:API Object (i.e. APIDescription).
 typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
 
-// MARK: Entity Definitions
+// MARK: ResourceObject Definitions
 
-enum AuthorDescription: EntityDescription {
+enum AuthorDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "authors" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -713,9 +713,9 @@ enum AuthorDescription: EntityDescription {
 	public typealias Relationships = NoRelationships
 }
 
-typealias Author = JSONEntity<AuthorDescription>
+typealias Author = JSONResourceObject<AuthorDescription>
 
-enum ArticleDescription: EntityDescription {
+enum ArticleDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "articles" }
 
 	public struct Attributes: JSONAPI.Attributes {
@@ -728,7 +728,7 @@ enum ArticleDescription: EntityDescription {
 	}
 }
 
-typealias Article = JSONEntity<ArticleDescription>
+typealias Article = JSONResourceObject<ArticleDescription>
 
 // MARK: Document Definitions
 
@@ -737,7 +737,7 @@ typealias Article = JSONEntity<ArticleDescription>
 typealias SingleArticleDocumentWithIncludes = Document<SingleResourceBody<Article>, Include1<Author>>
 
 // ... and a typealias to represent a document containing one Article and
-// not including any related entities.
+// not including any related resource objects.
 typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoIncludes>
 ```
 ### Server Pseudo-example
@@ -758,7 +758,7 @@ func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, Singl
 						  links: .none)
 
 	let document = SingleArticleDocument(apiDescription: .none,
-										 body: .init(entity: article),
+										 body: .init(resourceObject: article),
 										 includes: .none,
 										 meta: .none,
 										 links: .none)
@@ -839,7 +839,7 @@ print(response.author)
 ```
 
 # JSONAPI+Testing
-The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `Entity` values into your unit tests. It also provides a `check()` function for each `Entity` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
+The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `ResourceObject` values into your unit tests. It also provides a `check()` function for each `ResourceObject` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
 
 # JSONAPI+Arbitrary
 This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-Arbitrary
