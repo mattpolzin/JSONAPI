@@ -62,6 +62,70 @@ class AttributeTests: XCTestCase {
 	}
 }
 
+// MARK: Property Wrappers
+extension AttributeTests {
+    func test_Transformed() {
+
+        struct Test: Codable {
+            @Transformed(IntToString.self)
+            var value: String = ""
+        }
+
+        let test = Test(value: "hello")
+        XCTAssertEqual(test.value, "hello")
+
+        let test2 = try! JSONDecoder().decode(Test.self,
+                                              from: #"{"value": 12}"#.data(using: .utf8)!)
+
+        XCTAssertEqual(test2.value, "12")
+        try! print(String(data: JSONEncoder().encode(test2), encoding: .utf8)!)
+
+        let test3 = try? JSONDecoder().decode(Test.self,
+                                              from: #"{"value": null}"#.data(using: .utf8)!)
+
+        XCTAssertNil(test3)
+    }
+
+    func test_Nullable() {
+        struct Test: Codable {
+            @Nullable
+            var value: String?
+        }
+
+        let test = Test(value: nil)
+        XCTAssertNil(test.value)
+
+        let test2 = Test(value: "hello")
+        XCTAssertEqual(test2.value, "hello")
+
+        let test3 = try! JSONDecoder().decode(Test.self,
+                                              from: #"{"value": "world"}"#.data(using: .utf8)!)
+
+        XCTAssertEqual(test3.value, "world")
+        try! print(String(data: JSONEncoder().encode(test2), encoding: .utf8)!)
+
+        let test4 = try? JSONDecoder().decode(Test.self,
+                                              from: #"{"value": null}"#.data(using: .utf8)!)
+
+        XCTAssertNotNil(test4)
+        XCTAssertNil(test4?.value)
+    }
+
+    func test_NullableTransformed() {
+        struct Test: Codable {
+//            Nullable<Transformed<IntToString>>
+            let x: Transformed<IntToString>
+//            @Nullable @Transformed(IdentityTransformer.self)
+            @Transformed(IntToString.self) @Nullable
+            var value: String?
+        }
+
+        let test = Test(x: .init(initialValue: "12", IntToString.self))
+
+        print(test.x.wrappedValue)
+    }
+}
+
 // MARK: Test types
 extension AttributeTests {
 	enum TestTransformer: ReversibleTransformer {
@@ -77,11 +141,36 @@ extension AttributeTests {
 		}
 	}
 
-	enum IntToString: Transformer {
+	enum IntToString: ReversibleTransformer {
 		public static func transform(_ from: Int) -> String {
 			return String(from)
 		}
+
+        public static func reverse(_ value: String) throws -> Int {
+            guard let intValue = Int(value) else {
+                fatalError("Reversed IntToString with invalid String value.")
+            }
+            return intValue
+        }
 	}
+
+    enum OptionalIntToOptionalString: ReversibleTransformer {
+        public static func transform(_ from: Int?) -> String? {
+            return from.map(String.init)
+        }
+
+        public static func reverse(_ value: String?) throws -> Int? {
+            guard let stringValue = value else {
+                return nil
+            }
+
+            guard let intValue = Int(stringValue) else {
+                fatalError("Reversed IntToString with invalid String value.")
+            }
+
+            return intValue
+        }
+    }
 
 	enum IntToInt: Transformer {
 		public static func transform(_ from: Int) -> Int {

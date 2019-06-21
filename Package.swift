@@ -34,5 +34,5 @@ let package = Package(
             name: "JSONAPITestingTests",
             dependencies: ["JSONAPI", "JSONAPITesting"])
     ],
-  	swiftLanguageVersions: [.v5]
+  	swiftLanguageVersions: [.version("5.1")]
 )
