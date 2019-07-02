@@ -5,6 +5,8 @@
 //  Created by Mathew Polzin on 7/24/18.
 //
 
+import Foundation
+
 /// A JSON API structure within an ResourceObject that contains
 /// named properties of types `ToOneRelationship` and
 /// `ToManyRelationship`.
@@ -582,7 +584,6 @@ public extension ResourceObject {
 	}
 
 	init(from decoder: Decoder) throws {
-		
 		let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 		
 		let type = try container.decode(String.self, forKey: .type)
@@ -597,7 +598,9 @@ public extension ResourceObject {
 		attributes = try (NoAttributes() as? Description.Attributes) ??
 			container.decode(Description.Attributes.self, forKey: .attributes)
 
-		relationships = try (NoRelationships() as? Description.Relationships) ?? container.decode(Description.Relationships.self, forKey: .relationships)
+		relationships = try (NoRelationships() as? Description.Relationships)
+			?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
+			?? JSONDecoder().decode(Description.Relationships.self, from: "{}".data(using: .utf8)!)
 
 		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
 
