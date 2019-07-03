@@ -383,6 +383,16 @@ let entity_valid_validated_attribute = """
 }
 """.data(using: .utf8)!
 
+let entity_all_relationships_optional_and_omitted = """
+{
+	"id": "1",
+	"type": "twelfth_test_entities",
+	"attributes": {
+		"number": 10
+	}
+}
+""".data(using: .utf8)!
+
 let entity_unidentified = """
 {
 	"type": "unidentified_test_entities",

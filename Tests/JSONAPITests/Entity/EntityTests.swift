@@ -403,6 +403,16 @@ extension EntityTests {
 								  data: entity_optional_nullable_nulled_relationship)
 	}
 
+	func test_optionalNullableRelationshipOmitted() {
+		let entity = decoded(type: TestEntity12.self,
+							 data: entity_all_relationships_optional_and_omitted)
+
+		XCTAssertNil(entity ~> \.optionalOne)
+		XCTAssertNil(entity ~> \.optionalNullableOne)
+		XCTAssertNil(entity ~> \.optionalMany)
+		XCTAssertNoThrow(try TestEntity12.check(entity))
+	}
+
 	func test_nullableRelationshipIsNull() {
 		let entity = decoded(type: TestEntity9.self,
 								   data: entity_nulled_relationship)
@@ -805,6 +815,28 @@ extension EntityTests {
 	}
 
 	typealias TestEntity11 = BasicEntity<TestEntityType11>
+
+	enum TestEntityType12: ResourceObjectDescription {
+		public static var jsonType: String { return "twelfth_test_entities" }
+
+		typealias Attributes = NoAttributes
+
+		public struct Relationships: JSONAPI.Relationships {
+			public init() {
+				optionalOne = nil
+				optionalNullableOne = nil
+				optionalMany = nil
+			}
+
+			let optionalOne: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?
+
+			let optionalNullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>?
+
+			let optionalMany: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>?
+		}
+	}
+
+	typealias TestEntity12 = BasicEntity<TestEntityType12>
 
 	enum UnidentifiedTestEntityType: ResourceObjectDescription {
 		public static var jsonType: String { return "unidentified_test_entities" }
