@@ -31,7 +31,7 @@ class EntityTests: XCTestCase {
 
 		XCTAssertEqual(entity ~> \.optionalOne, entity1.id)
 	}
-	
+
 	func test_toMany_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
