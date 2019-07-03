@@ -203,7 +203,7 @@ In this documentation, in order to draw attention to the difference between the 
 
 ### `JSONAPI.ResourceObjectDescription`
 
-An `ResourceObjectDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
+A `ResourceObjectDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
 
 ```swift
 enum PersonDescription: IdentifiedResourceObjectDescription {
@@ -220,7 +220,7 @@ enum PersonDescription: IdentifiedResourceObjectDescription {
 }
 ```
 
-The requirements of an `ResourceObjectDescription` are:
+The requirements of a `ResourceObjectDescription` are:
 1. A static `var` "jsonType" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
@@ -259,11 +259,11 @@ This readme doesn't go into detail on the **SPEC**, but the following *Resource 
 
 ### `JSONAPI.ResourceObject`
 
-Once you have an `ResourceObjectDescription`, you _create_, _encode_, and _decode_ `ResourceObjects` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `ResourceObjects` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with resource objects.
+Once you have a `ResourceObjectDescription`, you _create_, _encode_, and _decode_ `ResourceObjects` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `ResourceObjects` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with resource objects.
 
 The `ResourceObject` and `ResourceObjectDescription` together with a `JSONAPI.Meta` type and a `JSONAPI.Links` type embody the rules and properties of a JSON API *Resource Object*.
 
-An `ResourceObject` needs to be specialized on four generic types. The first is the `ResourceObjectDescription` described above. The others are a `Meta`, `Links`, and `MaybeRawId`.
+A `ResourceObject` needs to be specialized on four generic types. The first is the `ResourceObjectDescription` described above. The others are a `Meta`, `Links`, and `MaybeRawId`.
 
 #### `Meta`
 
@@ -275,7 +275,7 @@ The third generic specialization on `ResourceObject` is `Links`. This is describ
 
 #### `MaybeRawId`
 
-The last generic specialization on `ResourceObject` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `ResourceObjects` or it is `Unidentified` which is used to indicate an `ResourceObject` does not have an `Id` (which is useful when a client is requesting that the server create an `ResourceObject` and assign it a new `Id`).
+The last generic specialization on `ResourceObject` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `ResourceObjects` or it is `Unidentified` which is used to indicate a `ResourceObject` does not have an `Id` (which is useful when a client is requesting that the server create a `ResourceObject` and assign it a new `Id`).
 
 ##### `RawIdType`
 
@@ -283,7 +283,7 @@ The raw type of `Id` to use for the `ResourceObject`. The actual `Id` of the `Re
 
 Having the `ResourceObject` type associated with the `Id` makes it easy to store all of your resource objects in a hash broken out by `ResourceObject` type; You can pass `Ids` around and always know where to look for the `ResourceObject` to which the `Id` refers. This encapsulation provides some type safety because the Ids of two `ResourceObjects` with the "raw ID" of `"1"` but different types will not compare as equal.
 
-A `RawIdType` is the underlying type that uniquely identifies an `ResourceObject`. This is often a `String` or a `UUID`.
+A `RawIdType` is the underlying type that uniquely identifies a `ResourceObject`. This is often a `String` or a `UUID`.
 
 #### Convenient `typealiases`
 
@@ -305,7 +305,7 @@ Note that I am assuming an unidentified person is a "new" person. I suspect that
 
 ### `JSONAPI.Relationships`
 
-There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. An `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of an `ResourceObjectDescription`.
+There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. A `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of a `ResourceObjectDescription`.
 
 In addition to identifying resource objects by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
 
@@ -314,7 +314,7 @@ To describe a relationship that may be omitted (i.e. the key is not even present
 let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
 ```
 
-An resource object that does not have relationships can be described by adding the following to an `ResourceObjectDescription`:
+A `ResourceObject` that does not have relationships can be described by adding the following to a `ResourceObjectDescription`:
 ```swift
 typealias Relationships = NoRelationships
 ```
@@ -326,7 +326,7 @@ let friendIds: [Person.Identifier] = person ~> \.friends
 
 ### `JSONAPI.Attributes`
 
-The `Attributes` of an `ResourceObjectDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
+The `Attributes` of a `ResourceObjectDescription` can contain any JSON encodable/decodable types as long as they are wrapped in an `Attribute`, `ValidatedAttribute`, or `TransformedAttribute` `struct`.
 
 To describe an attribute that may be omitted (i.e. the key might not even be in the JSON object), you make the entire `Attribute` optional:
 ```swift
@@ -338,7 +338,7 @@ To describe an attribute that is expected to exist but might have a `null` value
 let nullableAttribute: Attribute<String?>
 ```
 
-An resource object that does not have attributes can be described by adding the following to an `ResourceObjectDescription`:
+A resource object that does not have attributes can be described by adding the following to an `ResourceObjectDescription`:
 ```swift
 typealias Attributes = NoAttributes
 ```
@@ -396,8 +396,8 @@ public var fullName: Attribute<String> {
 
 If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person[\.fullName]` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
 
-### Copying `ResourceObjects`
-`ResourceObject` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying an `ResourceObject`:
+### Copying/Mutating `ResourceObjects`
+`ResourceObject` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying a `ResourceObject`:
 1. Assigning a new `Identifier` to the copy of an identified `ResourceObject`.
 2. Assigning a new `Identifier` to the copy of an unidentified `ResourceObject`.
 
@@ -590,7 +590,7 @@ extension ResourceObjectDescription1.Attributes {
 ### Meta-Attributes
 This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-attributes are just the thing to make your resource objects more natural to work with.
 
-Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of an resource object. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, the following example code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
+Suppose, for example, you are presented with the unfortunate situation where a piece of information you need is only available as part of the `Id` of a resource object. Perhaps a user's `Id` is formatted "{integer}-{createdAt}" where "createdAt" is the unix timestamp when the user account was created. The following `UserDescription` will expose what you need as an attribute. Realistically, the following example code is still terrible for its error handling. Using a `Result` type and/or invariants would clean things up substantially.
 
 ```swift
 enum UserDescription: ResourceObjectDescription {
