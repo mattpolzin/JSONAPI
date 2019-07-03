@@ -108,75 +108,44 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 #### Document
 - `data`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [x] OpenAPI
 - `included`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [x] OpenAPI
 - `errors`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 - `jsonapi` (i.e. API Information)
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 
 #### Resource Object
 - `id`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [x] OpenAPI
 - `type`
 	- [x] Encoding/Decoding
-	- [x] OpenAPI
 - `attributes`
 	- [x] Encoding/Decoding
-	- [x] OpenAPI
 - `relationships`
 	- [x] Encoding/Decoding
-	- [x] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [ ] OpenAPI
 
 #### Relationship Object
 - `data`
 	- [x] Encoding/Decoding
-	- [x] Arbitrary
-	- [x] OpenAPI
 - `links`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
 
 #### Links Object
 - `href`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
 - `meta`
 	- [x] Encoding/Decoding
-	- [ ] Arbitrary
-	- [ ] OpenAPI
 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
@@ -194,7 +163,6 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
 - [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
 - [ ] Support sideposting. JSONAPI spec might become opinionated in the future (https://github.com/json-api/json-api/pull/1197, https://github.com/json-api/json-api/issues/1215, https://github.com/json-api/json-api/issues/1216) but there is also an existing implementation to consider (https://jsonapi-suite.github.io/jsonapi_suite/ruby/writes/nested-writes). At this time, any sidepost implementation would be an awesome tertiary library to be used alongside the primary JSONAPI library. Maybe `JSONAPISideloading`.
-- [ ] Property-based testing (using `SwiftCheck`).
 - [ ] Error or warning if an included resource object is not related to a primary resource object or another included resource object (Turned off or at least not throwing by default).
 
 ## Usage
