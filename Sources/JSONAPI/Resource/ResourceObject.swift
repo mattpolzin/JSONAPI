@@ -5,7 +5,6 @@
 //  Created by Mathew Polzin on 7/24/18.
 //
 
-import Foundation
 
 /// A JSON API structure within an ResourceObject that contains
 /// named properties of types `ToOneRelationship` and
@@ -600,7 +599,7 @@ public extension ResourceObject {
 
 		relationships = try (NoRelationships() as? Description.Relationships)
 			?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
-			?? JSONDecoder().decode(Description.Relationships.self, from: "{}".data(using: .utf8)!)
+			?? Description.Relationships(from: EmptyObjectDecoder())
 
 		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
 
