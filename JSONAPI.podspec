@@ -119,7 +119,6 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  the lib prefix of their name.
   #
 
-  spec.framework  = "Poly"
   # spec.frameworks = "SomeFramework", "AnotherFramework"
 
   # spec.library   = "iconv"
