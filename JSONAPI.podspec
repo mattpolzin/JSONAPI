@@ -93,7 +93,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Sources", "Sources/**/*.{swift}"
+  spec.source_files  = "Sources/JSONAPI/**/*.{swift}"
   # spec.exclude_files = "Classes/Exclude"
 
   # spec.public_header_files = "Classes/**/*.h"
