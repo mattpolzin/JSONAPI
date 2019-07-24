@@ -462,6 +462,8 @@ A `Meta` struct is totally open-ended. It is described by the **SPEC** as a plac
 
 You can specify `NoMetadata` if the part of the document being described should not contain any `Meta`.
 
+If you need to support metadata with structure that is not pre-determined, consider an "Any Codable" type such as that found at https://github.com/Flight-School/AnyCodable.
+
 ### `JSONAPI.Links`
 
 A `Links` struct must contain only `Link` properties. Each `Link` property can either be a `URL` or a `URL` and some `Meta`. Each part of the document has some suggested common `Links` to include but generally any link can be included.
