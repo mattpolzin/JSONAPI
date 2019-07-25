@@ -311,10 +311,17 @@ A resource object that does not have attributes can be described by adding the f
 typealias Attributes = NoAttributes
 ```
 
-`Attributes` can be accessed via the `subscript` operator of the `ResourceObject` type as follows:
+As of Swift 5.1, `Attributes` can be accessed via dynamic member keypath lookup as follows:
+```swift
+let favoriteColor: String = person.favoriteColor
+```
+
+🗒 `Attributes` can also be accessed via the older `subscript` operator as follows:
 ```swift
 let favoriteColor: String = person[\.favoriteColor]
 ```
+
+In both cases you retain type-safety, although neither plays particularly nicely with code autocompletion. It is best practice to pick an attribute access syntax and stick with it. At some point in the future the syntax deemed less desirable may be deprecated.
 
 #### `Transformer`
 
@@ -354,7 +361,7 @@ You can also creator `Validators` and `ValidatedAttribute`s. A `Validator` is ju
 
 #### Computed `Attribute`
 
-You can add computed properties to your `ResourceObjectDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `person[\.name]` attribute from the example above and create a `fullName` computed property.
+You can add computed properties to your `ResourceObjectDescription.Attributes` struct if you would like to expose attributes that are not explicitly represented by the JSON. These computed properties do not have to be wrapped in `Attribute`, `ValidatedAttribute`, or `TransformedAttribute`. This allows computed attributes to be of types that are not `Codable`. Here's an example of how you might take the `person.name` attribute from the example above and create a `fullName` computed property.
 
 ```swift
 public var fullName: Attribute<String> {
@@ -362,7 +369,7 @@ public var fullName: Attribute<String> {
 }
 ```
 
-If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person[\.fullName]` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
+If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person.fullName` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
 
 ### Copying/Mutating `ResourceObjects`
 `ResourceObject` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying a `ResourceObject`:
@@ -599,7 +606,7 @@ typealias User = JSONAPI.ResourceObject<UserDescription, NoMetadata, NoLinks, St
 Given a value `user` of the above resource object type, you can access the `createdAt` attribute just like you would any other:
 
 ```swift
-let createdAt = user[\.createdAt]
+let createdAt = user.createdAt
 ```
 
 This works because `createdAt` is defined in the form: `var {name}: ({ResourceObject}) -> {Value}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-attribute.
@@ -620,7 +627,7 @@ enum UserDescription: ResourceObjectDescription {
 	struct Relationships: JSONAPI.Relationships {
 		public var friend: (User) -> User.Identifier {
 			return { user in
-				return User.Identifier(rawValue: user[\.friend_id])
+				return User.Identifier(rawValue: user.friend_id)
 			}
 		}
 	}
