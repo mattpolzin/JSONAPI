@@ -640,38 +640,39 @@ The following serves as a sort of pseudo-example. It skips server/client impleme
 
 ### Preamble (Setup shared by server and client)
 ```swift
-// We make String a CreatableRawIdType.
-var GlobalStringId: Int = 0
+// Make String a CreatableRawIdType.
+var globalStringId: Int = 0
 extension String: CreatableRawIdType {
 	public static func unique() -> String {
-		GlobalStringId += 1
-		return String(GlobalStringId)
+		globalStringId += 1
+		return String(globalStringId)
 	}
 }
 
-// We create a typealias given that we do not expect JSON:API Resource
+// Create a typealias because we do not expect JSON:API Resource
 // Objects for this particular API to have Metadata or Links associated
 // with them. We also expect them to have String Identifiers.
-typealias JSONResourceObject<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, String>
+typealias JSONEntity<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, String>
 
-// Similarly, we create a typealias for unidentified resource objects. JSON:API
-// only allows unidentified resource objects (i.e. no "id" field) for client
-// requests that create new resource objects. In these situations, the server
-// is expected to assign the new resource object a unique ID.
-typealias UnidentifiedJSONResourceObject<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, Unidentified>
+// Similarly, create a typealias for unidentified entities. JSON:API
+// only allows unidentified entities (i.e. no "id" field) for client
+// requests that create new entities. In these situations, the server
+// is expected to assign the new entity a unique ID.
+typealias UnidentifiedJSONEntity<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, Unidentified>
 
-// We create typealiases given that we do not expect JSON:API Relationships
-// for this particular API to have Metadata or Links associated
-// with them.
-typealias ToOneRelationship<ResourceObject: Identifiable> = JSONAPI.ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
-typealias ToManyRelationship<ResourceObject: Relatable> = JSONAPI.ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
+// Create relationship typealiases because we do not expect
+// JSON:API Relationships for this particular API to have
+// Metadata or Links associated with them.
+typealias ToOneRelationship<Entity: Identifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
+typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Entity, NoMetadata, NoLinks>
 
-// We create a typealias for a Document given that we do not expect
+// Create a typealias for a Document because we do not expect
 // JSON:API Documents for this particular API to have Metadata, Links,
-// useful Errors, or a JSON:API Object (i.e. APIDescription).
+// useful Errors, or an APIDescription (The *SPEC* calls this
+// "API Description" the "JSON:API Object").
 typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
 
-// MARK: ResourceObject Definitions
+// MARK: Entity Definitions
 
 enum AuthorDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "authors" }
@@ -683,7 +684,7 @@ enum AuthorDescription: ResourceObjectDescription {
 	public typealias Relationships = NoRelationships
 }
 
-typealias Author = JSONResourceObject<AuthorDescription>
+typealias Author = JSONEntity<AuthorDescription>
 
 enum ArticleDescription: ResourceObjectDescription {
 	public static var jsonType: String { return "articles" }
@@ -698,7 +699,7 @@ enum ArticleDescription: ResourceObjectDescription {
 	}
 }
 
-typealias Article = JSONResourceObject<ArticleDescription>
+typealias Article = JSONEntity<ArticleDescription>
 
 // MARK: Document Definitions
 
@@ -707,47 +708,48 @@ typealias Article = JSONResourceObject<ArticleDescription>
 typealias SingleArticleDocumentWithIncludes = Document<SingleResourceBody<Article>, Include1<Author>>
 
 // ... and a typealias to represent a document containing one Article and
-// not including any related resource objects.
+// not including any related entities.
 typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoIncludes>
 ```
+
 ### Server Pseudo-example
 ```swift
 // Skipping over all the API and database stuff, here's a chunk of code
 // that creates a document. Note that this document is the entirety
 // of a JSON:API response body.
 func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, SingleArticleDocumentWithIncludes> {
-	// Let's pretend all of this is coming from a database:
+    // Let's pretend all of this is coming from a database:
 
-	let authorId = Author.Identifier(rawValue: "1234")
+    let authorId = Author.Identifier(rawValue: "1234")
 
-	let article = Article(id: .init(rawValue: "5678"),
-						  attributes: .init(title: .init(value: "JSON:API in Swift"),
-											abstract: .init(value: "Not yet written")),
-						  relationships: .init(author: .init(id: authorId)),
-						  meta: .none,
-						  links: .none)
+    let article = Article(id: .init(rawValue: "5678"),
+                          attributes: .init(title: .init(value: "JSON:API in Swift"),
+                                            abstract: .init(value: "Not yet written")),
+                          relationships: .init(author: .init(id: authorId)),
+                          meta: .none,
+                          links: .none)
 
-	let document = SingleArticleDocument(apiDescription: .none,
-										 body: .init(resourceObject: article),
-										 includes: .none,
-										 meta: .none,
-										 links: .none)
+    let document = SingleArticleDocument(apiDescription: .none,
+                                         body: .init(resourceObject: article),
+                                         includes: .none,
+                                         meta: .none,
+                                         links: .none)
 
-	switch includeAuthor {
-	case false:
-		return .a(document)
+    switch includeAuthor {
+    case false:
+        return .init(document)
 
-	case true:
-		let author = Author(id: authorId,
-							attributes: .init(name: .init(value: "Janice Bluff")),
-							relationships: .none,
-							meta: .none,
-							links: .none)
+    case true:
+        let author = Author(id: authorId,
+                            attributes: .init(name: .init(value: "Janice Bluff")),
+                            relationships: .none,
+                            meta: .none,
+                            links: .none)
 
-		let includes: Includes<SingleArticleDocumentWithIncludes.Include> = .init(values: [.init(author)])
+        let includes: Includes<SingleArticleDocumentWithIncludes.Include> = .init(values: [.init(author)])
 
-		return .b(document.including(.init(values: [.init(author)])))
-	}
+        return .init(document.including(.init(values: [.init(author)])))
+    }
 }
 
 let encoder = JSONEncoder()
@@ -757,8 +759,8 @@ encoder.outputFormatting = .prettyPrinted
 let responseBody = articleDocument(includeAuthor: true)
 let responseData = try! encoder.encode(responseBody)
 
-// Next step would be encoding and setting as the HTTP body of a response.
-// we will just print it out instead:
+// Next step would be setting the HTTP body of a response.
+// We will just print it out instead:
 print("-----")
 print(String(data: responseData, encoding: .utf8)!)
 
@@ -773,31 +775,31 @@ print(String(data: otherResponseData, encoding: .utf8)!)
 ### Client Pseudo-example
 ```swift
 enum NetworkError: Swift.Error {
-	case serverError
-	case quantityMismatch
+    case serverError
+    case quantityMismatch
 }
 
 // Skipping over all the API stuff, here's a chunk of code that will
 // decode a document. We will assume we have made a request for a
 // single article including the author.
 func docode(articleResponseData: Data) throws -> (article: Article, author: Author) {
-	let decoder = JSONDecoder()
-	decoder.keyDecodingStrategy = .convertFromSnakeCase
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-	let articleDocument = try decoder.decode(SingleArticleDocumentWithIncludes.self, from: articleResponseData)
+    let articleDocument = try decoder.decode(SingleArticleDocumentWithIncludes.self, from: articleResponseData)
 
-	switch articleDocument.body {
-	case .data(let data):
-		let authors = data.includes[Author.self]
+    switch articleDocument.body {
+    case .data(let data):
+        let authors = data.includes[Author.self]
 
-		guard authors.count == 1 else {
-			throw NetworkError.quantityMismatch
-		}
+        guard authors.count == 1 else {
+            throw NetworkError.quantityMismatch
+        }
 
-		return (article: data.primary.value, author: authors[0])
-	case .errors(let errors, meta: _, links: _):
-		throw NetworkError.serverError
-	}
+        return (article: data.primary.value, author: authors[0])
+    case .errors(let errors, meta: _, links: _):
+        throw NetworkError.serverError
+    }
 }
 
 let response = try! docode(articleResponseData: responseData)
