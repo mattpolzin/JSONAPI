@@ -510,6 +510,8 @@ public enum ResourceObjectDescription2: JSONAPI.ResourceObjectDescription {
 			case wholeOtherThing = "coolProperty"
 		}
 	}
+
+    public typealias Relationships = NoRelationships
 }
 ```
 
