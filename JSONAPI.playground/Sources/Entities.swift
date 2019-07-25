@@ -15,11 +15,11 @@ Please enjoy these examples, but allow me the forced casting and the lack of err
 ********/
 
 // MARK: - String as CreatableRawIdType
-var GlobalStringId: Int = 0
+var globalStringId: Int = 0
 extension String: CreatableRawIdType {
 	public static func unique() -> String {
-		GlobalStringId += 1
-		return String(GlobalStringId)
+		globalStringId += 1
+		return String(globalStringId)
 	}
 }
 

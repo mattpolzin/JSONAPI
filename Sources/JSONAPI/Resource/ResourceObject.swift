@@ -56,8 +56,9 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
 public protocol ResourceObjectDescription: ResourceObjectProxyDescription where Attributes: JSONAPI.Attributes, Relationships: JSONAPI.Relationships {}
 
 /// ResourceObjectProxy is a protocol that can be used to create
-/// types that _act_ like Entities but cannot be encoded
-/// or decoded as Entities.
+/// types that _act_ like ResourceObject but cannot be encoded
+/// or decoded as ResourceObjects.
+@dynamicMemberLookup
 public protocol ResourceObjectProxy: Equatable, JSONTyped {
 	associatedtype Description: ResourceObjectProxyDescription
 	associatedtype EntityRawIdType: JSONAPI.MaybeRawId
@@ -81,7 +82,7 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
 }
 
 extension ResourceObjectProxy {
-	/// The JSON API compliant "type" of this `Entity`.
+	/// The JSON API compliant "type" of this `ResourceObject`.
 	public static var jsonType: String { return Description.jsonType }
 }
 
@@ -141,7 +142,7 @@ extension ResourceObject: CustomStringConvertible {
 	}
 }
 
-// MARK: Convenience initializers
+// MARK: - Convenience initializers
 extension ResourceObject where EntityRawIdType: CreatableRawIdType {
 	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
 		self.id = ResourceObject.Id()
@@ -392,7 +393,7 @@ extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, Ent
 }
 */
 
-// MARK: Pointer for Relationships use.
+// MARK: - Pointer for Relationships use
 public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
 	/// An ResourceObject.Pointer is a `ToOneRelationship` with no metadata or links.
@@ -416,7 +417,7 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 	}
 }
 
-// MARK: Identifying Unidentified Entities
+// MARK: - Identifying Unidentified Entities
 public extension ResourceObject where EntityRawIdType == Unidentified {
 	/// Create a new ResourceObject from this one with a newly created
 	/// unique Id of the given type.
@@ -437,31 +438,55 @@ public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
 	}
 }
 
-// MARK: Attribute Access
+// MARK: - Attribute Access
 public extension ResourceObjectProxy {
+    // MARK: Keypath Subscript Lookup
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
-	/// of `resourceObject.attributes.propertyName`.
+	/// of `resourceObject.attributes.propertyName.value`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
 		return attributes[keyPath: path].value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
-	/// of `resourceObject.attributes.propertyName`.
+	/// of `resourceObject.attributes.propertyName.value`.
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
 		return attributes[keyPath: path]?.value
 	}
 
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
-	/// of `resourceObject.attributes.propertyName`.
+	/// of `resourceObject.attributes.propertyName.value`.
 	subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
 		// Implementation Note: Handles Transform that returns optional
 		// type.
 		return attributes[keyPath: path].flatMap { $0.value }
 	}
 
+    // MARK: Dynaminc Member Keypath Lookup
+    /// Access the attribute at the given keypath. This just
+    /// allows you to write `resourceObject[\.propertyName]` instead
+    /// of `resourceObject.attributes.propertyName.value`.
+    subscript<T: AttributeType>(dynamicMember path: KeyPath<Description.Attributes, T>) -> T.ValueType {
+        return attributes[keyPath: path].value
+    }
+
+    /// Access the attribute at the given keypath. This just
+    /// allows you to write `resourceObject[\.propertyName]` instead
+    /// of `resourceObject.attributes.propertyName.value`.
+    subscript<T: AttributeType>(dynamicMember path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
+        return attributes[keyPath: path]?.value
+    }
+
+    /// Access the attribute at the given keypath. This just
+    /// allows you to write `resourceObject[\.propertyName]` instead
+    /// of `resourceObject.attributes.propertyName.value`.
+    subscript<T: AttributeType, U>(dynamicMember path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
+        return attributes[keyPath: path].flatMap { $0.value }
+    }
+
+    // MARK: Direct Keypath Subscript Lookup
 	/// Access the storage of the attribute at the given keypath. This just
     /// allows you to write `resourceObject[direct: \.propertyName]` instead
 	/// of `resourceObject.attributes.propertyName`.
@@ -475,16 +500,24 @@ public extension ResourceObjectProxy {
 	}
 }
 
-// MARK: Meta-Attribute Access
+// MARK: - Meta-Attribute Access
 public extension ResourceObjectProxy {
+    // MARK: Keypath Subscript Lookup
 	/// Access an attribute requiring a transformation on the RawValue _and_
 	/// a secondary transformation on this entity (self).
 	subscript<T>(_ path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
 		return attributes[keyPath: path](self)
 	}
+
+    // MARK: Dynamic Member Keypath Lookup
+    /// Access an attribute requiring a transformation on the RawValue _and_
+    /// a secondary transformation on this entity (self).
+    subscript<T>(dynamicMember path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
+        return attributes[keyPath: path](self)
+    }
 }
 
-// MARK: Relationship Access
+// MARK: - Relationship Access
 public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `resourceObject ~> \.other` instead
@@ -526,7 +559,7 @@ public extension ResourceObjectProxy {
 	}
 }
 
-// MARK: Meta-Relationship Access
+// MARK: - Meta-Relationship Access
 public extension ResourceObjectProxy {
 	/// Access to an Id of a `ToOneRelationship`.
 	/// This allows you to write `resourceObject ~> \.other` instead

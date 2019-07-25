@@ -14,7 +14,9 @@ class CustomAttributesTests: XCTestCase {
 		let entity = decoded(type: CustomAttributeEntity.self, data: customAttributeEntityData)
 
 		XCTAssertEqual(entity[\.firstName], "Cool")
+        XCTAssertEqual(entity.firstName, "Cool")
 		XCTAssertEqual(entity[\.name], "Cool Name")
+        XCTAssertEqual(entity.name, "Cool Name")
 		XCTAssertNoThrow(try CustomAttributeEntity.check(entity))
 	}
 
@@ -27,7 +29,9 @@ class CustomAttributesTests: XCTestCase {
 		let entity = decoded(type: CustomKeysEntity.self, data: customAttributeEntityData)
 
 		XCTAssertEqual(entity[\.firstNameSilly], "Cool")
+        XCTAssertEqual(entity.firstNameSilly, "Cool")
 		XCTAssertEqual(entity[\.lastNameSilly], "Name")
+        XCTAssertEqual(entity.lastNameSilly, "Name")
 		XCTAssertNoThrow(try CustomKeysEntity.check(entity))
 	}
 
