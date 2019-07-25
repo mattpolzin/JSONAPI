@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "JSONAPI"
-  spec.version      = "0.30.0"
+  spec.version      = "0.31.1"
   spec.summary      = "Swift Codable JSON API framework."
 
   # This description is used to generate tags and improve search results.
@@ -93,7 +93,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Sources", "Sources/**/*.{swift}"
+  spec.source_files  = "Sources/JSONAPI/**/*.{swift}"
   # spec.exclude_files = "Classes/Exclude"
 
   # spec.public_header_files = "Classes/**/*.h"
@@ -119,7 +119,6 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  the lib prefix of their name.
   #
 
-  spec.framework  = "Poly"
   # spec.frameworks = "SomeFramework", "AnotherFramework"
 
   # spec.library   = "iconv"
