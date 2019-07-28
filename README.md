@@ -813,10 +813,18 @@ print(response.author)
 ```
 
 # JSONAPI+Testing
-The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `ResourceObject` values into your unit tests. It also provides a `check()` function for each `ResourceObject` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
+The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. 
+
+The test library is called `JSONAPITesting`. It provides literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` in many situations so that you can easily write test `ResourceObject` values into your unit tests. It also provides a `check()` function for each `ResourceObject` type that can be used to catch problems with your `JSONAPI` structures that are not caught by Swift's type system. 
+
+You can see the `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
 
 # JSONAPI+Arbitrary
-This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-Arbitrary
+This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-Arbitrary for more information.
 
 # JSONAPI+OpenAPI
-This library has moved into its own Package. See https://github.com/mattpolzin/JSONAPI-OpenAPI
+The `JSONAPI+OpenAPI` library generates OpenAPI compliant JSON Schema for models built with the `JSONAPI` library. If your Swift code is your preferred source of truth for API information, this is an easy way to document the response schemas of your API. 
+
+`JSONAPI+OpenAPI` also has experimental support for generating `JSONAPI` Swift code from Open API documentation (this currently lives on the `feature/gen-swift` branch). 
+
+See https://github.com/mattpolzin/JSONAPI-OpenAPI for more information.
