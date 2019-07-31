@@ -190,10 +190,6 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: ResourceLinkageCodingKeys.self)
 
-		if (id as Any?) == nil {
-			try container.encodeNil(forKey: .data)
-		}
-
 		if MetaType.self != NoMetadata.self {
 			try container.encode(meta, forKey: .meta)
 		}

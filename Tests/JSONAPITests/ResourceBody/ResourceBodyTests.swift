@@ -100,6 +100,9 @@ class ResourceBodyTests: XCTestCase {
 		XCTAssertEqual(combined.values.count, 3)
 		XCTAssertEqual(combined.values, body1.values + body2.values)
 	}
+}
+
+extension ResourceBodyTests {
 
 	enum ArticleType: ResourceObjectDescription {
 		public static var jsonType: String { return "articles" }

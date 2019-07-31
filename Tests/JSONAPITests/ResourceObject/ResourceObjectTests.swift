@@ -10,14 +10,14 @@ import JSONAPI
 import JSONAPITesting
 
 class ResourceObjectTests: XCTestCase {
-	
+
 	func test_relationship_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
-		
+
 		XCTAssertEqual(entity2.relationships.other, entity1.pointer)
 	}
-	
+
 	func test_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
@@ -30,6 +30,7 @@ class ResourceObjectTests: XCTestCase {
 		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, Optional(entity1.id))
+		XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
 	}
 
 	func test_toMany_relationship_operator_access() {
@@ -47,11 +48,11 @@ class ResourceObjectTests: XCTestCase {
 
 		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
-	
+
 	func test_relationshipIds() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
-		
+
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
 
@@ -174,7 +175,7 @@ extension ResourceObjectTests {
 								   data: entity_some_relationships_no_attributes)
 
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
-		
+
 		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
 		XCTAssertNoThrow(try TestEntity3.check(entity))
 
@@ -185,11 +186,11 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity3.self,
 								  data: entity_some_relationships_no_attributes)
 	}
-	
+
 	func test_EntitySomeRelationshipsSomeAttributes() {
 		let entity = decoded(type: TestEntity4.self,
 								   data: entity_some_relationships_some_attributes)
-		
+
 		XCTAssertEqual(entity[\.word], "coolio")
         XCTAssertEqual(entity.word, "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
@@ -208,11 +209,11 @@ extension ResourceObjectTests {
 
 // MARK: Attribute omission and nullification
 extension ResourceObjectTests {
-	
+
 	func test_entityOneOmittedAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
         XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHere])
@@ -228,11 +229,11 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
 	}
-	
+
 	func test_entityOneNullAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
         XCTAssertEqual(entity.here, "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
@@ -248,11 +249,11 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_null_attribute)
 	}
-	
+
 	func test_entityAllAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_all_attributes)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
         XCTAssertEqual(entity.here, "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
@@ -268,11 +269,11 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_all_attributes)
 	}
-	
+
 	func test_entityOneNullAndOneOmittedAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_and_one_missing_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
         XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHere])
@@ -288,16 +289,16 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_null_and_one_missing_attribute)
 	}
-	
+
 	func test_entityBrokenNullableOmittedAttribute() {
 		XCTAssertThrowsError(try JSONDecoder().decode(TestEntity6.self,
 								   from: entity_broken_missing_nullable_attribute))
 	}
-	
+
 	func test_NullOptionalNullableAttribute() {
 		let entity = decoded(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
         XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHereMaybeNull])
@@ -311,7 +312,7 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
 	}
-	
+
 	func test_NonNullOptionalNullableAttribute() {
 		let entity = decoded(type: TestEntity7.self,
 								   data: entity_non_null_optional_nullable_attribute)
@@ -336,7 +337,7 @@ extension ResourceObjectTests {
 	func test_IntToString() {
 		let entity = decoded(type: TestEntity8.self,
 								   data: entity_int_to_string_attribute)
-		
+
 		XCTAssertEqual(entity[\.string], "22")
         XCTAssertEqual(entity.string, "22")
 		XCTAssertEqual(entity[\.int], 22)
@@ -419,6 +420,7 @@ extension ResourceObjectTests {
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalNullableOne)
+        XCTAssertNil((entity ~> \.optionalNullableOne).rawValue)
 		XCTAssertNoThrow(try TestEntity9.check(entity))
 
 		testEncoded(entity: entity)
@@ -690,6 +692,16 @@ extension ResourceObjectTests {
 
 		XCTAssertEqual(entity1 ~> \.metaRelationship, "hello")
 	}
+
+    func test_toManyMetaRelationshipAccessWorks() {
+        let entity1 = TestEntityWithMetaRelationship(id: "even",
+                                                     attributes: .none,
+                                                     relationships: .init(),
+                                                     meta: .none,
+                                                     links: .none)
+
+        XCTAssertEqual(entity1 ~> \.toManyMetaRelationship, ["hello"])
+    }
 }
 
 // MARK: - Test Types
@@ -708,7 +720,7 @@ extension ResourceObjectTests {
 		static var jsonType: String { return "second_test_entities"}
 
 		typealias Attributes = NoAttributes
-		
+
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
@@ -720,7 +732,7 @@ extension ResourceObjectTests {
 		static var jsonType: String { return "third_test_entities"}
 
 		typealias Attributes = NoAttributes
-		
+
 		struct Relationships: JSONAPI.Relationships {
 			let others: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
@@ -793,7 +805,7 @@ extension ResourceObjectTests {
 		static var jsonType: String { return "eighth_test_entities" }
 
 		typealias Relationships = NoRelationships
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let string: Attribute<String>
 			let int: Attribute<Int>
@@ -804,7 +816,7 @@ extension ResourceObjectTests {
 			let nullToString: TransformedAttribute<Int?, OptionalToString<Int>>
 		}
 	}
-	
+
 	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
 	enum TestEntityType9: ResourceObjectDescription {
@@ -922,6 +934,12 @@ extension ResourceObjectTests {
 					return TestEntity1.Identifier(rawValue: "hello")
 				}
 			}
+
+            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.Identifier] {
+                return { entity in
+                    return [TestEntity1.Identifier.id(from: "hello")]
+                }
+            }
 		}
 	}
 
@@ -932,19 +950,19 @@ extension ResourceObjectTests {
 			return String(from)
 		}
 	}
-	
+
 	enum IntPlusOneHundred: Transformer {
 		public static func transform(_ from: Int) -> Int {
 			return from + 100
 		}
 	}
-	
+
 	enum IntToDouble: Transformer {
 		public static func transform(_ from: Int) -> Double {
 			return Double(from)
 		}
 	}
-	
+
 	enum OptionalToString<T>: Transformer {
 		public static func transform(_ from: T?) -> String {
 			return String(describing: from)

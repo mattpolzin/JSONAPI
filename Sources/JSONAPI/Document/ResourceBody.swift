@@ -71,10 +71,12 @@ extension SingleResourceBody {
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.singleValueContainer()
 
-		if (value as Any?) == nil {
-			try container.encodeNil()
-			return
-		}
+        let anyNil: Any? = nil
+        let nilValue = anyNil as? Entity
+        guard value != nilValue else {
+            try container.encodeNil()
+            return
+        }
 
 		try container.encode(value)
 	}

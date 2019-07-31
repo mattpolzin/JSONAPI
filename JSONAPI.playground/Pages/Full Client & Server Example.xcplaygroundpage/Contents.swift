@@ -114,7 +114,7 @@ func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, Singl
 
         let includes: Includes<SingleArticleDocumentWithIncludes.Include> = .init(values: [.init(author)])
 
-        return .init(document.including(.init(values: [.init(author)])))
+        return .init(document.including(includes))
     }
 }
 
