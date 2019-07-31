@@ -30,6 +30,7 @@ class EntityTests: XCTestCase {
 		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, entity1.id)
+        XCTAssertEqual((entity ~> \.optionalOne).rawValue, entity1.id.rawValue)
 	}
 
 	func test_toMany_relationship_operator_access() {
@@ -393,6 +394,7 @@ extension EntityTests {
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalNullableOne)
+        XCTAssertNil((entity ~> \.optionalNullableOne).rawValue)
 		XCTAssertNoThrow(try TestEntity9.check(entity))
 
 		testEncoded(entity: entity)
@@ -651,6 +653,16 @@ extension EntityTests {
 
 		XCTAssertEqual(entity1 ~> \.metaRelationship, "hello")
 	}
+
+    func test_toManyMetaRelationshipAccessWorks() {
+        let entity1 = TestEntityWithMetaRelationship(id: "even",
+                                                     attributes: .none,
+                                                     relationships: .init(),
+                                                     meta: .none,
+                                                     links: .none)
+
+        XCTAssertEqual(entity1 ~> \.toManyMetaRelationship, ["hello"])
+    }
 }
 
 // MARK: - Test Types
@@ -883,6 +895,12 @@ extension EntityTests {
 					return TestEntity1.Identifier(rawValue: "hello")
 				}
 			}
+
+            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.Identifier] {
+                return { entity in
+                    return [TestEntity1.Identifier.id(from: "hello")]
+                }
+            }
 		}
 	}
 
