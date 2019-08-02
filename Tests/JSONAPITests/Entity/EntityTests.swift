@@ -29,8 +29,8 @@ class EntityTests: XCTestCase {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
-		XCTAssertEqual(entity ~> \.optionalOne, entity1.id)
-        XCTAssertEqual((entity ~> \.optionalOne).rawValue, entity1.id.rawValue)
+		XCTAssertEqual(entity ~> \.optionalOne, Optional(entity1.id))
+        XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
 	}
 
 	func test_toMany_relationship_operator_access() {
