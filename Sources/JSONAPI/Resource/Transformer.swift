@@ -42,6 +42,8 @@ extension Validator {
 		return value
 	}
 
+    /// Validate the given value and then return it if valid.
+    /// throws if invalid.
 	public static func validate(_ value: To) throws -> To {
 		let _ = try transform(value)
 		return value
