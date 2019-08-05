@@ -553,63 +553,63 @@ infix operator ~>
 
 // MARK: - Codable
 private enum ResourceObjectCodingKeys: String, CodingKey {
-	case type = "type"
-	case id = "id"
-	case attributes = "attributes"
-	case relationships = "relationships"
-	case meta = "meta"
-	case links = "links"
+    case type = "type"
+    case id = "id"
+    case attributes = "attributes"
+    case relationships = "relationships"
+    case meta = "meta"
+    case links = "links"
 }
 
 public extension ResourceObject {
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
-		
-		try container.encode(ResourceObject.jsonType, forKey: .type)
-		
-		if EntityRawIdType.self != Unidentified.self {
-			try container.encode(id, forKey: .id)
-		}
-		
-		if Description.Attributes.self != NoAttributes.self {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
+
+        try container.encode(ResourceObject.jsonType, forKey: .type)
+
+        if EntityRawIdType.self != Unidentified.self {
+            try container.encode(id, forKey: .id)
+        }
+
+        if Description.Attributes.self != NoAttributes.self {
             let nestedEncoder = container.superEncoder(forKey: .attributes)
             try attributes.encode(to: nestedEncoder)
-		}
-		
-		if Description.Relationships.self != NoRelationships.self {
-			try container.encode(relationships, forKey: .relationships)
-		}
+        }
 
-		if MetaType.self != NoMetadata.self {
-			try container.encode(meta, forKey: .meta)
-		}
+        if Description.Relationships.self != NoRelationships.self {
+            try container.encode(relationships, forKey: .relationships)
+        }
 
-		if LinksType.self != NoLinks.self {
-			try container.encode(links, forKey: .links)
-		}
-	}
+        if MetaType.self != NoMetadata.self {
+            try container.encode(meta, forKey: .meta)
+        }
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
-		
-		let type = try container.decode(String.self, forKey: .type)
-		
-		guard ResourceObject.jsonType == type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
-		}
+        if LinksType.self != NoLinks.self {
+            try container.encode(links, forKey: .links)
+        }
+    }
 
-		let maybeUnidentified = Unidentified() as? EntityRawIdType
-		id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 
-		attributes = try (NoAttributes() as? Description.Attributes) ??
-			container.decode(Description.Attributes.self, forKey: .attributes)
+        let type = try container.decode(String.self, forKey: .type)
 
-		relationships = try (NoRelationships() as? Description.Relationships)
-			?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
-			?? Description.Relationships(from: EmptyObjectDecoder())
+        guard ResourceObject.jsonType == type else {
+            throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
+        }
 
-		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+        let maybeUnidentified = Unidentified() as? EntityRawIdType
+        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
 
-		links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
-	}
+        attributes = try (NoAttributes() as? Description.Attributes) ??
+            container.decode(Description.Attributes.self, forKey: .attributes)
+
+        relationships = try (NoRelationships() as? Description.Relationships)
+            ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
+            ?? Description.Relationships(from: EmptyObjectDecoder())
+
+        meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+
+        links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
+    }
 }
