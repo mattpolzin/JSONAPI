@@ -38,3 +38,9 @@ public extension ResourceObject where Description.Attributes: SparsableAttribute
         return SparseFieldset(self, fields: fields)
     }
 }
+
+public extension ResourceObject where Description.Attributes: SparsableAttributes {
+
+    /// The Sparse Fieldset type for this `ResourceObject`
+    typealias SparseType = SparseFieldset<Description, MetaType, LinksType, EntityRawIdType>
+}
