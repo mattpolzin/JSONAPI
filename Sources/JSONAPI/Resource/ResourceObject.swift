@@ -15,6 +15,8 @@ public protocol Relationships: Codable & Equatable {}
 /// properties of any types that are JSON encodable.
 public protocol Attributes: Codable & Equatable {}
 
+/// CodingKeys must be `CodingKey` and `Equatable` in order
+/// to support Sparse Fieldsets.
 public typealias SparsableCodingKey = CodingKey & Equatable
 
 /// Attributes containing publicly accessible and `Equatable`
@@ -403,14 +405,14 @@ extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, Ent
 // MARK: Pointer for Relationships use.
 public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
-	/// An ResourceObject.Pointer is a `ToOneRelationship` with no metadata or links.
-	/// This is just a convenient way to reference an ResourceObject so that
-	/// other Entities' Relationships can be built up from it.
+	/// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
+	/// This is just a convenient way to reference a `ResourceObject` so that
+	/// other ResourceObjects' Relationships can be built up from it.
 	typealias Pointer = ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
 
-	/// ResourceObject.Pointers is a `ToManyRelationship` with no metadata or links.
-	/// This is just a convenient way to reference a bunch of Entities so
-	/// that other Entities' Relationships can be built up from them.
+	/// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
+	/// This is just a convenient way to reference a bunch of ResourceObjects so
+	/// that other ResourceObjects' Relationships can be built up from them.
 	typealias Pointers = ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
 
 	/// Get a pointer to this resource object that can be used as a
@@ -419,6 +421,8 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 		return Pointer(resourceObject: self)
 	}
 
+    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
+    /// object with the given metadata and links attached.
 	func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, MType, LType> {
 		return ToOneRelationship(resourceObject: self, meta: meta, links: links)
 	}
@@ -426,20 +430,20 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
 // MARK: Identifying Unidentified Entities
 public extension ResourceObject where EntityRawIdType == Unidentified {
-	/// Create a new ResourceObject from this one with a newly created
+	/// Create a new `ResourceObject` from this one with a newly created
 	/// unique Id of the given type.
 	func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
 		return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 
-	/// Create a new ResourceObject from this one with the given Id.
+	/// Create a new `ResourceObject` from this one with the given Id.
 	func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
 		return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 
 public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
-	/// Create a copy of this ResourceObject with a new unique Id.
+	/// Create a copy of this `ResourceObject` with a new unique Id.
 	func withNewIdentifier() -> ResourceObject {
 		return ResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
