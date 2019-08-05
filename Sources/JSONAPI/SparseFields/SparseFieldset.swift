@@ -10,7 +10,7 @@ public struct SparseFieldset<
     MetaType: JSONAPI.Meta,
     LinksType: JSONAPI.Links,
     EntityRawIdType: JSONAPI.MaybeRawId
->: Encodable where Description.Attributes: SparsableAttributes {
+>: EncodablePrimaryResource where Description.Attributes: SparsableAttributes {
 
     public typealias Resource = JSONAPI.ResourceObject<Description, MetaType, LinksType, EntityRawIdType>
 

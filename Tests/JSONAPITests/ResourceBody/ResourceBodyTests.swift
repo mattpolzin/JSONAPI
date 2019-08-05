@@ -102,6 +102,93 @@ class ResourceBodyTests: XCTestCase {
 	}
 }
 
+// MARK: - Sparse Fieldsets
+
+extension ResourceBodyTests {
+    func test_SparseSingleBodyEncode() {
+        let sparseArticle = Article(attributes: .init(title: "hello world"),
+                                    relationships: .none,
+                                    meta: .none,
+                                    links: .none)
+            .sparse(with: [])
+        let body = SingleResourceBody(resourceObject: sparseArticle)
+
+        let encoded = try! JSONEncoder().encode(body)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [String: Any]
+
+        XCTAssertNotNil(deserializedObj?["id"])
+        XCTAssertEqual(deserializedObj?["id"] as? String, sparseArticle.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj?["type"])
+        XCTAssertEqual(deserializedObj?["type"] as? String, Article.jsonType)
+
+        XCTAssertEqual((deserializedObj?["attributes"] as? [String: Any])?.count, 0)
+
+        XCTAssertNil(deserializedObj?["relationships"])
+    }
+
+    func test_SparseManyBodyEncode() {
+        let fields: [Article.Attributes.CodingKeys] = [.title]
+        let sparseArticle1 = Article(attributes: .init(title: "hello world"),
+                                     relationships: .none,
+                                     meta: .none,
+                                     links: .none)
+            .sparse(with: fields)
+        let sparseArticle2 = Article(attributes: .init(title: "hello two"),
+                                     relationships: .none,
+                                     meta: .none,
+                                     links: .none)
+            .sparse(with: fields)
+
+        let body = ManyResourceBody(resourceObjects: [sparseArticle1, sparseArticle2])
+
+        let encoded = try! JSONEncoder().encode(body)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [Any]
+
+        XCTAssertEqual(deserializedObj?.count, 2)
+
+        guard let deserializedObj1 = deserializedObj?.first as? [String: Any],
+            let deserializedObj2 = deserializedObj?.last as? [String: Any] else {
+                XCTFail("Expected to deserialize two objects from array")
+                return
+        }
+
+        // first article
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, sparseArticle1.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, Article.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["title"] as? String, "hello world")
+
+        XCTAssertNil(deserializedObj1["relationships"])
+
+        // second article
+        XCTAssertNotNil(deserializedObj2["id"])
+        XCTAssertEqual(deserializedObj2["id"] as? String, sparseArticle2.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj2["type"])
+        XCTAssertEqual(deserializedObj2["type"] as? String, Article.jsonType)
+
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?["title"] as? String, "hello two")
+
+        XCTAssertNil(deserializedObj2["relationships"])
+    }
+}
+
+// MARK: - Test Types
+
 extension ResourceBodyTests {
 
 	enum ArticleType: ResourceObjectDescription {
@@ -109,8 +196,12 @@ extension ResourceBodyTests {
 
 		typealias Relationships = NoRelationships
 
-		struct Attributes: JSONAPI.Attributes {
+		struct Attributes: JSONAPI.SparsableAttributes {
 			let title: Attribute<String>
+
+            public enum CodingKeys: String, Equatable, CodingKey {
+                case title
+            }
 		}
 	}
 
