@@ -10,7 +10,7 @@ import Foundation
 import JSONAPI
 import JSONAPITesting
 
-class SparseFieldEncoderTests: XCTestCase {
+class SparseFieldsetTests: XCTestCase {
     func test_FullEncode() {
         let jsonEncoder = JSONEncoder()
         let sparseWithEverything = SparseFieldset(testEverythingObject, fields: EverythingTest.Attributes.CodingKeys.allCases)
