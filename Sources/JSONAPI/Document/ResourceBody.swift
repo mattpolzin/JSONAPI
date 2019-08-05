@@ -5,6 +5,10 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
+/// A `MaybePrimaryResource` is just an optional `PrimaryResource`.
+/// This protocol allows for `SingleResourceBody` to contain a `null`
+/// data object where `ManyResourceBody` cannot (because an empty
+/// array should be used for no results).
 public protocol MaybePrimaryResource: Equatable, Codable {}
 
 /// A PrimaryResource is a type that can be used in the body of a JSON API
@@ -19,6 +23,8 @@ extension Optional: MaybePrimaryResource where Wrapped: PrimaryResource {}
 public protocol ResourceBody: Codable, Equatable {
 }
 
+/// A `ResourceBody` that has the ability to take on more primary
+/// resources by appending another similarly typed `ResourceBody`.
 public protocol AppendableResourceBody: ResourceBody {
 	func appending(_ other: Self) -> Self
 }
