@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SparseFieldEncodableTests.swift
 //  
 //
 //  Created by Mathew Polzin on 8/4/19.
@@ -52,9 +52,44 @@ class SparseFieldEncoderTests: XCTestCase {
 
     func test_PartialEncode() {
         let jsonEncoder = JSONEncoder()
-        let sparseWithEverything = SparseField(testEverythingObject, fields: [.string, .bool, .array])
+        let sparseObject = SparseField(testEverythingObject, fields: [.string, .bool, .array])
 
-        let encoded = try! jsonEncoder.encode(sparseWithEverything)
+        let encoded = try! jsonEncoder.encode(sparseObject)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let outerDict = deserialized as? [String: Any]
+        let id = outerDict?["id"] as? String
+        let type = outerDict?["type"] as? String
+        let attributesDict = outerDict?["attributes"] as? [String: Any]
+        let relationships = outerDict?["relationships"]
+
+        XCTAssertEqual(id, testEverythingObject.id.rawValue)
+        XCTAssertEqual(type, EverythingTest.jsonType)
+        XCTAssertNil(relationships)
+
+        XCTAssertEqual(attributesDict?.count, 3)
+        XCTAssertEqual(attributesDict?["bool"] as? Bool,
+                       testEverythingObject[\.bool])
+        XCTAssertNil(attributesDict?["int"])
+        XCTAssertNil(attributesDict?["double"])
+        XCTAssertEqual(attributesDict?["string"] as? String,
+                       testEverythingObject[\.string])
+        XCTAssertNil(attributesDict?["nestedStruct"])
+        XCTAssertNil(attributesDict?["nestedEnum"])
+        XCTAssertEqual(attributesDict?["array"] as? [Bool],
+                       testEverythingObject[\.array])
+        XCTAssertNil(attributesDict?["optional"])
+        XCTAssertNil(attributesDict?["nullable"])
+        XCTAssertNil(attributesDict?["optionalNullable"])
+    }
+
+    func test_sparseFieldsMethod() {
+        let jsonEncoder = JSONEncoder()
+        let sparseObject = testEverythingObject.sparse(with: [.string, .bool, .array])
+
+        let encoded = try! jsonEncoder.encode(sparseObject)
 
         let deserialized = try! JSONSerialization.jsonObject(with: encoded,
                                                              options: [])

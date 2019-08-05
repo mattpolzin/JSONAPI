@@ -29,3 +29,12 @@ public struct SparseField<
         try resourceObject.encode(to: sparseEncoder)
     }
 }
+
+public extension ResourceObject where Description.Attributes: SparsableAttributes {
+
+    /// Get a Sparse Fieldset of this `ResourceObject` that can be encoded
+    /// as a `PrimaryResource`.
+    func sparse(with fields: [Description.Attributes.CodingKeys]) -> SparseField<Description, MetaType, LinksType, EntityRawIdType> {
+        return SparseField(self, fields: fields)
+    }
+}
