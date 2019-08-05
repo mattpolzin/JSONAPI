@@ -15,10 +15,12 @@ public protocol Relationships: Codable & Equatable {}
 /// properties of any types that are JSON encodable.
 public protocol Attributes: Codable & Equatable {}
 
+public typealias SparsableCodingKey = CodingKey & Equatable
+
 /// Attributes containing publicly accessible and `Equatable`
 /// CodingKeys are required to support Sparse Fieldsets.
 public protocol SparsableAttributes: Attributes {
-    associatedtype CodingKeys: CodingKey & Equatable
+    associatedtype CodingKeys: SparsableCodingKey
 }
 
 /// Can be used as `Relationships` Type for Entities that do not
