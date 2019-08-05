@@ -5,8 +5,14 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
+/// This protocol allows for a `SingleResourceBody` to contain a `null`
+/// data object where `ManyResourceBody` cannot (because an empty
+/// array should be used for no results).
 public protocol OptionalEncodablePrimaryResource: Equatable, Encodable {}
 
+/// An `EncodablePrimaryResource` is a `PrimaryResource` that only supports encoding.
+/// This is actually more restrictave than `PrimaryResource`, which supports both encoding and
+/// decoding.
 public protocol EncodablePrimaryResource: OptionalEncodablePrimaryResource {}
 
 /// This protocol allows for `SingleResourceBody` to contain a `null`
@@ -14,7 +20,7 @@ public protocol EncodablePrimaryResource: OptionalEncodablePrimaryResource {}
 /// array should be used for no results).
 public protocol OptionalPrimaryResource: OptionalEncodablePrimaryResource, Decodable {}
 
-/// A PrimaryResource is a type that can be used in the body of a JSON API
+/// A `PrimaryResource` is a type that can be used in the body of a JSON API
 /// document as the primary resource.
 public protocol PrimaryResource: EncodablePrimaryResource, OptionalPrimaryResource {}
 

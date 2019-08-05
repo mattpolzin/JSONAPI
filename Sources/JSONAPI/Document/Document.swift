@@ -7,6 +7,9 @@
 
 import Poly
 
+/// An `EncodableJSONAPIDocument` supports encoding but not decoding.
+/// It is actually more restrictive than `JSONAPIDocument` which supports both
+/// encoding and decoding.
 public protocol EncodableJSONAPIDocument: Equatable, Encodable {
     associatedtype PrimaryResourceBody: JSONAPI.EncodableResourceBody
     associatedtype MetaType: JSONAPI.Meta
@@ -20,6 +23,8 @@ public protocol EncodableJSONAPIDocument: Equatable, Encodable {
     var body: Body { get }
 }
 
+/// A `JSONAPIDocument` supports encoding and decoding of a JSON:API
+/// compliant Document.
 public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
 
 /// A JSON API Document represents the entire body

@@ -5,6 +5,9 @@
 //  Created by Mathew Polzin on 8/4/19.
 //
 
+/// A SparseFieldset represents an `Encodable` subset of the fields
+/// a `ResourceObject` would normally encode. Currently, you can
+/// only apply sparse fieldset's to `ResourceObject.Attributes`.
 public struct SparseFieldset<
     Description: JSONAPI.ResourceObjectDescription,
     MetaType: JSONAPI.Meta,
@@ -12,6 +15,7 @@ public struct SparseFieldset<
     EntityRawIdType: JSONAPI.MaybeRawId
 >: EncodablePrimaryResource where Description.Attributes: SparsableAttributes {
 
+    /// The `ResourceObject` type this `SparseFieldset` is capable of modifying.
     public typealias Resource = JSONAPI.ResourceObject<Description, MetaType, LinksType, EntityRawIdType>
 
     public let resourceObject: Resource
@@ -41,6 +45,6 @@ public extension ResourceObject where Description.Attributes: SparsableAttribute
 
 public extension ResourceObject where Description.Attributes: SparsableAttributes {
 
-    /// The Sparse Fieldset type for this `ResourceObject`
+    /// The `SparseFieldset` type for this `ResourceObject`
     typealias SparseType = SparseFieldset<Description, MetaType, LinksType, EntityRawIdType>
 }

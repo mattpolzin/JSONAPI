@@ -10,12 +10,16 @@ public protocol Transformer {
 	associatedtype From
 	associatedtype To
 
+    /// Turn value of type `From` into a value of type `To` or
+    /// throw an error on failure.
 	static func transform(_ value: From) throws -> To
 }
 
 /// ReversibleTransformers define a function that reverses the transform
 /// operation.
 public protocol ReversibleTransformer: Transformer {
+    /// Turn a value of type `To` into a value of type `From` or
+    /// throw an error on failure.
 	static func reverse(_ value: To) throws -> From
 }
 
@@ -43,7 +47,8 @@ extension Validator {
 	}
 
     /// Validate the given value and then return it if valid.
-    /// throws if invalid.
+    /// throws an erro if invalid.
+    /// - returns: The same value passed in, if it was valid.
 	public static func validate(_ value: To) throws -> To {
 		let _ = try transform(value)
 		return value
