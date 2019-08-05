@@ -1,5 +1,5 @@
 //
-//  SparseFieldEncodableTests.swift
+//  SparseFieldsetTests.swift
 //  
 //
 //  Created by Mathew Polzin on 8/4/19.
@@ -13,7 +13,7 @@ import JSONAPITesting
 class SparseFieldEncoderTests: XCTestCase {
     func test_FullEncode() {
         let jsonEncoder = JSONEncoder()
-        let sparseWithEverything = SparseField(testEverythingObject, fields: EverythingTest.Attributes.CodingKeys.allCases)
+        let sparseWithEverything = SparseFieldset(testEverythingObject, fields: EverythingTest.Attributes.CodingKeys.allCases)
 
         let encoded = try! jsonEncoder.encode(sparseWithEverything)
 
@@ -30,7 +30,7 @@ class SparseFieldEncoderTests: XCTestCase {
         XCTAssertEqual(type, EverythingTest.jsonType)
         XCTAssertNil(relationships)
 
-        XCTAssertEqual(attributesDict?.count, 9) // note not 10 because one value is omitted
+        XCTAssertEqual(attributesDict?.count, 9) // note not 10 because one value is omitted intentionally at initialization
         XCTAssertEqual(attributesDict?["bool"] as? Bool,
                        testEverythingObject[\.bool])
         XCTAssertEqual(attributesDict?["int"] as? Int,
@@ -52,7 +52,7 @@ class SparseFieldEncoderTests: XCTestCase {
 
     func test_PartialEncode() {
         let jsonEncoder = JSONEncoder()
-        let sparseObject = SparseField(testEverythingObject, fields: [.string, .bool, .array])
+        let sparseObject = SparseFieldset(testEverythingObject, fields: [.string, .bool, .array])
 
         let encoded = try! jsonEncoder.encode(sparseObject)
 

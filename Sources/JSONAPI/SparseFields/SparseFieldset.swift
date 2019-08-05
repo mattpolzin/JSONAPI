@@ -1,11 +1,11 @@
 //
-//  SparseField.swift
+//  SparseFieldset.swift
 //  
 //
 //  Created by Mathew Polzin on 8/4/19.
 //
 
-public struct SparseField<
+public struct SparseFieldset<
     Description: JSONAPI.ResourceObjectDescription,
     MetaType: JSONAPI.Meta,
     LinksType: JSONAPI.Links,
@@ -33,8 +33,8 @@ public struct SparseField<
 public extension ResourceObject where Description.Attributes: SparsableAttributes {
 
     /// Get a Sparse Fieldset of this `ResourceObject` that can be encoded
-    /// as a `PrimaryResource`.
-    func sparse(with fields: [Description.Attributes.CodingKeys]) -> SparseField<Description, MetaType, LinksType, EntityRawIdType> {
-        return SparseField(self, fields: fields)
+    /// as a `SparsePrimaryResource`.
+    func sparse(with fields: [Description.Attributes.CodingKeys]) -> SparseFieldset<Description, MetaType, LinksType, EntityRawIdType> {
+        return SparseFieldset(self, fields: fields)
     }
 }
