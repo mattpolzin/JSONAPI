@@ -5,17 +5,16 @@
 //  Created by Mathew Polzin on 11/10/18.
 //
 
-/// A `MaybePrimaryResource` is just an optional `PrimaryResource`.
 /// This protocol allows for `SingleResourceBody` to contain a `null`
 /// data object where `ManyResourceBody` cannot (because an empty
 /// array should be used for no results).
-public protocol MaybePrimaryResource: Equatable, Codable {}
+public protocol OptionalPrimaryResource: Equatable, Codable {}
 
 /// A PrimaryResource is a type that can be used in the body of a JSON API
 /// document as the primary resource.
-public protocol PrimaryResource: MaybePrimaryResource {}
+public protocol PrimaryResource: OptionalPrimaryResource {}
 
-extension Optional: MaybePrimaryResource where Wrapped: PrimaryResource {}
+extension Optional: OptionalPrimaryResource where Wrapped: PrimaryResource {}
 
 /// A ResourceBody is a representation of the body of the JSON API Document.
 /// It can either be one resource (which can be specified as optional or not)
@@ -33,7 +32,7 @@ public func +<R: AppendableResourceBody>(_ left: R, right: R) -> R {
 	return left.appending(right)
 }
 
-public struct SingleResourceBody<Entity: JSONAPI.MaybePrimaryResource>: ResourceBody {
+public struct SingleResourceBody<Entity: JSONAPI.OptionalPrimaryResource>: ResourceBody {
 	public let value: Entity
 
 	public init(resourceObject: Entity) {

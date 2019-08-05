@@ -30,28 +30,28 @@ extension Poly0: PrimaryResource {
 }
 
 // MARK: - 1 type
-extension Poly1: PrimaryResource, MaybePrimaryResource where A: PolyWrapped {}
+extension Poly1: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped {}
 
 // MARK: - 2 types
-extension Poly2: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped {}
+extension Poly2: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped {}
 
 // MARK: - 3 types
-extension Poly3: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped {}
+extension Poly3: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped {}
 
 // MARK: - 4 types
-extension Poly4: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped {}
+extension Poly4: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped {}
 
 // MARK: - 5 types
-extension Poly5: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped {}
+extension Poly5: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped {}
 
 // MARK: - 6 types
-extension Poly6: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped {}
+extension Poly6: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped {}
 
 // MARK: - 7 types
-extension Poly7: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped {}
+extension Poly7: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped {}
 
 // MARK: - 8 types
-extension Poly8: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped {}
+extension Poly8: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped {}
 
 // MARK: - 9 types
-extension Poly9: PrimaryResource, MaybePrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped {}
+extension Poly9: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped {}
