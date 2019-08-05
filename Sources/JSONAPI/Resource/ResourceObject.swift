@@ -15,6 +15,12 @@ public protocol Relationships: Codable & Equatable {}
 /// properties of any types that are JSON encodable.
 public protocol Attributes: Codable & Equatable {}
 
+/// Attributes containing publicly accessible and `Equatable`
+/// CodingKeys are required to support Sparse Fieldsets.
+public protocol SparsableAttributes: Attributes {
+    associatedtype CodingKeys: CodingKey & Equatable
+}
+
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
 public struct NoRelationships: Relationships {
@@ -48,7 +54,7 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
 	associatedtype Relationships: Equatable
 }
 
-/// An `ResourceObjectDescription` describes a JSON API
+/// A `ResourceObjectDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
 /// `ResourceObject`, which gets specialized on an
@@ -566,7 +572,8 @@ public extension ResourceObject {
 		}
 		
 		if Description.Attributes.self != NoAttributes.self {
-			try container.encode(attributes, forKey: .attributes)
+            let nestedEncoder = container.superEncoder(forKey: .attributes)
+            try attributes.encode(to: nestedEncoder)
 		}
 		
 		if Description.Relationships.self != NoRelationships.self {
