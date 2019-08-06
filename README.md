@@ -42,7 +42,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [`Transformer`](#transformer)
 			- [`Validator`](#validator)
 			- [Computed `Attribute`](#computed-attribute)
-		- [Copying `ResourceObjects`](#copying-resourceobjects)
+		- [Copying/Mutating `ResourceObjects`](#copyingmutating-resourceobjects)
 		- [`JSONAPI.Document`](#jsonapidocument)
 			- [`ResourceBody`](#resourcebody)
 				- [nullable `PrimaryResource`](#nullable-primaryresource)
@@ -54,6 +54,9 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [`JSONAPI.Meta`](#jsonapimeta)
 		- [`JSONAPI.Links`](#jsonapilinks)
 		- [`JSONAPI.RawIdType`](#jsonapirawidtype)
+		- [Sparse Fieldsets](#sparse-fieldsets)
+			- [Supporting Sparse Fieldset Encoding](#supporting-sparse-fieldset-encoding)
+			- [Sparse Fieldset `typealias` comparisons](#sparse-fieldset-typealias-comparisons)
 		- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
 		- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
 		- [Meta-Attributes](#meta-attributes)
@@ -150,7 +153,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support validation on `Attributes`.
-- [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
+- [x] Support sparse fieldsets (encoding only). A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, sparse fieldsets of Resource Objects can be encoded without creating one model for every possible sparse fieldset.
 - [ ] Create more descriptive errors that are easier to use for troubleshooting.
 
 ### Testing
@@ -485,6 +488,31 @@ extension String: CreatableRawIdType {
 		return UUID().uuidString
 	}
 }
+```
+
+### Sparse Fieldsets
+Sparse Fieldsets are currently supported when encoding only. When decoding, Sparse Fieldsets become tricker to support under the current types this library uses and it is assumed that clients will request one or maybe two sparse fieldset combinations for any given model at most so it can simply define the `JSONAPI` models needed to decode those subsets of all possible fields. A server, on the other hand, likely needs to support arbitrary combinations of sparse fieldsets and this library provides a mechanism for encoding those sparse fieldsets without too much extra footwork.
+
+You can use sparse fieldsets on the primary resources(s) _and_ includes of a `JSONAPI.Document`.
+
+There is a sparse fieldsets example included with this repository as a Playground page.
+
+#### Supporting Sparse Fieldset Encoding
+1. The `JSONAPI` `ResourceObjectDescription`'s `Attributes` struct must conform to `JSONAPI.SparsableAttributes` rather than `JSONAPI.Attributes`.
+2. The `JSONAPI` `ResourceObjectDescription`'s `Attributes` struct must contain a `CodingKeys` enum that conforms to `JSONAPI.SparsableCodingKey` instead of `Swift.CodingKey`.
+3. `typealiases` you may have created for `JSONAPI.Document` that allow you to decode Documents will not support the "encode-only" nature of sparse fieldsets. See the next section for `typealias` comparisons.
+4. To create a sparse fieldset from a `ResourceObject` just call its `sparse(with: fields)` method and pass an array of `Attributes.CodingKeys` values you would like included in the encoding.
+5. Initialize and encode a `Document` containing one or more sparse or full primary resource(s) and any number of sparse or full includes.
+
+#### Sparse Fieldset `typealias` comparisons
+You might have found a `typealias` like the following for encoding/decoding `JSONAPI.Document`s (note the primary resource body is a `JSONAPI.ResourceBody`):
+```swift
+typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+```
+
+In order to support sparse fieldsets (which are encode-only), the following companion `typealias` would be useful (note the primary resource body is a `JSONAPI.EncodableResourceBody`):
+```swift
+typealias SparseDocument<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
 ```
 
 ### Custom Attribute or Relationship Key Mapping
