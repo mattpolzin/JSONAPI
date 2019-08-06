@@ -85,6 +85,73 @@ class SparseFieldEncoderTests: XCTestCase {
         XCTAssertNil(allThingsOnDeserialized["nested"])
         XCTAssertEqual(allThingsOnDeserialized.count, 0)
     }
+
+    func test_NilEncode() {
+        let encoder = JSONEncoder()
+
+        let nilOn = try! encoder.encode(NilWrapper(fields: [.hello]))
+        let nilOff = try! encoder.encode(NilWrapper(fields: []))
+
+        let nilOnDeserialized = try! JSONSerialization.jsonObject(with: nilOn,
+                                                                  options: []) as! [String: Any]
+
+        let nilOffDeserialized = try! JSONSerialization.jsonObject(with: nilOff,
+                                                                   options: []) as! [String: Any]
+
+        XCTAssertEqual(nilOnDeserialized.count, 1)
+        XCTAssertNotNil(nilOnDeserialized["hello"] as? NSNull)
+        XCTAssertEqual(nilOffDeserialized.count, 0)
+    }
+
+    func test_NestedContainers() {
+        let encoder = JSONEncoder()
+
+        let nestedOn = try! encoder.encode(NestedWrapper(fields: [.hello, .world]))
+        let nestedOff = try! encoder.encode(NestedWrapper(fields: []))
+
+        let nestedOnDeserialized = try! JSONSerialization.jsonObject(with: nestedOn,
+                                                                     options: []) as! [String: Any]
+        let nestedOffDeserialized = try! JSONSerialization.jsonObject(with: nestedOff,
+                                                                      options: []) as! [String: Any]
+
+        XCTAssertEqual(nestedOnDeserialized.count, 2)
+        XCTAssertEqual((nestedOnDeserialized["hello"] as? [String: Bool])?["nestedKey"], true)
+        XCTAssertEqual((nestedOnDeserialized["world"] as? [Bool])?.first, false)
+
+        // NOTE: When a nested container is explicitly requested,
+        //      the best we can do to omit the field is to encode
+        //      nothing _within_ the nested container.
+        XCTAssertEqual(nestedOffDeserialized.count, 2)
+        // TODO: The container currently does not encode empty object
+        //      for the keyed nested container but I think it should.
+        XCTAssertEqual((nestedOffDeserialized["hello"] as? [String: Bool])?.count, 1)
+        // TODO: The container currently does not encode empty array
+        //      for the unkeyed nested container but I think it should.
+        XCTAssertEqual((nestedOffDeserialized["world"] as? [Bool])?.count, 1)
+    }
+
+    func test_SuperEncoderIsStillSparse() {
+        let encoder = JSONEncoder()
+
+        let superOn = try! encoder.encode(SuperWrapper(fields: [.hello, .world]))
+        let superOff = try! encoder.encode(SuperWrapper(fields: []))
+
+        let superOnDeserialized = try! JSONSerialization.jsonObject(with: superOn,
+                                                                     options: []) as! [String: Any]
+        let superOffDeserialized = try! JSONSerialization.jsonObject(with: superOff,
+                                                                      options: []) as! [String: Any]
+
+        XCTAssertEqual(superOnDeserialized.count, 2)
+        XCTAssertEqual((superOnDeserialized["hello"] as? [String: Bool])?["hello"], true)
+        XCTAssertEqual((superOnDeserialized["super"] as? [String: Bool])?["world"], false)
+
+        // NOTE: When explicitly requesting a super encoder
+        //  the best we can do is tell the super encoder only
+        //  to encode the same keys
+        XCTAssertEqual(superOffDeserialized.count, 2)
+        XCTAssertEqual((superOffDeserialized["hello"] as? [String: Bool])?.count, 0)
+        XCTAssertEqual((superOffDeserialized["super"] as? [String: Bool])?.count, 0)
+    }
 }
 
 extension SparseFieldEncoderTests {
@@ -186,6 +253,97 @@ extension SparseFieldEncoderTests {
                 case uint32
                 case uint64
                 case nested
+            }
+        }
+    }
+
+    struct NilWrapper: Encodable {
+        let fields: [NilWrapped.CodingKeys]
+
+        func encode(to encoder: Encoder) throws {
+            let sparseEncoder = SparseFieldEncoder(wrapping: encoder,
+                                                   encoding: fields)
+
+            try NilWrapped()
+                .encode(to: sparseEncoder)
+        }
+
+        struct NilWrapped: Encodable {
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+
+                try container.encodeNil(forKey: .hello)
+            }
+
+            enum CodingKeys: String, Equatable, CodingKey {
+                case hello
+            }
+        }
+    }
+
+    struct NestedWrapper: Encodable {
+        let fields: [NestedWrapped.CodingKeys]
+
+        func encode(to encoder: Encoder) throws {
+            let sparseEncoder = SparseFieldEncoder(wrapping: encoder,
+                                                   encoding: fields)
+
+            try NestedWrapped()
+                .encode(to: sparseEncoder)
+        }
+
+        struct NestedWrapped: Encodable {
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+
+                var nestedContainer1 = container.nestedContainer(keyedBy: NestedKeys.self, forKey: .hello)
+
+                var nestedContainer2 = container.nestedUnkeyedContainer(forKey: .world)
+
+                try nestedContainer1.encode(true, forKey: .nestedKey)
+                try nestedContainer2.encode(false)
+            }
+
+            enum CodingKeys: String, Equatable, CodingKey {
+                case hello
+                case world
+            }
+
+            enum NestedKeys: String, CodingKey {
+                case nestedKey
+            }
+        }
+    }
+
+    struct SuperWrapper: Encodable {
+        let fields: [SuperWrapped.CodingKeys]
+
+        func encode(to encoder: Encoder) throws {
+            let sparseEncoder = SparseFieldEncoder(wrapping: encoder,
+                                                   encoding: fields)
+
+            try SuperWrapped()
+                .encode(to: sparseEncoder)
+        }
+
+        struct SuperWrapped: Encodable {
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+
+                let superEncoder1 = container.superEncoder(forKey: .hello)
+
+                let superEncoder2 = container.superEncoder()
+
+                var container1 = superEncoder1.container(keyedBy: CodingKeys.self)
+                var container2 = superEncoder2.container(keyedBy: CodingKeys.self)
+
+                try container1.encode(true, forKey: .hello)
+                try container2.encode(false, forKey: .world)
+            }
+
+            enum CodingKeys: String, Equatable, CodingKey {
+                case hello
+                case world
             }
         }
     }

@@ -50,7 +50,8 @@ public struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingCo
         self.allowedKeys = allowedKeys
     }
 
-    private func shouldAllow(key: Key) -> Bool {
+    /// Ask the container whether the given key should be encoded.
+    public func shouldAllow(key: Key) -> Bool {
         if let key = key as? SparseKey {
             return allowedKeys.contains(key)
         }
@@ -157,6 +158,9 @@ public struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingCo
                                                     forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
         guard shouldAllow(key: key) else {
             return KeyedEncodingContainer(
+                // TODO: not needed by JSONAPI library, but for completeness could
+                //      add an EmptyObjectEncoder that can be returned here so that
+                //      at least nothing gets encoded within the nested container
                 SparseFieldKeyedEncodingContainer<NestedKey, SparseKey>(wrapping: wrappedContainer.nestedContainer(keyedBy: keyType,
                                                                                                                    forKey: key),
                                                                         encoding: [])
@@ -172,7 +176,9 @@ public struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingCo
 
     public mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
         guard shouldAllow(key: key) else {
-            // TODO: Seems like this might not work as expected... maybe need an empty unkeyed container
+            // TODO: not needed by JSONAPI library, but for completeness could
+            //      add an EmptyObjectEncoder that can be returned here so that
+            //      at least nothing gets encoded within the nested container
             return wrappedContainer.nestedUnkeyedContainer(forKey: key)
         }
 
@@ -180,14 +186,19 @@ public struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingCo
     }
 
     public mutating func superEncoder() -> Encoder {
-        return wrappedContainer.superEncoder()
+        return SparseFieldEncoder(wrapping: wrappedContainer.superEncoder(),
+                                  encoding: allowedKeys)
     }
 
     public mutating func superEncoder(forKey key: Key) -> Encoder {
         guard shouldAllow(key: key) else {
-            return SparseFieldEncoder(wrapping: wrappedContainer.superEncoder(forKey: key), encoding: [SparseKey]())
+            // NOTE: We are creating a sparse field encoder with no allowed keys
+            //      here because the given key should not be allowed.
+            return SparseFieldEncoder(wrapping: wrappedContainer.superEncoder(forKey: key),
+                                      encoding: [SparseKey]())
         }
 
-        return SparseFieldEncoder(wrapping: wrappedContainer.superEncoder(forKey: key), encoding: allowedKeys)
+        return SparseFieldEncoder(wrapping: wrappedContainer.superEncoder(forKey: key),
+                                  encoding: allowedKeys)
     }
 }
