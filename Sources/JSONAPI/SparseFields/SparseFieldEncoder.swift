@@ -28,12 +28,6 @@ public class SparseFieldEncoder<SparseKey: CodingKey & Equatable>: Encoder {
         return KeyedEncodingContainer(container)
     }
 
-    public func container(keyedBy type: SparseKey.Type) -> KeyedEncodingContainer<SparseKey> {
-        let container = SparseFieldKeyedEncodingContainer(wrapping: wrappedEncoder.container(keyedBy: type),
-                                                          encoding: allowedKeys)
-        return KeyedEncodingContainer(container)
-    }
-
     public func unkeyedContainer() -> UnkeyedEncodingContainer {
         return wrappedEncoder.unkeyedContainer()
     }
