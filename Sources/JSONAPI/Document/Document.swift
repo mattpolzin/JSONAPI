@@ -203,7 +203,7 @@ extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, Link
 }
 */
 
-extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody {
+extension Document.Body.Data where PrimaryResourceBody: Appendable {
 	public func merging(_ other: Document.Body.Data,
 						combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
 						combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
@@ -214,7 +214,7 @@ extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody {
 	}
 }
 
-extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody, MetaType == NoMetadata, LinksType == NoLinks {
+extension Document.Body.Data where PrimaryResourceBody: Appendable, MetaType == NoMetadata, LinksType == NoLinks {
 	public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
 		return merging(other,
 					   combiningMetaWith: { _, _ in .none },
