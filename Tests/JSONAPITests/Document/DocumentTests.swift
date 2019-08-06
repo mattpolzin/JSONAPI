@@ -11,6 +11,34 @@ import Poly
 
 class DocumentTests: XCTestCase {
 
+    func test_genericDocFunc() {
+        func test<Doc: JSONAPIDocument>(_ doc: Doc) {
+            let _ = encoded(value: doc)
+
+            XCTAssert(Doc.PrimaryResourceBody.self == NoResourceBody.self)
+            XCTAssert(Doc.MetaType.self == NoMetadata.self)
+            XCTAssert(Doc.LinksType.self == NoLinks.self)
+            XCTAssert(Doc.IncludeType.self == NoIncludes.self)
+            XCTAssert(Doc.APIDescription.self == NoAPIDescription.self)
+            XCTAssert(Doc.Error.self == UnknownJSONAPIError.self)
+        }
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                apiDescription: .none,
+                body: .none,
+                includes: .none,
+                meta: .none,
+                links: .none
+        ))
+    }
+
 	func test_singleDocumentNull() {
 		let document = decoded(type: Document<SingleResourceBody<Article?>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_null)
