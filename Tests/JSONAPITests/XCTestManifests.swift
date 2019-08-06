@@ -77,6 +77,7 @@ extension DocumentTests {
         ("test_errorDocumentNoMeta_encode", test_errorDocumentNoMeta_encode),
         ("test_errorDocumentNoMetaWithAPIDescription", test_errorDocumentNoMetaWithAPIDescription),
         ("test_errorDocumentNoMetaWithAPIDescription_encode", test_errorDocumentNoMetaWithAPIDescription_encode),
+        ("test_genericDocFunc", test_genericDocFunc),
         ("test_manyDocumentNoIncludes", test_manyDocumentNoIncludes),
         ("test_manyDocumentNoIncludes_encode", test_manyDocumentNoIncludes_encode),
         ("test_manyDocumentNoIncludesWithAPIDescription", test_manyDocumentNoIncludesWithAPIDescription),
@@ -441,7 +442,13 @@ extension SparseFieldEncoderTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__SparseFieldEncoderTests = [
-        ("test_placeholder", test_placeholder),
+        ("test_AccurateCodingPath", test_AccurateCodingPath),
+        ("test_EverythingArsenal_allOff", test_EverythingArsenal_allOff),
+        ("test_EverythingArsenal_allOn", test_EverythingArsenal_allOn),
+        ("test_NestedContainers", test_NestedContainers),
+        ("test_NilEncode", test_NilEncode),
+        ("test_SkipsOmittedFields", test_SkipsOmittedFields),
+        ("test_SuperEncoderIsStillSparse", test_SuperEncoderIsStillSparse),
     ]
 }
 
