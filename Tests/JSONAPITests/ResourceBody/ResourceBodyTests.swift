@@ -191,19 +191,19 @@ extension ResourceBodyTests {
 
 extension ResourceBodyTests {
 
-	enum ArticleType: ResourceObjectDescription {
-		public static var jsonType: String { return "articles" }
+    enum ArticleType: ResourceObjectDescription {
+        public static var jsonType: String { return "articles" }
 
-		typealias Relationships = NoRelationships
+        typealias Relationships = NoRelationships
 
-		struct Attributes: JSONAPI.SparsableAttributes {
-			let title: Attribute<String>
+        struct Attributes: JSONAPI.SparsableAttributes {
+            let title: Attribute<String>
 
             public enum CodingKeys: String, Equatable, CodingKey {
                 case title
             }
-		}
-	}
+        }
+    }
 
-	typealias Article = BasicEntity<ArticleType>
+    typealias Article = BasicEntity<ArticleType>
 }

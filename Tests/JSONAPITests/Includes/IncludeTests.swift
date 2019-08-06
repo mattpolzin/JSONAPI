@@ -350,45 +350,45 @@ extension IncludedTests {
 
 // MARK: - Test types
 extension IncludedTests {
-	enum TestEntityType: ResourceObjectDescription {
+    enum TestEntityType: ResourceObjectDescription {
 
-		typealias Relationships = NoRelationships
+        typealias Relationships = NoRelationships
 
-		public static var jsonType: String { return "test_entity1" }
+        public static var jsonType: String { return "test_entity1" }
 
-		public struct Attributes: JSONAPI.SparsableAttributes {
-			let foo: Attribute<String>
-			let bar: Attribute<Int>
-
-            public enum CodingKeys: String, Equatable, CodingKey {
-                case foo
-                case bar
-            }
-		}
-	}
-
-	typealias TestEntity = BasicEntity<TestEntityType>
-
-	enum TestEntityType2: ResourceObjectDescription {
-
-		public static var jsonType: String { return "test_entity2" }
-
-		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
-		}
-
-		public struct Attributes: JSONAPI.SparsableAttributes {
-			let foo: Attribute<String>
-			let bar: Attribute<Int>
+        public struct Attributes: JSONAPI.SparsableAttributes {
+            let foo: Attribute<String>
+            let bar: Attribute<Int>
 
             public enum CodingKeys: String, Equatable, CodingKey {
                 case foo
                 case bar
             }
-		}
-	}
+        }
+    }
 
-	typealias TestEntity2 = BasicEntity<TestEntityType2>
+    typealias TestEntity = BasicEntity<TestEntityType>
+
+    enum TestEntityType2: ResourceObjectDescription {
+
+        public static var jsonType: String { return "test_entity2" }
+
+        public struct Relationships: JSONAPI.Relationships {
+            let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+        }
+
+        public struct Attributes: JSONAPI.SparsableAttributes {
+            let foo: Attribute<String>
+            let bar: Attribute<Int>
+
+            public enum CodingKeys: String, Equatable, CodingKey {
+                case foo
+                case bar
+            }
+        }
+    }
+
+    typealias TestEntity2 = BasicEntity<TestEntityType2>
 
 	enum TestEntityType3: ResourceObjectDescription {
 
