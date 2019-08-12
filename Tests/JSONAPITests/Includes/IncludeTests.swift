@@ -12,15 +12,15 @@ class IncludedTests: XCTestCase {
 	func test_zeroIncludes() {
 		let includes = decoded(type: Includes<NoIncludes>.self,
 												data: two_same_type_includes)
-		
+
 		XCTAssertEqual(includes.count, 0)
 	}
 
 	func test_zeroIncludes_encode() {
-		XCTAssertThrowsError(try JSONEncoder().encode(decoded(type: Includes<NoIncludes>.self,
-														  data: two_same_type_includes)))
-	}
-	
+        XCTAssertThrowsError(try JSONEncoder().encode(decoded(type: Includes<NoIncludes>.self,
+                                                              data: two_same_type_includes)))
+    }
+
 	func test_OneInclude() {
 		let includes = decoded(type: Includes<Include1<TestEntity>>.self,
 							   data: one_include)
@@ -32,7 +32,7 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include1<TestEntity>>.self,
 							   data: one_include)
 	}
-	
+
 	func test_TwoSameIncludes() {
 		let includes = decoded(type: Includes<Include1<TestEntity>>.self,
 							   data: two_same_type_includes)
@@ -57,7 +57,7 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include2<TestEntity, TestEntity2>>.self,
 							   data: two_different_type_includes)
 	}
-	
+
 	func test_ThreeDifferentIncludes() {
 		let includes = decoded(type: Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
 							   data: three_different_type_includes)
@@ -71,11 +71,11 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
 							   data: three_different_type_includes)
 	}
-	
+
 	func test_FourDifferentIncludes() {
 		let includes = decoded(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
 							   data: four_different_type_includes)
-		
+
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 		XCTAssertEqual(includes[TestEntity4.self].count, 1)
@@ -86,11 +86,11 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
 							   data: four_different_type_includes)
 	}
-	
+
 	func test_FiveDifferentIncludes() {
 		let includes = decoded(type: Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self,
 							   data: five_different_type_includes)
-		
+
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 		XCTAssertEqual(includes[TestEntity3.self].count, 1)
@@ -102,11 +102,11 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include5<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity6>>.self,
 							   data: five_different_type_includes)
 	}
-	
+
 	func test_SixDifferentIncludes() {
 		let includes = decoded(type: Includes<Include6<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6>>.self,
 							   data: six_different_type_includes)
-		
+
 		XCTAssertEqual(includes[TestEntity.self].count, 1)
 		XCTAssertEqual(includes[TestEntity2.self].count, 1)
 		XCTAssertEqual(includes[TestEntity3.self].count, 1)
@@ -178,6 +178,8 @@ class IncludedTests: XCTestCase {
 	}
 }
 
+// MARK: - Appending
+
 extension IncludedTests {
 	func test_appending() {
 		let include1 = Includes<Include2<TestEntity8, TestEntity9>>(values: [.init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity9(attributes: .none, relationships: .none, meta: .none, links: .none)), .init(TestEntity8(attributes: .none, relationships: .none, meta: .none, links: .none))])
@@ -190,37 +192,203 @@ extension IncludedTests {
 	}
 }
 
+// MARK: - Sparse Fieldsets
+
+extension IncludedTests {
+    func test_OneSparseIncludeType() {
+        let include1 = TestEntity(attributes: .init(foo: "hello",
+                                                    bar: 10),
+                                  relationships: .none,
+                                  meta: .none,
+                                  links: .none)
+            .sparse(with: [.foo])
+
+        let includes: Includes<Include1<TestEntity.SparseType>> = .init(values: [.init(include1)])
+
+        let encoded = try! JSONEncoder().encode(includes)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [Any]
+
+        XCTAssertEqual(deserializedObj?.count, 1)
+
+        guard let deserializedObj1 = deserializedObj?.first as? [String: Any] else {
+                XCTFail("Expected to deserialize one object from array")
+                return
+        }
+
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, include1.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, TestEntity.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["foo"] as? String, "hello")
+
+        XCTAssertNil(deserializedObj1["relationships"])
+    }
+
+    func test_TwoSparseIncludeTypes() {
+        let include1 = TestEntity(attributes: .init(foo: "hello",
+                                                    bar: 10),
+                                  relationships: .none,
+                                  meta: .none,
+                                  links: .none)
+            .sparse(with: [.foo])
+
+        let include2 = TestEntity2(attributes: .init(foo: "world",
+                                                     bar: 2),
+                                   relationships: .init(entity1: "1234"),
+                                   meta: .none,
+                                   links: .none)
+            .sparse(with: [.bar])
+
+        let includes: Includes<Include2<TestEntity.SparseType, TestEntity2.SparseType>> = .init(values: [.init(include1), .init(include2)])
+
+        let encoded = try! JSONEncoder().encode(includes)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [Any]
+
+        XCTAssertEqual(deserializedObj?.count, 2)
+
+        guard let deserializedObj1 = deserializedObj?.first as? [String: Any],
+            let deserializedObj2 = deserializedObj?.last as? [String: Any] else {
+            XCTFail("Expected to deserialize two objects from array")
+            return
+        }
+
+        // first include
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, include1.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, TestEntity.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["foo"] as? String, "hello")
+
+        XCTAssertNil(deserializedObj1["relationships"])
+
+        // second include
+        XCTAssertNotNil(deserializedObj2["id"])
+        XCTAssertEqual(deserializedObj2["id"] as? String, include2.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj2["type"])
+        XCTAssertEqual(deserializedObj2["type"] as? String, TestEntity2.jsonType)
+
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?["bar"] as? Int, 2)
+
+        XCTAssertNotNil(deserializedObj2["relationships"])
+        XCTAssertNotNil((deserializedObj2["relationships"] as? [String: Any])?["entity1"])
+    }
+
+    func test_ComboSparseAndFullIncludeTypes() {
+        let include1 = TestEntity(attributes: .init(foo: "hello",
+                                                    bar: 10),
+                                  relationships: .none,
+                                  meta: .none,
+                                  links: .none)
+            .sparse(with: [.foo])
+
+        let include2 = TestEntity2(attributes: .init(foo: "world",
+                                                     bar: 2),
+                                   relationships: .init(entity1: "1234"),
+                                   meta: .none,
+                                   links: .none)
+
+        let includes: Includes<Include2<TestEntity.SparseType, TestEntity2>> = .init(values: [.init(include1), .init(include2)])
+
+        let encoded = try! JSONEncoder().encode(includes)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [Any]
+
+        XCTAssertEqual(deserializedObj?.count, 2)
+
+        guard let deserializedObj1 = deserializedObj?.first as? [String: Any],
+            let deserializedObj2 = deserializedObj?.last as? [String: Any] else {
+                XCTFail("Expected to deserialize two objects from array")
+                return
+        }
+
+        // first include
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, include1.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, TestEntity.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["foo"] as? String, "hello")
+
+        XCTAssertNil(deserializedObj1["relationships"])
+
+        // second include
+        XCTAssertNotNil(deserializedObj2["id"])
+        XCTAssertEqual(deserializedObj2["id"] as? String, include2.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj2["type"])
+        XCTAssertEqual(deserializedObj2["type"] as? String, TestEntity2.jsonType)
+
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?.count, 2)
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?["foo"] as? String, "world")
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?["bar"] as? Int, 2)
+
+        XCTAssertNotNil(deserializedObj2["relationships"])
+        XCTAssertNotNil((deserializedObj2["relationships"] as? [String: Any])?["entity1"])
+    }
+}
+
 // MARK: - Test types
 extension IncludedTests {
-	enum TestEntityType: ResourceObjectDescription {
+    enum TestEntityType: ResourceObjectDescription {
 
-		typealias Relationships = NoRelationships
+        typealias Relationships = NoRelationships
 
-		public static var jsonType: String { return "test_entity1" }
+        public static var jsonType: String { return "test_entity1" }
 
-		public struct Attributes: JSONAPI.Attributes {
-			let foo: Attribute<String>
-			let bar: Attribute<Int>
-		}
-	}
+        public struct Attributes: JSONAPI.SparsableAttributes {
+            let foo: Attribute<String>
+            let bar: Attribute<Int>
 
-	typealias TestEntity = BasicEntity<TestEntityType>
+            public enum CodingKeys: String, Equatable, CodingKey {
+                case foo
+                case bar
+            }
+        }
+    }
 
-	enum TestEntityType2: ResourceObjectDescription {
+    typealias TestEntity = BasicEntity<TestEntityType>
 
-		public static var jsonType: String { return "test_entity2" }
+    enum TestEntityType2: ResourceObjectDescription {
 
-		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
-		}
+        public static var jsonType: String { return "test_entity2" }
 
-		public struct Attributes: JSONAPI.Attributes {
-			let foo: Attribute<String>
-			let bar: Attribute<Int>
-		}
-	}
+        public struct Relationships: JSONAPI.Relationships {
+            let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+        }
 
-	typealias TestEntity2 = BasicEntity<TestEntityType2>
+        public struct Attributes: JSONAPI.SparsableAttributes {
+            let foo: Attribute<String>
+            let bar: Attribute<Int>
+
+            public enum CodingKeys: String, Equatable, CodingKey {
+                case foo
+                case bar
+            }
+        }
+    }
+
+    typealias TestEntity2 = BasicEntity<TestEntityType2>
 
 	enum TestEntityType3: ResourceObjectDescription {
 

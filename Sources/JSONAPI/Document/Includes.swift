@@ -7,32 +7,15 @@
 
 import Poly
 
-public typealias Include = JSONPoly
+public typealias Include = EncodableJSONPoly
 
-public struct Includes<I: Include>: Codable, Equatable {
+public struct Includes<I: Include>: Encodable, Equatable {
 	public static var none: Includes { return .init(values: []) }
 	
 	let values: [I]
 	
 	public init(values: [I]) {
 		self.values = values
-	}
-	
-	public init(from decoder: Decoder) throws {
-		var container = try decoder.unkeyedContainer()
-		
-		// If not parsing includes, no need to loop over them.
-		guard I.self != NoIncludes.self else {
-			values = []
-			return
-		}
-		
-		var valueAggregator = [I]()
-		while !container.isAtEnd {
-			valueAggregator.append(try container.decode(I.self))
-		}
-		
-		values = valueAggregator
 	}
 
 	public func encode(to encoder: Encoder) throws {
@@ -50,6 +33,25 @@ public struct Includes<I: Include>: Codable, Equatable {
 	public var count: Int {
 		return values.count
 	}
+}
+
+extension Includes: Decodable where I: Decodable {
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+
+        // If not parsing includes, no need to loop over them.
+        guard I.self != NoIncludes.self else {
+            values = []
+            return
+        }
+
+        var valueAggregator = [I]()
+        while !container.isAtEnd {
+            valueAggregator.append(try container.decode(I.self))
+        }
+
+        values = valueAggregator
+    }
 }
 
 extension Includes {
