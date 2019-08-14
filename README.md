@@ -5,7 +5,7 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
-:warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating resource objects in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+:warning: This library provides well-tested type safety when working with JSON:API 1.0, however the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -109,52 +109,34 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ### JSON:API
 #### Document
-- `data`
-	- [x] Encoding/Decoding
-- `included`
-	- [x] Encoding/Decoding
-- `errors`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
-- `jsonapi` (i.e. API Information)
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
+- [x] `data`
+- [x] `included`
+- [x] `errors`
+- [x] `meta`
+- [x] `jsonapi` (i.e. API Information)
+- [x] `links`
 
 #### Resource Object
-- `id`
-	- [x] Encoding/Decoding
-- `type`
-	- [x] Encoding/Decoding
-- `attributes`
-	- [x] Encoding/Decoding
-- `relationships`
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `id`
+- [x] `type`
+- [x] `attributes`
+- [x] `relationships`
+- [x] `links`
+- [x] `meta`
 
 #### Relationship Object
-- `data`
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `data`
+- [x] `links`
+- [x] `meta`
 
 #### Links Object
-- `href`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `href`
+- [x] `meta`
 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support validation on `Attributes`.
-- [x] Support sparse fieldsets (encoding only). A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, sparse fieldsets of Resource Objects can be encoded without creating one model for every possible sparse fieldset.
-- [ ] Create more descriptive errors that are easier to use for troubleshooting.
+- [x] Support sparse fieldsets (encoding only). A client can likely just define a new model to represent a sparse population of another model in a very specific use case for decoding purposes. On the server side, sparse fieldsets of Resource Objects can be encoded without creating one model for every possible sparse fieldset.
 
 ### Testing
 #### Resource Object Validator
@@ -163,6 +145,8 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
 ### Potential Improvements
+These ideas could be implemented in future versions.
+
 - [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
 - [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
 - [ ] Support sideposting. JSONAPI spec might become opinionated in the future (https://github.com/json-api/json-api/pull/1197, https://github.com/json-api/json-api/issues/1215, https://github.com/json-api/json-api/issues/1216) but there is also an existing implementation to consider (https://jsonapi-suite.github.io/jsonapi_suite/ruby/writes/nested-writes). At this time, any sidepost implementation would be an awesome tertiary library to be used alongside the primary JSONAPI library. Maybe `JSONAPISideloading`.
