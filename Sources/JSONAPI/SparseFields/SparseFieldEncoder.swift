@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 8/4/19.
 //
 
-public class SparseFieldEncoder<SparseKey: CodingKey & Equatable>: Encoder {
+class SparseFieldEncoder<SparseKey: CodingKey & Equatable>: Encoder {
     private let wrappedEncoder: Encoder
     private let allowedKeys: [SparseKey]
 
@@ -37,7 +37,7 @@ public class SparseFieldEncoder<SparseKey: CodingKey & Equatable>: Encoder {
     }
 }
 
-public struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingContainerProtocol where SparseKey: CodingKey, SparseKey: Equatable, Key: CodingKey {
+struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingContainerProtocol where SparseKey: CodingKey, SparseKey: Equatable, Key: CodingKey {
     private var wrappedContainer: KeyedEncodingContainer<Key>
     private let allowedKeys: [SparseKey]
 

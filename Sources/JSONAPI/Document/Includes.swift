@@ -9,6 +9,16 @@ import Poly
 
 public typealias Include = EncodableJSONPoly
 
+/// A structure holding zero or more included Resource Objects.
+/// The resources are accessed by their type using a subscript.
+///
+/// If you have
+///
+/// `let includes: Includes<Include2<Thing1, Thing2>> = ...`
+///
+/// then you can access all `Thing1` included resources with
+///
+/// `let includedThings = includes[Thing1.self]`
 public struct Includes<I: Include>: Encodable, Equatable {
 	public static var none: Includes { return .init(values: []) }
 	

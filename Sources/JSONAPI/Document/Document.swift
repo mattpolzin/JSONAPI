@@ -53,7 +53,9 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 		case data(Data)
 
 		public struct Data: Equatable {
+            /// The document's Primary Resource object(s)
 			public let primary: PrimaryResourceBody
+            /// The document's included objects
 			public let includes: Includes<Include>
 			public let meta: MetaType
 			public let links: LinksType
@@ -66,6 +68,8 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 			}
 		}
 
+        /// `true` if the document represents one or more errors. `false` if the
+        /// document represents JSON:API data and/or metadata.
 		public var isError: Bool {
 			guard case .errors = self else { return false }
 			return true
