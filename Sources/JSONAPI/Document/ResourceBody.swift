@@ -48,6 +48,9 @@ public func +<R: Appendable>(_ left: R, right: R) -> R {
 	return left.appending(right)
 }
 
+/// A type allowing for a document body containing 1 primary resource.
+/// If the `Entity` specialization is an `Optional` type, the body can contain
+/// 0 or 1 primary resources.
 public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
 	public let value: Entity
 
@@ -56,6 +59,7 @@ public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResourc
 	}
 }
 
+/// A type allowing for a document body containing 0 or more primary resources.
 public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, Appendable {
 	public let values: [Entity]
 
