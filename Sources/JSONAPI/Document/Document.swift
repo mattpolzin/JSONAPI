@@ -7,18 +7,25 @@
 
 import Poly
 
-public protocol JSONAPIDocument: Codable, Equatable {
-	associatedtype PrimaryResourceBody: JSONAPI.ResourceBody
-	associatedtype MetaType: JSONAPI.Meta
-	associatedtype LinksType: JSONAPI.Links
-	associatedtype IncludeType: JSONAPI.Include
-	associatedtype APIDescription: APIDescriptionType
-	associatedtype Error: JSONAPIError
+/// An `EncodableJSONAPIDocument` supports encoding but not decoding.
+/// It is actually more restrictive than `JSONAPIDocument` which supports both
+/// encoding and decoding.
+public protocol EncodableJSONAPIDocument: Equatable, Encodable {
+    associatedtype PrimaryResourceBody: JSONAPI.EncodableResourceBody
+    associatedtype MetaType: JSONAPI.Meta
+    associatedtype LinksType: JSONAPI.Links
+    associatedtype IncludeType: JSONAPI.Include
+    associatedtype APIDescription: APIDescriptionType
+    associatedtype Error: JSONAPIError
 
-	typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, APIDescription, Error>.Body
+    typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, APIDescription, Error>.Body
 
-	var body: Body { get }
+    var body: Body { get }
 }
+
+/// A `JSONAPIDocument` supports encoding and decoding of a JSON:API
+/// compliant Document.
+public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
 
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
@@ -27,7 +34,7 @@ public protocol JSONAPIDocument: Codable, Equatable {
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
-public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: JSONAPIDocument {
+public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument {
 	public typealias Include = IncludeType
 
 	/// The JSON API Spec calls this the JSON:API Object. It contains version
@@ -46,7 +53,9 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 		case data(Data)
 
 		public struct Data: Equatable {
+            /// The document's Primary Resource object(s)
 			public let primary: PrimaryResourceBody
+            /// The document's included objects
 			public let includes: Includes<Include>
 			public let meta: MetaType
 			public let links: LinksType
@@ -59,6 +68,8 @@ public struct Document<PrimaryResourceBody: JSONAPI.ResourceBody, MetaType: JSON
 			}
 		}
 
+        /// `true` if the document represents one or more errors. `false` if the
+        /// document represents JSON:API data and/or metadata.
 		public var isError: Bool {
 			guard case .errors = self else { return false }
 			return true
@@ -196,7 +207,7 @@ extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, Link
 }
 */
 
-extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody {
+extension Document.Body.Data where PrimaryResourceBody: Appendable {
 	public func merging(_ other: Document.Body.Data,
 						combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
 						combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
@@ -207,7 +218,7 @@ extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody {
 	}
 }
 
-extension Document.Body.Data where PrimaryResourceBody: AppendableResourceBody, MetaType == NoMetadata, LinksType == NoLinks {
+extension Document.Body.Data where PrimaryResourceBody: Appendable, MetaType == NoMetadata, LinksType == NoLinks {
 	public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
 		return merging(other,
 					   combiningMetaWith: { _, _ in .none },
@@ -273,66 +284,6 @@ extension Document {
 		case links
 		case jsonapi
 	}
-	
-	public init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: RootCodingKeys.self)
-
-		if let noData = NoAPIDescription() as? APIDescription {
-			apiDescription = noData
-		} else {
-			apiDescription = try container.decode(APIDescription.self, forKey: .jsonapi)
-		}
-
-		let errors = try container.decodeIfPresent([Error].self, forKey: .errors)
-
-		let meta: MetaType?
-		if let noMeta = NoMetadata() as? MetaType {
-			meta = noMeta
-		} else {
-			do {
-				meta = try container.decode(MetaType.self, forKey: .meta)
-			} catch {
-				meta = nil
-			}
-		}
-
-		let links: LinksType?
-		if let noLinks = NoLinks() as? LinksType {
-			links = noLinks
-		} else {
-			do {
-				links = try container.decode(LinksType.self, forKey: .links)
-			} catch {
-				links = nil
-			}
-		}
-
-		// If there are errors, there cannot be a body. Return errors and any metadata found.
-		if let errors = errors {
-			body = .errors(errors, meta: meta, links: links)
-			return
-		}
-
-		let data: PrimaryResourceBody
-		if let noData = NoResourceBody() as? PrimaryResourceBody {
-			data = noData
-		} else {
-			data = try container.decode(PrimaryResourceBody.self, forKey: .data)
-		}
-
-		let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
-		
-		// TODO come back to this and make robust
-
-		guard let metaVal = meta else {
-			throw JSONAPIEncodingError.missingOrMalformedMetadata
-		}
-		guard let linksVal = links else {
-			throw JSONAPIEncodingError.missingOrMalformedLinks
-		}
-		
-		body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal))
-	}
 
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: RootCodingKeys.self)
@@ -375,6 +326,68 @@ extension Document {
 			try container.encode(apiDescription, forKey: .jsonapi)
 		}
 	}
+}
+
+extension Document: Decodable, JSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: RootCodingKeys.self)
+
+        if let noData = NoAPIDescription() as? APIDescription {
+            apiDescription = noData
+        } else {
+            apiDescription = try container.decode(APIDescription.self, forKey: .jsonapi)
+        }
+
+        let errors = try container.decodeIfPresent([Error].self, forKey: .errors)
+
+        let meta: MetaType?
+        if let noMeta = NoMetadata() as? MetaType {
+            meta = noMeta
+        } else {
+            do {
+                meta = try container.decode(MetaType.self, forKey: .meta)
+            } catch {
+                meta = nil
+            }
+        }
+
+        let links: LinksType?
+        if let noLinks = NoLinks() as? LinksType {
+            links = noLinks
+        } else {
+            do {
+                links = try container.decode(LinksType.self, forKey: .links)
+            } catch {
+                links = nil
+            }
+        }
+
+        // If there are errors, there cannot be a body. Return errors and any metadata found.
+        if let errors = errors {
+            body = .errors(errors, meta: meta, links: links)
+            return
+        }
+
+        let data: PrimaryResourceBody
+        if let noData = NoResourceBody() as? PrimaryResourceBody {
+            data = noData
+        } else {
+            data = try container.decode(PrimaryResourceBody.self, forKey: .data)
+        }
+
+        let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
+
+        // TODO come back to this and make robust
+
+        guard let metaVal = meta else {
+            throw JSONAPIEncodingError.missingOrMalformedMetadata
+        }
+        guard let linksVal = links else {
+            throw JSONAPIEncodingError.missingOrMalformedLinks
+        }
+
+        body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal))
+    }
 }
 
 // MARK: - CustomStringConvertible

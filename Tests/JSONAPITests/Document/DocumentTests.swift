@@ -11,6 +11,34 @@ import Poly
 
 class DocumentTests: XCTestCase {
 
+    func test_genericDocFunc() {
+        func test<Doc: JSONAPIDocument>(_ doc: Doc) {
+            let _ = encoded(value: doc)
+
+            XCTAssert(Doc.PrimaryResourceBody.self == NoResourceBody.self)
+            XCTAssert(Doc.MetaType.self == NoMetadata.self)
+            XCTAssert(Doc.LinksType.self == NoLinks.self)
+            XCTAssert(Doc.IncludeType.self == NoIncludes.self)
+            XCTAssert(Doc.APIDescription.self == NoAPIDescription.self)
+            XCTAssert(Doc.Error.self == UnknownJSONAPIError.self)
+        }
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                apiDescription: .none,
+                body: .none,
+                includes: .none,
+                meta: .none,
+                links: .none
+        ))
+    }
+
 	func test_singleDocumentNull() {
 		let document = decoded(type: Document<SingleResourceBody<Article?>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.self,
 							   data: single_document_null)
@@ -926,6 +954,217 @@ extension DocumentTests {
 	}
 }
 
+// MARK: Sparse Fieldset Documents
+
+extension DocumentTests {
+    func test_sparsePrimaryResource() {
+        let primaryResource = Book(attributes: .init(pageCount: 100),
+                                   relationships: .init(author: "1234",
+                                                        series: []),
+                                   meta: .none,
+                                   links: .none)
+            .sparse(with: [.pageCount])
+
+        let document = Document<
+            SingleResourceBody<Book.SparseType>,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(apiDescription: .none,
+              body: .init(resourceObject: primaryResource),
+              includes: .none,
+              meta: .none,
+              links: .none)
+
+        let encoded = try! JSONEncoder().encode(document)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [String: Any]
+
+        guard let deserializedObj1 = deserializedObj?["data"] as? [String: Any] else {
+            XCTFail("Expected to deserialize one object from document data")
+            return
+        }
+
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, primaryResource.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, Book.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["pageCount"] as? Int, 100)
+
+        XCTAssertNotNil(deserializedObj1["relationships"])
+    }
+
+    func test_sparsePrimaryResourceOptionalAndNil() {
+        let document = Document<
+            SingleResourceBody<Book.SparseType?>,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(apiDescription: .none,
+              body: .init(resourceObject: nil),
+              includes: .none,
+              meta: .none,
+              links: .none)
+
+        let encoded = try! JSONEncoder().encode(document)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [String: Any]
+
+        XCTAssertNotNil(deserializedObj?["data"] as? NSNull)
+    }
+
+    func test_sparseIncludeFullPrimaryResource() {
+        let bookInclude = Book(id: "444",
+                               attributes: .init(pageCount: 113),
+                               relationships: .init(author: "1234",
+                                                    series: ["443"]),
+                               meta: .none,
+                               links: .none)
+            .sparse(with: [])
+
+        let primaryResource = Book(id: "443",
+                                   attributes: .init(pageCount: 100),
+                                   relationships: .init(author: "1234",
+                                                        series: ["444"]),
+                                   meta: .none,
+                                   links: .none)
+
+        let document = Document<
+            SingleResourceBody<Book>,
+            NoMetadata,
+            NoLinks,
+            Include1<Book.SparseType>,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(apiDescription: .none,
+              body: .init(resourceObject: primaryResource),
+              includes: .init(values: [.init(bookInclude)]),
+              meta: .none,
+              links: .none)
+
+        let encoded = try! JSONEncoder().encode(document)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [String: Any]
+
+        guard let deserializedObj1 = deserializedObj?["data"] as? [String: Any] else {
+            XCTFail("Expected to deserialize one object from document data")
+            return
+        }
+
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, primaryResource.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, Book.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 1)
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?["pageCount"] as? Int, 100)
+
+        XCTAssertNotNil(deserializedObj1["relationships"])
+
+        guard let deserializedIncludes = deserializedObj?["included"] as? [Any],
+            let deserializedObj2 = deserializedIncludes.first as? [String: Any] else {
+                XCTFail("Expected to deserialize one incude object")
+                return
+        }
+
+        XCTAssertNotNil(deserializedObj2["id"])
+        XCTAssertEqual(deserializedObj2["id"] as? String, bookInclude.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj2["type"])
+        XCTAssertEqual(deserializedObj2["type"] as? String, Book.jsonType)
+
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?.count, 0)
+
+        XCTAssertNotNil(deserializedObj2["relationships"])
+    }
+
+    func test_sparseIncludeSparsePrimaryResource() {
+        let bookInclude = Book(id: "444",
+                               attributes: .init(pageCount: 113),
+                               relationships: .init(author: "1234",
+                                                    series: ["443"]),
+                               meta: .none,
+                               links: .none)
+            .sparse(with: [])
+
+        let primaryResource = Book(id: "443",
+                                   attributes: .init(pageCount: 100),
+                                   relationships: .init(author: "1234",
+                                                        series: ["444"]),
+                                   meta: .none,
+                                   links: .none)
+            .sparse(with: [])
+
+        let document = Document<
+        SingleResourceBody<Book.SparseType>,
+            NoMetadata,
+            NoLinks,
+            Include1<Book.SparseType>,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(apiDescription: .none,
+              body: .init(resourceObject: primaryResource),
+              includes: .init(values: [.init(bookInclude)]),
+              meta: .none,
+              links: .none)
+
+        let encoded = try! JSONEncoder().encode(document)
+
+        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
+                                                             options: [])
+
+        let deserializedObj = deserialized as? [String: Any]
+
+        guard let deserializedObj1 = deserializedObj?["data"] as? [String: Any] else {
+            XCTFail("Expected to deserialize one object from document data")
+            return
+        }
+
+        XCTAssertNotNil(deserializedObj1["id"])
+        XCTAssertEqual(deserializedObj1["id"] as? String, primaryResource.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj1["type"])
+        XCTAssertEqual(deserializedObj1["type"] as? String, Book.jsonType)
+
+        XCTAssertEqual((deserializedObj1["attributes"] as? [String: Any])?.count, 0)
+
+        XCTAssertNotNil(deserializedObj1["relationships"])
+
+        guard let deserializedIncludes = deserializedObj?["included"] as? [Any],
+            let deserializedObj2 = deserializedIncludes.first as? [String: Any] else {
+                XCTFail("Expected to deserialize one incude object")
+                return
+        }
+
+        XCTAssertNotNil(deserializedObj2["id"])
+        XCTAssertEqual(deserializedObj2["id"] as? String, bookInclude.resourceObject.id.rawValue)
+
+        XCTAssertNotNil(deserializedObj2["type"])
+        XCTAssertEqual(deserializedObj2["type"] as? String, Book.jsonType)
+
+        XCTAssertEqual((deserializedObj2["attributes"] as? [String: Any])?.count, 0)
+
+        XCTAssertNotNil(deserializedObj2["relationships"])
+    }
+}
+
 // MARK: Poly PrimaryResource Tests
 extension DocumentTests {
 	func test_singleDocument_PolyPrimaryResource() {
@@ -1114,6 +1353,25 @@ extension DocumentTests {
 	}
 	
 	typealias Article = BasicEntity<ArticleType>
+
+    enum BookType: ResourceObjectDescription {
+        static var jsonType: String { return "books" }
+
+        struct Attributes: JSONAPI.SparsableAttributes {
+            let pageCount: Attribute<Int>
+
+            enum CodingKeys: String, SparsableCodingKey {
+                case pageCount
+            }
+        }
+
+        struct Relationships: JSONAPI.Relationships {
+            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
+            let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+        }
+    }
+
+    typealias Book = BasicEntity<BookType>
 
 	struct TestPageMetadata: JSONAPI.Meta {
 		let total: Int

@@ -15,6 +15,16 @@ public protocol Relationships: Codable & Equatable {}
 /// properties of any types that are JSON encodable.
 public protocol Attributes: Codable & Equatable {}
 
+/// CodingKeys must be `CodingKey` and `Equatable` in order
+/// to support Sparse Fieldsets.
+public typealias SparsableCodingKey = CodingKey & Equatable
+
+/// Attributes containing publicly accessible and `Equatable`
+/// CodingKeys are required to support Sparse Fieldsets.
+public protocol SparsableAttributes: Attributes {
+    associatedtype CodingKeys: SparsableCodingKey
+}
+
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
 public struct NoRelationships: Relationships {
@@ -48,7 +58,7 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
 	associatedtype Relationships: Equatable
 }
 
-/// An `ResourceObjectDescription` describes a JSON API
+/// A `ResourceObjectDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
 /// `ResourceObject`, which gets specialized on an
@@ -396,14 +406,14 @@ extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, Ent
 // MARK: - Pointer for Relationships use
 public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
-	/// An ResourceObject.Pointer is a `ToOneRelationship` with no metadata or links.
-	/// This is just a convenient way to reference an ResourceObject so that
-	/// other Entities' Relationships can be built up from it.
+	/// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
+	/// This is just a convenient way to reference a `ResourceObject` so that
+	/// other ResourceObjects' Relationships can be built up from it.
 	typealias Pointer = ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
 
-	/// ResourceObject.Pointers is a `ToManyRelationship` with no metadata or links.
-	/// This is just a convenient way to reference a bunch of Entities so
-	/// that other Entities' Relationships can be built up from them.
+	/// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
+	/// This is just a convenient way to reference a bunch of ResourceObjects so
+	/// that other ResourceObjects' Relationships can be built up from them.
 	typealias Pointers = ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
 
 	/// Get a pointer to this resource object that can be used as a
@@ -412,6 +422,8 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 		return Pointer(resourceObject: self)
 	}
 
+    /// Get a pointer (i.e. `ToOneRelationship`) to this resource
+    /// object with the given metadata and links attached.
 	func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, MType, LType> {
 		return ToOneRelationship(resourceObject: self, meta: meta, links: links)
 	}
@@ -419,20 +431,20 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
 // MARK: - Identifying Unidentified Entities
 public extension ResourceObject where EntityRawIdType == Unidentified {
-	/// Create a new ResourceObject from this one with a newly created
+	/// Create a new `ResourceObject` from this one with a newly created
 	/// unique Id of the given type.
 	func identified<RawIdType: CreatableRawIdType>(byType: RawIdType.Type) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
 		return .init(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 
-	/// Create a new ResourceObject from this one with the given Id.
+	/// Create a new `ResourceObject` from this one with the given Id.
 	func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
 		return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
 }
 
 public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
-	/// Create a copy of this ResourceObject with a new unique Id.
+	/// Create a copy of this `ResourceObject` with a new unique Id.
 	func withNewIdentifier() -> ResourceObject {
 		return ResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
 	}
@@ -580,62 +592,63 @@ infix operator ~>
 
 // MARK: - Codable
 private enum ResourceObjectCodingKeys: String, CodingKey {
-	case type = "type"
-	case id = "id"
-	case attributes = "attributes"
-	case relationships = "relationships"
-	case meta = "meta"
-	case links = "links"
+    case type = "type"
+    case id = "id"
+    case attributes = "attributes"
+    case relationships = "relationships"
+    case meta = "meta"
+    case links = "links"
 }
 
 public extension ResourceObject {
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
-		
-		try container.encode(ResourceObject.jsonType, forKey: .type)
-		
-		if EntityRawIdType.self != Unidentified.self {
-			try container.encode(id, forKey: .id)
-		}
-		
-		if Description.Attributes.self != NoAttributes.self {
-			try container.encode(attributes, forKey: .attributes)
-		}
-		
-		if Description.Relationships.self != NoRelationships.self {
-			try container.encode(relationships, forKey: .relationships)
-		}
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ResourceObjectCodingKeys.self)
 
-		if MetaType.self != NoMetadata.self {
-			try container.encode(meta, forKey: .meta)
-		}
+        try container.encode(ResourceObject.jsonType, forKey: .type)
 
-		if LinksType.self != NoLinks.self {
-			try container.encode(links, forKey: .links)
-		}
-	}
+        if EntityRawIdType.self != Unidentified.self {
+            try container.encode(id, forKey: .id)
+        }
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
-		
-		let type = try container.decode(String.self, forKey: .type)
-		
-		guard ResourceObject.jsonType == type else {
-			throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
-		}
+        if Description.Attributes.self != NoAttributes.self {
+            let nestedEncoder = container.superEncoder(forKey: .attributes)
+            try attributes.encode(to: nestedEncoder)
+        }
 
-		let maybeUnidentified = Unidentified() as? EntityRawIdType
-		id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+        if Description.Relationships.self != NoRelationships.self {
+            try container.encode(relationships, forKey: .relationships)
+        }
 
-		attributes = try (NoAttributes() as? Description.Attributes) ??
-			container.decode(Description.Attributes.self, forKey: .attributes)
+        if MetaType.self != NoMetadata.self {
+            try container.encode(meta, forKey: .meta)
+        }
 
-		relationships = try (NoRelationships() as? Description.Relationships)
-			?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
-			?? Description.Relationships(from: EmptyObjectDecoder())
+        if LinksType.self != NoLinks.self {
+            try container.encode(links, forKey: .links)
+        }
+    }
 
-		meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 
-		links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
-	}
+        let type = try container.decode(String.self, forKey: .type)
+
+        guard ResourceObject.jsonType == type else {
+            throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
+        }
+
+        let maybeUnidentified = Unidentified() as? EntityRawIdType
+        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+
+        attributes = try (NoAttributes() as? Description.Attributes) ??
+            container.decode(Description.Attributes.self, forKey: .attributes)
+
+        relationships = try (NoRelationships() as? Description.Relationships)
+            ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
+            ?? Description.Relationships(from: EmptyObjectDecoder())
+
+        meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+
+        links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
+    }
 }

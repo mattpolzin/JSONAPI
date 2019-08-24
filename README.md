@@ -5,7 +5,7 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
-:warning: Although I find the type-safety of this framework appealing, the Swift compiler currently has enough trouble with it that it can become difficult to reason about errors produced by small typos. Similarly, auto-complete fails to provide reasonable suggestions much of the time. If you get the code right, everything compiles, otherwise it can suck to figure out what is wrong. This is mostly a concern when creating resource objects in-code (servers and test suites must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. Note that this is a compile-time concern -- test coverage of this library's behavior is very good. :warning:
+:warning: This library provides well-tested type safety when working with JSON:API 1.0, however the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -42,7 +42,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 			- [`Transformer`](#transformer)
 			- [`Validator`](#validator)
 			- [Computed `Attribute`](#computed-attribute)
-		- [Copying `ResourceObjects`](#copying-resourceobjects)
+		- [Copying/Mutating `ResourceObjects`](#copyingmutating-resourceobjects)
 		- [`JSONAPI.Document`](#jsonapidocument)
 			- [`ResourceBody`](#resourcebody)
 				- [nullable `PrimaryResource`](#nullable-primaryresource)
@@ -54,6 +54,9 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [`JSONAPI.Meta`](#jsonapimeta)
 		- [`JSONAPI.Links`](#jsonapilinks)
 		- [`JSONAPI.RawIdType`](#jsonapirawidtype)
+		- [Sparse Fieldsets](#sparse-fieldsets)
+			- [Supporting Sparse Fieldset Encoding](#supporting-sparse-fieldset-encoding)
+			- [Sparse Fieldset `typealias` comparisons](#sparse-fieldset-typealias-comparisons)
 		- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
 		- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
 		- [Meta-Attributes](#meta-attributes)
@@ -106,52 +109,34 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ### JSON:API
 #### Document
-- `data`
-	- [x] Encoding/Decoding
-- `included`
-	- [x] Encoding/Decoding
-- `errors`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
-- `jsonapi` (i.e. API Information)
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
+- [x] `data`
+- [x] `included`
+- [x] `errors`
+- [x] `meta`
+- [x] `jsonapi` (i.e. API Information)
+- [x] `links`
 
 #### Resource Object
-- `id`
-	- [x] Encoding/Decoding
-- `type`
-	- [x] Encoding/Decoding
-- `attributes`
-	- [x] Encoding/Decoding
-- `relationships`
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `id`
+- [x] `type`
+- [x] `attributes`
+- [x] `relationships`
+- [x] `links`
+- [x] `meta`
 
 #### Relationship Object
-- `data`
-	- [x] Encoding/Decoding
-- `links`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `data`
+- [x] `links`
+- [x] `meta`
 
 #### Links Object
-- `href`
-	- [x] Encoding/Decoding
-- `meta`
-	- [x] Encoding/Decoding
+- [x] `href`
+- [x] `meta`
 
 ### Misc
 - [x] Support transforms on `Attributes` values (e.g. to support different representations of `Date`)
 - [x] Support validation on `Attributes`.
-- [ ] Support sparse fieldsets. At the moment, not sure what this support will look like. A client can likely just define a new model to represent a sparse population of another model in a very specific use case. On the server side, it becomes much more appealing to be able to support arbitrary combinations of omitted fields.
-- [ ] Create more descriptive errors that are easier to use for troubleshooting.
+- [x] Support sparse fieldsets (encoding only). A client can likely just define a new model to represent a sparse population of another model in a very specific use case for decoding purposes. On the server side, sparse fieldsets of Resource Objects can be encoded without creating one model for every possible sparse fieldset.
 
 ### Testing
 #### Resource Object Validator
@@ -160,6 +145,8 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 - [x] Only allow `ToManyRelationship` and `ToOneRelationship` within `Relationships` struct.
 
 ### Potential Improvements
+These ideas could be implemented in future versions.
+
 - [ ] (Maybe) Use `KeyPath` to specify `Includes` thus creating type safety around the relationship between a primary resource type and the types of included resources.
 - [ ] (Maybe) Replace `SingleResourceBody` and `ManyResourceBody` with support at the `Document` level to just interpret `PrimaryResource`, `PrimaryResource?`, or `[PrimaryResource]` as the same decoding/encoding strategies.
 - [ ] Support sideposting. JSONAPI spec might become opinionated in the future (https://github.com/json-api/json-api/pull/1197, https://github.com/json-api/json-api/issues/1215, https://github.com/json-api/json-api/issues/1216) but there is also an existing implementation to consider (https://jsonapi-suite.github.io/jsonapi_suite/ruby/writes/nested-writes). At this time, any sidepost implementation would be an awesome tertiary library to be used alongside the primary JSONAPI library. Maybe `JSONAPISideloading`.
@@ -492,6 +479,31 @@ extension String: CreatableRawIdType {
 		return UUID().uuidString
 	}
 }
+```
+
+### Sparse Fieldsets
+Sparse Fieldsets are currently supported when encoding only. When decoding, Sparse Fieldsets become tricker to support under the current types this library uses and it is assumed that clients will request one or maybe two sparse fieldset combinations for any given model at most so it can simply define the `JSONAPI` models needed to decode those subsets of all possible fields. A server, on the other hand, likely needs to support arbitrary combinations of sparse fieldsets and this library provides a mechanism for encoding those sparse fieldsets without too much extra footwork.
+
+You can use sparse fieldsets on the primary resources(s) _and_ includes of a `JSONAPI.Document`.
+
+There is a sparse fieldsets example included with this repository as a Playground page.
+
+#### Supporting Sparse Fieldset Encoding
+1. The `JSONAPI` `ResourceObjectDescription`'s `Attributes` struct must conform to `JSONAPI.SparsableAttributes` rather than `JSONAPI.Attributes`.
+2. The `JSONAPI` `ResourceObjectDescription`'s `Attributes` struct must contain a `CodingKeys` enum that conforms to `JSONAPI.SparsableCodingKey` instead of `Swift.CodingKey`.
+3. `typealiases` you may have created for `JSONAPI.Document` that allow you to decode Documents will not support the "encode-only" nature of sparse fieldsets. See the next section for `typealias` comparisons.
+4. To create a sparse fieldset from a `ResourceObject` just call its `sparse(with: fields)` method and pass an array of `Attributes.CodingKeys` values you would like included in the encoding.
+5. Initialize and encode a `Document` containing one or more sparse or full primary resource(s) and any number of sparse or full includes.
+
+#### Sparse Fieldset `typealias` comparisons
+You might have found a `typealias` like the following for encoding/decoding `JSONAPI.Document`s (note the primary resource body is a `JSONAPI.ResourceBody`):
+```swift
+typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+```
+
+In order to support sparse fieldsets (which are encode-only), the following companion `typealias` would be useful (note the primary resource body is a `JSONAPI.EncodableResourceBody`):
+```swift
+typealias SparseDocument<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
 ```
 
 ### Custom Attribute or Relationship Key Mapping

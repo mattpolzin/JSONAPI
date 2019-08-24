@@ -9,6 +9,9 @@ public protocol JSONAPIError: Swift.Error, Equatable, Codable {
 	static var unknown: Self { get }
 }
 
+/// `UnknownJSONAPIError` can actually be used in any sitaution
+/// where you don't know what errors are possible _or_ you just don't
+/// care what errors might show up.
 public enum UnknownJSONAPIError: JSONAPIError {
 	case unknownError
 	
