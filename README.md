@@ -7,6 +7,10 @@ See the JSON API Spec here: https://jsonapi.org/format/
 
 :warning: This library provides well-tested type safety when working with JSON:API 1.0, however the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
 
+## Quick Start
+
+Basic Example Colab: https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te
+
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
