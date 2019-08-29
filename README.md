@@ -12,7 +12,9 @@ See the JSON API Spec here: https://jsonapi.org/format/
 ### Clientside
 Basic Example Colab: https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te 
 
-Includes Example Colab: https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU
+Includes Example Colab: https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU 
+
+Metadata Example Colab: https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
