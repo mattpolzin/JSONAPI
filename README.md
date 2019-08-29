@@ -10,7 +10,8 @@ See the JSON API Spec here: https://jsonapi.org/format/
 ## Quick Start
 
 ### Clientside
-Basic Example Colab: https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te
+Basic Example Colab: https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te 
+
 Includes Example Colab: https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU
 
 ## Table of Contents
