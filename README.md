@@ -27,6 +27,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [Caveat](#caveat)
 	- [Dev Environment](#dev-environment)
 		- [Prerequisites](#prerequisites)
+		- [Swift Package Manager](#swift-package-manager)
 		- [CocoaPods](#cocoapods)
 		- [Xcode project](#xcode-project)
 		- [Running the Playground](#running-the-playground)
@@ -99,6 +100,12 @@ If you find something wrong with this library and it isn't already mentioned und
 ### Prerequisites
 1. Swift 4.2+
 2. Swift Package Manager *OR* Cocoapods
+
+### Swift Package Manager
+Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
+```
+	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "1.0.0"))
+```
 
 ### CocoaPods
 To use this framework in your project via Cocoapods instead of Swift Package Manager, add the following dependencies to your Podfile.
