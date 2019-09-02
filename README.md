@@ -16,7 +16,8 @@ See the JSON API Spec here: https://jsonapi.org/format/
 - [Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
 
 ### Serverside
-- [Basic GET Response Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
+- [GET Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
+- [POST Example](https://colab.research.google.com/drive/1z3n70LwRY7vLIgbsMghvnfHA67QiuqpQ)
 
 ### Combined
 This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](#example) further down in this README.
