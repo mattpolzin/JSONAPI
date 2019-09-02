@@ -16,7 +16,10 @@ See the JSON API Spec here: https://jsonapi.org/format/
 - [Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
 
 ### Serverside
-- [Basic Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
+- [Basic GET Response Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
+
+### Combined
+This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](#example) further down in this README.
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
