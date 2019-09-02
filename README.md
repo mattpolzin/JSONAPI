@@ -11,7 +11,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 
 ### Clientside
 - [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te) 
-- [Includes Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU) 
+- [Compound Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU) 
 - [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr) 
 - [Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
 
