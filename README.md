@@ -5,7 +5,22 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
-:warning: This library provides well-tested type safety when working with JSON:API 1.0, however the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+:warning: This library provides well-tested type safety when working with JSON:API 1.0. However, the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+
+## Quick Start
+
+### Clientside
+- [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te) 
+- [Compound Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU) 
+- [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr) 
+- [Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
+
+### Serverside
+- [GET Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
+- [POST Example](https://colab.research.google.com/drive/1z3n70LwRY7vLIgbsMghvnfHA67QiuqpQ)
+
+### Combined
+This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](#example) further down in this README.
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -16,6 +31,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 		- [Caveat](#caveat)
 	- [Dev Environment](#dev-environment)
 		- [Prerequisites](#prerequisites)
+		- [Swift Package Manager](#swift-package-manager)
 		- [CocoaPods](#cocoapods)
 		- [Xcode project](#xcode-project)
 		- [Running the Playground](#running-the-playground)
@@ -89,8 +105,14 @@ If you find something wrong with this library and it isn't already mentioned und
 1. Swift 4.2+
 2. Swift Package Manager *OR* Cocoapods
 
+### Swift Package Manager
+Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
+```
+	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "1.0.0"))
+```
+
 ### CocoaPods
-To use this framework in your project via Cocoapods instead of Swift Package Manager, add the following dependencies to your Podfile.
+To use this framework in your project via Cocoapods, add the following dependencies to your Podfile.
 ```
 	pod 'Poly', :git => 'https://github.com/mattpolzin/Poly.git'
 	pod 'JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
