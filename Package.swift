@@ -6,33 +6,33 @@ import PackageDescription
 let package = Package(
     name: "JSONAPI",
     platforms: [
-      .macOS(.v10_10),
-      .iOS(.v10)
+        .macOS(.v10_10),
+        .iOS(.v10)
     ],
     products: [
         .library(
             name: "JSONAPI",
             targets: ["JSONAPI"]),
-		.library(
-			name: "JSONAPITesting",
-			targets: ["JSONAPITesting"])
+        .library(
+            name: "JSONAPITesting",
+            targets: ["JSONAPITesting"])
     ],
     dependencies: [
-		.package(url: "https://github.com/mattpolzin/Poly.git", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/mattpolzin/Poly.git", .upToNextMajor(from: "2.0.0")),
     ],
     targets: [
         .target(
             name: "JSONAPI",
             dependencies: ["Poly"]),
-		.target(
-			name: "JSONAPITesting",
-			dependencies: ["JSONAPI"]),
+        .target(
+            name: "JSONAPITesting",
+            dependencies: ["JSONAPI"]),
         .testTarget(
             name: "JSONAPITests",
             dependencies: ["JSONAPI", "JSONAPITesting"]),
         .testTarget(
             name: "JSONAPITestingTests",
             dependencies: ["JSONAPI", "JSONAPITesting"])
-    ]
-//  	swiftLanguageVersions: [.version("5.1")]
+    ],
+    swiftLanguageVersions: [.v5]
 )
