@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  spec.name         = "JSONAPI"
+  spec.name         = "MP-JSONAPI"
   spec.version      = "1.0.0"
   spec.summary      = "Swift Codable JSON API framework."
 
@@ -132,6 +132,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  you can include multiple dependencies to ensure it works.
 
   spec.swift_version = "5.0"
+  spec.module_name   = "JSONAPI"
   # spec.requires_arc = true
 
   # spec.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
