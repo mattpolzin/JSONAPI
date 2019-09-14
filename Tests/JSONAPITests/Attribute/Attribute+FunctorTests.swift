@@ -16,6 +16,7 @@ class Attribute_FunctorTests: XCTestCase {
 		XCTAssertNotNil(entity)
 
 		XCTAssertEqual(entity?[\.computedString], "Frankie2")
+        XCTAssertEqual(entity?.computedString, "Frankie2")
 	}
 
 	func test_mapOptionalSuccess() {
@@ -24,6 +25,7 @@ class Attribute_FunctorTests: XCTestCase {
 		XCTAssertNotNil(entity)
 
 		XCTAssertEqual(entity?[\.computedNumber], 22)
+        XCTAssertEqual(entity?.computedNumber, 22)
 	}
 
 	func test_mapOptionalFailure() {
@@ -32,6 +34,7 @@ class Attribute_FunctorTests: XCTestCase {
 		XCTAssertNotNil(entity)
 
 		XCTAssertNil(entity?[\.computedNumber])
+        XCTAssertNil(entity?.computedNumber)
 	}
 }
 

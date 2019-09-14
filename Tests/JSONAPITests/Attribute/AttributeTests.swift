@@ -77,11 +77,36 @@ extension AttributeTests {
 		}
 	}
 
-	enum IntToString: Transformer {
+	enum IntToString: ReversibleTransformer {
 		public static func transform(_ from: Int) -> String {
 			return String(from)
 		}
+
+        public static func reverse(_ value: String) throws -> Int {
+            guard let intValue = Int(value) else {
+                fatalError("Reversed IntToString with invalid String value.")
+            }
+            return intValue
+        }
 	}
+
+    enum OptionalIntToOptionalString: ReversibleTransformer {
+        public static func transform(_ from: Int?) -> String? {
+            return from.map(String.init)
+        }
+
+        public static func reverse(_ value: String?) throws -> Int? {
+            guard let stringValue = value else {
+                return nil
+            }
+
+            guard let intValue = Int(stringValue) else {
+                fatalError("Reversed IntToString with invalid String value.")
+            }
+
+            return intValue
+        }
+    }
 
 	enum IntToInt: Transformer {
 		public static func transform(_ from: Int) -> Int {

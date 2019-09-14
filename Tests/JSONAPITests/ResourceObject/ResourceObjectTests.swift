@@ -1,5 +1,5 @@
 //
-//  EntityTests.swift
+//  ResourceObjectTests.swift
 //  JSONAPITests
 //
 //  Created by Mathew Polzin on 7/25/18.
@@ -9,15 +9,15 @@ import XCTest
 import JSONAPI
 import JSONAPITesting
 
-class EntityTests: XCTestCase {
-	
+class ResourceObjectTests: XCTestCase {
+
 	func test_relationship_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
-		
+
 		XCTAssertEqual(entity2.relationships.other, entity1.pointer)
 	}
-	
+
 	func test_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
@@ -30,7 +30,7 @@ class EntityTests: XCTestCase {
 		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, Optional(entity1.id))
-        XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
+		XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
 	}
 
 	func test_toMany_relationship_operator_access() {
@@ -48,11 +48,11 @@ class EntityTests: XCTestCase {
 
 		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
-	
+
 	func test_relationshipIds() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(attributes: .none, relationships: .init(other: entity1.pointer), meta: .none, links: .none)
-		
+
 		XCTAssertEqual(entity2.relationships.other.id, entity1.id)
 	}
 
@@ -70,6 +70,7 @@ class EntityTests: XCTestCase {
 		let entity = UnidentifiedTestEntity(attributes: .init(me: "hello"), relationships: .none, meta: .none, links: .none)
 
 		XCTAssertEqual(entity[\.me], "hello")
+        XCTAssertEqual(entity.me, "hello")
 	}
 
 	func test_initialization() {
@@ -103,7 +104,7 @@ class EntityTests: XCTestCase {
 }
 
 // MARK: - Identifying entity copies
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_copyIdentifiedByType() {
 		let unidentifiedEntity = UnidentifiedTestEntity(attributes: .init(me: .init(value: "hello")), relationships: .none, meta: .none, links: .none)
 
@@ -133,7 +134,7 @@ extension EntityTests {
 }
 
 // MARK: - Encode/Decode
-extension EntityTests {
+extension ResourceObjectTests {
 
 	func test_EntityNoRelationshipsNoAttributes() {
 		let entity = decoded(type: TestEntity1.self,
@@ -158,6 +159,7 @@ extension EntityTests {
 		XCTAssert(type(of: entity.relationships) == NoRelationships.self)
 
 		XCTAssertEqual(entity[\.floater], 123.321)
+        XCTAssertEqual(entity.floater, 123.321)
 		XCTAssertNoThrow(try TestEntity5.check(entity))
 
 		testEncoded(entity: entity)
@@ -173,7 +175,7 @@ extension EntityTests {
 								   data: entity_some_relationships_no_attributes)
 
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
-		
+
 		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
 		XCTAssertNoThrow(try TestEntity3.check(entity))
 
@@ -184,13 +186,15 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity3.self,
 								  data: entity_some_relationships_no_attributes)
 	}
-	
+
 	func test_EntitySomeRelationshipsSomeAttributes() {
 		let entity = decoded(type: TestEntity4.self,
 								   data: entity_some_relationships_some_attributes)
-		
+
 		XCTAssertEqual(entity[\.word], "coolio")
+        XCTAssertEqual(entity.word, "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
+        XCTAssertEqual(entity.number, 992299)
 		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 		XCTAssertNoThrow(try TestEntity4.check(entity))
 
@@ -204,15 +208,18 @@ extension EntityTests {
 }
 
 // MARK: Attribute omission and nullification
-extension EntityTests {
-	
+extension ResourceObjectTests {
+
 	func test_entityOneOmittedAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHere])
+        XCTAssertNil(entity.maybeHere)
 		XCTAssertEqual(entity[\.maybeNull], "World")
+        XCTAssertEqual(entity.maybeNull, "World")
 		XCTAssertNoThrow(try TestEntity6.check(entity))
 
 		testEncoded(entity: entity)
@@ -222,14 +229,17 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
 	}
-	
+
 	func test_entityOneNullAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
+        XCTAssertEqual(entity.maybeHere, "World")
 		XCTAssertNil(entity[\.maybeNull])
+        XCTAssertNil(entity.maybeNull)
 		XCTAssertNoThrow(try TestEntity6.check(entity))
 
 		testEncoded(entity: entity)
@@ -239,14 +249,17 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_null_attribute)
 	}
-	
+
 	func test_entityAllAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_all_attributes)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertEqual(entity[\.maybeHere], "World")
+        XCTAssertEqual(entity.maybeHere, "World")
 		XCTAssertEqual(entity[\.maybeNull], "!")
+        XCTAssertEqual(entity.maybeNull, "!")
 		XCTAssertNoThrow(try TestEntity6.check(entity))
 
 		testEncoded(entity: entity)
@@ -256,14 +269,17 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_all_attributes)
 	}
-	
+
 	func test_entityOneNullAndOneOmittedAttribute() {
 		let entity = decoded(type: TestEntity6.self,
 								   data: entity_one_null_and_one_missing_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHere])
+        XCTAssertNil(entity.maybeHere)
 		XCTAssertNil(entity[\.maybeNull])
+        XCTAssertNil(entity.maybeNull)
 		XCTAssertNoThrow(try TestEntity6.check(entity))
 
 		testEncoded(entity: entity)
@@ -273,18 +289,20 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_null_and_one_missing_attribute)
 	}
-	
+
 	func test_entityBrokenNullableOmittedAttribute() {
 		XCTAssertThrowsError(try JSONDecoder().decode(TestEntity6.self,
 								   from: entity_broken_missing_nullable_attribute))
 	}
-	
+
 	func test_NullOptionalNullableAttribute() {
 		let entity = decoded(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
-		
+
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertNil(entity[\.maybeHereMaybeNull])
+        XCTAssertNil(entity.maybeHereMaybeNull)
 		XCTAssertNoThrow(try TestEntity7.check(entity))
 
 		testEncoded(entity: entity)
@@ -294,13 +312,15 @@ extension EntityTests {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
 	}
-	
+
 	func test_NonNullOptionalNullableAttribute() {
 		let entity = decoded(type: TestEntity7.self,
 								   data: entity_non_null_optional_nullable_attribute)
 
 		XCTAssertEqual(entity[\.here], "Hello")
+        XCTAssertEqual(entity.here, "Hello")
 		XCTAssertEqual(entity[\.maybeHereMaybeNull], "World")
+        XCTAssertEqual(entity.maybeHereMaybeNull, "World")
 		XCTAssertNoThrow(try TestEntity7.check(entity))
 
 		testEncoded(entity: entity)
@@ -313,17 +333,23 @@ extension EntityTests {
 }
 
 // MARK: Attribute Transformation
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_IntToString() {
 		let entity = decoded(type: TestEntity8.self,
 								   data: entity_int_to_string_attribute)
-		
+
 		XCTAssertEqual(entity[\.string], "22")
+        XCTAssertEqual(entity.string, "22")
 		XCTAssertEqual(entity[\.int], 22)
+        XCTAssertEqual(entity.int, 22)
 		XCTAssertEqual(entity[\.stringFromInt], "22")
+        XCTAssertEqual(entity.stringFromInt, "22")
 		XCTAssertEqual(entity[\.plus], 122)
+        XCTAssertEqual(entity.plus, 122)
 		XCTAssertEqual(entity[\.doubleFromInt], 22.0)
+        XCTAssertEqual(entity.doubleFromInt, 22.0)
 		XCTAssertEqual(entity[\.nullToString], "nil")
+        XCTAssertEqual(entity.nullToString, "nil")
 		XCTAssertNoThrow(try TestEntity8.check(entity))
 
 		testEncoded(entity: entity)
@@ -336,7 +362,7 @@ extension EntityTests {
 }
 
 // MARK: Attribute Validation
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_IntOver10_success() {
 		XCTAssertNoThrow(decoded(type: TestEntity11.self, data: entity_valid_validated_attribute))
 	}
@@ -351,7 +377,7 @@ extension EntityTests {
 }
 
 // MARK: Relationship omission and nullification
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_nullableRelationshipNotNullOrOmitted() {
 		let entity = decoded(type: TestEntity9.self,
 								   data: entity_optional_not_omitted_relationship)
@@ -453,7 +479,7 @@ extension EntityTests {
 
 // MARK: Relationships of same type as root entity
 
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_RleationshipsOfSameType() {
 		let entity = decoded(type: TestEntity10.self,
 								   data: entity_self_ref_relationship)
@@ -472,12 +498,13 @@ extension EntityTests {
 
 // MARK: Unidentified
 
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_UnidentifiedEntity() {
 		let entity = decoded(type: UnidentifiedTestEntity.self,
 								   data: entity_unidentified)
 
 		XCTAssertNil(entity[\.me])
+        XCTAssertNil(entity.me)
 		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 
@@ -494,6 +521,7 @@ extension EntityTests {
 								   data: entity_unidentified_with_attributes)
 
 		XCTAssertEqual(entity[\.me], "unknown")
+        XCTAssertEqual(entity.me, "unknown")
 		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertNoThrow(try UnidentifiedTestEntity.check(entity))
 
@@ -508,12 +536,13 @@ extension EntityTests {
 
 // MARK: With Meta and/or Links
 
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_UnidentifiedEntityWithAttributesAndMeta() {
 		let entity = decoded(type: UnidentifiedTestEntityWithMeta.self,
 							 data: entity_unidentified_with_attributes_and_meta)
 
 		XCTAssertEqual(entity[\.me], "unknown")
+        XCTAssertEqual(entity.me, "unknown")
 		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertEqual(entity.meta.x, "world")
 		XCTAssertEqual(entity.meta.y, 5)
@@ -532,6 +561,7 @@ extension EntityTests {
 							 data: entity_unidentified_with_attributes_and_links)
 
 		XCTAssertEqual(entity[\.me], "unknown")
+        XCTAssertEqual(entity.me, "unknown")
 		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
 		XCTAssertNoThrow(try UnidentifiedTestEntityWithLinks.check(entity))
@@ -549,6 +579,7 @@ extension EntityTests {
 							 data: entity_unidentified_with_attributes_and_meta_and_links)
 
 		XCTAssertEqual(entity[\.me], "unknown")
+        XCTAssertEqual(entity.me, "unknown")
 		XCTAssertEqual(entity.id, .unidentified)
 		XCTAssertEqual(entity.meta.x, "world")
 		XCTAssertEqual(entity.meta.y, 5)
@@ -568,7 +599,9 @@ extension EntityTests {
 							 data: entity_some_relationships_some_attributes_with_meta)
 
 		XCTAssertEqual(entity[\.word], "coolio")
+        XCTAssertEqual(entity.word, "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
+        XCTAssertEqual(entity.number, 992299)
 		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 		XCTAssertEqual(entity.meta.x, "world")
 		XCTAssertEqual(entity.meta.y, 5)
@@ -587,7 +620,9 @@ extension EntityTests {
 							 data: entity_some_relationships_some_attributes_with_links)
 
 		XCTAssertEqual(entity[\.word], "coolio")
+        XCTAssertEqual(entity.word, "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
+        XCTAssertEqual(entity.number, 992299)
 		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 		XCTAssertEqual(entity.links.link1, .init(url: "https://image.com/image.png"))
 		XCTAssertNoThrow(try TestEntity4WithLinks.check(entity))
@@ -605,7 +640,9 @@ extension EntityTests {
 							 data: entity_some_relationships_some_attributes_with_meta_and_links)
 
 		XCTAssertEqual(entity[\.word], "coolio")
+        XCTAssertEqual(entity.word, "coolio")
 		XCTAssertEqual(entity[\.number], 992299)
+        XCTAssertEqual(entity.number, 992299)
 		XCTAssertEqual((entity ~> \.other).rawValue, "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF")
 		XCTAssertEqual(entity.meta.x, "world")
 		XCTAssertEqual(entity.meta.y, 5)
@@ -623,7 +660,7 @@ extension EntityTests {
 
 // MARK: With a Meta Attribute
 
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_MetaEntityAttributeAccessWorks() {
 		let entity1 = TestEntityWithMetaAttribute(id: "even",
 												  attributes: .init(),
@@ -637,13 +674,15 @@ extension EntityTests {
 												  links: .none)
 
 		XCTAssertEqual(entity1[\.metaAttribute], true)
+        XCTAssertEqual(entity1.metaAttribute, true)
 		XCTAssertEqual(entity2[\.metaAttribute], false)
+        XCTAssertEqual(entity2.metaAttribute, false)
 	}
 }
 
 // MARK: With a Meta Relationship
 
-extension EntityTests {
+extension ResourceObjectTests {
 	func test_MetaEntityRelationshipAccessWorks() {
 		let entity1 = TestEntityWithMetaRelationship(id: "even",
 												  attributes: .none,
@@ -666,7 +705,7 @@ extension EntityTests {
 }
 
 // MARK: - Test Types
-extension EntityTests {
+extension ResourceObjectTests {
 
 	enum TestEntityType1: ResourceObjectDescription {
 		static var jsonType: String { return "test_entities"}
@@ -681,7 +720,7 @@ extension EntityTests {
 		static var jsonType: String { return "second_test_entities"}
 
 		typealias Attributes = NoAttributes
-		
+
 		struct Relationships: JSONAPI.Relationships {
 			let other: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
@@ -693,7 +732,7 @@ extension EntityTests {
 		static var jsonType: String { return "third_test_entities"}
 
 		typealias Attributes = NoAttributes
-		
+
 		struct Relationships: JSONAPI.Relationships {
 			let others: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>
 		}
@@ -766,7 +805,7 @@ extension EntityTests {
 		static var jsonType: String { return "eighth_test_entities" }
 
 		typealias Relationships = NoRelationships
-		
+
 		struct Attributes: JSONAPI.Attributes {
 			let string: Attribute<String>
 			let int: Attribute<Int>
@@ -777,7 +816,7 @@ extension EntityTests {
 			let nullToString: TransformedAttribute<Int?, OptionalToString<Int>>
 		}
 	}
-	
+
 	typealias TestEntity8 = BasicEntity<TestEntityType8>
 
 	enum TestEntityType9: ResourceObjectDescription {
@@ -911,19 +950,19 @@ extension EntityTests {
 			return String(from)
 		}
 	}
-	
+
 	enum IntPlusOneHundred: Transformer {
 		public static func transform(_ from: Int) -> Int {
 			return from + 100
 		}
 	}
-	
+
 	enum IntToDouble: Transformer {
 		public static func transform(_ from: Int) -> Double {
 			return Double(from)
 		}
 	}
-	
+
 	enum OptionalToString<T>: Transformer {
 		public static func transform(_ from: T?) -> String {
 			return String(describing: from)

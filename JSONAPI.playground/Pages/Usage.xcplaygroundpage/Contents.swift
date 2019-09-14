@@ -55,15 +55,11 @@ print("-----")
 
 // MARK: - Pass successfully parsed body to other parts of the code
 
-/*
- ---- CRASHING IN XCODE 10.2 PLAYGROUND ----
-
 if case let .data(bodyData) = peopleResponse.body {
-	print("first person's name: \(bodyData.primary.values[0][\.fullName])")
+	print("first person's name: \(bodyData.primary.values[0].fullName)")
 } else {
 	print("no body data")
 }
- */
 
 
 // MARK: - Work in the abstract

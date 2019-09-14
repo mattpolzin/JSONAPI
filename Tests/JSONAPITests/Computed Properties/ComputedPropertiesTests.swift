@@ -15,6 +15,7 @@ class ComputedPropertiesTests: XCTestCase {
 
 		XCTAssertEqual(entity.id, "1234")
 		XCTAssertEqual(entity[\.name], "Sarah")
+        XCTAssertEqual(entity.name, "Sarah")
 		XCTAssertEqual(entity ~> \.other, "5678")
 		XCTAssertNoThrow(try TestType.check(entity))
 	}
@@ -27,6 +28,7 @@ class ComputedPropertiesTests: XCTestCase {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)
 
 		XCTAssertEqual(entity[\.computed], "Sarah2")
+        XCTAssertEqual(entity.computed, "Sarah2")
         XCTAssertEqual(entity[direct: \.directSecretsOut], "shhhh")
 	}
 
