@@ -102,13 +102,13 @@ If you find something wrong with this library and it isn't already mentioned und
 
 ## Dev Environment
 ### Prerequisites
-1. Swift 4.2+
+1. Swift 5.1+
 2. Swift Package Manager *OR* Cocoapods
 
 ### Swift Package Manager
 Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
 ```
-	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "1.0.0"))
+	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "2.0.0"))
 ```
 
 ### CocoaPods
