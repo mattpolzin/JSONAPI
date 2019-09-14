@@ -115,7 +115,7 @@ Just include the following in your package's dependencies and add `JSONAPI` to t
 To use this framework in your project via Cocoapods, add the following dependencies to your Podfile.
 ```
 	pod 'Poly', :git => 'https://github.com/mattpolzin/Poly.git'
-	pod 'JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
+	pod 'MP-JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
 ```
 
 ### Xcode project
