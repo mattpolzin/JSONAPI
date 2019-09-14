@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MP-JSONAPI"
-  spec.version      = "1.0.0"
+  spec.version      = "2.0.0"
   spec.summary      = "Swift Codable JSON API framework."
 
   # This description is used to generate tags and improve search results.
@@ -131,7 +131,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  spec.swift_version = "5.0"
+  spec.swift_version = "5.1"
   spec.module_name   = "JSONAPI"
   # spec.requires_arc = true
 
