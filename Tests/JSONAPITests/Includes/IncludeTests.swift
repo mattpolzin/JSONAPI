@@ -176,6 +176,27 @@ class IncludedTests: XCTestCase {
 		test_DecodeEncodeEquality(type: Includes<Include9<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9>>.self,
 								  data: nine_different_type_includes)
 	}
+
+    func test_TenDifferentIncludes() {
+        let includes = decoded(type: Includes<Include10<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9, TestEntity10>>.self,
+                               data: ten_different_type_includes)
+
+        XCTAssertEqual(includes[TestEntity.self].count, 1)
+        XCTAssertEqual(includes[TestEntity2.self].count, 1)
+        XCTAssertEqual(includes[TestEntity3.self].count, 1)
+        XCTAssertEqual(includes[TestEntity4.self].count, 1)
+        XCTAssertEqual(includes[TestEntity5.self].count, 1)
+        XCTAssertEqual(includes[TestEntity6.self].count, 1)
+        XCTAssertEqual(includes[TestEntity7.self].count, 1)
+        XCTAssertEqual(includes[TestEntity8.self].count, 1)
+        XCTAssertEqual(includes[TestEntity9.self].count, 1)
+        XCTAssertEqual(includes[TestEntity10.self].count, 1)
+    }
+
+    func test_TenDifferentIncludes_encode() {
+        test_DecodeEncodeEquality(type: Includes<Include10<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9, TestEntity10>>.self,
+                                  data: ten_different_type_includes)
+    }
 }
 
 // MARK: - Appending
@@ -471,4 +492,15 @@ extension IncludedTests {
 	}
 
 	typealias TestEntity9 = BasicEntity<TestEntityType9>
+
+    enum TestEntityType10: ResourceObjectDescription {
+
+        typealias Attributes = NoAttributes
+
+        public static var jsonType: String { return "test_entity10" }
+
+        typealias Relationships = NoRelationships
+    }
+
+    typealias TestEntity10 = BasicEntity<TestEntityType10>
 }
