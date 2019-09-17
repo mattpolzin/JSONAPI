@@ -452,7 +452,7 @@ The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are d
 
 #### `IncludeType`
 
-The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to six types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
+The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to 10 types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included resource objects, it indicates a number of _types_ of included resource objects. `Include1` can be used to decode any number of included resource objects as long as all the resource objects are of the same _type_.
 
