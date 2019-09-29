@@ -35,7 +35,7 @@ typealias ThingWithProperties = JSONAPI.ResourceObject<ThingWithPropertiesDescri
 //
 // NOTE: Using `JSONAPI.EncodableResourceBody` which means the document type will be `Encodable` but not `Decodable`.
 //
-typealias Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+typealias Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 
 //
 // NOTE: Using `JSONAPI.EncodablePrimaryResource` which means the `ResourceBody` will be `Encodable` but not `Decodable.

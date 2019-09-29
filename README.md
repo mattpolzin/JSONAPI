@@ -10,9 +10,9 @@ See the JSON API Spec here: https://jsonapi.org/format/
 ## Quick Start
 
 ### Clientside
-- [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te) 
-- [Compound Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU) 
-- [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr) 
+- [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te)
+- [Compound Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU)
+- [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr)
 - [Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
 
 ### Serverside
@@ -108,7 +108,7 @@ If you find something wrong with this library and it isn't already mentioned und
 ### Swift Package Manager
 Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
 ```
-	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "2.0.0"))
+	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "2.2.0"))
 ```
 
 ### CocoaPods

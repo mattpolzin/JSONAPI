@@ -139,6 +139,6 @@ public enum HouseDescription: ResourceObjectDescription {
 
 public typealias House = ExampleEntity<HouseDescription>
 
-public typealias SingleDogDocument = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>
+public typealias SingleDogDocument = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
 
-public typealias BatchPeopleDocument = JSONAPI.Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include2<Dog, House>, NoAPIDescription, UnknownJSONAPIError>
+public typealias BatchPeopleDocument = JSONAPI.Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include2<Dog, House>, NoAPIDescription, BasicJSONAPIError<String>>
