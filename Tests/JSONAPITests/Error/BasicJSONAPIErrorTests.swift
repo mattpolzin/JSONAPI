@@ -8,6 +8,7 @@
 import Foundation
 @testable import JSONAPI
 import XCTest
+import Poly
 
 final class BasicJSONAPIErrorTests: XCTestCase {
     func test_initAndEquality() {
@@ -88,5 +89,43 @@ final class BasicJSONAPIErrorTests: XCTestCase {
         XCTAssertEqual(wellPopulatedError.definedFields["detail"], "Resource was not found")
         XCTAssertEqual(wellPopulatedError.definedFields["pointer"], "/data/attributes/id")
         XCTAssertEqual(wellPopulatedError.definedFields["parameter"], "id")
+    }
+
+    func test_decodeAFewExamples() {
+        let datas = [
+"""
+{
+    "id": "hello"
+}
+""",
+"""
+{
+    "id": 1234
+}
+""",
+"""
+{
+    "status": "404",
+    "title": "Missing",
+    "links": {
+        "about": "https://google.com"
+    }
+}
+""",
+"""
+{
+    "status": 404
+}
+"""
+        ].map { $0.data(using: .utf8)! }
+
+        let errors = datas
+            .map { decoded(type: BasicJSONAPIError<Either<Int, String>>.self, data: $0) }
+
+        XCTAssertEqual(errors[0].payload?.id, .init("hello"))
+        XCTAssertEqual(errors[1].payload?.id, .init(1234))
+        XCTAssertEqual(errors[2].payload?.status, "404")
+        XCTAssertEqual(errors[2].payload?.title, "Missing")
+        XCTAssertEqual(errors[3], .unknown)
     }
 }
