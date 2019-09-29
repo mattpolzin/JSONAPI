@@ -92,6 +92,14 @@ final class GenericJSONAPIErrorTests: XCTestCase {
         }
     }
 
+    func test_encodeUnknown() {
+        let error = TestGenericJSONAPIError.unknownError
+
+        let encodedError = encoded(value: ["errors": [error]])
+
+        XCTAssertEqual(String(data: encodedError, encoding: .utf8)!, #"{"errors":["unknown"]}"#)
+    }
+
     func test_payloadAccess() {
         let error1 = TestGenericJSONAPIError.error(.init(hello: "world", world: 3))
         let error2 = TestGenericJSONAPIError.error(.init(hello: "there", world: nil))

@@ -70,4 +70,9 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
 /// a good option if you do not know what to expect. You could also use
 /// `Either<Int, String>` (provided by the `Poly` package that is
 /// already a dependency of `JSONAPI`).
+///
+///  - Important: The `definedFields` property will include fields
+///     with non-nil values in a flattened way. There will be no `source` key
+///     but there will be `pointer` and `parameter` keys (if those values
+///     are non-nil).
 public typealias BasicJSONAPIError<IdType: Codable & Equatable> = GenericJSONAPIError<BasicJSONAPIErrorPayload<IdType>>
