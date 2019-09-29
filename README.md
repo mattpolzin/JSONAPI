@@ -23,10 +23,8 @@ See the JSON API Spec here: https://jsonapi.org/format/
 This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](#example) further down in this README.
 
 ## Table of Contents
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [JSONAPI](#jsonapi)
-	- [Table of Contents](#table-of-contents)
 	- [Primary Goals](#primary-goals)
 		- [Caveat](#caveat)
 	- [Dev Environment](#dev-environment)
@@ -67,6 +65,9 @@ This library works well when used by both the server responsible for serializati
 			- [`IncludeType`](#includetype)
 			- [`APIDescriptionType`](#apidescriptiontype)
 			- [`Error`](#error)
+				- [`UnknownJSONAPIError`](#unknownjsonapierror)
+				- [`BasicJSONAPIError`](#basicjsonapierror)
+				- [`GenericJSONAPIError`](#genericjsonapierror)
 		- [`JSONAPI.Meta`](#jsonapimeta)
 		- [`JSONAPI.Links`](#jsonapilinks)
 		- [`JSONAPI.RawIdType`](#jsonapirawidtype)
@@ -84,8 +85,6 @@ This library works well when used by both the server responsible for serializati
 - [JSONAPI+Testing](#jsonapitesting)
 - [JSONAPI+Arbitrary](#jsonapiarbitrary)
 - [JSONAPI+OpenAPI](#jsonapiopenapi)
-
-<!-- /TOC -->
 
 ## Primary Goals
 
@@ -121,6 +120,8 @@ To use this framework in your project via Cocoapods, add the following dependenc
 ### Xcode project
 To create an Xcode project for JSONAPI, run
 `swift package generate-xcodeproj`
+
+With Xcode 11+ you can also just open the folder containing your clone of this repository and begin working.
 
 ### Running the Playground
 To run the included Playground files, create an Xcode project using Swift Package Manager, then create an Xcode Workspace in the root of the repository and add both the generated Xcode project and the playground to the Workspace.
@@ -330,7 +331,7 @@ let favoriteColor: String = person.favoriteColor
 let favoriteColor: String = person[\.favoriteColor]
 ```
 
-In both cases you retain type-safety, although neither plays particularly nicely with code autocompletion. It is best practice to pick an attribute access syntax and stick with it. At some point in the future the syntax deemed less desirable may be deprecated.
+In both cases you retain type-safety. It is best practice to pick an attribute access syntax and stick with it. At some point in the future the syntax deemed less desirable may be deprecated.
 
 #### `Transformer`
 
@@ -403,7 +404,7 @@ The entirety of a JSON API request or response is encoded or decoded from- or to
 ```swift
 let decoder = JSONDecoder()
 
-let responseStructure = JSONAPI.Document<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, UnknownJSONAPIError>.self
+let responseStructure = JSONAPI.Document<SingleResourceBody<Person>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError<String>>.self
 
 let document = try decoder.decode(responseStructure, from: data)
 ```
@@ -470,7 +471,45 @@ You can supply any `JSONAPI.Meta` type as the metadata type of the API descripti
 
 #### `Error`
 
-The final generic type of a `JSONAPIDocument` is the `Error`. You should create an error type that can decode all the errors you expect your `JSONAPIDocument` to be able to decode. As prescribed by the **SPEC**, these errors will be found in the root document member `errors`.
+The final generic type of a `JSONAPIDocument` is the `Error`.
+
+You can either create an error type that can handle all the errors you expect your `JSONAPIDocument` to be able to encode/decode or use an out-of-box error type described here. As prescribed by the **SPEC**, these errors will be found under the root document key `errors`.
+
+##### `UnknownJSONAPIError`
+The `UnknownJSONAPIError` type will always succeed in parsing errors but it will not give you any information about what error occurred. You will generally get more bang for your buck out of the next error type described.
+
+##### `BasicJSONAPIError`
+The `BasicJSONAPIError` type will always succeed unless it is faced with an `id` field of an unexpected type, although it still "succeeds" in falling back to its `.unknown` case when that happens. This type extracts _most_ of the fields the **SPEC** describes [here](https://jsonapi.org/format/#error-objects). Because all of these fields are optional in the **SPEC**, they are optional on the `BasicJSONAPIError` type. You will have to create your own error type if you want to define certain fields as non-optional or parse metadata or links out of error objects.
+
+🗒Metadata and links are supported at the Document level for error responses, the are just not supported hanging off of the individual errors in the `errors` array of the response when using this error type.
+
+The `BasicJSONAPIError` type is generic on one thing: The type it expects for the `id` field. If you expect integer `ids` back, you use `BasicJSONAPIError<Int>`. The same can be done for `String` or any other type that is both `Codable` and `Equatable`. You can even employ something like `AnyCodable` from *Flight-School* as your id field type. If you only need to handle a small subset of possible `id` field types, you can also use the `Poly` library that is already a dependency of `JSONAPI`. For example, you might expect a mix of `String` and `Int` ids for some reason: `BasicJSONAPIError<Either<Int, String>>`.
+
+The two easiest ways to access the available properties of an error response are under the `payload` property of the error (this property is `nil` if the error was parsed as `.unknown`) or by asking the error for its `definedFields` dictionary.
+
+As an example, let's say you have the following `Document` type that is destined for errors:
+```swift
+typealias ErrorDoc = JSONAPI.Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
+```
+And you've parsed an error response
+```swift
+let errorResponse = try! JSONDecoder().decode(ErrorDoc.self, from: mockErrorData)
+```
+You can get at the `Document` body and errors in a couple of different ways, but for one you can switch on the body:
+```swift
+switch errorResponse.body {
+case .data:
+    print("cool, data!")
+
+case .errors(let errors, let meta, let links):
+    let errorDetails = errors.compactMap { $0.payload?.detail }
+
+    print("error details: \(errorDetails)")
+}
+```
+
+##### `GenericJSONAPIError`
+This type makes it simple to use your own error payload structures as `JSONAPIError` types. Simply define a `Codable` and `Equatable` struct and then use `GenericJSONAPIError<YourType>` as the error type for a `Document`.
 
 ### `JSONAPI.Meta`
 
@@ -520,12 +559,12 @@ There is a sparse fieldsets example included with this repository as a Playgroun
 #### Sparse Fieldset `typealias` comparisons
 You might have found a `typealias` like the following for encoding/decoding `JSONAPI.Document`s (note the primary resource body is a `JSONAPI.ResourceBody`):
 ```swift
-typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 ```
 
 In order to support sparse fieldsets (which are encode-only), the following companion `typealias` would be useful (note the primary resource body is a `JSONAPI.EncodableResourceBody`):
 ```swift
-typealias SparseDocument<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+typealias SparseDocument<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 ```
 
 ### Custom Attribute or Relationship Key Mapping
@@ -713,7 +752,7 @@ typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Ent
 // JSON:API Documents for this particular API to have Metadata, Links,
 // useful Errors, or an APIDescription (The *SPEC* calls this
 // "API Description" the "JSON:API Object").
-typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, UnknownJSONAPIError>
+typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 
 // MARK: Entity Definitions
 

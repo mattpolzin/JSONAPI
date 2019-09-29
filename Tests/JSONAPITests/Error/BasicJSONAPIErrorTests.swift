@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import JSONAPI
+import JSONAPI
 import XCTest
 import Poly
 

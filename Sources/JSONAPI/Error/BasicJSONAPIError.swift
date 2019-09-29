@@ -5,30 +5,48 @@
 //  Created by Mathew Polzin on 9/29/19.
 //
 
-import Foundation
-
 /// Most of the JSON:API Spec defined Error fields.
 public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Equatable, ErrorDictType {
     /// a unique identifier for this particular occurrence of the problem
-    let id: IdType?
-//    let links: Links? // we skip this for now to avoid adding complexity to using this basic type.
+    public let id: IdType?
+//    public let links: Links? // we skip this for now to avoid adding complexity to using this basic type.
     /// the HTTP status code applicable to this problem
-    let status: String?
+    public let status: String?
     /// an application-specific error code
-    let code: String?
+    public let code: String?
     /// a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization
-    let title: String?
+    public let title: String?
     /// a human-readable explanation specific to this occurrence of the problem. Like `title`, this field’s value can be localized
-    let detail: String?
+    public let detail: String?
     /// an object containing references to the source of the error
-    let source: Source?
-//    let meta: Meta? // we skip this for now to avoid adding complexity to using this basic type
+    public let source: Source?
+//    public let meta: Meta? // we skip this for now to avoid adding complexity to using this basic type
+
+    public init(id: IdType? = nil,
+                status: String? = nil,
+                code: String? = nil,
+                title: String? = nil,
+                detail: String? = nil,
+                source: Source? = nil) {
+        self.id = id
+        self.status = status
+        self.code = code
+        self.title = title
+        self.detail = detail
+        self.source = source
+    }
 
     public struct Source: Codable, Equatable {
         /// a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
-        let pointer: String?
+        public let pointer: String?
         /// which URI query parameter caused the error
-        let parameter: String?
+        public let parameter: String?
+
+        public init(pointer: String? = nil,
+                    parameter: String? = nil) {
+            self.pointer = pointer
+            self.parameter = parameter
+        }
     }
 
     public var definedFields: [String: String] {

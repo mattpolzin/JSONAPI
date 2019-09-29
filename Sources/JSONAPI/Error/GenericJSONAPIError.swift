@@ -5,8 +5,6 @@
 //  Created by Mathew Polzin on 9/29/19.
 //
 
-import Foundation
-
 /// `GenericJSONAPIError` can be used to specify whatever error
 /// payload you expect to need to parse in responses and handle any
 /// other payload structure as `.unknownError`.
