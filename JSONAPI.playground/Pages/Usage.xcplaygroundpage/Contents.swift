@@ -24,7 +24,7 @@ let dogOwner: Person.Identifier? = dogFromData.flatMap { $0 ~> \.owner }
 
 
 // MARK: - Parse a request or response body with one Dog in it using an alternative model
-typealias AltSingleDogDocument = JSONAPI.Document<SingleResourceBody<AlternativeDog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>
+typealias AltSingleDogDocument = JSONAPI.Document<SingleResourceBody<AlternativeDog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
 let altDogResponse = try! JSONDecoder().decode(AltSingleDogDocument.self, from: singleDogData)
 let altDogFromData = altDogResponse.body.primaryResource?.value
 let altDogHuman: Person.Identifier? = altDogFromData.flatMap { $0 ~> \.human }
@@ -63,7 +63,7 @@ if case let .data(bodyData) = peopleResponse.body {
 
 
 // MARK: - Work in the abstract
-
+print("-----")
 func process<T: JSONAPIDocument>(document: T) {
 	guard case let .data(body) = document.body else {
 		return
@@ -71,3 +71,29 @@ func process<T: JSONAPIDocument>(document: T) {
 	let x: T.Body.Data = body
 }
 process(document: peopleResponse)
+
+// MARK: - Work with errors
+typealias ErrorDoc = JSONAPI.Document<NoResourceBody, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
+
+let mockErrorData =
+"""
+{
+    "errors": [
+        {
+            "status": "500",
+            "title": "Internal Server Error",
+            "detail": "Server fell over while parsing your request."
+        }
+    ]
+}
+""".data(using: .utf8)!
+
+let errorResponse = try! JSONDecoder().decode(ErrorDoc.self, from: mockErrorData)
+
+switch errorResponse.body {
+case .data:
+    print("cool, data!")
+case .errors(let errors, let meta, let links):
+    let errorDetails = errors.compactMap { $0.payload?.detail }
+    print("error details: \(errorDetails)")
+}

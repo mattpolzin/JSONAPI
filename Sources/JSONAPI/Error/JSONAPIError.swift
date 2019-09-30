@@ -11,7 +11,10 @@ public protocol JSONAPIError: Swift.Error, Equatable, Codable {
 
 /// `UnknownJSONAPIError` can actually be used in any sitaution
 /// where you don't know what errors are possible _or_ you just don't
-/// care what errors might show up.
+/// care what errors might show up. If you don't know how the error
+/// will be structured but you would like to have access to more
+/// information the server might be providing in the error payload,
+/// use `BasicJSONAPIError` instead.
 public enum UnknownJSONAPIError: JSONAPIError {
 	case unknownError
 	
@@ -24,7 +27,7 @@ public enum UnknownJSONAPIError: JSONAPIError {
 		try container.encode("unknown")
 	}
 	
-	public static var unknown: UnknownJSONAPIError {
+	public static var unknown: Self {
 		return .unknownError
 	}
 }
