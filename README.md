@@ -5,7 +5,7 @@ A Swift package for encoding to- and decoding from **JSON API** compliant reques
 
 See the JSON API Spec here: https://jsonapi.org/format/
 
-:warning: This library provides well-tested type safety when working with JSON:API 1.0. However, the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful. :warning:
+:warning: This library provides well-tested type safety when working with JSON:API 1.0. However, the Swift compiler can sometimes have difficulty tracking down small typos when initializing `ResourceObjects`. Once the code is written correctly, it will compile, but tracking down the source of programmer errors can be an annoyance. This is mostly a concern when creating resource objects in-code (servers and test cases must do this). Writing a client that uses this framework to ingest JSON API Compliant API responses is much less painful.
 
 ## Quick Start
 
