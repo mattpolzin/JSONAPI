@@ -29,6 +29,12 @@ public enum IdentityTransformer<T>: ReversibleTransformer {
     public static func reverse(_ value: T) throws -> T { return value }
 }
 
+extension Optional: Transformer where Wrapped: Transformer {
+    public static func transform(_ value: Wrapped.From?) throws -> Wrapped.To? {
+        return try value.map { try Wrapped.transform($0) }
+    }
+}
+
 // MARK: - Validator
 
 /// A Validator is a Transformer that throws an error if an invalid value
