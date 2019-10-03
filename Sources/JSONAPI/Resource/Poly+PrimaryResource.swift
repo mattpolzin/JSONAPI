@@ -79,3 +79,8 @@ extension Poly9: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, 
 extension Poly10: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped, I: EncodablePolyWrapped, J: EncodablePolyWrapped {}
 
 extension Poly10: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped, J: PolyWrapped {}
+
+// MARK: - 11 types
+extension Poly11: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped, I: EncodablePolyWrapped, J: EncodablePolyWrapped, K: EncodablePolyWrapped {}
+
+extension Poly11: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped, J: PolyWrapped, K: PolyWrapped {}

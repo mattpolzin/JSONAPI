@@ -1,5 +1,5 @@
 //
-//  Error.swift
+//  JSONAPIError.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 11/10/18.

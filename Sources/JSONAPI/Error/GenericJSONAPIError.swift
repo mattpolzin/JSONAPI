@@ -1,5 +1,5 @@
 //
-//  GenericError.swift
+//  GenericJSONAPIError.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 9/29/19.
