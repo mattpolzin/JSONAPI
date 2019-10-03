@@ -169,3 +169,11 @@ extension Includes where I: _Poly10 {
         return values.compactMap { $0.j }
     }
 }
+
+// MARK: - 11 includes
+public typealias Include11 = Poly11
+extension Includes where I: _Poly11 {
+    public subscript(_ lookup: I.K.Type) -> [I.K] {
+        return values.compactMap { $0.k }
+    }
+}
