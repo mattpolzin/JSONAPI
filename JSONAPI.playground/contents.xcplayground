@@ -6,5 +6,6 @@
         <page name='Full Client &amp; Server Example'/>
         <page name='Full Document Verbose Generation'/>
         <page name='Sparse Fieldsets Example'/>
+        <page name='PATCHing'/>
     </pages>
 </playground>

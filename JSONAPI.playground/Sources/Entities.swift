@@ -119,6 +119,29 @@ public enum AlternativeDogDescription: ResourceObjectDescription {
 
 public typealias AlternativeDog = ExampleEntity<AlternativeDogDescription>
 
+public enum MutableDogDescription: ResourceObjectDescription {
+
+    public static var jsonType: String { return "dogs" }
+
+    public struct Attributes: JSONAPI.Attributes {
+        public var name: Attribute<String>
+
+        public init(name: Attribute<String>) {
+            self.name = name
+        }
+    }
+
+    public struct Relationships: JSONAPI.Relationships {
+        public var owner: ToOne<Person?>
+
+        public init(owner: ToOne<Person?>) {
+            self.owner = owner
+        }
+    }
+}
+
+public typealias MutableDog = ExampleEntity<MutableDogDescription>
+
 public extension ResourceObject where Description == DogDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
 	init(name: String, owner: Person?) throws {
 		self = Dog(attributes: .init(name: .init(value: name)), relationships: DogDescription.Relationships(owner: .init(resourceObject: owner)), meta: .none, links: .none)
@@ -140,5 +163,7 @@ public enum HouseDescription: ResourceObjectDescription {
 public typealias House = ExampleEntity<HouseDescription>
 
 public typealias SingleDogDocument = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
+
+public typealias MutableDogDocument = JSONAPI.Document<SingleResourceBody<MutableDog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
 
 public typealias BatchPeopleDocument = JSONAPI.Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include2<Dog, House>, NoAPIDescription, BasicJSONAPIError<String>>
