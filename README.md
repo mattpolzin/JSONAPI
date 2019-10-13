@@ -76,6 +76,9 @@ This library works well when used by both the server responsible for serializati
 		- [Sparse Fieldsets](#sparse-fieldsets)
 			- [Supporting Sparse Fieldset Encoding](#supporting-sparse-fieldset-encoding)
 			- [Sparse Fieldset `typealias` comparisons](#sparse-fieldset-typealias-comparisons)
+		- [Replacing and Tapping Attributes/Relationships](#replacing-and-tapping-attributesrelationships)
+			- [Tapping](#tapping)
+			- [Replacing](#replacing)
 		- [Custom Attribute or Relationship Key Mapping](#custom-attribute-or-relationship-key-mapping)
 		- [Custom Attribute Encode/Decode](#custom-attribute-encodedecode)
 		- [Meta-Attributes](#meta-attributes)
@@ -567,6 +570,35 @@ typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONA
 In order to support sparse fieldsets (which are encode-only), the following companion `typealias` would be useful (note the primary resource body is a `JSONAPI.EncodableResourceBody`):
 ```swift
 typealias SparseDocument<PrimaryResourceBody: JSONAPI.EncodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
+```
+
+### Replacing and Tapping Attributes/Relationships
+When you are working with an immutable Resource Object, it can be useful to replace its attributes or relationships. As a client, you might receive a resource from the server, update something, and then send the server a PATCH request.
+
+`ResourceObject` is immutable, but you can create a new copy of a `ResourceObject` having updated attributes or relationships.
+
+#### Tapping
+If your `Attributes` or `Relationships` struct is mutable (i.e. its properties are `var`s) then you may find `ResourceObject`'s `tappingAttributes()` and `tappingRelationships()` functions useful. For both, you pass a function that takes an `inout` copy of the respective object or value that you can mutate. The mutated value is then used to create a new `ResourceObject`.
+
+For example, to take a hypothetical `Dog` resource object and change the name attribute:
+```swift
+let resourceObject = Dog(...)
+
+let newResourceObject = resourceObject
+	.tappingAttributes { $0.name = .init(value: "Charlie") }
+```
+
+#### Replacing
+If your `Attributes` or `Relationships` struct is immutable (i.e. its properties are `let`s) then you may find `ResourceObject`'s `replacingAttributes()` and `replacingRelationships()` functions useful. For both, you pass a function that takes the current attributes or relationships and you return a new value. The new value is then used to create a new `ResourceObject`.
+
+For example, to take a hypothetical `Dog` resource object and change the name attribute:
+```swift
+let resourceObject = Dog(...)
+
+let newResourceObject = resourceObject
+	.replacingAttributes { _ in
+		return Dog.Attributes(name: .init(value: "Charlie"))
+}
 ```
 
 ### Custom Attribute or Relationship Key Mapping
