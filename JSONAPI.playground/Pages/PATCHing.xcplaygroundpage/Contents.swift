@@ -12,25 +12,6 @@ import JSONAPI
 
  ********/
 
-// Mapping functions (will be included in future version of library)
-extension JSONAPI.ResourceObject {
-    func mapAttributes(_ transform: (Description.Attributes) -> Description.Attributes) -> Self {
-        return Self(id: id,
-                    attributes: transform(attributes),
-                    relationships: relationships,
-                    meta: meta,
-                    links: links)
-    }
-
-    func mapRelationships(_ transform: (Description.Relationships) -> Description.Relationships) -> Self {
-        return Self(id: id,
-                    attributes: attributes,
-                    relationships: transform(relationships),
-                    meta: meta,
-                    links: links)
-    }
-}
-
 // Mock up a server response
 let mockDogData = """
 {
@@ -62,11 +43,7 @@ var dog = parsedResponse.body.primaryResource!.value
 print("Received dog named: \(dog.name)")
 
 // change the dog's name
-let changedDog = dog.mapAttributes { currentAttributes in
-    var ret = currentAttributes
-    ret.name = .init(value: "Julia")
-    return ret
-}
+let changedDog = dog.tappingAttributes { $0.name = .init(value: "Julia") }
 
 // create a document to be used as a request body for a PATCH request
 let patchRequest = MutableDogDocument(apiDescription: .none,
@@ -97,7 +74,7 @@ var dog2 = parsedResponse2.body.primaryResource!.value
 print("Received dog named: \(dog2.name)")
 
 // change the dog's name
-let changedDog2 = dog2.mapAttributes { _ in
+let changedDog2 = dog2.replacingAttributes { _ in
     return .init(name: .init(value: "Nigel"))
 }
 
@@ -130,7 +107,7 @@ var dog3 = parsedResponse2.body.primaryResource!.value
 print("Received dog with owner: \(dog3 ~> \.owner)")
 
 // give the dog an owner
-let changedDog3 = dog3.mapRelationships { _ in
+let changedDog3 = dog3.replacingRelationships { _ in
     return .init(owner: .init(id: Id(rawValue: "1")))
 }
 
