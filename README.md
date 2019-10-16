@@ -22,7 +22,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 - [GET Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
 - [POST Example](https://colab.research.google.com/drive/1z3n70LwRY7vLIgbsMghvnfHA67QiuqpQ)
 
-### Combined
+### Client+Server
 This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](#example) further down in this README.
 
 ## Table of Contents
