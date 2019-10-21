@@ -414,3 +414,137 @@ extension Document.Body.Data: CustomStringConvertible {
 		return "primary: \(String(describing: primary)), includes: \(String(describing: includes)), meta: \(String(describing: meta)), links: \(String(describing: links))"
 	}
 }
+
+// MARK: - Error and Success Document Types
+
+extension Document {
+    /// A Document that only supports error bodies. This is useful if you wish to pass around a
+    /// Document type but you wish to constrain it to error values.
+    @dynamicMemberLookup
+    public struct ErrorDocument: EncodableJSONAPIDocument {
+        public var body: Document.Body { return document.body }
+
+        private let document: Document
+
+        public init(apiDescription: APIDescription, errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
+            document = .init(apiDescription: apiDescription, errors: errors, meta: meta, links: links)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+
+            try container.encode(document)
+        }
+
+        public subscript<T>(dynamicMember path: KeyPath<Document, T>) -> T {
+            return document[keyPath: path]
+        }
+
+        public static func ==(lhs: Document, rhs: ErrorDocument) -> Bool {
+            return lhs == rhs.document
+        }
+    }
+
+    /// A Document that only supports success bodies. This is useful if you wish to pass around a
+    /// Document type but you wish to constrain it to success values.
+    @dynamicMemberLookup
+    public struct SuccessDocument: EncodableJSONAPIDocument {
+        public var body: Document.Body { return document.body }
+
+        private let document: Document
+
+        public init(apiDescription: APIDescription,
+                    body: PrimaryResourceBody,
+                    includes: Includes<Include>,
+                    meta: MetaType,
+                    links: LinksType) {
+            document = .init(apiDescription: apiDescription,
+                             body: body,
+                             includes: includes,
+                             meta: meta,
+                             links: links)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+
+            try container.encode(document)
+        }
+
+        public subscript<T>(dynamicMember path: KeyPath<Document, T>) -> T {
+            return document[keyPath: path]
+        }
+
+        public static func ==(lhs: Document, rhs: SuccessDocument) -> Bool {
+            return lhs == rhs.document
+        }
+    }
+}
+
+extension Document.ErrorDocument: Decodable, JSONAPIDocument
+    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        document = try container.decode(Document.self)
+
+        guard document.body.isError else {
+            throw JSONAPIDocumentDecodingError.foundSuccessDocumentWhenExpectingError
+        }
+    }
+}
+
+extension Document.SuccessDocument: Decodable, JSONAPIDocument
+    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+
+        document = try container.decode(Document.self)
+
+        guard !document.body.isError else {
+            throw JSONAPIDocumentDecodingError.foundErrorDocumentWhenExpectingSuccess
+        }
+    }
+}
+
+extension Document.SuccessDocument where IncludeType == NoIncludes {
+    /// Create a new Document with the given includes.
+    public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error> {
+        // Note that if IncludeType is NoIncludes, then we allow anything
+        // to be included, but if IncludeType already specifies a type
+        // of thing to be expected then we lock that down.
+        // See: Document.including() where IncludeType: _Poly1
+        switch document.body {
+        case .data(let data):
+            return .init(apiDescription: document.apiDescription,
+                         body: data.primary,
+                         includes: includes,
+                         meta: data.meta,
+                         links: data.links)
+        case .errors:
+            fatalError("SuccessDocument cannot end up in an error state")
+        }
+    }
+}
+
+// extending where _Poly1 means all non-zero _Poly arities are included
+extension Document.SuccessDocument where IncludeType: _Poly1 {
+    /// Create a new Document adding the given includes. This does not
+    /// remove existing includes; it is additive.
+    public func including(_ includes: Includes<IncludeType>) -> Document {
+        // Note that if IncludeType is NoIncludes, then we allow anything
+        // to be included, but if IncludeType already specifies a type
+        // of thing to be expected then we lock that down.
+        // See: Document.including() where IncludeType == NoIncludes
+        switch document.body {
+        case .data(let data):
+            return .init(apiDescription: document.apiDescription,
+                         body: data.primary,
+                         includes: data.includes + includes,
+                         meta: data.meta,
+                         links: data.links)
+        case .errors:
+            fatalError("SuccessDocument cannot end up in an error state")
+        }
+    }
+}
