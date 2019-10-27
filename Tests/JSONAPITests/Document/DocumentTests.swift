@@ -720,6 +720,7 @@ extension DocumentTests {
 
         let documentWithIncludes = document.including(Includes<Include1<Author>>(values: [.init(author)]))
 
+        XCTAssert(type(of: documentWithIncludes) == Document<NoResourceBody, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.SuccessDocument.self)
         XCTAssertEqual(document.body.errors, documentWithIncludes.body.errors)
         XCTAssertEqual(document.body.meta, documentWithIncludes.body.meta)
         XCTAssertEqual(document.body.links, documentWithIncludes.body.links)

@@ -509,7 +509,7 @@ extension Document.SuccessDocument: Decodable, JSONAPIDocument
 
 extension Document.SuccessDocument where IncludeType == NoIncludes {
     /// Create a new Document with the given includes.
-    public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error> {
+    public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error>.SuccessDocument {
         // Note that if IncludeType is NoIncludes, then we allow anything
         // to be included, but if IncludeType already specifies a type
         // of thing to be expected then we lock that down.
@@ -531,7 +531,7 @@ extension Document.SuccessDocument where IncludeType == NoIncludes {
 extension Document.SuccessDocument where IncludeType: _Poly1 {
     /// Create a new Document adding the given includes. This does not
     /// remove existing includes; it is additive.
-    public func including(_ includes: Includes<IncludeType>) -> Document {
+    public func including(_ includes: Includes<IncludeType>) -> Document.SuccessDocument {
         // Note that if IncludeType is NoIncludes, then we allow anything
         // to be included, but if IncludeType already specifies a type
         // of thing to be expected then we lock that down.
