@@ -10,33 +10,31 @@
 /// array should be used for no results).
 public protocol OptionalEncodablePrimaryResource: Equatable, Encodable {}
 
-/// An `EncodablePrimaryResource` is a `PrimaryResource` that only supports encoding.
-/// This is actually more restrictave than `PrimaryResource`, which supports both encoding and
-/// decoding.
+/// An `EncodablePrimaryResource` is a `CodablePrimaryResource` that only supports encoding.
 public protocol EncodablePrimaryResource: OptionalEncodablePrimaryResource {}
 
 /// This protocol allows for `SingleResourceBody` to contain a `null`
 /// data object where `ManyResourceBody` cannot (because an empty
 /// array should be used for no results).
-public protocol OptionalPrimaryResource: OptionalEncodablePrimaryResource, Decodable {}
+public protocol OptionalCodablePrimaryResource: OptionalEncodablePrimaryResource, Decodable {}
 
-/// A `PrimaryResource` is a type that can be used in the body of a JSON API
+/// A `CodablePrimaryResource` is a type that can be used in the body of a JSON API
 /// document as the primary resource.
-public protocol PrimaryResource: EncodablePrimaryResource, OptionalPrimaryResource {}
+public protocol CodablePrimaryResource: EncodablePrimaryResource, OptionalCodablePrimaryResource {}
 
 extension Optional: OptionalEncodablePrimaryResource where Wrapped: EncodablePrimaryResource {}
 
-extension Optional: OptionalPrimaryResource where Wrapped: PrimaryResource {}
+extension Optional: OptionalCodablePrimaryResource where Wrapped: CodablePrimaryResource {}
 
 /// An `EncodableResourceBody` is a `ResourceBody` that only supports being
 /// encoded. It is actually weaker than `ResourceBody`, which supports both encoding
 /// and decoding.
 public protocol EncodableResourceBody: Equatable, Encodable {}
 
-/// A ResourceBody is a representation of the body of the JSON API Document.
+/// A `CodableResourceBody` is a representation of the body of the JSON:API Document.
 /// It can either be one resource (which can be specified as optional or not)
 /// or it can contain many resources (and array with zero or more entries).
-public protocol ResourceBody: Decodable, EncodableResourceBody {}
+public protocol CodableResourceBody: Decodable, EncodableResourceBody {}
 
 /// A `ResourceBody` that has the ability to take on more primary
 /// resources by appending another similarly typed `ResourceBody`.
@@ -74,7 +72,7 @@ public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: Encoda
 
 /// Use NoResourceBody to indicate you expect a JSON API document to not
 /// contain a "data" top-level key.
-public struct NoResourceBody: ResourceBody {
+public struct NoResourceBody: CodableResourceBody {
 	public static var none: NoResourceBody { return NoResourceBody() }
 }
 
@@ -94,7 +92,7 @@ extension SingleResourceBody {
 	}
 }
 
-extension SingleResourceBody: Decodable, ResourceBody where Entity: OptionalPrimaryResource {
+extension SingleResourceBody: Decodable, CodableResourceBody where Entity: OptionalCodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -119,7 +117,7 @@ extension ManyResourceBody {
 	}
 }
 
-extension ManyResourceBody: Decodable, ResourceBody where Entity: PrimaryResource {
+extension ManyResourceBody: Decodable, CodableResourceBody where Entity: CodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         var valueAggregator = [Entity]()
