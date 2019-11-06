@@ -332,12 +332,10 @@ As of Swift 5.1, `Attributes` can be accessed via dynamic member keypath lookup 
 let favoriteColor: String = person.favoriteColor
 ```
 
-🗒 `Attributes` can also be accessed via the older `subscript` operator as follows:
+:warning:  `Attributes` can also be accessed via the older `subscript` operator, but this is a deprecated feature that will be removed in the next major version:
 ```swift
 let favoriteColor: String = person[\.favoriteColor]
 ```
-
-In both cases you retain type-safety. It is best practice to pick an attribute access syntax and stick with it. At some point in the future the syntax deemed less desirable may be deprecated.
 
 #### `Transformer`
 
