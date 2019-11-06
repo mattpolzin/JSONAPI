@@ -120,79 +120,10 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 	/// document type specifies.
 	public let body: Body
 
-    public enum Body: DocumentBody, Equatable {
-		case errors([Error], meta: MetaType?, links: LinksType?)
-		case data(Data)
-
-        public typealias BodyData = Data
-
-		public struct Data: DocumentBodyData, Equatable {
-            /// The document's Primary Resource object(s)
-			public let primary: PrimaryResourceBody
-            /// The document's included objects
-			public let includes: Includes<Include>
-			public let meta: MetaType
-			public let links: LinksType
-
-			public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
-				self.primary = primary
-				self.includes = includes
-				self.meta = meta
-				self.links = links
-			}
-		}
-
-        /// `true` if the document represents one or more errors. `false` if the
-        /// document represents JSON:API data and/or metadata.
-		public var isError: Bool {
-			guard case .errors = self else { return false }
-			return true
-		}
-
-		public var errors: [Error]? {
-			guard case let .errors(errors, meta: _, links: _) = self else { return nil }
-			return errors
-		}
-
-		public var data: Data? {
-			guard case let .data(data) = self else { return nil }
-			return data
-		}
-		
-		public var primaryResource: PrimaryResourceBody? {
-			guard case let .data(data) = self else { return nil }
-			return data.primary
-		}
-
-		public var includes: Includes<Include>? {
-			guard case let .data(data) = self else { return nil }
-			return data.includes
-		}
-
-		public var meta: MetaType? {
-			switch self {
-			case .data(let data):
-				return data.meta
-			case .errors(_, meta: let metadata?, links: _):
-				return metadata
-			default:
-				return nil
-			}
-		}
-
-		public var links: LinksType? {
-			switch self {
-			case .data(let data):
-				return data.links
-			case .errors(_, meta: _, links: let links?):
-				return links
-			default:
-				return nil
-			}
-		}
-	}
-
-	public init(apiDescription: APIDescription, errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
+	public init(apiDescription: APIDescription,
+                errors: [Error],
+                meta: MetaType? = nil,
+                links: LinksType? = nil) {
 		body = .errors(errors, meta: meta, links: links)
 		self.apiDescription = apiDescription
 	}
@@ -202,9 +133,90 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 				includes: Includes<Include>,
 				meta: MetaType,
 				links: LinksType) {
-		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
+		self.body = .data(
+            .init(
+                primary: body,
+                includes: includes,
+                meta: meta,
+                links: links
+            )
+        )
 		self.apiDescription = apiDescription
 	}
+}
+
+extension Document {
+    public enum Body: DocumentBody, Equatable {
+        case errors([Error], meta: MetaType?, links: LinksType?)
+        case data(Data)
+
+        public typealias BodyData = Data
+
+        public struct Data: DocumentBodyData, Equatable {
+            /// The document's Primary Resource object(s)
+            public let primary: PrimaryResourceBody
+            /// The document's included objects
+            public let includes: Includes<Include>
+            public let meta: MetaType
+            public let links: LinksType
+
+            public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+                self.primary = primary
+                self.includes = includes
+                self.meta = meta
+                self.links = links
+            }
+        }
+
+        /// `true` if the document represents one or more errors. `false` if the
+        /// document represents JSON:API data and/or metadata.
+        public var isError: Bool {
+            guard case .errors = self else { return false }
+            return true
+        }
+
+        public var errors: [Error]? {
+            guard case let .errors(errors, meta: _, links: _) = self else { return nil }
+            return errors
+        }
+
+        public var data: Data? {
+            guard case let .data(data) = self else { return nil }
+            return data
+        }
+
+        public var primaryResource: PrimaryResourceBody? {
+            guard case let .data(data) = self else { return nil }
+            return data.primary
+        }
+
+        public var includes: Includes<Include>? {
+            guard case let .data(data) = self else { return nil }
+            return data.includes
+        }
+
+        public var meta: MetaType? {
+            switch self {
+            case .data(let data):
+                return data.meta
+            case .errors(_, meta: let metadata?, links: _):
+                return metadata
+            default:
+                return nil
+            }
+        }
+
+        public var links: LinksType? {
+            switch self {
+            case .data(let data):
+                return data.links
+            case .errors(_, meta: _, links: let links?):
+                return links
+            default:
+                return nil
+            }
+        }
+    }
 }
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
