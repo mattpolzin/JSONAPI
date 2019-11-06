@@ -91,16 +91,26 @@ public protocol EncodableJSONAPIDocument: Equatable, Encodable, DocumentBodyCont
             Body.Error == Error,
             Body.BodyData == BodyData
 
+    /// The Body of the Document. This body is either one or more errors
+    /// with links and metadata attempted to parse but not guaranteed or
+    /// it is a successful data struct containing all the primary and
+    /// included resources, the metadata, and the links that this
+    /// document type specifies.
     var body: Body { get }
+
+    /// The JSON API Spec calls this the JSON:API Object. It contains version
+    /// and metadata information about the API itself.
+    var apiDescription: APIDescription { get }
 }
 
 /// A `CodableJSONAPIDocument` supports encoding and decoding of a JSON:API
 /// compliant Document.
-public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
+public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.CodableResourceBody, IncludeType: Decodable {}
 
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
 /// a JSON API response.
+///
 /// Note that this type uses Camel case. If your
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
@@ -109,15 +119,10 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
     public typealias Include = IncludeType
     public typealias BodyData = Body.Data
 
-    /// The JSON API Spec calls this the JSON:API Object. It contains version
-    /// and metadata information about the API itself.
+    // See `EncodableJSONAPIDocument` for documentation.
     public let apiDescription: APIDescription
 
-    /// The Body of the Document. This body is either one or more errors
-    /// with links and metadata attempted to parse but not guaranteed or
-    /// it is a successful data struct containing all the primary and
-    /// included resources, the metadata, and the links that this
-    /// document type specifies.
+    // See `EncodableJSONAPIDocument` for documentation.
     public let body: Body
 
     public init(apiDescription: APIDescription,
@@ -340,7 +345,7 @@ extension Document {
     }
 }
 
-extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RootCodingKeys.self)
 
@@ -557,7 +562,7 @@ extension Document {
 }
 
 extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
-    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -570,7 +575,7 @@ extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
 }
 
 extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
-    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
