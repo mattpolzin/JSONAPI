@@ -96,7 +96,7 @@ public protocol EncodableJSONAPIDocument: Equatable, Encodable, DocumentBodyCont
 
 /// A `CodableJSONAPIDocument` supports encoding and decoding of a JSON:API
 /// compliant Document.
-public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
+public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.CodableResourceBody, IncludeType: Decodable {}
 
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
@@ -340,7 +340,7 @@ extension Document {
 	}
 }
 
-extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RootCodingKeys.self)
 
@@ -557,7 +557,7 @@ extension Document {
 }
 
 extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
-    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -570,7 +570,7 @@ extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
 }
 
 extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
-    where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+    where PrimaryResourceBody: CodableResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
