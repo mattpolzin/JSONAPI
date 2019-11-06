@@ -6,7 +6,7 @@
 //
 
 public protocol JSONAPIError: Swift.Error, Equatable, Codable {
-	static var unknown: Self { get }
+    static var unknown: Self { get }
 }
 
 /// `UnknownJSONAPIError` can actually be used in any sitaution
@@ -16,18 +16,18 @@ public protocol JSONAPIError: Swift.Error, Equatable, Codable {
 /// information the server might be providing in the error payload,
 /// use `BasicJSONAPIError` instead.
 public enum UnknownJSONAPIError: JSONAPIError {
-	case unknownError
-	
-	public init(from decoder: Decoder) throws {
-		self = .unknown
-	}
+    case unknownError
 
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
-		try container.encode("unknown")
-	}
-	
-	public static var unknown: Self {
-		return .unknownError
-	}
+    public init(from decoder: Decoder) throws {
+        self = .unknown
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode("unknown")
+    }
+
+    public static var unknown: Self {
+        return .unknownError
+    }
 }

@@ -22,9 +22,9 @@ extension Optional: Meta where Wrapped: Meta {}
 /// Use this type when you want to specify not to encode or decode any metadata
 /// for a type.
 public struct NoMetadata: Meta, CustomStringConvertible {
-	public static var none: NoMetadata { return NoMetadata() }
+    public static var none: NoMetadata { return NoMetadata() }
 
-	public init() { }
+    public init() { }
 
-	public var description: String { return "No Metadata" }
+    public var description: String { return "No Metadata" }
 }
