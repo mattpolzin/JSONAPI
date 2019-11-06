@@ -102,6 +102,12 @@ extension ResourceObjectProxy {
 public protocol ResourceObjectType: ResourceObjectProxy, PrimaryResource where Description: ResourceObjectDescription {
 	associatedtype Meta: JSONAPI.Meta
 	associatedtype Links: JSONAPI.Links
+
+    /// Any additional metadata packaged with the entity.
+    var meta: Meta { get }
+
+    /// Links related to the entity.
+    var links: Links { get }
 }
 
 public protocol IdentifiableResourceObjectType: ResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}

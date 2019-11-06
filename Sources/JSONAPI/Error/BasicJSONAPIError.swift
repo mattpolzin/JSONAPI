@@ -6,7 +6,7 @@
 //
 
 /// Most of the JSON:API Spec defined Error fields.
-public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Equatable, ErrorDictType {
+public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Equatable, ErrorDictType, CustomStringConvertible {
     /// a unique identifier for this particular occurrence of the problem
     public let id: IdType?
 //    public let links: Links? // we skip this for now to avoid adding complexity to using this basic type.
@@ -60,6 +60,10 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
             source.flatMap { $0.parameter.map { ("parameter", $0) } }
             ].compactMap { $0 }
         return Dictionary(uniqueKeysWithValues: keysAndValues)
+    }
+
+    public var description: String {
+        return definedFields.map { "\($0.key): \($0.value)" }.sorted().joined(separator: ", ")
     }
 }
 

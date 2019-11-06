@@ -20,7 +20,16 @@ public protocol EncodableJSONAPIDocument: Equatable, Encodable {
 
     typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, APIDescription, Error>.Body
 
+    /// The Body of the Document. This body is either one or more errors
+    /// with links and metadata attempted to parse but not guaranteed or
+    /// it is a successful data struct containing all the primary and
+    /// included resources, the metadata, and the links that this
+    /// document type specifies.
     var body: Body { get }
+
+    /// The JSON API Spec calls this the JSON:API Object. It contains version
+    /// and metadata information about the API itself.
+    var apiDescription: APIDescription { get }
 }
 
 /// A `JSONAPIDocument` supports encoding and decoding of a JSON:API
@@ -30,6 +39,7 @@ public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where Prima
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
 /// a JSON API response.
+///
 /// Note that this type uses Camel case. If your
 /// API uses snake case, you will want to use
 /// a conversion such as the one offerred by the
@@ -37,15 +47,10 @@ public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where Prima
 public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument {
 	public typealias Include = IncludeType
 
-	/// The JSON API Spec calls this the JSON:API Object. It contains version
-	/// and metadata information about the API itself.
+    // See `EncodableJSONAPIDocument` for documentation.
 	public let apiDescription: APIDescription
 
-	/// The Body of the Document. This body is either one or more errors
-	/// with links and metadata attempted to parse but not guaranteed or
-	/// it is a successful data struct containing all the primary and
-	/// included resources, the metadata, and the links that this
-	/// document type specifies.
+    // See `EncodableJSONAPIDocument` for documentation.
 	public let body: Body
 	
 	public enum Body: Equatable {
@@ -423,6 +428,7 @@ extension Document {
     @dynamicMemberLookup
     public struct ErrorDocument: EncodableJSONAPIDocument {
         public var body: Document.Body { return document.body }
+        public var apiDescription: APIDescription { return document.apiDescription }
 
         private let document: Document
 
@@ -450,6 +456,7 @@ extension Document {
     @dynamicMemberLookup
     public struct SuccessDocument: EncodableJSONAPIDocument {
         public var body: Document.Body { return document.body }
+        public var apiDescription: APIDescription { return document.apiDescription }
 
         private let document: Document
 

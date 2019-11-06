@@ -14,15 +14,15 @@ public typealias Include = EncodableJSONPoly
 ///
 /// If you have
 ///
-/// `let includes: Includes<Include2<Thing1, Thing2>> = ...`
+///     let includes: Includes<Include2<Thing1, Thing2>> = ...
 ///
 /// then you can access all `Thing1` included resources with
 ///
-/// `let includedThings = includes[Thing1.self]`
+///     let includedThings = includes[Thing1.self]
 public struct Includes<I: Include>: Encodable, Equatable {
 	public static var none: Includes { return .init(values: []) }
 	
-	let values: [I]
+	public let values: [I]
 	
 	public init(values: [I]) {
 		self.values = values
