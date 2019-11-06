@@ -99,7 +99,7 @@ extension ResourceObjectProxy {
 /// ResourceObjectType is the protocol that ResourceObject conforms to. This
 /// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
-public protocol ResourceObjectType: ResourceObjectProxy, PrimaryResource where Description: ResourceObjectDescription {
+public protocol ResourceObjectType: ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
 	associatedtype Meta: JSONAPI.Meta
 	associatedtype Links: JSONAPI.Links
 
@@ -179,236 +179,6 @@ extension ResourceObject where EntityRawIdType == Unidentified {
 	}
 }
 
-/*
-extension ResourceObject where Description.Attributes == NoAttributes {
-	public init(id: ResourceObject.Id, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-		self.init(id: id, attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata {
-	public init(id: ResourceObject.Id, relationships: Description.Relationships, links: LinksType) {
-		self.init(id: id, relationships: relationships, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, relationships: Description.Relationships, meta: MetaType) {
-		self.init(id: id, relationships: relationships, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, relationships: Description.Relationships) {
-		self.init(id: id, relationships: relationships, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, EntityRawIdType: CreatableRawIdType {
-	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
-	public init(relationships: Description.Relationships, links: LinksType) {
-		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(relationships: Description.Relationships, meta: MetaType) {
-		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(relationships: Description.Relationships) {
-		self.init(attributes: NoAttributes(), relationships: relationships, meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, EntityRawIdType == Unidentified {
-	public init(relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-		self.init(attributes: NoAttributes(), relationships: relationships, meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, meta: MetaType, links: LinksType) {
-		self.init(id: id, attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, links: LinksType) {
-		self.init(id: id, attributes: attributes, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, meta: MetaType) {
-		self.init(id: id, attributes: attributes, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes) {
-		self.init(id: id, attributes: attributes, meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, links: LinksType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, meta: MetaType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, meta: MetaType, links: LinksType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, links: LinksType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, meta: MetaType) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes) {
-		self.init(attributes: attributes, relationships: NoRelationships(), meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships {
-	public init(id: ResourceObject.Id, meta: MetaType, links: LinksType) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata {
-	public init(id: ResourceObject.Id, links: LinksType) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, meta: MetaType) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: ResourceObject.Id) {
-		self.init(id: id, attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, EntityRawIdType: CreatableRawIdType {
-	public init(meta: MetaType, links: LinksType) {
-		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
-	public init(links: LinksType) {
-		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(meta: MetaType) {
-		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where Description.Attributes == NoAttributes, Description.Relationships == NoRelationships, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init() {
-		self.init(attributes: NoAttributes(), relationships: NoRelationships(), meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
-		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
-		self.init(attributes: attributes, relationships: relationships, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships, links: LinksType) {
-		self.init(attributes: attributes, relationships: relationships, meta: .none, links: links)
-	}
-}
-
-extension ResourceObject where LinksType == NoLinks {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
-		self.init(id: id, attributes: attributes, relationships: relationships, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
-		self.init(attributes: attributes, relationships: relationships, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where LinksType == NoLinks, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType) {
-		self.init(attributes: attributes, relationships: relationships, meta: meta, links: .none)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks {
-	public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships) {
-		self.init(id: id, attributes: attributes, relationships: relationships, meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType: CreatableRawIdType {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
-		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
-	}
-}
-
-extension ResourceObject where MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == Unidentified {
-	public init(attributes: Description.Attributes, relationships: Description.Relationships) {
-		self.init(attributes: attributes, relationships: relationships, meta: .none, links: .none)
-	}
-}
-*/
-
 // MARK: - Pointer for Relationships use
 public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
@@ -462,6 +232,7 @@ public extension ResourceObjectProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
 	/// of `resourceObject.attributes.propertyName.value`.
+    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
 		return attributes[keyPath: path].value
 	}
@@ -469,6 +240,7 @@ public extension ResourceObjectProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
 	/// of `resourceObject.attributes.propertyName.value`.
+    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
 	subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
 		return attributes[keyPath: path]?.value
 	}
@@ -476,6 +248,7 @@ public extension ResourceObjectProxy {
 	/// Access the attribute at the given keypath. This just
 	/// allows you to write `resourceObject[\.propertyName]` instead
 	/// of `resourceObject.attributes.propertyName.value`.
+    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
 	subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
 		// Implementation Note: Handles Transform that returns optional
 		// type.
@@ -523,6 +296,7 @@ public extension ResourceObjectProxy {
     // MARK: Keypath Subscript Lookup
 	/// Access an attribute requiring a transformation on the RawValue _and_
 	/// a secondary transformation on this entity (self).
+    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
 	subscript<T>(_ path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
 		return attributes[keyPath: path](self)
 	}
