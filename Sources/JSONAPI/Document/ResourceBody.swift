@@ -40,11 +40,11 @@ public protocol ResourceBody: Decodable, EncodableResourceBody {}
 
 /// A `ResourceBody` that has the ability to take on more primary
 /// resources by appending another similarly typed `ResourceBody`.
-public protocol Appendable {
+public protocol ResourceBodyAppendable {
 	func appending(_ other: Self) -> Self
 }
 
-public func +<R: Appendable>(_ left: R, right: R) -> R {
+public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
 	return left.appending(right)
 }
 
@@ -60,7 +60,7 @@ public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResourc
 }
 
 /// A type allowing for a document body containing 0 or more primary resources.
-public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, Appendable {
+public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
 	public let values: [Entity]
 
 	public init(resourceObjects: [Entity]) {

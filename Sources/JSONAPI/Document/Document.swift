@@ -1,5 +1,5 @@
 //
-//  JSONAPIDocument.swift
+//  Document.swift
 //  JSONAPI
 //
 //  Created by Mathew Polzin on 11/5/18.
@@ -7,25 +7,96 @@
 
 import Poly
 
-/// An `EncodableJSONAPIDocument` supports encoding but not decoding.
-/// It is actually more restrictive than `JSONAPIDocument` which supports both
-/// encoding and decoding.
-public protocol EncodableJSONAPIDocument: Equatable, Encodable {
+public protocol DocumentBodyDataContext {
     associatedtype PrimaryResourceBody: JSONAPI.EncodableResourceBody
     associatedtype MetaType: JSONAPI.Meta
     associatedtype LinksType: JSONAPI.Links
     associatedtype IncludeType: JSONAPI.Include
-    associatedtype APIDescription: APIDescriptionType
-    associatedtype Error: JSONAPIError
+}
 
-    typealias Body = Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, APIDescription, Error>.Body
+public protocol DocumentBodyContext: DocumentBodyDataContext {
+    associatedtype Error: JSONAPIError
+    associatedtype BodyData: DocumentBodyData
+        where
+            BodyData.PrimaryResourceBody == PrimaryResourceBody,
+            BodyData.MetaType == MetaType,
+            BodyData.LinksType == LinksType,
+            BodyData.IncludeType == IncludeType
+}
+
+public protocol DocumentBodyData: DocumentBodyDataContext {
+    /// The document's primary resource body
+    /// (contains one or many resource objects)
+    var primary: PrimaryResourceBody { get }
+
+    /// The document's included objects
+    var includes: Includes<IncludeType> { get }
+    var meta: MetaType { get }
+    var links: LinksType { get }
+}
+
+public protocol DocumentBody: DocumentBodyContext {
+    /// `true` if the document represents one or more errors. `false` if the
+    /// document represents JSON:API data and/or metadata.
+    var isError: Bool { get }
+
+    /// Get all errors in the document, if any.
+    ///
+    /// `nil` if the Document is _not_ an error response. Otherwise,
+    /// an array containing all errors.
+    var errors: [Error]? { get }
+
+    /// Get the document data
+    ///
+    /// `nil` if the Document is an error response. Otherwise,
+    /// a structure containing the primary resource, any included
+    /// resources, metadata, and links.
+    var data: BodyData? { get }
+
+    /// Quick access to the `data`'s primary resource.
+    ///
+    /// `nil` if the Document is an error document. Otherwise,
+    /// the primary resource body, which will contain zero/one, one/many
+    /// resources dependening on the `PrimaryResourceBody` type.
+    ///
+    /// See `SingleResourceBody` and `ManyResourceBody`.
+    var primaryResource: PrimaryResourceBody? { get }
+
+    /// Quick access to the `data`'s includes.
+    ///
+    /// `nil` if the Document is an error document. Otherwise,
+    /// zero or more includes.
+    var includes: Includes<IncludeType>? { get }
+
+    /// The metadata for the error or data document or `nil` if
+    /// no metadata is found.
+    var meta: MetaType? { get }
+
+    /// The links for the error or data document or `nil` if
+    /// no links are found.
+    var links: LinksType? { get }
+}
+
+/// An `EncodableJSONAPIDocument` supports encoding but not decoding.
+/// It is actually more restrictive than `JSONAPIDocument` which supports both
+/// encoding and decoding.
+public protocol EncodableJSONAPIDocument: Equatable, Encodable, DocumentBodyContext {
+    associatedtype APIDescription: APIDescriptionType
+    associatedtype Body: DocumentBody
+        where
+            Body.PrimaryResourceBody == PrimaryResourceBody,
+            Body.MetaType == MetaType,
+            Body.LinksType == LinksType,
+            Body.IncludeType == IncludeType,
+            Body.Error == Error,
+            Body.BodyData == BodyData
 
     var body: Body { get }
 }
 
-/// A `JSONAPIDocument` supports encoding and decoding of a JSON:API
+/// A `CodableJSONAPIDocument` supports encoding and decoding of a JSON:API
 /// compliant Document.
-public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
+public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable where PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: Decodable {}
 
 /// A JSON API Document represents the entire body
 /// of a JSON API request or the entire body of
@@ -36,6 +107,7 @@ public protocol JSONAPIDocument: EncodableJSONAPIDocument, Decodable where Prima
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
 public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument {
 	public typealias Include = IncludeType
+    public typealias BodyData = Body.Data
 
 	/// The JSON API Spec calls this the JSON:API Object. It contains version
 	/// and metadata information about the API itself.
@@ -47,78 +119,11 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 	/// included resources, the metadata, and the links that this
 	/// document type specifies.
 	public let body: Body
-	
-	public enum Body: Equatable {
-		case errors([Error], meta: MetaType?, links: LinksType?)
-		case data(Data)
 
-		public struct Data: Equatable {
-            /// The document's Primary Resource object(s)
-			public let primary: PrimaryResourceBody
-            /// The document's included objects
-			public let includes: Includes<Include>
-			public let meta: MetaType
-			public let links: LinksType
-
-			public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
-				self.primary = primary
-				self.includes = includes
-				self.meta = meta
-				self.links = links
-			}
-		}
-
-        /// `true` if the document represents one or more errors. `false` if the
-        /// document represents JSON:API data and/or metadata.
-		public var isError: Bool {
-			guard case .errors = self else { return false }
-			return true
-		}
-
-		public var errors: [Error]? {
-			guard case let .errors(errors, meta: _, links: _) = self else { return nil }
-			return errors
-		}
-
-		public var data: Data? {
-			guard case let .data(data) = self else { return nil }
-			return data
-		}
-		
-		public var primaryResource: PrimaryResourceBody? {
-			guard case let .data(data) = self else { return nil }
-			return data.primary
-		}
-
-		public var includes: Includes<Include>? {
-			guard case let .data(data) = self else { return nil }
-			return data.includes
-		}
-
-		public var meta: MetaType? {
-			switch self {
-			case .data(let data):
-				return data.meta
-			case .errors(_, meta: let metadata?, links: _):
-				return metadata
-			default:
-				return nil
-			}
-		}
-
-		public var links: LinksType? {
-			switch self {
-			case .data(let data):
-				return data.links
-			case .errors(_, meta: _, links: let links?):
-				return links
-			default:
-				return nil
-			}
-		}
-	}
-
-	public init(apiDescription: APIDescription, errors: [Error], meta: MetaType? = nil, links: LinksType? = nil) {
+	public init(apiDescription: APIDescription,
+                errors: [Error],
+                meta: MetaType? = nil,
+                links: LinksType? = nil) {
 		body = .errors(errors, meta: meta, links: links)
 		self.apiDescription = apiDescription
 	}
@@ -128,86 +133,93 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
 				includes: Includes<Include>,
 				meta: MetaType,
 				links: LinksType) {
-		self.body = .data(.init(primary: body, includes: includes, meta: meta, links: links))
+		self.body = .data(
+            .init(
+                primary: body,
+                includes: includes,
+                meta: meta,
+                links: links
+            )
+        )
 		self.apiDescription = apiDescription
 	}
 }
 
-/*
-extension Document where IncludeType == NoIncludes {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
-		self.init(apiDescription: apiDescription, body: body, includes: .none, meta: meta, links: links)
-	}
+extension Document {
+    public enum Body: DocumentBody, Equatable {
+        case errors([Error], meta: MetaType?, links: LinksType?)
+        case data(Data)
+
+        public typealias BodyData = Data
+
+        public struct Data: DocumentBodyData, Equatable {
+            /// The document's Primary Resource object(s)
+            public let primary: PrimaryResourceBody
+            /// The document's included objects
+            public let includes: Includes<Include>
+            public let meta: MetaType
+            public let links: LinksType
+
+            public init(primary: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
+                self.primary = primary
+                self.includes = includes
+                self.meta = meta
+                self.links = links
+            }
+        }
+
+        /// `true` if the document represents one or more errors. `false` if the
+        /// document represents JSON:API data and/or metadata.
+        public var isError: Bool {
+            guard case .errors = self else { return false }
+            return true
+        }
+
+        public var errors: [Error]? {
+            guard case let .errors(errors, meta: _, links: _) = self else { return nil }
+            return errors
+        }
+
+        public var data: Data? {
+            guard case let .data(data) = self else { return nil }
+            return data
+        }
+
+        public var primaryResource: PrimaryResourceBody? {
+            guard case let .data(data) = self else { return nil }
+            return data.primary
+        }
+
+        public var includes: Includes<Include>? {
+            guard case let .data(data) = self else { return nil }
+            return data.includes
+        }
+
+        public var meta: MetaType? {
+            switch self {
+            case .data(let data):
+                return data.meta
+            case .errors(_, meta: let metadata?, links: _):
+                return metadata
+            default:
+                return nil
+            }
+        }
+
+        public var links: LinksType? {
+            switch self {
+            case .data(let data):
+                return data.links
+            case .errors(_, meta: _, links: let links?):
+                return links
+            default:
+                return nil
+            }
+        }
+    }
 }
 
-extension Document where MetaType == NoMetadata {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
-		self.init(apiDescription: apiDescription, body: body, includes: includes, meta: .none, links: links)
-	}
-}
-
-extension Document where LinksType == NoLinks {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType) {
-		self.init(apiDescription: apiDescription, body: body, includes: includes, meta: meta, links: .none)
-	}
-}
-
-extension Document where APIDescription == NoAPIDescription {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>, meta: MetaType, links: LinksType) {
-		self.init(apiDescription: .none, body: body, includes: includes, meta: meta, links: links)
-	}
-}
-
-extension Document where IncludeType == NoIncludes, LinksType == NoLinks {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, meta: MetaType) {
-		self.init(apiDescription: apiDescription, body: body, meta: meta, links: .none)
-	}
-}
-
-extension Document where IncludeType == NoIncludes, MetaType == NoMetadata {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, links: LinksType) {
-		self.init(apiDescription: apiDescription, body: body, meta: .none, links: links)
-	}
-}
-
-extension Document where IncludeType == NoIncludes, APIDescription == NoAPIDescription {
-	public init(body: PrimaryResourceBody, meta: MetaType, links: LinksType) {
-		self.init(apiDescription: .none, body: body, meta: meta, links: links)
-	}
-}
-
-extension Document where MetaType == NoMetadata, LinksType == NoLinks {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody, includes: Includes<Include>) {
-		self.init(apiDescription: apiDescription, body: body, includes: includes, links: .none)
-	}
-}
-
-extension Document where MetaType == NoMetadata, APIDescription == NoAPIDescription {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>, links: LinksType) {
-		self.init(apiDescription: .none, body: body, includes: includes, links: links)
-	}
-}
-
-extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks {
-	public init(apiDescription: APIDescription, body: PrimaryResourceBody) {
-		self.init(apiDescription: apiDescription, body: body, includes: .none)
-	}
-}
-
-extension Document where MetaType == NoMetadata, LinksType == NoLinks, APIDescription == NoAPIDescription {
-	public init(body: PrimaryResourceBody, includes: Includes<Include>) {
-		self.init(apiDescription: .none, body: body, includes: includes)
-	}
-}
-
-extension Document where IncludeType == NoIncludes, MetaType == NoMetadata, LinksType == NoLinks, APIDescription == NoAPIDescription {
-	public init(body: PrimaryResourceBody) {
-		self.init(apiDescription: .none, body: body)
-	}
-}
-*/
-
-extension Document.Body.Data where PrimaryResourceBody: Appendable {
+extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
 	public func merging(_ other: Document.Body.Data,
 						combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
 						combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
@@ -218,7 +230,7 @@ extension Document.Body.Data where PrimaryResourceBody: Appendable {
 	}
 }
 
-extension Document.Body.Data where PrimaryResourceBody: Appendable, MetaType == NoMetadata, LinksType == NoLinks {
+extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable, MetaType == NoMetadata, LinksType == NoLinks {
 	public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
 		return merging(other,
 					   combiningMetaWith: { _, _ in .none },
@@ -328,7 +340,7 @@ extension Document {
 	}
 }
 
-extension Document: Decodable, JSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
+extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RootCodingKeys.self)
 
@@ -420,8 +432,9 @@ extension Document.Body.Data: CustomStringConvertible {
 extension Document {
     /// A Document that only supports error bodies. This is useful if you wish to pass around a
     /// Document type but you wish to constrain it to error values.
-    @dynamicMemberLookup
     public struct ErrorDocument: EncodableJSONAPIDocument {
+        public typealias BodyData = Document.BodyData
+
         public var body: Document.Body { return document.body }
 
         private let document: Document
@@ -436,8 +449,27 @@ extension Document {
             try container.encode(document)
         }
 
-        public subscript<T>(dynamicMember path: KeyPath<Document, T>) -> T {
-            return document[keyPath: path]
+        /// The JSON API Spec calls this the JSON:API Object. It contains version
+        /// and metadata information about the API itself.
+        public var apiDescription: APIDescription {
+            return document.apiDescription
+        }
+
+        /// Get all errors in the document, if any.
+        public var errors: [Error] {
+            return document.body.errors ?? []
+        }
+
+        /// The metadata for the error or data document or `nil` if
+        /// no metadata is found.
+        public var meta: MetaType? {
+            return document.body.meta
+        }
+
+        /// The links for the error or data document or `nil` if
+        /// no links are found.
+        public var links: LinksType? {
+            return document.body.links
         }
 
         public static func ==(lhs: Document, rhs: ErrorDocument) -> Bool {
@@ -447,8 +479,9 @@ extension Document {
 
     /// A Document that only supports success bodies. This is useful if you wish to pass around a
     /// Document type but you wish to constrain it to success values.
-    @dynamicMemberLookup
     public struct SuccessDocument: EncodableJSONAPIDocument {
+        public typealias BodyData = Document.BodyData
+
         public var body: Document.Body { return document.body }
 
         private let document: Document
@@ -471,8 +504,50 @@ extension Document {
             try container.encode(document)
         }
 
-        public subscript<T>(dynamicMember path: KeyPath<Document, T>) -> T {
-            return document[keyPath: path]
+        /// The JSON API Spec calls this the JSON:API Object. It contains version
+        /// and metadata information about the API itself.
+        public var apiDescription: APIDescription {
+            return document.apiDescription
+        }
+
+        /// Get the document data
+        ///
+        /// `nil` if the Document is an error response. Otherwise,
+        /// a structure containing the primary resource, any included
+        /// resources, metadata, and links.
+        var data: BodyData? {
+            return document.body.data
+        }
+
+        /// Quick access to the `data`'s primary resource.
+        ///
+        /// `nil` if the Document is an error document. Otherwise,
+        /// the primary resource body, which will contain zero/one, one/many
+        /// resources dependening on the `PrimaryResourceBody` type.
+        ///
+        /// See `SingleResourceBody` and `ManyResourceBody`.
+        var primaryResource: PrimaryResourceBody? {
+            return document.body.primaryResource
+        }
+
+        /// Quick access to the `data`'s includes.
+        ///
+        /// `nil` if the Document is an error document. Otherwise,
+        /// zero or more includes.
+        var includes: Includes<IncludeType>? {
+            return document.body.includes
+        }
+
+        /// The metadata for the error or data document or `nil` if
+        /// no metadata is found.
+        var meta: MetaType? {
+            return document.body.meta
+        }
+
+        /// The links for the error or data document or `nil` if
+        /// no links are found.
+        var links: LinksType? {
+            return document.body.links
         }
 
         public static func ==(lhs: Document, rhs: SuccessDocument) -> Bool {
@@ -481,7 +556,7 @@ extension Document {
     }
 }
 
-extension Document.ErrorDocument: Decodable, JSONAPIDocument
+extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
     where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -494,7 +569,7 @@ extension Document.ErrorDocument: Decodable, JSONAPIDocument
     }
 }
 
-extension Document.SuccessDocument: Decodable, JSONAPIDocument
+extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
     where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
