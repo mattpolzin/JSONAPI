@@ -106,34 +106,34 @@ public protocol CodableJSONAPIDocument: EncodableJSONAPIDocument, Decodable wher
 /// a conversion such as the one offerred by the
 /// Foundation JSONEncoder/Decoder: `KeyDecodingStrategy`
 public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, IncludeType: JSONAPI.Include, APIDescription: APIDescriptionType, Error: JSONAPIError>: EncodableJSONAPIDocument {
-	public typealias Include = IncludeType
+    public typealias Include = IncludeType
     public typealias BodyData = Body.Data
 
-	/// The JSON API Spec calls this the JSON:API Object. It contains version
-	/// and metadata information about the API itself.
-	public let apiDescription: APIDescription
+    /// The JSON API Spec calls this the JSON:API Object. It contains version
+    /// and metadata information about the API itself.
+    public let apiDescription: APIDescription
 
-	/// The Body of the Document. This body is either one or more errors
-	/// with links and metadata attempted to parse but not guaranteed or
-	/// it is a successful data struct containing all the primary and
-	/// included resources, the metadata, and the links that this
-	/// document type specifies.
-	public let body: Body
+    /// The Body of the Document. This body is either one or more errors
+    /// with links and metadata attempted to parse but not guaranteed or
+    /// it is a successful data struct containing all the primary and
+    /// included resources, the metadata, and the links that this
+    /// document type specifies.
+    public let body: Body
 
-	public init(apiDescription: APIDescription,
+    public init(apiDescription: APIDescription,
                 errors: [Error],
                 meta: MetaType? = nil,
                 links: LinksType? = nil) {
-		body = .errors(errors, meta: meta, links: links)
-		self.apiDescription = apiDescription
-	}
+        body = .errors(errors, meta: meta, links: links)
+        self.apiDescription = apiDescription
+    }
 
-	public init(apiDescription: APIDescription,
-				body: PrimaryResourceBody,
-				includes: Includes<Include>,
-				meta: MetaType,
-				links: LinksType) {
-		self.body = .data(
+    public init(apiDescription: APIDescription,
+                body: PrimaryResourceBody,
+                includes: Includes<Include>,
+                meta: MetaType,
+                links: LinksType) {
+        self.body = .data(
             .init(
                 primary: body,
                 includes: includes,
@@ -141,8 +141,8 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
                 links: links
             )
         )
-		self.apiDescription = apiDescription
-	}
+        self.apiDescription = apiDescription
+    }
 }
 
 extension Document {
@@ -220,124 +220,124 @@ extension Document {
 }
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
-	public func merging(_ other: Document.Body.Data,
-						combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
-						combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
-		return Document.Body.Data(primary: primary.appending(other.primary),
-								  includes: includes.appending(other.includes),
-								  meta: metaMerge(meta, other.meta),
-								  links: linksMerge(links, other.links))
-	}
+    public func merging(_ other: Document.Body.Data,
+                        combiningMetaWith metaMerge: (MetaType, MetaType) -> MetaType,
+                        combiningLinksWith linksMerge: (LinksType, LinksType) -> LinksType) -> Document.Body.Data {
+        return Document.Body.Data(primary: primary.appending(other.primary),
+                                  includes: includes.appending(other.includes),
+                                  meta: metaMerge(meta, other.meta),
+                                  links: linksMerge(links, other.links))
+    }
 }
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable, MetaType == NoMetadata, LinksType == NoLinks {
-	public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
-		return merging(other,
-					   combiningMetaWith: { _, _ in .none },
-					   combiningLinksWith: { _, _ in .none })
-	}
+    public func merging(_ other: Document.Body.Data) -> Document.Body.Data {
+        return merging(other,
+                       combiningMetaWith: { _, _ in .none },
+                       combiningLinksWith: { _, _ in .none })
+    }
 }
 
 extension Document where IncludeType == NoIncludes {
-	/// Create a new Document with the given includes.
-	public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error> {
-		// Note that if IncludeType is NoIncludes, then we allow anything
-		// to be included, but if IncludeType already specifies a type
-		// of thing to be expected then we lock that down.
-		// See: Document.including() where IncludeType: _Poly1
-		switch body {
-		case .data(let data):
-			return .init(apiDescription: apiDescription,
-						 body: data.primary,
-						 includes: includes,
-						 meta: data.meta,
-						 links: data.links)
-		case .errors(let errors, meta: let meta, links: let links):
-			return .init(apiDescription: apiDescription,
-						 errors: errors,
-						 meta: meta,
-						 links: links)
-		}
-	}
+    /// Create a new Document with the given includes.
+    public func including<I: JSONAPI.Include>(_ includes: Includes<I>) -> Document<PrimaryResourceBody, MetaType, LinksType, I, APIDescription, Error> {
+        // Note that if IncludeType is NoIncludes, then we allow anything
+        // to be included, but if IncludeType already specifies a type
+        // of thing to be expected then we lock that down.
+        // See: Document.including() where IncludeType: _Poly1
+        switch body {
+        case .data(let data):
+            return .init(apiDescription: apiDescription,
+                         body: data.primary,
+                         includes: includes,
+                         meta: data.meta,
+                         links: data.links)
+        case .errors(let errors, meta: let meta, links: let links):
+            return .init(apiDescription: apiDescription,
+                         errors: errors,
+                         meta: meta,
+                         links: links)
+        }
+    }
 }
 
 // extending where _Poly1 means all non-zero _Poly arities are included
 extension Document where IncludeType: _Poly1 {
-	/// Create a new Document adding the given includes. This does not
-	/// remove existing includes; it is additive.
-	public func including(_ includes: Includes<IncludeType>) -> Document {
-		// Note that if IncludeType is NoIncludes, then we allow anything
-		// to be included, but if IncludeType already specifies a type
-		// of thing to be expected then we lock that down.
-		// See: Document.including() where IncludeType == NoIncludes
-		switch body {
-		case .data(let data):
-			return .init(apiDescription: apiDescription,
-						 body: data.primary,
-						 includes: data.includes + includes,
-						 meta: data.meta,
-						 links: data.links)
-		case .errors(let errors, meta: let meta, links: let links):
-			return .init(apiDescription: apiDescription,
-						 errors: errors,
-						 meta: meta,
-						 links: links)
-		}
-	}
+    /// Create a new Document adding the given includes. This does not
+    /// remove existing includes; it is additive.
+    public func including(_ includes: Includes<IncludeType>) -> Document {
+        // Note that if IncludeType is NoIncludes, then we allow anything
+        // to be included, but if IncludeType already specifies a type
+        // of thing to be expected then we lock that down.
+        // See: Document.including() where IncludeType == NoIncludes
+        switch body {
+        case .data(let data):
+            return .init(apiDescription: apiDescription,
+                         body: data.primary,
+                         includes: data.includes + includes,
+                         meta: data.meta,
+                         links: data.links)
+        case .errors(let errors, meta: let meta, links: let links):
+            return .init(apiDescription: apiDescription,
+                         errors: errors,
+                         meta: meta,
+                         links: links)
+        }
+    }
 }
 
 // MARK: - Codable
 extension Document {
-	private enum RootCodingKeys: String, CodingKey {
-		case data
-		case errors
-		case included
-		case meta
-		case links
-		case jsonapi
-	}
+    private enum RootCodingKeys: String, CodingKey {
+        case data
+        case errors
+        case included
+        case meta
+        case links
+        case jsonapi
+    }
 
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.container(keyedBy: RootCodingKeys.self)
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: RootCodingKeys.self)
 
-		switch body {
-		case .errors(let errors, meta: let meta, links: let links):
-			var errContainer = container.nestedUnkeyedContainer(forKey: .errors)
+        switch body {
+        case .errors(let errors, meta: let meta, links: let links):
+            var errContainer = container.nestedUnkeyedContainer(forKey: .errors)
 
-			for error in errors {
-				try errContainer.encode(error)
-			}
+            for error in errors {
+                try errContainer.encode(error)
+            }
 
-			if MetaType.self != NoMetadata.self,
-				let metaVal = meta {
-				try container.encode(metaVal, forKey: .meta)
-			}
+            if MetaType.self != NoMetadata.self,
+                let metaVal = meta {
+                try container.encode(metaVal, forKey: .meta)
+            }
 
-			if LinksType.self != NoLinks.self,
-				let linksVal = links {
-				try container.encode(linksVal, forKey: .links)
-			}
+            if LinksType.self != NoLinks.self,
+                let linksVal = links {
+                try container.encode(linksVal, forKey: .links)
+            }
 
-		case .data(let data):
-			try container.encode(data.primary, forKey: .data)
+        case .data(let data):
+            try container.encode(data.primary, forKey: .data)
 
-			if Include.self != NoIncludes.self {
-				try container.encode(data.includes, forKey: .included)
-			}
+            if Include.self != NoIncludes.self {
+                try container.encode(data.includes, forKey: .included)
+            }
 
-			if MetaType.self != NoMetadata.self {
-				try container.encode(data.meta, forKey: .meta)
-			}
+            if MetaType.self != NoMetadata.self {
+                try container.encode(data.meta, forKey: .meta)
+            }
 
-			if LinksType.self != NoLinks.self {
-				try container.encode(data.links, forKey: .links)
-			}
-		}
+            if LinksType.self != NoLinks.self {
+                try container.encode(data.links, forKey: .links)
+            }
+        }
 
-		if APIDescription.self != NoAPIDescription.self {
-			try container.encode(apiDescription, forKey: .jsonapi)
-		}
-	}
+        if APIDescription.self != NoAPIDescription.self {
+            try container.encode(apiDescription, forKey: .jsonapi)
+        }
+    }
 }
 
 extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody: ResourceBody, IncludeType: Decodable {
@@ -405,26 +405,26 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
 // MARK: - CustomStringConvertible
 
 extension Document: CustomStringConvertible {
-	public var description: String {
-		return "Document(\(String(describing: body)))"
-	}
+    public var description: String {
+        return "Document(\(String(describing: body)))"
+    }
 }
 
 extension Document.Body: CustomStringConvertible {
-	public var description: String {
-		switch self {
-		case .errors(let errors, meta: let meta, links: let links):
-			return "errors: \(String(describing: errors)), meta: \(String(describing: meta)), links: \(String(describing: links))"
-		case .data(let data):
-			return String(describing: data)
-		}
-	}
+    public var description: String {
+        switch self {
+        case .errors(let errors, meta: let meta, links: let links):
+            return "errors: \(String(describing: errors)), meta: \(String(describing: meta)), links: \(String(describing: links))"
+        case .data(let data):
+            return String(describing: data)
+        }
+    }
 }
 
 extension Document.Body.Data: CustomStringConvertible {
-	public var description: String {
-		return "primary: \(String(describing: primary)), includes: \(String(describing: includes)), meta: \(String(describing: meta)), links: \(String(describing: links))"
-	}
+    public var description: String {
+        return "primary: \(String(describing: primary)), includes: \(String(describing: includes)), meta: \(String(describing: meta)), links: \(String(describing: links))"
+    }
 }
 
 // MARK: - Error and Success Document Types
