@@ -41,47 +41,47 @@ public protocol ResourceBody: Decodable, EncodableResourceBody {}
 /// A `ResourceBody` that has the ability to take on more primary
 /// resources by appending another similarly typed `ResourceBody`.
 public protocol ResourceBodyAppendable {
-	func appending(_ other: Self) -> Self
+    func appending(_ other: Self) -> Self
 }
 
 public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
-	return left.appending(right)
+    return left.appending(right)
 }
 
 /// A type allowing for a document body containing 1 primary resource.
 /// If the `Entity` specialization is an `Optional` type, the body can contain
 /// 0 or 1 primary resources.
 public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
-	public let value: Entity
+    public let value: Entity
 
-	public init(resourceObject: Entity) {
-		self.value = resourceObject
-	}
+    public init(resourceObject: Entity) {
+        self.value = resourceObject
+    }
 }
 
 /// A type allowing for a document body containing 0 or more primary resources.
 public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
-	public let values: [Entity]
+    public let values: [Entity]
 
-	public init(resourceObjects: [Entity]) {
-		values = resourceObjects
-	}
+    public init(resourceObjects: [Entity]) {
+        values = resourceObjects
+    }
 
-	public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
-		return ManyResourceBody(resourceObjects: values + other.values)
-	}
+    public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
+        return ManyResourceBody(resourceObjects: values + other.values)
+    }
 }
 
 /// Use NoResourceBody to indicate you expect a JSON API document to not
 /// contain a "data" top-level key.
 public struct NoResourceBody: ResourceBody {
-	public static var none: NoResourceBody { return NoResourceBody() }
+    public static var none: NoResourceBody { return NoResourceBody() }
 }
 
 // MARK: Codable
 extension SingleResourceBody {
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
 
         let anyNil: Any? = nil
         let nilValue = anyNil as? Entity
@@ -90,8 +90,8 @@ extension SingleResourceBody {
             return
         }
 
-		try container.encode(value)
-	}
+        try container.encode(value)
+    }
 }
 
 extension SingleResourceBody: Decodable, ResourceBody where Entity: OptionalPrimaryResource {
@@ -110,13 +110,13 @@ extension SingleResourceBody: Decodable, ResourceBody where Entity: OptionalPrim
 }
 
 extension ManyResourceBody {
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.unkeyedContainer()
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
 
-		for value in values {
-			try container.encode(value)
-		}
-	}
+        for value in values {
+            try container.encode(value)
+        }
+    }
 }
 
 extension ManyResourceBody: Decodable, ResourceBody where Entity: PrimaryResource {
@@ -133,13 +133,13 @@ extension ManyResourceBody: Decodable, ResourceBody where Entity: PrimaryResourc
 // MARK: CustomStringConvertible
 
 extension SingleResourceBody: CustomStringConvertible {
-	public var description: String {
-		return "PrimaryResourceBody(\(String(describing: value)))"
-	}
+    public var description: String {
+        return "PrimaryResourceBody(\(String(describing: value)))"
+    }
 }
 
 extension ManyResourceBody: CustomStringConvertible {
-	public var description: String {
-		return "PrimaryResourceBody(\(String(describing: values)))"
-	}
+    public var description: String {
+        return "PrimaryResourceBody(\(String(describing: values)))"
+    }
 }

@@ -9,7 +9,9 @@
 public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Equatable, ErrorDictType {
     /// a unique identifier for this particular occurrence of the problem
     public let id: IdType?
-//    public let links: Links? // we skip this for now to avoid adding complexity to using this basic type.
+
+    //    public let links: Links? // we skip this for now to avoid adding complexity to using this basic type.
+
     /// the HTTP status code applicable to this problem
     public let status: String?
     /// an application-specific error code
@@ -20,7 +22,8 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
     public let detail: String?
     /// an object containing references to the source of the error
     public let source: Source?
-//    public let meta: Meta? // we skip this for now to avoid adding complexity to using this basic type
+
+    //    public let meta: Meta? // we skip this for now to avoid adding complexity to using this basic type
 
     public init(id: IdType? = nil,
                 status: String? = nil,

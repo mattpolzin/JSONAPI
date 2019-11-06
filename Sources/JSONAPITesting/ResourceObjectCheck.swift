@@ -8,29 +8,29 @@
 import JSONAPI
 
 public enum ResourceObjectCheckError: Swift.Error {
-	/// The attributes should live in a struct, not
-	/// another type class.
-	case attributesNotStruct
+    /// The attributes should live in a struct, not
+    /// another type class.
+    case attributesNotStruct
 
-	/// The relationships should live in a struct, not
-	/// another type class.
-	case relationshipsNotStruct
+    /// The relationships should live in a struct, not
+    /// another type class.
+    case relationshipsNotStruct
 
-	/// All stored properties on an Attributes struct should
-	/// be one of the supplied Attribute types.
-	case nonAttribute(named: String)
+    /// All stored properties on an Attributes struct should
+    /// be one of the supplied Attribute types.
+    case nonAttribute(named: String)
 
-	/// All stored properties on a Relationships struct should
-	/// be one of the supplied Relationship types.
-	case nonRelationship(named: String)
+    /// All stored properties on a Relationships struct should
+    /// be one of the supplied Relationship types.
+    case nonRelationship(named: String)
 
-	/// It is explicitly stated by the JSON spec
-	/// a "none" value for arrays is an empty array, not `nil`.
-	case nullArray(named: String)
+    /// It is explicitly stated by the JSON spec
+    /// a "none" value for arrays is an empty array, not `nil`.
+    case nullArray(named: String)
 }
 
 public struct ResourceObjectCheckErrors: Swift.Error {
-	let problems: [ResourceObjectCheckError]
+    let problems: [ResourceObjectCheckError]
 }
 
 private protocol OptionalAttributeType {}
@@ -55,40 +55,40 @@ extension TransformedAttribute: _AttributeType {}
 extension Attribute: _AttributeType {}
 
 public extension ResourceObject {
-	static func check(_ entity: ResourceObject) throws {
-		var problems = [ResourceObjectCheckError]()
+    static func check(_ entity: ResourceObject) throws {
+        var problems = [ResourceObjectCheckError]()
 
-		let attributesMirror = Mirror(reflecting: entity.attributes)
+        let attributesMirror = Mirror(reflecting: entity.attributes)
 
-		if attributesMirror.displayStyle != .`struct` {
-			problems.append(.attributesNotStruct)
-		}
+        if attributesMirror.displayStyle != .`struct` {
+            problems.append(.attributesNotStruct)
+        }
 
-		for attribute in attributesMirror.children {
-			if attribute.value as? _AttributeType == nil,
-				attribute.value as? OptionalAttributeType == nil {
-				problems.append(.nonAttribute(named: attribute.label ?? "unnamed"))
-			}
-			if attribute.value as? AttributeTypeWithOptionalArray != nil {
-				problems.append(.nullArray(named: attribute.label ?? "unnamed"))
-			}
-		}
+        for attribute in attributesMirror.children {
+            if attribute.value as? _AttributeType == nil,
+                attribute.value as? OptionalAttributeType == nil {
+                problems.append(.nonAttribute(named: attribute.label ?? "unnamed"))
+            }
+            if attribute.value as? AttributeTypeWithOptionalArray != nil {
+                problems.append(.nullArray(named: attribute.label ?? "unnamed"))
+            }
+        }
 
-		let relationshipsMirror = Mirror(reflecting: entity.relationships)
+        let relationshipsMirror = Mirror(reflecting: entity.relationships)
 
-		if relationshipsMirror.displayStyle != .`struct` {
-			problems.append(.relationshipsNotStruct)
-		}
+        if relationshipsMirror.displayStyle != .`struct` {
+            problems.append(.relationshipsNotStruct)
+        }
 
-		for relationship in relationshipsMirror.children {
-			if relationship.value as? _RelationshipType == nil,
-				relationship.value as? OptionalRelationshipType == nil {
-				problems.append(.nonRelationship(named: relationship.label ?? "unnamed"))
-			}
-		}
+        for relationship in relationshipsMirror.children {
+            if relationship.value as? _RelationshipType == nil,
+                relationship.value as? OptionalRelationshipType == nil {
+                problems.append(.nonRelationship(named: relationship.label ?? "unnamed"))
+            }
+        }
 
-		guard problems.count == 0 else {
-			throw ResourceObjectCheckErrors(problems: problems)
-		}
-	}
+        guard problems.count == 0 else {
+            throw ResourceObjectCheckErrors(problems: problems)
+        }
+    }
 }
