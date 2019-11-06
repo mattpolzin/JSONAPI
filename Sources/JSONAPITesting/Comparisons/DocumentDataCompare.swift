@@ -33,7 +33,7 @@ public struct DocumentDataComparison: Equatable, PropertyComparable {
     }
 }
 
-extension Document.Body.Data {
+extension DocumentBodyData {
     public func compare<T>(to other: Self) -> DocumentDataComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T> {
         return .init(
             primary: primary.compare(to: other.primary),

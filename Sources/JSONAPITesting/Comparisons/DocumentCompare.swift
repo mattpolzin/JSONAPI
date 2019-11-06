@@ -79,7 +79,7 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     public var rawValue: String { description }
 }
 
-extension Document {
+extension EncodableJSONAPIDocument where Body: Equatable {
     public func compare<T>(to other: Self) -> DocumentComparison where PrimaryResourceBody == SingleResourceBody<T>, T: ResourceObjectType {
         return DocumentComparison(
             apiDescription: Comparison(
@@ -111,70 +111,88 @@ extension Document {
     }
 }
 
-extension Document.Body {
+extension DocumentBody where Self: Equatable {
     public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T> {
+
+        // rule out case where they are the same
         guard self != other else {
             return .same
         }
 
-        switch (self, other) {
-        case (.errors(let errors1), .errors(let errors2)):
-            return .differentErrors(BodyComparison.compare(errors: errors1.0,
-                                                           errors1.meta,
-                                                           errors1.links,
-                                                           with: errors2.0,
-                                                           errors2.meta,
-                                                           errors2.links))
-        case (.errors, .data):
-            return .dataErrorMismatch(errorOnLeft: true)
-        case (.data, .errors):
-            return .dataErrorMismatch(errorOnLeft: false)
-        case (.data(let data1), .data(let data2)):
+        // rule out case where they are both error bodies
+        if let errors1 = errors, let errors2 = other.errors {
+            return .differentErrors(
+                BodyComparison.compare(
+                    errors: errors1, meta, links,
+                    with: errors2, meta, links
+                )
+            )
+        }
+
+        // rule out the case where they are both data
+        if let data1 = data, let data2 = other.data {
             return .differentData(data1.compare(to: data2))
         }
+
+        // we are left with the case where one is data and the
+        // other is an error if self.isError, then "the error
+        // is on the left"
+        return .dataErrorMismatch(errorOnLeft: isError)
     }
 
     public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T?> {
+
+        // rule out case where they are the same
         guard self != other else {
             return .same
         }
 
-        switch (self, other) {
-        case (.errors(let errors1), .errors(let errors2)):
-            return .differentErrors(BodyComparison.compare(errors: errors1.0,
-                                                           errors1.meta,
-                                                           errors1.links,
-                                                           with: errors2.0,
-                                                           errors2.meta,
-                                                           errors2.links))
-        case (.errors, .data):
-            return .dataErrorMismatch(errorOnLeft: true)
-        case (.data, .errors):
-            return .dataErrorMismatch(errorOnLeft: false)
-        case (.data(let data1), .data(let data2)):
+        // rule out case where they are both error bodies
+        if let errors1 = errors, let errors2 = other.errors {
+            return .differentErrors(
+                BodyComparison.compare(
+                    errors: errors1, meta, links,
+                    with: errors2, meta, links
+                )
+            )
+        }
+
+        // rule out the case where they are both data
+        if let data1 = data, let data2 = other.data {
             return .differentData(data1.compare(to: data2))
         }
+
+        // we are left with the case where one is data and the
+        // other is an error if self.isError, then "the error
+        // is on the left"
+        return .dataErrorMismatch(errorOnLeft: isError)
     }
 
     public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == ManyResourceBody<T> {
+
+        // rule out case where they are the same
         guard self != other else {
             return .same
         }
 
-        switch (self, other) {
-        case (.errors(let errors1), .errors(let errors2)):
-            return .differentErrors(BodyComparison.compare(errors: errors1.0,
-                                                           errors1.meta,
-                                                           errors1.links,
-                                                           with: errors2.0,
-                                                           errors2.meta,
-                                                           errors2.links))
-        case (.errors, .data):
-            return .dataErrorMismatch(errorOnLeft: true)
-        case (.data, .errors):
-            return .dataErrorMismatch(errorOnLeft: false)
-        case (.data(let data1), .data(let data2)):
+        // rule out case where they are both error bodies
+        if let errors1 = errors, let errors2 = other.errors {
+            return .differentErrors(
+                BodyComparison.compare(
+                    errors: errors1, meta, links,
+                    with: errors2, meta, links
+                )
+            )
+        }
+
+        // rule out the case where they are both data
+        if let data1 = data, let data2 = other.data {
             return .differentData(data1.compare(to: data2))
         }
+
+        // we are left with the case where one is data and the
+        // other is an error if self.isError, then "the error
+        // is on the left"
+        return .dataErrorMismatch(errorOnLeft: isError)
     }
 }
