@@ -441,7 +441,6 @@ extension Document {
         public typealias BodyData = Document.BodyData
 
         public var body: Document.Body { return document.body }
-        public var apiDescription: APIDescription { return document.apiDescription }
 
         private let document: Document
 
@@ -489,7 +488,6 @@ extension Document {
         public typealias BodyData = Document.BodyData
 
         public var body: Document.Body { return document.body }
-        public var apiDescription: APIDescription { return document.apiDescription }
 
         private let document: Document
 
