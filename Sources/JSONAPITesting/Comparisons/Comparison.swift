@@ -5,7 +5,13 @@
 //  Created by Mathew Polzin on 11/3/19.
 //
 
-public enum Comparison: Equatable, CustomStringConvertible {
+public protocol Comparable: CustomStringConvertible {
+    var rawValue: String { get }
+
+    var isSame: Bool { get }
+}
+
+public enum Comparison: Comparable, Equatable {
     case same
     case different(String, String)
     case prebuilt(String)
@@ -50,7 +56,7 @@ public enum Comparison: Equatable, CustomStringConvertible {
 
 public typealias NamedDifferences = [String: String]
 
-public protocol PropertyComparable: CustomStringConvertible {
+public protocol PropertyComparable: Comparable {
     var differences: NamedDifferences { get }
 }
 
