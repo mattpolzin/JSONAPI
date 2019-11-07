@@ -53,7 +53,7 @@ final class DocumentCompareTests: XCTestCase {
         ])
 
         XCTAssertEqual(d8.compare(to: d9).differences, [
-            "Body": ##"(Primary Resource: ('age' attribute: 10 ≠ 12), ('bestFriend' relationship: Optional(Id(2)) ≠ nil), ('favoriteColor' attribute: nil ≠ Optional("blue")), ('name' attribute: name ≠ Fig), (id: 1 ≠ 5))"##
+            "Body": ##"(Primary Resource: (resource 1: 'age' attribute: 10 ≠ 12, 'bestFriend' relationship: Optional(Id(2)) ≠ nil, 'favoriteColor' attribute: nil ≠ Optional("blue"), 'name' attribute: name ≠ Fig, id: 1 ≠ 5))"##
         ])
 
         XCTAssertEqual(d1.compare(to: d10).differences, [

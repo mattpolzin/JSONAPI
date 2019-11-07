@@ -79,18 +79,6 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     public var rawValue: String { description }
 }
 
-extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _ResourceBody {
-    public func compare(to other: Self) -> DocumentComparison {
-        return DocumentComparison(
-            apiDescription: Comparison(
-                String(describing: apiDescription),
-                String(describing: other.apiDescription)
-            ),
-            body: body.compare(to: other.body)
-        )
-    }
-}
-
 extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _OptionalResourceBody {
     public func compare(to other: Self) -> DocumentComparison {
         return DocumentComparison(
@@ -100,36 +88,6 @@ extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _
             ),
             body: body.compare(to: other.body)
         )
-    }
-}
-
-extension DocumentBody where Self: Equatable, PrimaryResourceBody: _ResourceBody {
-    public func compare(to other: Self) -> BodyComparison {
-
-        // rule out case where they are the same
-        guard self != other else {
-            return .same
-        }
-
-        // rule out case where they are both error bodies
-        if let errors1 = errors, let errors2 = other.errors {
-            return .differentErrors(
-                BodyComparison.compare(
-                    errors: errors1, meta, links,
-                    with: errors2, meta, links
-                )
-            )
-        }
-
-        // rule out the case where they are both data
-        if let data1 = data, let data2 = other.data {
-            return .differentData(data1.compare(to: data2))
-        }
-
-        // we are left with the case where one is data and the
-        // other is an error if self.isError, then "the error
-        // is on the left"
-        return .dataErrorMismatch(errorOnLeft: isError)
     }
 }
 
