@@ -79,28 +79,8 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     public var rawValue: String { description }
 }
 
-extension EncodableJSONAPIDocument where Body: Equatable {
-    public func compare<T>(to other: Self) -> DocumentComparison where PrimaryResourceBody == SingleResourceBody<T>, T: ResourceObjectType {
-        return DocumentComparison(
-            apiDescription: Comparison(
-                String(describing: apiDescription),
-                String(describing: other.apiDescription)
-            ),
-            body: body.compare(to: other.body)
-        )
-    }
-
-    public func compare<T>(to other: Self) -> DocumentComparison where PrimaryResourceBody == SingleResourceBody<T?>, T: ResourceObjectType {
-        return DocumentComparison(
-            apiDescription: Comparison(
-                String(describing: apiDescription),
-                String(describing: other.apiDescription)
-            ),
-            body: body.compare(to: other.body)
-        )
-    }
-
-    public func compare<T>(to other: Self) -> DocumentComparison where PrimaryResourceBody == ManyResourceBody<T>, T: ResourceObjectType {
+extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _ResourceBody {
+    public func compare(to other: Self) -> DocumentComparison {
         return DocumentComparison(
             apiDescription: Comparison(
                 String(describing: apiDescription),
@@ -111,8 +91,20 @@ extension EncodableJSONAPIDocument where Body: Equatable {
     }
 }
 
-extension DocumentBody where Self: Equatable {
-    public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T> {
+extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _OptionalResourceBody {
+    public func compare(to other: Self) -> DocumentComparison {
+        return DocumentComparison(
+            apiDescription: Comparison(
+                String(describing: apiDescription),
+                String(describing: other.apiDescription)
+            ),
+            body: body.compare(to: other.body)
+        )
+    }
+}
+
+extension DocumentBody where Self: Equatable, PrimaryResourceBody: _ResourceBody {
+    public func compare(to other: Self) -> BodyComparison {
 
         // rule out case where they are the same
         guard self != other else {
@@ -139,36 +131,10 @@ extension DocumentBody where Self: Equatable {
         // is on the left"
         return .dataErrorMismatch(errorOnLeft: isError)
     }
+}
 
-    public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T?> {
-
-        // rule out case where they are the same
-        guard self != other else {
-            return .same
-        }
-
-        // rule out case where they are both error bodies
-        if let errors1 = errors, let errors2 = other.errors {
-            return .differentErrors(
-                BodyComparison.compare(
-                    errors: errors1, meta, links,
-                    with: errors2, meta, links
-                )
-            )
-        }
-
-        // rule out the case where they are both data
-        if let data1 = data, let data2 = other.data {
-            return .differentData(data1.compare(to: data2))
-        }
-
-        // we are left with the case where one is data and the
-        // other is an error if self.isError, then "the error
-        // is on the left"
-        return .dataErrorMismatch(errorOnLeft: isError)
-    }
-
-    public func compare<T>(to other: Self) -> BodyComparison where T: ResourceObjectType, PrimaryResourceBody == ManyResourceBody<T> {
+extension DocumentBody where Self: Equatable, PrimaryResourceBody: _OptionalResourceBody {
+    public func compare(to other: Self) -> BodyComparison {
 
         // rule out case where they are the same
         guard self != other else {
