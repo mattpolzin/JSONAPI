@@ -36,15 +36,12 @@ public struct SparseFieldset<
 
 public extension ResourceObject where Description.Attributes: SparsableAttributes {
 
-    /// Get a Sparse Fieldset of this `ResourceObject` that can be encoded
-    /// as a `SparsePrimaryResource`.
-    func sparse(with fields: [Description.Attributes.CodingKeys]) -> SparseFieldset<Description, MetaType, LinksType, EntityRawIdType> {
-        return SparseFieldset(self, fields: fields)
-    }
-}
-
-public extension ResourceObject where Description.Attributes: SparsableAttributes {
-
     /// The `SparseFieldset` type for this `ResourceObject`
     typealias SparseType = SparseFieldset<Description, MetaType, LinksType, EntityRawIdType>
+
+    /// Get a Sparse Fieldset of this `ResourceObject` that can be encoded
+    /// as a `SparsePrimaryResource`.
+    func sparse(with fields: [Description.Attributes.CodingKeys]) -> SparseType {
+        return SparseFieldset(self, fields: fields)
+    }
 }
