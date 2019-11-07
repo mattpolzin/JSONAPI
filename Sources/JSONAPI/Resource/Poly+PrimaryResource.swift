@@ -18,7 +18,7 @@ import Poly
 public typealias EncodableJSONPoly = Poly & EncodablePrimaryResource
 
 public typealias EncodablePolyWrapped = Encodable & Equatable
-public typealias PolyWrapped = EncodablePolyWrapped & Decodable
+public typealias CodablePolyWrapped = EncodablePolyWrapped & Decodable
 
 extension Poly0: CodablePrimaryResource {
     public init(from decoder: Decoder) throws {
@@ -35,42 +35,42 @@ extension Poly1: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped {}
 
 extension Poly1: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped {}
+    where A: CodablePolyWrapped {}
 
 // MARK: - 2 types
 extension Poly2: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped, B: EncodablePolyWrapped {}
 
 extension Poly2: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped {}
 
 // MARK: - 3 types
 extension Poly3: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped {}
 
 extension Poly3: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped {}
 
 // MARK: - 4 types
 extension Poly4: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped {}
 
 extension Poly4: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped {}
 
 // MARK: - 5 types
 extension Poly5: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped {}
 
 extension Poly5: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped {}
 
 // MARK: - 6 types
 extension Poly6: EncodablePrimaryResource, OptionalEncodablePrimaryResource
     where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped {}
 
 extension Poly6: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped {}
 
 // MARK: - 7 types
 extension Poly7: EncodablePrimaryResource, OptionalEncodablePrimaryResource
@@ -84,7 +84,7 @@ extension Poly7: EncodablePrimaryResource, OptionalEncodablePrimaryResource
         G: EncodablePolyWrapped {}
 
 extension Poly7: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped {}
 
 // MARK: - 8 types
 extension Poly8: EncodablePrimaryResource, OptionalEncodablePrimaryResource
@@ -99,7 +99,7 @@ extension Poly8: EncodablePrimaryResource, OptionalEncodablePrimaryResource
         H: EncodablePolyWrapped {}
 
 extension Poly8: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped {}
 
 // MARK: - 9 types
 extension Poly9: EncodablePrimaryResource, OptionalEncodablePrimaryResource
@@ -115,7 +115,7 @@ extension Poly9: EncodablePrimaryResource, OptionalEncodablePrimaryResource
         I: EncodablePolyWrapped {}
 
 extension Poly9: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped, I: CodablePolyWrapped {}
 
 // MARK: - 10 types
 extension Poly10: EncodablePrimaryResource, OptionalEncodablePrimaryResource
@@ -132,7 +132,7 @@ extension Poly10: EncodablePrimaryResource, OptionalEncodablePrimaryResource
         J: EncodablePolyWrapped {}
 
 extension Poly10: CodablePrimaryResource, OptionalCodablePrimaryResource
-    where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped, J: PolyWrapped {}
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped, I: CodablePolyWrapped, J: CodablePolyWrapped {}
 
 // MARK: - 11 types
 extension Poly11: EncodablePrimaryResource, OptionalEncodablePrimaryResource
@@ -151,14 +151,14 @@ extension Poly11: EncodablePrimaryResource, OptionalEncodablePrimaryResource
 
 extension Poly11: CodablePrimaryResource, OptionalCodablePrimaryResource
     where
-        A: PolyWrapped,
-        B: PolyWrapped,
-        C: PolyWrapped,
-        D: PolyWrapped,
-        E: PolyWrapped,
-        F: PolyWrapped,
-        G: PolyWrapped,
-        H: PolyWrapped,
-        I: PolyWrapped,
-        J: PolyWrapped,
-        K: PolyWrapped {}
+        A: CodablePolyWrapped,
+        B: CodablePolyWrapped,
+        C: CodablePolyWrapped,
+        D: CodablePolyWrapped,
+        E: CodablePolyWrapped,
+        F: CodablePolyWrapped,
+        G: CodablePolyWrapped,
+        H: CodablePolyWrapped,
+        I: CodablePolyWrapped,
+        J: CodablePolyWrapped,
+        K: CodablePolyWrapped {}
