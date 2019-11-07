@@ -33,26 +33,8 @@ public struct DocumentDataComparison: Equatable, PropertyComparable {
     }
 }
 
-extension DocumentBodyData {
-    public func compare<T>(to other: Self) -> DocumentDataComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T> {
-        return .init(
-            primary: primary.compare(to: other.primary),
-            includes: includes.compare(to: other.includes),
-            meta: Comparison(meta, other.meta),
-            links: Comparison(links, other.links)
-        )
-    }
-
-    public func compare<T>(to other: Self) -> DocumentDataComparison where T: ResourceObjectType, PrimaryResourceBody == SingleResourceBody<T?> {
-        return .init(
-            primary: primary.compare(to: other.primary),
-            includes: includes.compare(to: other.includes),
-            meta: Comparison(meta, other.meta),
-            links: Comparison(links, other.links)
-        )
-    }
-
-    public func compare<T>(to other: Self) -> DocumentDataComparison where T: ResourceObjectType, PrimaryResourceBody == ManyResourceBody<T> {
+extension DocumentBodyData where PrimaryResourceBody: _OptionalResourceBody {
+    public func compare(to other: Self) -> DocumentDataComparison {
         return .init(
             primary: primary.compare(to: other.primary),
             includes: includes.compare(to: other.includes),
@@ -63,28 +45,23 @@ extension DocumentBodyData {
 }
 
 public enum PrimaryResourceBodyComparison: Equatable, CustomStringConvertible {
-    case single(ResourceObjectComparison)
-    case many(ManyResourceObjectComparison)
-    case other(Comparison)
+    case oneOrMore(ManyResourceObjectComparison)
+    case optionalSingle(Comparison)
 
     public var isSame: Bool {
         switch self {
-        case .other(let comparison):
+        case .optionalSingle(let comparison):
             return comparison == .same
-        case .single(let comparison):
-            return comparison.isSame
-        case .many(let comparison):
+        case .oneOrMore(let comparison):
             return comparison.isSame
         }
     }
 
     public var description: String {
         switch self {
-        case .other(let comparison):
+        case .optionalSingle(let comparison):
             return comparison.rawValue
-        case .single(let comparison):
-            return comparison.rawValue
-        case .many(let comparison):
+        case .oneOrMore(let comparison):
             return comparison.rawValue
         }
     }
@@ -109,42 +86,19 @@ public struct ManyResourceObjectComparison: Equatable, PropertyComparable {
     }
 }
 
-extension SingleResourceBody where Entity: ResourceObjectType {
+extension _OptionalResourceBody where WrappedPrimaryResourceType: ResourceObjectType {
     public func compare(to other: Self) -> PrimaryResourceBodyComparison {
-        return .single(.init(value, other.value))
-    }
-}
+        guard let one = optionalResourceObject,
+            let two = other.optionalResourceObject else {
 
-public protocol _OptionalResourceObjectType {
-    associatedtype Wrapped: ResourceObjectType
+                func nilOrName<T>(_ resObj: [T]?) -> String {
+                    resObj.map { _ in String(describing: T.self) } ?? "nil"
+                }
 
-    var maybeValue: Wrapped? { get }
-}
-
-extension Optional: _OptionalResourceObjectType where Wrapped: ResourceObjectType {
-    public var maybeValue: Wrapped? {
-        switch self {
-        case .none:
-            return nil
-        case .some(let value):
-            return value
+                return .optionalSingle(Comparison(nilOrName(optionalResourceObject), nilOrName(other.optionalResourceObject)))
         }
-    }
-}
 
-extension SingleResourceBody where Entity: _OptionalResourceObjectType {
-    public func compare(to other: Self) -> PrimaryResourceBodyComparison {
-        guard let one = value.maybeValue,
-            let two = other.value.maybeValue else {
-                return .other(Comparison(value, other.value))
-        }
-        return .single(.init(one, two))
-    }
-}
-
-extension ManyResourceBody where Entity: ResourceObjectType {
-    public func compare(to other: Self) -> PrimaryResourceBodyComparison {
-        return .many(.init(values.compare(to: other.values, using: { r1, r2 in
+        return .oneOrMore(.init(one.compare(to: two, using: { r1, r2 in
             let r1AsResource = r1 as? AbstractResourceObjectType
 
             let maybeComparison = r1AsResource
@@ -164,4 +118,40 @@ extension ManyResourceBody where Entity: ResourceObjectType {
             return comparison
         })))
     }
+}
+
+public protocol _OptionalResourceBody {
+    associatedtype WrappedPrimaryResourceType: ResourceObjectType
+    var optionalResourceObject: [WrappedPrimaryResourceType]? { get }
+}
+
+public protocol _OptionalResourceObjectType {
+    associatedtype Wrapped: ResourceObjectType
+
+    var maybeValue: Wrapped? { get }
+}
+
+extension Optional: _OptionalResourceObjectType where Wrapped: ResourceObjectType {
+    public var maybeValue: Wrapped? {
+        switch self {
+        case .none:
+            return nil
+        case .some(let value):
+            return value
+        }
+    }
+}
+
+extension ResourceObject: _OptionalResourceObjectType {
+    public var maybeValue: Self? { self }
+}
+
+extension ManyResourceBody: _OptionalResourceBody where PrimaryResource: ResourceObjectType {
+    public var optionalResourceObject: [PrimaryResource]? { values }
+}
+
+extension SingleResourceBody: _OptionalResourceBody where PrimaryResource: _OptionalResourceObjectType {
+    public typealias WrappedPrimaryResourceType = PrimaryResource.Wrapped
+
+    public var optionalResourceObject: [WrappedPrimaryResourceType]? { value.maybeValue.map { [$0] } }
 }

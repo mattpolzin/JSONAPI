@@ -15,6 +15,12 @@ final class DocumentCompareTests: XCTestCase {
         XCTAssertTrue(d2.compare(to: d2).differences.isEmpty)
         XCTAssertTrue(d3.compare(to: d3).differences.isEmpty)
         XCTAssertTrue(d4.compare(to: d4).differences.isEmpty)
+        XCTAssertTrue(d5.compare(to: d5).differences.isEmpty)
+        XCTAssertTrue(d6.compare(to: d6).differences.isEmpty)
+        XCTAssertTrue(d7.compare(to: d7).differences.isEmpty)
+        XCTAssertTrue(d8.compare(to: d8).differences.isEmpty)
+        XCTAssertTrue(d9.compare(to: d9).differences.isEmpty)
+        XCTAssertTrue(d10.compare(to: d10).differences.isEmpty)
     }
 
     func test_errorAndData() {
@@ -40,6 +46,18 @@ final class DocumentCompareTests: XCTestCase {
 
         XCTAssertEqual(d3.compare(to: d6).differences, [
             "Body": ##"(Includes: (include 2: missing)), (Primary Resource: (resource 2: 'age' attribute: 10 ≠ 12, 'bestFriend' relationship: Optional(Id(2)) ≠ nil, 'favoriteColor' attribute: nil ≠ Optional("blue"), 'name' attribute: name ≠ Fig, id: 1 ≠ 5), (resource 3: missing))"##
+        ])
+
+        XCTAssertEqual(d7.compare(to: d8).differences, [
+            "Body": ##"(Primary Resource: nil ≠ ResourceObject<TestDescription, NoMetadata, NoLinks, String>)"##
+        ])
+
+        XCTAssertEqual(d8.compare(to: d9).differences, [
+            "Body": ##"(Primary Resource: (resource 1: 'age' attribute: 10 ≠ 12, 'bestFriend' relationship: Optional(Id(2)) ≠ nil, 'favoriteColor' attribute: nil ≠ Optional("blue"), 'name' attribute: name ≠ Fig, id: 1 ≠ 5))"##
+        ])
+
+        XCTAssertEqual(d1.compare(to: d10).differences, [
+            "Body": ##"(Primary Resource: (resource 1: 'age' attribute: 10 ≠ 12, 'bestFriend' relationship: Optional(Id(2)) ≠ nil, 'favoriteColor' attribute: nil ≠ Optional("blue"), 'name' attribute: name ≠ Fig, id: 1 ≠ 5))"##
         ])
     }
 }
@@ -79,6 +97,8 @@ fileprivate enum TestDescription2: JSONAPI.ResourceObjectDescription {
 fileprivate typealias TestType2 = ResourceObject<TestDescription2, NoMetadata, NoLinks, String>
 
 fileprivate typealias SingleDocument = JSONAPI.Document<SingleResourceBody<TestType>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
+
+fileprivate typealias OptionalSingleDocument = JSONAPI.Document<SingleResourceBody<TestType?>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
 
 fileprivate typealias ManyDocument = JSONAPI.Document<ManyResourceBody<TestType>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
 
@@ -165,6 +185,38 @@ fileprivate let d6 = ManyDocument(
     apiDescription: .none,
     body: .init(resourceObjects: [r1, r1, r2]),
     includes: .init(values: [.init(r3), .init(r2)]),
+    meta: .none,
+    links: .none
+)
+
+fileprivate let d7 = OptionalSingleDocument(
+    apiDescription: .none,
+    body: .init(resourceObject: nil),
+    includes: .none,
+    meta: .none,
+    links: .none
+)
+
+fileprivate let d8 = OptionalSingleDocument(
+    apiDescription: .none,
+    body: .init(resourceObject: r1),
+    includes: .none,
+    meta: .none,
+    links: .none
+)
+
+fileprivate let d9 = OptionalSingleDocument(
+    apiDescription: .none,
+    body: .init(resourceObject: r2),
+    includes: .none,
+    meta: .none,
+    links: .none
+)
+
+fileprivate let d10 = SingleDocument(
+    apiDescription: .none,
+    body: .init(resourceObject: r2),
+    includes: .none,
     meta: .none,
     links: .none
 )

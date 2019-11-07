@@ -29,7 +29,9 @@ extension Optional: OptionalCodablePrimaryResource where Wrapped: CodablePrimary
 /// An `EncodableResourceBody` is a `ResourceBody` that only supports being
 /// encoded. It is actually weaker than `ResourceBody`, which supports both encoding
 /// and decoding.
-public protocol EncodableResourceBody: Equatable, Encodable {}
+public protocol EncodableResourceBody: Equatable, Encodable {
+    associatedtype PrimaryResource
+}
 
 /// A `CodableResourceBody` is a representation of the body of the JSON:API Document.
 /// It can either be one resource (which can be specified as optional or not)
@@ -49,19 +51,19 @@ public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
 /// A type allowing for a document body containing 1 primary resource.
 /// If the `Entity` specialization is an `Optional` type, the body can contain
 /// 0 or 1 primary resources.
-public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
-    public let value: Entity
+public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
+    public let value: PrimaryResource
 
-    public init(resourceObject: Entity) {
+    public init(resourceObject: PrimaryResource) {
         self.value = resourceObject
     }
 }
 
 /// A type allowing for a document body containing 0 or more primary resources.
-public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
-    public let values: [Entity]
+public struct ManyResourceBody<PrimaryResource: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
+    public let values: [PrimaryResource]
 
-    public init(resourceObjects: [Entity]) {
+    public init(resourceObjects: [PrimaryResource]) {
         values = resourceObjects
     }
 
@@ -73,6 +75,8 @@ public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: Encoda
 /// Use NoResourceBody to indicate you expect a JSON API document to not
 /// contain a "data" top-level key.
 public struct NoResourceBody: CodableResourceBody {
+    public typealias PrimaryResource = Void
+
     public static var none: NoResourceBody { return NoResourceBody() }
 }
 
@@ -82,7 +86,7 @@ extension SingleResourceBody {
         var container = encoder.singleValueContainer()
 
         let anyNil: Any? = nil
-        let nilValue = anyNil as? Entity
+        let nilValue = anyNil as? PrimaryResource
         guard value != nilValue else {
             try container.encodeNil()
             return
@@ -92,18 +96,18 @@ extension SingleResourceBody {
     }
 }
 
-extension SingleResourceBody: Decodable, CodableResourceBody where Entity: OptionalCodablePrimaryResource {
+extension SingleResourceBody: Decodable, CodableResourceBody where PrimaryResource: OptionalCodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         let anyNil: Any? = nil
         if container.decodeNil(),
-            let val = anyNil as? Entity {
+            let val = anyNil as? PrimaryResource {
             value = val
             return
         }
 
-        value = try container.decode(Entity.self)
+        value = try container.decode(PrimaryResource.self)
     }
 }
 
@@ -117,12 +121,12 @@ extension ManyResourceBody {
     }
 }
 
-extension ManyResourceBody: Decodable, CodableResourceBody where Entity: CodablePrimaryResource {
+extension ManyResourceBody: Decodable, CodableResourceBody where PrimaryResource: CodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        var valueAggregator = [Entity]()
+        var valueAggregator = [PrimaryResource]()
         while !container.isAtEnd {
-            valueAggregator.append(try container.decode(Entity.self))
+            valueAggregator.append(try container.decode(PrimaryResource.self))
         }
         values = valueAggregator
     }
