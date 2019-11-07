@@ -7,21 +7,21 @@
 
 import JSONAPI
 
-public struct ResourceObjectComparison: Equatable, PropertyComparable {
-    public typealias ComparisonHash = [String: Comparison]
+public struct ResourceObjectComparison: Equatable, PropertyComparison {
+    public typealias ComparisonHash = [String: BasicComparison]
 
-    public let id: Comparison
+    public let id: BasicComparison
     public let attributes: ComparisonHash
     public let relationships: ComparisonHash
-    public let meta: Comparison
-    public let links: Comparison
+    public let meta: BasicComparison
+    public let links: BasicComparison
 
     public init<T: ResourceObjectType>(_ one: T, _ two: T) {
-        id = Comparison(one.id.rawValue, two.id.rawValue)
+        id = BasicComparison(one.id.rawValue, two.id.rawValue)
         attributes = one.attributes.compare(to: two.attributes)
         relationships = one.relationships.compare(to: two.relationships)
-        meta = Comparison(one.meta, two.meta)
-        links = Comparison(one.links, two.links)
+        meta = BasicComparison(one.meta, two.meta)
+        links = BasicComparison(one.links, two.links)
     }
 
     public var differences: NamedDifferences {

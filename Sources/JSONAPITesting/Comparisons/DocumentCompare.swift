@@ -7,11 +7,11 @@
 
 import JSONAPI
 
-public struct DocumentComparison: Equatable, PropertyComparable {
-    public let apiDescription: Comparison
+public struct DocumentComparison: Equatable, PropertyComparison {
+    public let apiDescription: BasicComparison
     public let body: BodyComparison
 
-    init(apiDescription: Comparison, body: BodyComparison) {
+    init(apiDescription: BasicComparison, body: BodyComparison) {
         self.apiDescription = apiDescription
         self.body = body
     }
@@ -33,7 +33,7 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     case differentErrors(ErrorComparison)
     case differentData(DocumentDataComparison)
 
-    public typealias ErrorComparison = [Comparison]
+    public typealias ErrorComparison = [BasicComparison]
 
     static func compare<E: JSONAPIError, M: JSONAPI.Meta, L: JSONAPI.Links>(errors errors1: [E], _ meta1: M?, _ links1: L?, with errors2: [E], _ meta2: M?, _ links2: L?) -> ErrorComparison {
         return errors1.compare(
@@ -48,9 +48,9 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
                     String(describing: error2)
                 )
             }
-        ).map(Comparison.init) + [
-            Comparison(meta1, meta2),
-            Comparison(links1, links2)
+        ).map(BasicComparison.init) + [
+            BasicComparison(meta1, meta2),
+            BasicComparison(links1, links2)
         ]
     }
 
@@ -79,10 +79,10 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     public var rawValue: String { description }
 }
 
-extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _OptionalResourceBody {
+extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: TestableResourceBody {
     public func compare(to other: Self) -> DocumentComparison {
         return DocumentComparison(
-            apiDescription: Comparison(
+            apiDescription: BasicComparison(
                 String(describing: apiDescription),
                 String(describing: other.apiDescription)
             ),
@@ -91,7 +91,7 @@ extension EncodableJSONAPIDocument where Body: Equatable, PrimaryResourceBody: _
     }
 }
 
-extension DocumentBody where Self: Equatable, PrimaryResourceBody: _OptionalResourceBody {
+extension DocumentBody where Self: Equatable, PrimaryResourceBody: TestableResourceBody {
     public func compare(to other: Self) -> BodyComparison {
 
         // rule out case where they are the same

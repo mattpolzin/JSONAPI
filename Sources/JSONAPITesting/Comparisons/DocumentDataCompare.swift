@@ -7,13 +7,13 @@
 
 import JSONAPI
 
-public struct DocumentDataComparison: Equatable, PropertyComparable {
+public struct DocumentDataComparison: Equatable, PropertyComparison {
     public let primary: PrimaryResourceBodyComparison
     public let includes: IncludesComparison
-    public let meta: Comparison
-    public let links: Comparison
+    public let meta: BasicComparison
+    public let links: BasicComparison
 
-    init(primary: PrimaryResourceBodyComparison, includes: IncludesComparison, meta: Comparison, links: Comparison) {
+    init(primary: PrimaryResourceBodyComparison, includes: IncludesComparison, meta: BasicComparison, links: BasicComparison) {
         self.primary = primary
         self.includes = includes
         self.meta = meta
@@ -33,20 +33,20 @@ public struct DocumentDataComparison: Equatable, PropertyComparable {
     }
 }
 
-extension DocumentBodyData where PrimaryResourceBody: _OptionalResourceBody {
+extension DocumentBodyData where PrimaryResourceBody: TestableResourceBody {
     public func compare(to other: Self) -> DocumentDataComparison {
         return .init(
             primary: primary.compare(to: other.primary),
             includes: includes.compare(to: other.includes),
-            meta: Comparison(meta, other.meta),
-            links: Comparison(links, other.links)
+            meta: BasicComparison(meta, other.meta),
+            links: BasicComparison(links, other.links)
         )
     }
 }
 
 public enum PrimaryResourceBodyComparison: Equatable, CustomStringConvertible {
     case oneOrMore(ManyResourceObjectComparison)
-    case optionalSingle(Comparison)
+    case optionalSingle(BasicComparison)
 
     public var isSame: Bool {
         switch self {
@@ -69,7 +69,7 @@ public enum PrimaryResourceBodyComparison: Equatable, CustomStringConvertible {
     public var rawValue: String { return description }
 }
 
-public struct ManyResourceObjectComparison: Equatable, PropertyComparable {
+public struct ManyResourceObjectComparison: Equatable, PropertyComparison {
     public let comparisons: [ArrayElementComparison]
 
     public init(_ comparisons: [ArrayElementComparison]) {
@@ -86,16 +86,16 @@ public struct ManyResourceObjectComparison: Equatable, PropertyComparable {
     }
 }
 
-extension _OptionalResourceBody where WrappedPrimaryResourceType: ResourceObjectType {
+extension TestableResourceBody where TestablePrimaryResourceType: ResourceObjectType {
     public func compare(to other: Self) -> PrimaryResourceBodyComparison {
-        guard let one = optionalResourceObject,
-            let two = other.optionalResourceObject else {
+        guard let one = testableResourceObject,
+            let two = other.testableResourceObject else {
 
                 func nilOrName<T>(_ resObj: [T]?) -> String {
                     resObj.map { _ in String(describing: T.self) } ?? "nil"
                 }
 
-                return .optionalSingle(Comparison(nilOrName(optionalResourceObject), nilOrName(other.optionalResourceObject)))
+                return .optionalSingle(BasicComparison(nilOrName(testableResourceObject), nilOrName(other.testableResourceObject)))
         }
 
         return .oneOrMore(.init(one.compare(to: two, using: { r1, r2 in
@@ -120,18 +120,18 @@ extension _OptionalResourceBody where WrappedPrimaryResourceType: ResourceObject
     }
 }
 
-public protocol _OptionalResourceBody {
-    associatedtype WrappedPrimaryResourceType: ResourceObjectType
-    var optionalResourceObject: [WrappedPrimaryResourceType]? { get }
+public protocol TestableResourceBody {
+    associatedtype TestablePrimaryResourceType: ResourceObjectType
+    var testableResourceObject: [TestablePrimaryResourceType]? { get }
 }
 
-public protocol _OptionalResourceObjectType {
+public protocol OptionalResourceObjectType {
     associatedtype Wrapped: ResourceObjectType
 
     var maybeValue: Wrapped? { get }
 }
 
-extension Optional: _OptionalResourceObjectType where Wrapped: ResourceObjectType {
+extension Optional: OptionalResourceObjectType where Wrapped: ResourceObjectType {
     public var maybeValue: Wrapped? {
         switch self {
         case .none:
@@ -142,16 +142,16 @@ extension Optional: _OptionalResourceObjectType where Wrapped: ResourceObjectTyp
     }
 }
 
-extension ResourceObject: _OptionalResourceObjectType {
+extension ResourceObject: OptionalResourceObjectType {
     public var maybeValue: Self? { self }
 }
 
-extension ManyResourceBody: _OptionalResourceBody where PrimaryResource: ResourceObjectType {
-    public var optionalResourceObject: [PrimaryResource]? { values }
+extension ManyResourceBody: TestableResourceBody where PrimaryResource: ResourceObjectType {
+    public var testableResourceObject: [PrimaryResource]? { values }
 }
 
-extension SingleResourceBody: _OptionalResourceBody where PrimaryResource: _OptionalResourceObjectType {
-    public typealias WrappedPrimaryResourceType = PrimaryResource.Wrapped
+extension SingleResourceBody: TestableResourceBody where PrimaryResource: OptionalResourceObjectType {
+    public typealias TestablePrimaryResourceType = PrimaryResource.Wrapped
 
-    public var optionalResourceObject: [WrappedPrimaryResourceType]? { value.maybeValue.map { [$0] } }
+    public var testableResourceObject: [TestablePrimaryResourceType]? { value.maybeValue.map { [$0] } }
 }

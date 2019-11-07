@@ -8,7 +8,7 @@
 import JSONAPI
 import Poly
 
-public struct IncludesComparison: Equatable, PropertyComparable {
+public struct IncludesComparison: Equatable, PropertyComparison {
     public let comparisons: [ArrayElementComparison]
 
     public init(_ comparisons: [ArrayElementComparison]) {

@@ -14,7 +14,7 @@ public enum ArrayElementComparison: Equatable, CustomStringConvertible {
     case differentValues(String, String)
     case prebuilt(String)
 
-    public init(sameTypeComparison: Comparison) {
+    public init(sameTypeComparison: BasicComparison) {
         switch sameTypeComparison {
         case .same:
             self = .same

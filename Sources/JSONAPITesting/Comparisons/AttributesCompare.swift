@@ -8,11 +8,11 @@
 import JSONAPI
 
 extension Attributes {
-    public func compare(to other: Self) -> [String: Comparison] {
+    public func compare(to other: Self) -> [String: BasicComparison] {
         let mirror1 = Mirror(reflecting: self)
         let mirror2 = Mirror(reflecting: other)
 
-        var comparisons = [String: Comparison]()
+        var comparisons = [String: BasicComparison]()
 
         for child in mirror1.children {
             guard let childLabel = child.label else { continue }

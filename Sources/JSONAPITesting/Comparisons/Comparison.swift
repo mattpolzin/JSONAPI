@@ -5,13 +5,13 @@
 //  Created by Mathew Polzin on 11/3/19.
 //
 
-public protocol Comparable: CustomStringConvertible {
+public protocol Comparison: CustomStringConvertible {
     var rawValue: String { get }
 
     var isSame: Bool { get }
 }
 
-public enum Comparison: Comparable, Equatable {
+public enum BasicComparison: Comparison, Equatable {
     case same
     case different(String, String)
     case prebuilt(String)
@@ -56,11 +56,11 @@ public enum Comparison: Comparable, Equatable {
 
 public typealias NamedDifferences = [String: String]
 
-public protocol PropertyComparable: Comparable {
+public protocol PropertyComparison: Comparison {
     var differences: NamedDifferences { get }
 }
 
-extension PropertyComparable {
+extension PropertyComparison {
     public var description: String {
         return differences
             .map { "(\($0): \($1))" }
