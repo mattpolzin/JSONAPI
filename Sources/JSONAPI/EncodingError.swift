@@ -6,9 +6,9 @@
 //
 
 public enum JSONAPIEncodingError: Swift.Error {
-    case typeMismatch(expected: String, found: String)
-    case illegalEncoding(String)
-    case illegalDecoding(String)
-    case missingOrMalformedMetadata
-    case missingOrMalformedLinks
+    case typeMismatch(expected: String, found: String, path: [CodingKey])
+    case illegalEncoding(String, path: [CodingKey])
+    case illegalDecoding(String, path: [CodingKey])
+    case missingOrMalformedMetadata(path: [CodingKey])
+    case missingOrMalformedLinks(path: [CodingKey])
 }

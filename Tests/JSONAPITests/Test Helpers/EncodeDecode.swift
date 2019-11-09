@@ -8,8 +8,10 @@
 import Foundation
 import XCTest
 
+let testDecoder = JSONDecoder()
+
 func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
-	return try! JSONDecoder().decode(T.self, from: data)
+	return try! testDecoder.decode(T.self, from: data)
 }
 
 func encoded<T: Encodable>(value: T) -> Data {

@@ -5,11 +5,19 @@
 //  Created by Mathew Polzin on 11/13/18.
 //
 
-public protocol AttributeType: Codable {
+public protocol AbstractAttributeType {
+    var rawValueType: Any.Type { get }
+}
+
+public protocol AttributeType: Codable, AbstractAttributeType {
     associatedtype RawValue: Codable
     associatedtype ValueType
 
     var value: ValueType { get }
+}
+
+extension AttributeType {
+    public var rawValueType: Any.Type { return RawValue.self }
 }
 
 // MARK: TransformedAttribute

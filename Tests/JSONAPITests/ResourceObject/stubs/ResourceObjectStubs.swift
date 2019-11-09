@@ -393,6 +393,59 @@ let entity_all_relationships_optional_and_omitted = """
 }
 """.data(using: .utf8)!
 
+let entity_nonNullable_relationship_is_null = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": null
+    }
+}
+""".data(using: .utf8)!
+
+let entity_nonNullable_relationship_is_null2 = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": null
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_required_relationship_is_omitted = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+    }
+}
+""".data(using: .utf8)!
+
+let entity_relationship_is_wrong_type = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "123",
+                "type": "not_the_same"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_relationships_entirely_missing = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+}
+""".data(using: .utf8)!
+
 let entity_unidentified = """
 {
 	"type": "unidentified_test_entities",

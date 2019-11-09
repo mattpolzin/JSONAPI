@@ -170,8 +170,16 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         // succeeds and then attempt to coerce nil to a Identifier
         // type at which point we can store nil in `id`.
         let anyNil: Any? = nil
-        if try container.decodeNil(forKey: .data),
-            let val = anyNil as? Identifiable.Identifier {
+        if try container.decodeNil(forKey: .data) {
+            guard let val = anyNil as? Identifiable.Identifier else {
+                throw DecodingError.valueNotFound(
+                    Self.self,
+                    DecodingError.Context(
+                        codingPath: decoder.codingPath,
+                        debugDescription: "Expected non-null relationship data."
+                    )
+                )
+            }
             id = val
             return
         }
@@ -181,7 +189,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         let type = try identifier.decode(String.self, forKey: .entityType)
 
         guard type == Identifiable.jsonType else {
-            throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.jsonType, found: type)
+            throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.jsonType, found: type, path: decoder.codingPath)
         }
 
         id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
@@ -239,7 +247,7 @@ extension ToManyRelationship: Codable {
             let type = try identifier.decode(String.self, forKey: .entityType)
 
             guard type == Relatable.jsonType else {
-                throw JSONAPIEncodingError.typeMismatch(expected: Relatable.jsonType, found: type)
+                throw JSONAPIEncodingError.typeMismatch(expected: Relatable.jsonType, found: type, path: decoder.codingPath)
             }
 
             newIds.append(Relatable.Identifier(rawValue: try identifier.decode(Relatable.Identifier.RawType.self, forKey: .id)))

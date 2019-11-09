@@ -22,11 +22,11 @@ public typealias CodablePolyWrapped = EncodablePolyWrapped & Decodable
 
 extension Poly0: CodablePrimaryResource {
     public init(from decoder: Decoder) throws {
-        throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.")
+        throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.", path: decoder.codingPath)
     }
 
     public func encode(to encoder: Encoder) throws {
-        throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.")
+        throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.", path: encoder.codingPath)
     }
 }
 

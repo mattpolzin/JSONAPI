@@ -397,10 +397,10 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
         // TODO come back to this and make robust
 
         guard let metaVal = meta else {
-            throw JSONAPIEncodingError.missingOrMalformedMetadata
+            throw JSONAPIEncodingError.missingOrMalformedMetadata(path: decoder.codingPath)
         }
         guard let linksVal = links else {
-            throw JSONAPIEncodingError.missingOrMalformedLinks
+            throw JSONAPIEncodingError.missingOrMalformedLinks(path: decoder.codingPath)
         }
 
         body = .data(.init(primary: data, includes: maybeIncludes ?? Includes<Include>.none, meta: metaVal, links: linksVal))
