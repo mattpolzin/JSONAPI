@@ -189,7 +189,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         let type = try identifier.decode(String.self, forKey: .entityType)
 
         guard type == Identifiable.jsonType else {
-            throw JSONAPIEncodingError.typeMismatch(expected: Identifiable.jsonType, found: type, path: decoder.codingPath)
+            throw JSONAPICodingError.typeMismatch(expected: Identifiable.jsonType, found: type, path: decoder.codingPath)
         }
 
         id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
@@ -247,7 +247,7 @@ extension ToManyRelationship: Codable {
             let type = try identifier.decode(String.self, forKey: .entityType)
 
             guard type == Relatable.jsonType else {
-                throw JSONAPIEncodingError.typeMismatch(expected: Relatable.jsonType, found: type, path: decoder.codingPath)
+                throw JSONAPICodingError.typeMismatch(expected: Relatable.jsonType, found: type, path: decoder.codingPath)
             }
 
             newIds.append(Relatable.Identifier(rawValue: try identifier.decode(Relatable.Identifier.RawType.self, forKey: .id)))

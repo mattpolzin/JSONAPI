@@ -32,7 +32,7 @@ public struct Includes<I: Include>: Encodable, Equatable {
         var container = encoder.unkeyedContainer()
 
         guard I.self != NoIncludes.self else {
-            throw JSONAPIEncodingError.illegalEncoding("Attempting to encode Include0, which should be represented by the absense of an 'included' entry altogether.", path: encoder.codingPath)
+            throw JSONAPICodingError.illegalEncoding("Attempting to encode Include0, which should be represented by the absense of an 'included' entry altogether.", path: encoder.codingPath)
         }
 
         for value in values {

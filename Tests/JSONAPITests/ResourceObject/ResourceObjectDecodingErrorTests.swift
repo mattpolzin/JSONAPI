@@ -23,6 +23,11 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                     location: .relationships
                 )
             )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "relationships object is required and missing."
+            )
         }
     }
 
@@ -38,6 +43,11 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                     cause: .keyNotFound,
                     location: .relationships
                 )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship is required and missing."
             )
         }
     }
@@ -55,6 +65,11 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                     location: .relationships
                 )
             )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship is not nullable but null."
+            )
         }
     }
 
@@ -70,6 +85,11 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                     cause: .valueNotFound,
                     location: .relationships
                 )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship is not nullable but null."
             )
         }
     }
@@ -88,13 +108,146 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                     location: .relationships
                 )
             )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                #"'required' relationship is of JSON:API type "not_the_same" but it was expected to be "thirteenth_test_entities""#
+            )
         }
+    }
+
+    func test_twoOneVsToMany_relationship() {
+        // TODO: write test
     }
 }
 
 // MARK: - Attributes
 extension ResourceObjectDecodingErrorTests {
-    // TODO: write tests
+    func test_missingAttributesObject() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_attributes_entirely_missing
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: ResourceObjectDecodingError.entireObject,
+                    cause: .keyNotFound,
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "attributes object is required and missing."
+            )
+        }
+    }
+
+    func test_required_attribute() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_required_attribute_is_omitted
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .keyNotFound,
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' attribute is required and missing."
+            )
+        }
+    }
+
+    func test_NonNullable_attribute() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_nonNullable_attribute_is_null
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .valueNotFound,
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' attribute is not nullable but null."
+            )
+        }
+    }
+
+    func test_oneTypeVsAnother_attribute() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_attribute_is_wrong_type
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .typeMismatch(expectedTypeName: String(describing: String.self)),
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' attribute is not a String as expected."
+            )
+        }
+    }
+
+    func test_oneTypeVsAnother_attribute2() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_attribute_is_wrong_type2
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "other",
+                    cause: .typeMismatch(expectedTypeName: String(describing: Int.self)),
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'other' attribute is not a Int as expected."
+            )
+        }
+    }
+
+    func test_oneTypeVsAnother_attribute3() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_attribute_is_wrong_type3
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "yetAnother",
+                    cause: .typeMismatch(expectedTypeName: String(describing: Bool.self)),
+                    location: .attributes
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'yetAnother' attribute is not a Bool as expected."
+            )
+        }
+    }
 }
 
 // MARK: - Test Types
@@ -111,4 +264,19 @@ extension ResourceObjectDecodingErrorTests {
     }
 
     typealias TestEntity = BasicEntity<TestEntityType>
+
+    enum TestEntityType2: ResourceObjectDescription {
+        public static var jsonType: String { return "thirteenth_test_entities" }
+
+        public struct Attributes: JSONAPI.Attributes {
+
+            let required: Attribute<String>
+            let other: Attribute<Int>?
+            let yetAnother: Attribute<Bool?>?
+        }
+
+        typealias Relationships = NoRelationships
+    }
+
+    typealias TestEntity2 = BasicEntity<TestEntityType2>
 }

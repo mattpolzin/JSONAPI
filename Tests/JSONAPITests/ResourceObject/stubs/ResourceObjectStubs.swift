@@ -446,6 +446,64 @@ let entity_relationships_entirely_missing = """
 }
 """.data(using: .utf8)!
 
+let entity_required_attribute_is_omitted = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "attributes": {
+    }
+}
+""".data(using: .utf8)!
+
+let entity_nonNullable_attribute_is_null = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "attributes": {
+        "required": null
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "attributes": {
+        "required": 10
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type2 = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "other": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type3 = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "yetAnother": 101
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attributes_entirely_missing = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities"
+}
+""".data(using: .utf8)!
+
 let entity_unidentified = """
 {
 	"type": "unidentified_test_entities",

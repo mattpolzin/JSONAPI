@@ -414,21 +414,25 @@ public extension ResourceObject {
         let type = try container.decode(String.self, forKey: .type)
 
         guard ResourceObject.jsonType == type else {
-            throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type, path: decoder.codingPath)
+            throw JSONAPICodingError.typeMismatch(expected: Description.jsonType, found: type, path: decoder.codingPath)
         }
 
         let maybeUnidentified = Unidentified() as? EntityRawIdType
         id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
 
         do {
-            attributes = try (NoAttributes() as? Description.Attributes) ??
-                container.decode(Description.Attributes.self, forKey: .attributes)
+            attributes = try (NoAttributes() as? Description.Attributes)
+                ?? container.decodeIfPresent(Description.Attributes.self, forKey: .attributes)
+                ?? Description.Attributes(from: EmptyObjectDecoder())
         } catch let decodingError as DecodingError {
             throw ResourceObjectDecodingError(decodingError)
                 ?? decodingError
-        } catch let decodingError as JSONAPIEncodingError {
-            throw ResourceObjectDecodingError(decodingError)
-                ?? decodingError
+        } catch _ as EmptyObjectDecodingError {
+            throw ResourceObjectDecodingError(
+                subjectName: ResourceObjectDecodingError.entireObject,
+                cause: .keyNotFound,
+                location: .attributes
+            )
         }
 
         do {
@@ -438,7 +442,7 @@ public extension ResourceObject {
         } catch let decodingError as DecodingError {
             throw ResourceObjectDecodingError(decodingError)
                 ?? decodingError
-        } catch let decodingError as JSONAPIEncodingError {
+        } catch let decodingError as JSONAPICodingError {
             throw ResourceObjectDecodingError(decodingError)
                 ?? decodingError
         } catch _ as EmptyObjectDecodingError {
@@ -469,21 +473,23 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         case jsonTypeMismatch(expectedType: String, foundType: String)
     }
 
-    public enum Location: Equatable {
+    public enum Location: String, Equatable {
         case attributes
         case relationships
+
+        var singular: String {
+            switch self {
+            case .attributes: return "attribute"
+            case .relationships: return "relationship"
+            }
+        }
     }
 
     init?(_ decodingError: DecodingError) {
         switch decodingError {
         case .typeMismatch(let expectedType, let ctx):
             (location, subjectName) = Self.context(ctx)
-            let typeString: String
-            if let attrType = expectedType as? AbstractAttributeType {
-                typeString = String(describing: attrType.rawValueType)
-            } else {
-                typeString = String(describing: expectedType)
-            }
+            let typeString = String(describing: expectedType)
             cause = .typeMismatch(expectedTypeName: typeString)
         case .valueNotFound(_, let ctx):
             (location, subjectName) = Self.context(ctx)
@@ -497,7 +503,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
-    init?(_ jsonAPIError: JSONAPIEncodingError) {
+    init?(_ jsonAPIError: JSONAPICodingError) {
         switch jsonAPIError {
         case .typeMismatch(expected: let expected, found: let found, path: let path):
             (location, subjectName) = Self.context(path: path)
@@ -523,5 +529,23 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
             path.contains { $0.stringValue == "attributes" } ? .attributes : .relationships,
             name: path.last?.stringValue ?? "unnamed"
         )
+    }
+}
+
+extension ResourceObjectDecodingError: CustomStringConvertible {
+    public var description: String {
+        switch cause {
+        case .keyNotFound:
+            if subjectName == ResourceObjectDecodingError.entireObject {
+                return "\(location) object is required and missing."
+            }
+            return "'\(subjectName)' \(location.singular) is required and missing."
+        case .valueNotFound:
+            return "'\(subjectName)' \(location.singular) is not nullable but null."
+        case .typeMismatch(expectedTypeName: let expected):
+            return "'\(subjectName)' \(location.singular) is not a \(expected) as expected."
+        case .jsonTypeMismatch(expectedType: let expected, foundType: let found):
+            return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found)\" but it was expected to be \"\(expected)\""
+        }
     }
 }
