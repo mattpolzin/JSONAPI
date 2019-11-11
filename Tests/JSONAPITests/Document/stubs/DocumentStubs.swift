@@ -37,6 +37,17 @@ let single_document_no_includes = """
 }
 """.data(using: .utf8)!
 
+let single_document_no_includes_missing_relationship = """
+{
+    "data": {
+        "id": "1",
+        "type": "articles",
+        "relationships": {
+        }
+    }
+}
+""".data(using: .utf8)!
+
 let single_document_no_includes_with_api_description = """
 {
 	"data": {
@@ -247,6 +258,37 @@ let single_document_some_includes = """
 }
 """.data(using: .utf8)!
 
+let single_document_some_includes_wrong_type = """
+{
+    "data": {
+        "id": "1",
+        "type": "articles",
+        "relationships": {
+            "author": {
+                "data": {
+                    "type": "authors",
+                    "id": "33"
+                }
+            }
+        }
+    },
+    "included": [
+        {
+            "id": "30",
+            "type": "authors"
+        },
+        {
+            "id": "31",
+            "type": "authors"
+        },
+        {
+            "id": "33",
+            "type": "not_an_author"
+        }
+    ]
+}
+""".data(using: .utf8)!
+
 let single_document_some_includes_with_api_description = """
 {
 	"data": {
@@ -449,6 +491,49 @@ let many_document_no_includes = """
 			}
 		}
 	]
+}
+""".data(using: .utf8)!
+
+let many_document_no_includes_data_is_null = """
+{
+    "data": null
+}
+""".data(using: .utf8)!
+
+let many_document_no_includes_missing_relationship = """
+{
+    "data": [
+        {
+            "id": "1",
+            "type": "articles",
+            "relationships": {
+                "author": {
+                    "data": {
+                        "type": "authors",
+                        "id": "33"
+                    }
+                }
+            }
+        },
+        {
+            "id": "2",
+            "type": "articles",
+            "relationships": {
+            }
+        },
+        {
+            "id": "3",
+            "type": "articles",
+            "relationships": {
+                "author": {
+                    "data": {
+                        "type": "authors",
+                        "id": "11"
+                    }
+                }
+            }
+        }
+    ]
 }
 """.data(using: .utf8)!
 

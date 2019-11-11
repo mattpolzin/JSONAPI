@@ -96,10 +96,13 @@ extension ResourceObjectProxy {
     public static var jsonType: String { return Description.jsonType }
 }
 
+/// A marker protocol.
+public protocol AbstractResourceObject {}
+
 /// ResourceObjectType is the protocol that ResourceObject conforms to. This
 /// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
-public protocol ResourceObjectType: ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
+public protocol ResourceObjectType: AbstractResourceObject, ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
     associatedtype Meta: JSONAPI.Meta
     associatedtype Links: JSONAPI.Links
 
@@ -414,18 +417,47 @@ public extension ResourceObject {
         let type = try container.decode(String.self, forKey: .type)
 
         guard ResourceObject.jsonType == type else {
-            throw JSONAPIEncodingError.typeMismatch(expected: Description.jsonType, found: type)
+            throw ResourceObjectDecodingError(
+                expectedJSONAPIType: ResourceObject.jsonType,
+                found: type
+            )
         }
 
         let maybeUnidentified = Unidentified() as? EntityRawIdType
         id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
 
-        attributes = try (NoAttributes() as? Description.Attributes) ??
-            container.decode(Description.Attributes.self, forKey: .attributes)
+        do {
+            attributes = try (NoAttributes() as? Description.Attributes)
+                ?? container.decodeIfPresent(Description.Attributes.self, forKey: .attributes)
+                ?? Description.Attributes(from: EmptyObjectDecoder())
+        } catch let decodingError as DecodingError {
+            throw ResourceObjectDecodingError(decodingError)
+                ?? decodingError
+        } catch _ as EmptyObjectDecodingError {
+            throw ResourceObjectDecodingError(
+                subjectName: ResourceObjectDecodingError.entireObject,
+                cause: .keyNotFound,
+                location: .attributes
+            )
+        }
 
-        relationships = try (NoRelationships() as? Description.Relationships)
-            ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
-            ?? Description.Relationships(from: EmptyObjectDecoder())
+        do {
+            relationships = try (NoRelationships() as? Description.Relationships)
+                ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
+                ?? Description.Relationships(from: EmptyObjectDecoder())
+        } catch let decodingError as DecodingError {
+            throw ResourceObjectDecodingError(decodingError)
+                ?? decodingError
+        } catch let decodingError as JSONAPICodingError {
+            throw ResourceObjectDecodingError(decodingError)
+                ?? decodingError
+        } catch _ as EmptyObjectDecodingError {
+            throw ResourceObjectDecodingError(
+                subjectName: ResourceObjectDecodingError.entireObject,
+                cause: .keyNotFound,
+                location: .relationships
+            )
+        }
 
         meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
 

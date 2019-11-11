@@ -32,7 +32,7 @@ public struct Includes<I: Include>: Encodable, Equatable {
         var container = encoder.unkeyedContainer()
 
         guard I.self != NoIncludes.self else {
-            throw JSONAPIEncodingError.illegalEncoding("Attempting to encode Include0, which should be represented by the absense of an 'included' entry altogether.")
+            throw JSONAPICodingError.illegalEncoding("Attempting to encode Include0, which should be represented by the absense of an 'included' entry altogether.", path: encoder.codingPath)
         }
 
         for value in values {
@@ -56,8 +56,35 @@ extension Includes: Decodable where I: Decodable {
         }
 
         var valueAggregator = [I]()
+        var idx = 0
         while !container.isAtEnd {
-            valueAggregator.append(try container.decode(I.self))
+            do {
+                valueAggregator.append(try container.decode(I.self))
+                idx = idx + 1
+            } catch let error as PolyDecodeNoTypesMatchedError {
+                let errors: [ResourceObjectDecodingError] = error
+                    .individualTypeFailures
+                    .compactMap { decodingError in
+                        switch decodingError.error {
+                        case .typeMismatch(_, let context),
+                             .valueNotFound(_, let context),
+                             .keyNotFound(_, let context),
+                             .dataCorrupted(let context):
+                            return context.underlyingError as? ResourceObjectDecodingError
+                        @unknown default:
+                            return nil
+                        }
+                }
+                guard errors.count == error.individualTypeFailures.count else {
+                    throw IncludesDecodingError(error: error, idx: idx)
+                }
+                throw IncludesDecodingError(
+                    error: IncludeDecodingError(failures: errors),
+                    idx: idx
+                )
+            } catch let error {
+                throw IncludesDecodingError(error: error, idx: idx)
+            }
         }
 
         values = valueAggregator
@@ -175,5 +202,34 @@ public typealias Include11 = Poly11
 extension Includes where I: _Poly11 {
     public subscript(_ lookup: I.K.Type) -> [I.K] {
         return values.compactMap { $0.k }
+    }
+}
+
+// MARK: - DecodingError
+public struct IncludesDecodingError: Swift.Error, Equatable {
+    public let error: Swift.Error
+    public let idx: Int
+
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        return lhs.idx == rhs.idx
+            && String(describing: lhs) == String(describing: rhs)
+    }
+}
+
+extension IncludesDecodingError: CustomStringConvertible {
+    public var description: String {
+        return "Include \(idx + 1) failed to parse: \(error)"
+    }
+}
+
+public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConvertible {
+    public let failures: [ResourceObjectDecodingError]
+
+    public var description: String {
+        return failures
+            .enumerated()
+            .map {
+                "\nCould not have been Include Type \($0.offset + 1) because:\n\($0.element)"
+        }.joined(separator: "\n")
     }
 }

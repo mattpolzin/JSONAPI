@@ -45,7 +45,10 @@ public protocol OptionalId: Codable {
     init(rawValue: RawType)
 }
 
-public protocol IdType: OptionalId, CustomStringConvertible, Hashable where RawType: RawIdType {}
+/// marker protocol
+public protocol AbstractId {}
+
+public protocol IdType: AbstractId, OptionalId, CustomStringConvertible, Hashable where RawType: RawIdType {}
 
 extension Optional: MaybeRawId where Wrapped: Codable & Equatable {}
 extension Optional: OptionalId where Wrapped: IdType {
@@ -94,7 +97,7 @@ public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equa
     }
 }
 
-extension Id: Hashable, CustomStringConvertible, IdType where RawType: RawIdType {
+extension Id: Hashable, CustomStringConvertible, AbstractId, IdType where RawType: RawIdType {
     public static func id(from rawValue: RawType) -> Id<RawType, IdentifiableType> {
         return Id(rawValue: rawValue)
     }
