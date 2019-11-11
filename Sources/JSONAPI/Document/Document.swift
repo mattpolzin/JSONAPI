@@ -349,8 +349,8 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: RootCodingKeys.self)
 
-        if let noData = NoAPIDescription() as? APIDescription {
-            apiDescription = noData
+        if let noAPIDescription = NoAPIDescription() as? APIDescription {
+            apiDescription = noAPIDescription
         } else {
             apiDescription = try container.decode(APIDescription.self, forKey: .jsonapi)
         }
@@ -389,10 +389,24 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
         if let noData = NoResourceBody() as? PrimaryResourceBody {
             data = noData
         } else {
-            data = try container.decode(PrimaryResourceBody.self, forKey: .data)
+            do {
+                data = try container.decode(PrimaryResourceBody.self, forKey: .data)
+            } catch let error as ResourceObjectDecodingError {
+                throw DocumentDecodingError(error)
+            } catch let error as ManyResourceBodyDecodingError {
+                throw DocumentDecodingError(error)
+            } catch let error as DecodingError {
+                throw DocumentDecodingError(error)
+                    ?? error
+            }
         }
 
-        let maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
+        let maybeIncludes: Includes<Include>?
+        do {
+            maybeIncludes = try container.decodeIfPresent(Includes<Include>.self, forKey: .included)
+        } catch let error as IncludesDecodingError {
+            throw DocumentDecodingError(error)
+        }
 
         // TODO come back to this and make robust
 
@@ -569,7 +583,7 @@ extension Document.ErrorDocument: Decodable, CodableJSONAPIDocument
         document = try container.decode(Document.self)
 
         guard document.body.isError else {
-            throw JSONAPIDocumentDecodingError.foundSuccessDocumentWhenExpectingError
+            throw DocumentDecodingError.foundSuccessDocumentWhenExpectingError
         }
     }
 }
@@ -582,7 +596,7 @@ extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
         document = try container.decode(Document.self)
 
         guard !document.body.isError else {
-            throw JSONAPIDocumentDecodingError.foundErrorDocumentWhenExpectingSuccess
+            throw DocumentDecodingError.foundErrorDocumentWhenExpectingSuccess
         }
     }
 }

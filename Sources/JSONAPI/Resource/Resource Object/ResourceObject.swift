@@ -96,10 +96,13 @@ extension ResourceObjectProxy {
     public static var jsonType: String { return Description.jsonType }
 }
 
+/// A marker protocol.
+public protocol AbstractResourceObject {}
+
 /// ResourceObjectType is the protocol that ResourceObject conforms to. This
 /// protocol lets other types accept any ResourceObject as a generic
 /// specialization.
-public protocol ResourceObjectType: ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
+public protocol ResourceObjectType: AbstractResourceObject, ResourceObjectProxy, CodablePrimaryResource where Description: ResourceObjectDescription {
     associatedtype Meta: JSONAPI.Meta
     associatedtype Links: JSONAPI.Links
 
@@ -414,7 +417,10 @@ public extension ResourceObject {
         let type = try container.decode(String.self, forKey: .type)
 
         guard ResourceObject.jsonType == type else {
-            throw JSONAPICodingError.typeMismatch(expected: Description.jsonType, found: type, path: decoder.codingPath)
+            throw ResourceObjectDecodingError(
+                expectedJSONAPIType: ResourceObject.jsonType,
+                found: type
+            )
         }
 
         let maybeUnidentified = Unidentified() as? EntityRawIdType

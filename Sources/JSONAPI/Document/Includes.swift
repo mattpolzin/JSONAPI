@@ -56,8 +56,14 @@ extension Includes: Decodable where I: Decodable {
         }
 
         var valueAggregator = [I]()
+        var idx = 0
         while !container.isAtEnd {
-            valueAggregator.append(try container.decode(I.self))
+            do {
+                valueAggregator.append(try container.decode(I.self))
+                idx = idx + 1
+            } catch let error {
+                throw IncludesDecodingError(error: error, idx: idx)
+            }
         }
 
         values = valueAggregator
@@ -175,5 +181,22 @@ public typealias Include11 = Poly11
 extension Includes where I: _Poly11 {
     public subscript(_ lookup: I.K.Type) -> [I.K] {
         return values.compactMap { $0.k }
+    }
+}
+
+// MARK: - DecodingError
+public struct IncludesDecodingError: Swift.Error, Equatable {
+    public let error: Swift.Error
+    public let idx: Int
+
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        return lhs.idx == rhs.idx
+            && String(describing: lhs) == String(describing: rhs)
+    }
+}
+
+extension IncludesDecodingError: CustomStringConvertible {
+    public var description: String {
+        return "Include \(idx + 1) failed to parse: \(error)"
     }
 }

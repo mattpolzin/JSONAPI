@@ -125,8 +125,17 @@ extension ManyResourceBody: Decodable, CodableResourceBody where PrimaryResource
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         var valueAggregator = [PrimaryResource]()
+        var idx = 0
         while !container.isAtEnd {
-            valueAggregator.append(try container.decode(PrimaryResource.self))
+            do {
+                valueAggregator.append(try container.decode(PrimaryResource.self))
+            } catch let error as ResourceObjectDecodingError {
+                throw ManyResourceBodyDecodingError(
+                    error: error,
+                    idx: idx
+                )
+            }
+            idx = idx + 1
         }
         values = valueAggregator
     }
@@ -144,4 +153,10 @@ extension ManyResourceBody: CustomStringConvertible {
     public var description: String {
         return "PrimaryResourceBody(\(String(describing: values)))"
     }
+}
+
+// MARK: - DecodingError
+public struct ManyResourceBodyDecodingError: Swift.Error, Equatable {
+    public let error: ResourceObjectDecodingError
+    public let idx: Int
 }

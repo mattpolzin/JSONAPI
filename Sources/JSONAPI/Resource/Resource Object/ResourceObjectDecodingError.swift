@@ -23,11 +23,13 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
     public enum Location: String, Equatable {
         case attributes
         case relationships
+        case type
 
         var singular: String {
             switch self {
             case .attributes: return "attribute"
             case .relationships: return "relationship"
+            case .type: return "type"
             }
         }
     }
@@ -63,6 +65,12 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
+    init(expectedJSONAPIType: String, found: String) {
+        location = .type
+        subjectName = "self"
+        cause = .jsonTypeMismatch(expectedType: expectedJSONAPIType, foundType: found)
+    }
+
     init(subjectName: String, cause: Cause, location: Location) {
         self.subjectName = subjectName
         self.cause = cause
@@ -75,8 +83,17 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
     }
 
     static func context(path: [CodingKey]) -> (Location, name: String) {
+        let location: Location
+        if path.contains(where: { $0.stringValue == "attributes" }) {
+            location = .attributes
+        } else if path.contains(where: { $0.stringValue == "relationships" }) {
+            location = .relationships
+        } else {
+            location = .type
+        }
+
         return (
-            path.contains { $0.stringValue == "attributes" } ? .attributes : .relationships,
+            location,
             name: path.last?.stringValue ?? "unnamed"
         )
     }
@@ -94,6 +111,8 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
             return "'\(subjectName)' \(location.singular) is not nullable but null."
         case .typeMismatch(expectedTypeName: let expected):
             return "'\(subjectName)' \(location.singular) is not a \(expected) as expected."
+        case .jsonTypeMismatch(expectedType: let expected, foundType: let found) where location == .type:
+            return "found JSON:API type \"\(found)\" but expected \"\(expected)\""
         case .jsonTypeMismatch(expectedType: let expected, foundType: let found):
             return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found)\" but it was expected to be \"\(expected)\""
         case .quantityMismatch(expected: let expected):

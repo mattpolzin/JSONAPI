@@ -1,11 +1,75 @@
 //
-//  DocumentDecodingErro.swift
+//  DocumentDecodingError.swift
 //  
 //
 //  Created by Mathew Polzin on 10/20/19.
 //
 
-public enum JSONAPIDocumentDecodingError: Swift.Error {
+public enum DocumentDecodingError: Swift.Error, Equatable {
+    case primaryResource(error: ResourceObjectDecodingError, idx: Int?)
+    case primaryResourceMissing
+    case primaryResourcesMissing
+
+    case includes(error: IncludesDecodingError)
+
     case foundErrorDocumentWhenExpectingSuccess
     case foundSuccessDocumentWhenExpectingError
+
+    init(_ decodingError: ResourceObjectDecodingError) {
+        self = .primaryResource(error: decodingError, idx: nil)
+    }
+
+    init(_ decodingError: ManyResourceBodyDecodingError) {
+        self = .primaryResource(error: decodingError.error, idx: decodingError.idx)
+    }
+
+    init(_ decodingError: IncludesDecodingError) {
+        self = .includes(error: decodingError)
+    }
+
+    init?(_ decodingError: DecodingError) {
+        switch decodingError {
+        case .valueNotFound(let type, let context) where Location(context) == .data && type is AbstractResourceObject.Type:
+            self = .primaryResourceMissing
+        case .valueNotFound(let type, let context) where Location(context) == .data && type == UnkeyedDecodingContainer.self:
+            self = .primaryResourcesMissing
+        default:
+            return nil
+        }
+    }
+
+    private enum Location: Equatable {
+        case data
+        case other
+
+        init(_ context: DecodingError.Context) {
+            if context.codingPath.contains(where: { $0.stringValue == "data" }) {
+                self = .data
+            } else {
+                self = .other
+            }
+        }
+    }
+}
+
+extension DocumentDecodingError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .primaryResource(error: let error, idx: let idx):
+            let idxString = idx.map { " \($0 + 1)" } ?? ""
+            return "Primary Resource\(idxString) failed to parse because \(error)"
+        case .primaryResourceMissing:
+            return "Primary Resource missing."
+        case .primaryResourcesMissing:
+            return "Primary Resources array missing."
+
+        case .includes(error: let error):
+            return "\(error)"
+
+        case .foundErrorDocumentWhenExpectingSuccess:
+            return "Expected a success document with a 'data' property but found an error document."
+        case .foundSuccessDocumentWhenExpectingError:
+            return "Expected an error document but found a success document with a 'data' property."
+        }
+    }
 }

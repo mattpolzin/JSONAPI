@@ -533,6 +533,17 @@ let entity_attribute_is_wrong_type3 = """
 }
 """.data(using: .utf8)!
 
+let entity_is_wrong_type = """
+{
+    "id": "1",
+    "type": "not_correct_type",
+    "attributes": {
+        "required": "hello",
+        "yetAnother": 101
+    }
+}
+""".data(using: .utf8)!
+
 let entity_attributes_entirely_missing = """
 {
     "id": "1",

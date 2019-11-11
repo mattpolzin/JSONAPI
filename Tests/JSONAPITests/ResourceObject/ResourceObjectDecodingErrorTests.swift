@@ -287,6 +287,30 @@ extension ResourceObjectDecodingErrorTests {
     }
 }
 
+// MARK: - JSON:API Type
+extension ResourceObjectDecodingErrorTests {
+    func test_wrongType() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity2.self,
+            from: entity_is_wrong_type
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "self",
+                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: "not_correct_type"),
+                    location: .type
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                #"found JSON:API type "not_correct_type" but expected "fourteenth_test_entities""#
+            )
+        }
+    }
+}
+
 // MARK: - Test Types
 extension ResourceObjectDecodingErrorTests {
     enum TestEntityType: ResourceObjectDescription {
