@@ -94,6 +94,32 @@ final class DocumentDecodingErrorTests: XCTestCase {
             XCTAssertEqual(String(describing: error), #"Include 3 failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
         }
     }
+
+    func test_include_failure2() {
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include2<Article, Author>, NoAPIDescription, UnknownJSONAPIError>.self,
+                from: single_document_some_includes_wrong_type
+            )
+        ) { error in
+            guard let docError = error as? DocumentDecodingError,
+                case .includes = docError else {
+                    XCTFail("Expected primary resource document error. Got \(error)")
+                    return
+            }
+
+            XCTAssertEqual(String(describing: error),
+#"""
+Include 3 failed to parse: 
+Could not have been Include Type 1 because:
+found JSON:API type "not_an_author" but expected "articles"
+
+Could not have been Include Type 2 because:
+found JSON:API type "not_an_author" but expected "authors"
+"""#
+            )
+        }
+    }
 }
 
 // MARK: - Test Types

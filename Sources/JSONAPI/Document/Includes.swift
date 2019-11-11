@@ -61,6 +61,27 @@ extension Includes: Decodable where I: Decodable {
             do {
                 valueAggregator.append(try container.decode(I.self))
                 idx = idx + 1
+            } catch let error as PolyDecodeNoTypesMatchedError {
+                let errors: [ResourceObjectDecodingError] = error
+                    .individualTypeFailures
+                    .compactMap { decodingError in
+                        switch decodingError.error {
+                        case .typeMismatch(_, let context),
+                             .valueNotFound(_, let context),
+                             .keyNotFound(_, let context),
+                             .dataCorrupted(let context):
+                            return context.underlyingError as? ResourceObjectDecodingError
+                        @unknown default:
+                            return nil
+                        }
+                }
+                guard errors.count == error.individualTypeFailures.count else {
+                    throw IncludesDecodingError(error: error, idx: idx)
+                }
+                throw IncludesDecodingError(
+                    error: IncludeDecodingError(failures: errors),
+                    idx: idx
+                )
             } catch let error {
                 throw IncludesDecodingError(error: error, idx: idx)
             }
@@ -198,5 +219,17 @@ public struct IncludesDecodingError: Swift.Error, Equatable {
 extension IncludesDecodingError: CustomStringConvertible {
     public var description: String {
         return "Include \(idx + 1) failed to parse: \(error)"
+    }
+}
+
+public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConvertible {
+    public let failures: [ResourceObjectDecodingError]
+
+    public var description: String {
+        return failures
+            .enumerated()
+            .map {
+                "\nCould not have been Include Type \($0.offset + 1) because:\n\($0.element)"
+        }.joined(separator: "\n")
     }
 }
