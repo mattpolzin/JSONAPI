@@ -439,6 +439,42 @@ let entity_relationship_is_wrong_type = """
 }
 """.data(using: .utf8)!
 
+let entity_single_relationship_is_many = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": [{
+                "id": "123",
+                "type": "thirteenth_test_entities"
+            }]
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_many_relationship_is_single = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "123",
+                "type": "thirteenth_test_entities"
+            }
+        },
+        "omittable": {
+            "data": {
+                "id": "456",
+                "type": "thirteenth_test_entities"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
 let entity_relationships_entirely_missing = """
 {
     "id": "1",
@@ -449,7 +485,7 @@ let entity_relationships_entirely_missing = """
 let entity_required_attribute_is_omitted = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities",
+    "type": "fourteenth_test_entities",
     "attributes": {
     }
 }
@@ -458,7 +494,7 @@ let entity_required_attribute_is_omitted = """
 let entity_nonNullable_attribute_is_null = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities",
+    "type": "fourteenth_test_entities",
     "attributes": {
         "required": null
     }
@@ -468,7 +504,7 @@ let entity_nonNullable_attribute_is_null = """
 let entity_attribute_is_wrong_type = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities",
+    "type": "fourteenth_test_entities",
     "attributes": {
         "required": 10
     }
@@ -478,7 +514,7 @@ let entity_attribute_is_wrong_type = """
 let entity_attribute_is_wrong_type2 = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities",
+    "type": "fourteenth_test_entities",
     "attributes": {
         "required": "hello",
         "other": "world"
@@ -489,7 +525,7 @@ let entity_attribute_is_wrong_type2 = """
 let entity_attribute_is_wrong_type3 = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities",
+    "type": "fourteenth_test_entities",
     "attributes": {
         "required": "hello",
         "yetAnother": 101
@@ -500,7 +536,7 @@ let entity_attribute_is_wrong_type3 = """
 let entity_attributes_entirely_missing = """
 {
     "id": "1",
-    "type": "thirteenth_test_entities"
+    "type": "fourteenth_test_entities"
 }
 """.data(using: .utf8)!
 

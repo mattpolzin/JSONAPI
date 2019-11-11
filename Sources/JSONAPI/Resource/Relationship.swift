@@ -184,7 +184,17 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
             return
         }
 
-        let identifier = try container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
+        let identifier: KeyedDecodingContainer<ResourceIdentifierCodingKeys>
+        do {
+            identifier = try container.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self, forKey: .data)
+        } catch let error as DecodingError {
+            guard case let .typeMismatch(type, context) = error,
+                type is _DictionaryType.Type else {
+                throw error
+            }
+            throw JSONAPICodingError.quantityMismatch(expected: .one,
+                                                  path: context.codingPath)
+        }
 
         let type = try identifier.decode(String.self, forKey: .entityType)
 
@@ -238,7 +248,17 @@ extension ToManyRelationship: Codable {
             links = try container.decode(LinksType.self, forKey: .links)
         }
 
-        var identifiers = try container.nestedUnkeyedContainer(forKey: .data)
+        var identifiers: UnkeyedDecodingContainer
+        do {
+            identifiers = try container.nestedUnkeyedContainer(forKey: .data)
+        } catch let error as DecodingError {
+            guard case let .typeMismatch(type, context) = error,
+                type is _ArrayType.Type else {
+                    throw error
+            }
+            throw JSONAPICodingError.quantityMismatch(expected: .many,
+                                                  path: context.codingPath)
+        }
 
         var newIds = [Relatable.Identifier]()
         while !identifiers.isAtEnd {
@@ -285,3 +305,9 @@ extension ToOneRelationship: CustomStringConvertible {
 extension ToManyRelationship: CustomStringConvertible {
     public var description: String { return "Relationship([\(ids.map(String.init(describing:)).joined(separator: ", "))])" }
 }
+
+private protocol _DictionaryType {}
+extension Dictionary: _DictionaryType {}
+
+private protocol _ArrayType {}
+extension Array: _ArrayType {}

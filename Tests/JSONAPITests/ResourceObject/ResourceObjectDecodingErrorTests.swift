@@ -117,7 +117,44 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
     }
 
     func test_twoOneVsToMany_relationship() {
-        // TODO: write test
+
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity.self,
+            from: entity_single_relationship_is_many
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .quantityMismatch(expected: .one),
+                    location: .relationships
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship should contain one value but found many"
+            )
+        }
+
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity.self,
+            from: entity_many_relationship_is_single
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "omittable",
+                    cause: .quantityMismatch(expected: .many),
+                    location: .relationships
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'omittable' relationship should contain many values but found one"
+            )
+        }
     }
 }
 
@@ -260,13 +297,14 @@ extension ResourceObjectDecodingErrorTests {
         public struct Relationships: JSONAPI.Relationships {
 
             let required: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+            let omittable: ToManyRelationship<TestEntity, NoMetadata, NoLinks>?
         }
     }
 
     typealias TestEntity = BasicEntity<TestEntityType>
 
     enum TestEntityType2: ResourceObjectDescription {
-        public static var jsonType: String { return "thirteenth_test_entities" }
+        public static var jsonType: String { return "fourteenth_test_entities" }
 
         public struct Attributes: JSONAPI.Attributes {
 
