@@ -18,69 +18,147 @@ import Poly
 public typealias EncodableJSONPoly = Poly & EncodablePrimaryResource
 
 public typealias EncodablePolyWrapped = Encodable & Equatable
-public typealias PolyWrapped = EncodablePolyWrapped & Decodable
+public typealias CodablePolyWrapped = EncodablePolyWrapped & Decodable
 
-extension Poly0: PrimaryResource {
-	public init(from decoder: Decoder) throws {
-		throw JSONAPIEncodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.")
-	}
+extension Poly0: CodablePrimaryResource {
+    public init(from decoder: Decoder) throws {
+        throw JSONAPICodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.", path: decoder.codingPath)
+    }
 
-	public func encode(to encoder: Encoder) throws {
-		throw JSONAPIEncodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.")
-	}
+    public func encode(to encoder: Encoder) throws {
+        throw JSONAPICodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.", path: encoder.codingPath)
+    }
 }
 
 // MARK: - 1 type
-extension Poly1: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped {}
+extension Poly1: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped {}
 
-extension Poly1: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped {}
+extension Poly1: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped {}
 
 // MARK: - 2 types
-extension Poly2: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped {}
+extension Poly2: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped, B: EncodablePolyWrapped {}
 
-extension Poly2: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped {}
+extension Poly2: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped {}
 
 // MARK: - 3 types
-extension Poly3: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped {}
+extension Poly3: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped {}
 
-extension Poly3: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped {}
+extension Poly3: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped {}
 
 // MARK: - 4 types
-extension Poly4: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped {}
+extension Poly4: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped {}
 
-extension Poly4: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped {}
+extension Poly4: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped {}
 
 // MARK: - 5 types
-extension Poly5: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped {}
+extension Poly5: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped {}
 
-extension Poly5: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped {}
+extension Poly5: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped {}
 
 // MARK: - 6 types
-extension Poly6: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped {}
+extension Poly6: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped {}
 
-extension Poly6: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped {}
+extension Poly6: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped {}
 
 // MARK: - 7 types
-extension Poly7: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped {}
+extension Poly7: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where
+        A: EncodablePolyWrapped,
+        B: EncodablePolyWrapped,
+        C: EncodablePolyWrapped,
+        D: EncodablePolyWrapped,
+        E: EncodablePolyWrapped,
+        F: EncodablePolyWrapped,
+        G: EncodablePolyWrapped {}
 
-extension Poly7: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped {}
+extension Poly7: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped {}
 
 // MARK: - 8 types
-extension Poly8: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped {}
+extension Poly8: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where
+        A: EncodablePolyWrapped,
+        B: EncodablePolyWrapped,
+        C: EncodablePolyWrapped,
+        D: EncodablePolyWrapped,
+        E: EncodablePolyWrapped,
+        F: EncodablePolyWrapped,
+        G: EncodablePolyWrapped,
+        H: EncodablePolyWrapped {}
 
-extension Poly8: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped {}
+extension Poly8: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped {}
 
 // MARK: - 9 types
-extension Poly9: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped, I: EncodablePolyWrapped {}
+extension Poly9: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where
+        A: EncodablePolyWrapped,
+        B: EncodablePolyWrapped,
+        C: EncodablePolyWrapped,
+        D: EncodablePolyWrapped,
+        E: EncodablePolyWrapped,
+        F: EncodablePolyWrapped,
+        G: EncodablePolyWrapped,
+        H: EncodablePolyWrapped,
+        I: EncodablePolyWrapped {}
 
-extension Poly9: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped {}
+extension Poly9: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped, I: CodablePolyWrapped {}
 
 // MARK: - 10 types
-extension Poly10: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped, I: EncodablePolyWrapped, J: EncodablePolyWrapped {}
+extension Poly10: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where
+        A: EncodablePolyWrapped,
+        B: EncodablePolyWrapped,
+        C: EncodablePolyWrapped,
+        D: EncodablePolyWrapped,
+        E: EncodablePolyWrapped,
+        F: EncodablePolyWrapped,
+        G: EncodablePolyWrapped,
+        H: EncodablePolyWrapped,
+        I: EncodablePolyWrapped,
+        J: EncodablePolyWrapped {}
 
-extension Poly10: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped, J: PolyWrapped {}
+extension Poly10: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where A: CodablePolyWrapped, B: CodablePolyWrapped, C: CodablePolyWrapped, D: CodablePolyWrapped, E: CodablePolyWrapped, F: CodablePolyWrapped, G: CodablePolyWrapped, H: CodablePolyWrapped, I: CodablePolyWrapped, J: CodablePolyWrapped {}
 
 // MARK: - 11 types
-extension Poly11: EncodablePrimaryResource, OptionalEncodablePrimaryResource where A: EncodablePolyWrapped, B: EncodablePolyWrapped, C: EncodablePolyWrapped, D: EncodablePolyWrapped, E: EncodablePolyWrapped, F: EncodablePolyWrapped, G: EncodablePolyWrapped, H: EncodablePolyWrapped, I: EncodablePolyWrapped, J: EncodablePolyWrapped, K: EncodablePolyWrapped {}
+extension Poly11: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+    where
+        A: EncodablePolyWrapped,
+        B: EncodablePolyWrapped,
+        C: EncodablePolyWrapped,
+        D: EncodablePolyWrapped,
+        E: EncodablePolyWrapped,
+        F: EncodablePolyWrapped,
+        G: EncodablePolyWrapped,
+        H: EncodablePolyWrapped,
+        I: EncodablePolyWrapped,
+        J: EncodablePolyWrapped,
+        K: EncodablePolyWrapped {}
 
-extension Poly11: PrimaryResource, OptionalPrimaryResource where A: PolyWrapped, B: PolyWrapped, C: PolyWrapped, D: PolyWrapped, E: PolyWrapped, F: PolyWrapped, G: PolyWrapped, H: PolyWrapped, I: PolyWrapped, J: PolyWrapped, K: PolyWrapped {}
+extension Poly11: CodablePrimaryResource, OptionalCodablePrimaryResource
+    where
+        A: CodablePolyWrapped,
+        B: CodablePolyWrapped,
+        C: CodablePolyWrapped,
+        D: CodablePolyWrapped,
+        E: CodablePolyWrapped,
+        F: CodablePolyWrapped,
+        G: CodablePolyWrapped,
+        H: CodablePolyWrapped,
+        I: CodablePolyWrapped,
+        J: CodablePolyWrapped,
+        K: CodablePolyWrapped {}

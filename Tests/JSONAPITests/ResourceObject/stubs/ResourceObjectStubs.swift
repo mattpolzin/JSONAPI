@@ -393,6 +393,215 @@ let entity_all_relationships_optional_and_omitted = """
 }
 """.data(using: .utf8)!
 
+let entity_nonNullable_relationship_is_null = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": null
+    }
+}
+""".data(using: .utf8)!
+
+let entity_nonNullable_relationship_is_null2 = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": null
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_required_relationship_is_omitted = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+    }
+}
+""".data(using: .utf8)!
+
+let entity_relationship_is_wrong_type = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "123",
+                "type": "not_the_same"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_single_relationship_is_many = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": [{
+                "id": "123",
+                "type": "thirteenth_test_entities"
+            }]
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_many_relationship_is_single = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "123",
+                "type": "thirteenth_test_entities"
+            }
+        },
+        "omittable": {
+            "data": {
+                "id": "456",
+                "type": "thirteenth_test_entities"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_relationships_entirely_missing = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+}
+""".data(using: .utf8)!
+
+let entity_required_attribute_is_omitted = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+    }
+}
+""".data(using: .utf8)!
+
+let entity_nonNullable_attribute_is_null = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": null
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": 10
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type2 = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "other": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type3 = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "yetAnother": 101
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_is_wrong_type4 = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "transformed": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_always_fails = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "transformed2": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attributes_entirely_missing = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities"
+}
+""".data(using: .utf8)!
+
+let entity_is_wrong_type = """
+{
+    "id": "1",
+    "type": "not_correct_type",
+    "attributes": {
+        "required": "hello",
+        "yetAnother": 101
+    }
+}
+""".data(using: .utf8)!
+
+let entity_type_is_wrong_type = """
+{
+    "id": "1",
+    "type": 10,
+    "attributes": {
+        "required": "hello"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_type_is_missing = """
+{
+    "id": "1",
+    "attributes": {
+        "required": "hello"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_type_is_null = """
+{
+    "id": "1",
+    "type": null,
+    "attributes": {
+        "required": "hello"
+    }
+}
+""".data(using: .utf8)!
+
 let entity_unidentified = """
 {
 	"type": "unidentified_test_entities",
