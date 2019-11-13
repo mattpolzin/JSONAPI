@@ -40,14 +40,12 @@ public enum DocumentDecodingError: Swift.Error, Equatable {
 
     private enum Location: Equatable {
         case data
-        case other
 
-        init(_ context: DecodingError.Context) {
-            if context.codingPath.contains(where: { $0.stringValue == "data" }) {
-                self = .data
-            } else {
-                self = .other
+        init?(_ context: DecodingError.Context) {
+            guard context.codingPath.contains(where: { $0.stringValue == "data" }) else {
+                return nil
             }
+            self = .data
         }
     }
 }

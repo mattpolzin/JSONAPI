@@ -11,7 +11,6 @@ import JSONAPITesting
 
 final class ResourceObjectCompareTests: XCTestCase {
     func test_same() {
-        print(test1.compare(to: test1).differences)
         XCTAssertTrue(test1.compare(to: test1).differences.isEmpty)
         XCTAssertTrue(test2.compare(to: test2).differences.isEmpty)
     }

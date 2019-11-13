@@ -414,7 +414,13 @@ public extension ResourceObject {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceObjectCodingKeys.self)
 
-        let type = try container.decode(String.self, forKey: .type)
+        let type: String
+        do {
+            type = try container.decode(String.self, forKey: .type)
+        } catch let error as DecodingError {
+            throw ResourceObjectDecodingError(error)
+                ?? error
+        }
 
         guard ResourceObject.jsonType == type else {
             throw ResourceObjectDecodingError(

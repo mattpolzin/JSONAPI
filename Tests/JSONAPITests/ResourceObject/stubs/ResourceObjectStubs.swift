@@ -533,6 +533,35 @@ let entity_attribute_is_wrong_type3 = """
 }
 """.data(using: .utf8)!
 
+let entity_attribute_is_wrong_type4 = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "transformed": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attribute_always_fails = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities",
+    "attributes": {
+        "required": "hello",
+        "transformed2": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_attributes_entirely_missing = """
+{
+    "id": "1",
+    "type": "fourteenth_test_entities"
+}
+""".data(using: .utf8)!
+
 let entity_is_wrong_type = """
 {
     "id": "1",
@@ -544,10 +573,32 @@ let entity_is_wrong_type = """
 }
 """.data(using: .utf8)!
 
-let entity_attributes_entirely_missing = """
+let entity_type_is_wrong_type = """
 {
     "id": "1",
-    "type": "fourteenth_test_entities"
+    "type": 10,
+    "attributes": {
+        "required": "hello"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_type_is_missing = """
+{
+    "id": "1",
+    "attributes": {
+        "required": "hello"
+    }
+}
+""".data(using: .utf8)!
+
+let entity_type_is_null = """
+{
+    "id": "1",
+    "type": null,
+    "attributes": {
+        "required": "hello"
+    }
 }
 """.data(using: .utf8)!
 
