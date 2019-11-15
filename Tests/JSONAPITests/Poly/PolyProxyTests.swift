@@ -15,6 +15,12 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(User.jsonType, "users")
 	}
 
+    func test_CannotEncodeOrDecodePoly0() {
+        XCTAssertThrowsError(try testDecoder.decode(Poly0.self, from: poly_user_stub_1))
+
+        XCTAssertThrowsError(try testEncoder.encode(Poly0()))
+    }
+
 	func test_UserADecode() {
 		let polyUserA = decoded(type: User.self, data: poly_user_stub_1)
 		let userA = decoded(type: UserA.self, data: poly_user_stub_1)

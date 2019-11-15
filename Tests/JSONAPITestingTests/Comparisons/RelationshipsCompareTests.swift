@@ -10,5 +10,23 @@ import JSONAPI
 import JSONAPITesting
 
 final class RelationshipsCompareTests: XCTestCase {
-    // TODO: write tests
+    func test_same() {
+        // TODO: write test
+    }
+
+    func test_differentIds() {
+        // TODO: write test
+    }
+
+    func test_differentTypes() {
+        // TODO: write test
+    }
+
+    func test_differentMetadata() {
+        // TODO: write test
+    }
+
+    func test_differentLinks() {
+        // TODO: write tests
+    }
 }

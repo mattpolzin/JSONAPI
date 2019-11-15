@@ -12,3 +12,5 @@ public typealias Entity<Description: JSONAPI.ResourceObjectDescription, Meta: JS
 public typealias BasicEntity<Description: JSONAPI.ResourceObjectDescription> = Entity<Description, NoMetadata, NoLinks>
 
 public typealias NewEntity<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, Unidentified>
+
+extension String: JSONAPI.JSONAPIURL {}

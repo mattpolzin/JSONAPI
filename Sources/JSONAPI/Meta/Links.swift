@@ -5,7 +5,7 @@
 //  Created by Mathew Polzin on 11/24/18.
 //
 
-/// A Links structure should contain nothing but JSONAPI.Link properties.
+/// A Links structure should contain nothing but `JSONAPI.Link` properties.
 public protocol Links: Codable, Equatable {}
 
 /// Use NoLinks where no links should belong to a JSON API component

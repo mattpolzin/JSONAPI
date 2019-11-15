@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ResourceObjectCompareTests.swift
 //  
 //
 //  Created by Mathew Polzin on 11/3/19.
@@ -15,9 +15,29 @@ final class ResourceObjectCompareTests: XCTestCase {
         XCTAssertTrue(test2.compare(to: test2).differences.isEmpty)
     }
 
-    func test_different() {
+    func test_differentAttributes() {
         // TODO: write actual test
         print(test1.compare(to: test2).differences.map { "\($0): \($1)" }.joined(separator: ", "))
+    }
+
+    func test_differentRelationships() {
+        // TODO: write test
+    }
+
+    func test_differentTypes() {
+        // TODO: write test
+    }
+
+    func test_differentIds() {
+        // TODO: write test
+    }
+
+    func test_differentMetadata() {
+        // TODO: write test
+    }
+
+    func test_differentLinks() {
+        // TODO: write test
     }
 
     fileprivate let test1 = TestType(

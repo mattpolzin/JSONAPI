@@ -14,17 +14,6 @@ public enum ArrayElementComparison: Equatable, CustomStringConvertible {
     case differentValues(String, String)
     case prebuilt(String)
 
-    public init(sameTypeComparison: BasicComparison) {
-        switch sameTypeComparison {
-        case .same:
-            self = .same
-        case .different(let one, let two):
-            self = .differentValues(one, two)
-        case .prebuilt(let str):
-            self = .prebuilt(str)
-        }
-    }
-
     public init(resourceObjectComparison: ResourceObjectComparison) {
         guard !resourceObjectComparison.isSame else {
             self = .same

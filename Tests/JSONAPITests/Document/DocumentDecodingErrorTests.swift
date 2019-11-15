@@ -120,6 +120,28 @@ found JSON:API type "not_an_author" but expected "authors"
             )
         }
     }
+
+    func test_wantSuccess_foundError() {
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.SuccessDocument.self,
+                from: error_document_no_metadata
+            )
+        ) { error in
+            XCTAssertEqual(String(describing: error), #"Expected a success document with a 'data' property but found an error document."#)
+        }
+    }
+
+    func test_wantError_foundSuccess() {
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.ErrorDocument.self,
+                from: single_document_some_includes_with_metadata_with_api_description
+            )
+        ) { error in
+            XCTAssertEqual(String(describing: error), #"Expected an error document but found a success document with a 'data' property."#)
+        }
+    }
 }
 
 // MARK: - Test Types

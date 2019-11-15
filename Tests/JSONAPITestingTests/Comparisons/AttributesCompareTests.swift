@@ -10,13 +10,14 @@ import JSONAPI
 import JSONAPITesting
 
 final class AttributesCompareTests: XCTestCase {
-    func test_sameAttributes() {
+    func test_sameAttributes() throws {
         let attr1 = TestAttributes(
             string: "hello world",
             int: 10,
             bool: true,
             double: 105.4,
-            struct: .init(value: .init())
+            struct: .init(value: .init()),
+            transformed: try .init(rawValue: 10)
         )
         let attr2 = attr1
 
@@ -25,24 +26,27 @@ final class AttributesCompareTests: XCTestCase {
             "int": .same,
             "bool": .same,
             "double": .same,
-            "struct": .same
+            "struct": .same,
+            "transformed": .same
         ])
     }
 
-    func test_differentAttributes() {
+    func test_differentAttributes() throws {
         let attr1 = TestAttributes(
             string: "hello world",
             int: 10,
             bool: true,
             double: 105.4,
-            struct: .init(value: .init())
+            struct: .init(value: .init()),
+            transformed: try .init(rawValue: 10)
         )
         let attr2 = TestAttributes(
             string: "hello",
             int: 11,
             bool: false,
             double: 1.4,
-            struct: .init(value: .init(val: "there"))
+            struct: .init(value: .init(val: "there")),
+            transformed: try .init(rawValue: 11)
         )
 
         XCTAssertEqual(attr1.compare(to: attr2), [
@@ -50,7 +54,8 @@ final class AttributesCompareTests: XCTestCase {
             "int": .different("10", "11"),
             "bool": .different("true", "false"),
             "double": .different("105.4", "1.4"),
-            "struct": .different("string: hello", "string: there")
+            "struct": .different("string: hello", "string: there"),
+            "transformed": .different("10", "11")
         ])
     }
 }
@@ -61,6 +66,7 @@ private struct TestAttributes: JSONAPI.Attributes {
     let bool: Attribute<Bool>
     let double: Attribute<Double>
     let `struct`: Attribute<Struct>
+    let transformed: TransformedAttribute<Int, TestTransformer>
 
     struct Struct: Equatable, Codable, CustomStringConvertible {
         let string: String
@@ -70,5 +76,11 @@ private struct TestAttributes: JSONAPI.Attributes {
         }
 
         var description: String { return "string: \(string)" }
+    }
+}
+
+private enum TestTransformer: Transformer {
+    static func transform(_ value: Int) throws -> String {
+        return "\(value)"
     }
 }

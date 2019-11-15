@@ -33,10 +33,10 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
     case differentErrors(ErrorComparison)
     case differentData(DocumentDataComparison)
 
-    public typealias ErrorComparison = [BasicComparison]
+    public typealias ErrorComparison = [String: BasicComparison]
 
     static func compare<E: JSONAPIError, M: JSONAPI.Meta, L: JSONAPI.Links>(errors errors1: [E], _ meta1: M?, _ links1: L?, with errors2: [E], _ meta2: M?, _ links2: L?) -> ErrorComparison {
-        return errors1.compare(
+        let errorComparisons = errors1.compare(
             to: errors2,
             using: { error1, error2 in
                 guard error1 != error2 else {
@@ -48,9 +48,19 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
                     String(describing: error2)
                 )
             }
-        ).map(BasicComparison.init) + [
-            BasicComparison(meta1, meta2),
-            BasicComparison(links1, links2)
+        ).map(BasicComparison.init)
+            .filter { !$0.isSame }
+            .map { $0.rawValue }
+            .joined(separator: ", ")
+
+        let errorComparisonString = errorComparisons.isEmpty
+            ? nil
+            : errorComparisons
+
+        return [
+            "Errors": errorComparisonString.map { BasicComparison.prebuilt("(\($0))") } ?? .same,
+            "Metadata": BasicComparison(meta1, meta2),
+            "Links": BasicComparison(links1, links2)
         ]
     }
 
@@ -67,8 +77,8 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
             return "\(left) ≠ \(right)"
         case .differentErrors(let comparisons):
             return comparisons
-                .filter { !$0.isSame }
-                .map { $0.rawValue }
+                .filter { !$0.value.isSame }
+                .map { "\($0.key): \($0.value.rawValue)" }
                 .sorted()
                 .joined(separator: ", ")
         case .differentData(let comparison):
@@ -104,7 +114,7 @@ extension DocumentBody where Self: Equatable, PrimaryResourceBody: TestableResou
             return .differentErrors(
                 BodyComparison.compare(
                     errors: errors1, meta, links,
-                    with: errors2, meta, links
+                    with: errors2, other.meta, other.links
                 )
             )
         }

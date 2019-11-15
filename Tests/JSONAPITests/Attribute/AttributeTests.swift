@@ -14,6 +14,10 @@ class AttributeTests: XCTestCase {
 		XCTAssertEqual(Attribute<String>(value: "hello").value, "hello")
 	}
 
+    func test_AttributeRawType() {
+        XCTAssert(Attribute<String>(value: "hello").rawValueType == String.self)
+    }
+
 	func test_TransformedAttributeNoThrow() {
 		XCTAssertNoThrow(try TransformedAttribute<String, TestTransformer>(rawValue: "10"))
 	}
@@ -25,6 +29,10 @@ class AttributeTests: XCTestCase {
 	func test_TransformedAttributeReversNoThrow() {
 		XCTAssertNoThrow(try TransformedAttribute<String, TestTransformer>(transformedValue: 10))
 	}
+
+    func test_TransformedAttributeRawType() throws {
+        try XCTAssert(TransformedAttribute<String, TestTransformer>(rawValue: "10").rawValueType == String.self)
+    }
 
 	func test_EncodedPrimitives() {
 		testEncodedPrimitive(attribute: Attribute<Int>(value: 10))

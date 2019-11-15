@@ -1554,5 +1554,3 @@ extension DocumentTests {
 		}
 	}
 }
-
-extension String: JSONAPI.JSONAPIURL {}

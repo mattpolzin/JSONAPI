@@ -34,8 +34,33 @@ final class DocumentCompareTests: XCTestCase {
     }
 
     func test_differentErrors() {
-        XCTAssertEqual(d2.compare(to: d4).differences, [
-            "Body": "status: 500, title: Internal Error ≠ status: 404, title: Not Found"
+        let comparison = d2.compare(to: d4)
+        XCTAssertEqual(comparison.differences, [
+            "Body": "Errors: (status: 500, title: Internal Error ≠ status: 404, title: Not Found)"
+        ])
+
+        XCTAssertEqual(String(describing: comparison), "(Body: Errors: (status: 500, title: Internal Error ≠ status: 404, title: Not Found))")
+    }
+
+    func test_sameErrorsDifferentMetadata() {
+        let errors = [
+        BasicJSONAPIError<String>.error(.init(id: nil, status: "500", title: "Internal Error"))
+        ]
+        let doc1 = SingleDocumentWithMetaAndLinks(
+            apiDescription: TestAPIDescription(version: "1", meta: .none),
+            errors: errors,
+            meta: nil,
+            links: nil
+        )
+        let doc2 = SingleDocumentWithMetaAndLinks(
+            apiDescription: TestAPIDescription(version: "1", meta: .none),
+            errors: errors,
+            meta: .init(total: 11),
+            links: nil
+        )
+
+        XCTAssertEqual(doc1.compare(to: doc2).differences, [
+            "Body": "Metadata: nil ≠ Optional(total: 11)"
         ])
     }
 
@@ -58,6 +83,24 @@ final class DocumentCompareTests: XCTestCase {
 
         XCTAssertEqual(d1.compare(to: d10).differences, [
             "Body": ##"(Primary Resource: (resource 1: 'age' attribute: 10 ≠ 12, 'bestFriend' relationship: Optional(Id(2)) ≠ nil, 'favoriteColor' attribute: nil ≠ Optional("blue"), 'name' attribute: name ≠ Fig, id: 1 ≠ 5))"##
+        ])
+    }
+
+    func test_differentMetadata() {
+        XCTAssertEqual(d11.compare(to: d12).differences, [
+            "Body": "(Meta: total: 10 ≠ total: 10000)"
+        ])
+    }
+
+    func test_differentLinks() {
+        XCTAssertEqual(d11.compare(to: d13).differences, [
+            "Body": ##"(Links: TestLinks(link: JSONAPI.Link<Swift.String, JSONAPI.NoMetadata>(url: "http://google.com", meta: No Metadata)) ≠ TestLinks(link: JSONAPI.Link<Swift.String, JSONAPI.NoMetadata>(url: "http://yahoo.com", meta: No Metadata)))"##
+        ])
+    }
+
+    func test_differentAPIDescription() {
+        XCTAssertEqual(d11.compare(to: d14).differences, [
+            "API Description": ##"APIDescription<NoMetadata>(version: "10", meta: No Metadata) ≠ APIDescription<NoMetadata>(version: "1", meta: No Metadata)"##
         ])
     }
 }
@@ -97,6 +140,22 @@ fileprivate enum TestDescription2: JSONAPI.ResourceObjectDescription {
 fileprivate typealias TestType2 = ResourceObject<TestDescription2, NoMetadata, NoLinks, String>
 
 fileprivate typealias SingleDocument = JSONAPI.Document<SingleResourceBody<TestType>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
+
+fileprivate struct TestMetadata: JSONAPI.Meta, CustomStringConvertible {
+    let total: Int
+
+    var description: String {
+        "total: \(total)"
+    }
+}
+
+fileprivate struct TestLinks: JSONAPI.Links {
+    let link: Link<String, NoMetadata>
+}
+
+typealias TestAPIDescription = APIDescription<NoMetadata>
+
+fileprivate typealias SingleDocumentWithMetaAndLinks = JSONAPI.Document<SingleResourceBody<TestType>, TestMetadata, TestLinks, Include2<TestType, TestType2>, TestAPIDescription, BasicJSONAPIError<String>>
 
 fileprivate typealias OptionalSingleDocument = JSONAPI.Document<SingleResourceBody<TestType?>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
 
@@ -219,4 +278,36 @@ fileprivate let d10 = SingleDocument(
     includes: .none,
     meta: .none,
     links: .none
+)
+
+fileprivate let d11 = SingleDocumentWithMetaAndLinks(
+    apiDescription: TestAPIDescription(version: "10", meta: .none),
+    body: .init(resourceObject: r2),
+    includes: .none,
+    meta: TestMetadata(total: 10),
+    links: TestLinks(link: .init(url: "http://google.com"))
+)
+
+fileprivate let d12 = SingleDocumentWithMetaAndLinks(
+    apiDescription: TestAPIDescription(version: "10", meta: .none),
+    body: .init(resourceObject: r2),
+    includes: .none,
+    meta: TestMetadata(total: 10000),
+    links: TestLinks(link: .init(url: "http://google.com"))
+)
+
+fileprivate let d13 = SingleDocumentWithMetaAndLinks(
+    apiDescription: TestAPIDescription(version: "10", meta: .none),
+    body: .init(resourceObject: r2),
+    includes: .none,
+    meta: TestMetadata(total: 10),
+    links: TestLinks(link: .init(url: "http://yahoo.com"))
+)
+
+fileprivate let d14 = SingleDocumentWithMetaAndLinks(
+    apiDescription: TestAPIDescription(version: "1", meta: .none),
+    body: .init(resourceObject: r2),
+    includes: .none,
+    meta: TestMetadata(total: 10),
+    links: TestLinks(link: .init(url: "http://google.com"))
 )

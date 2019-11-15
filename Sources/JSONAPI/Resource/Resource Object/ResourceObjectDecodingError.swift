@@ -109,11 +109,11 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
         case .keyNotFound:
             return "'\(subjectName)' \(location.singular) is required and missing."
         case .valueNotFound where location == .type:
-            return "'type' (a.k.a. JSON:API type name) is not nullable but null was found."
+            return "'\(location.singular)' (a.k.a. JSON:API type name) is not nullable but null was found."
         case .valueNotFound:
             return "'\(subjectName)' \(location.singular) is not nullable but null was found."
         case .typeMismatch(expectedTypeName: let expected) where location == .type:
-            return "'type' (a.k.a. the JSON:API type name) is not a \(expected) as expected."
+            return "'\(location.singular)' (a.k.a. the JSON:API type name) is not a \(expected) as expected."
         case .typeMismatch(expectedTypeName: let expected):
             return "'\(subjectName)' \(location.singular) is not a \(expected) as expected."
         case .jsonTypeMismatch(expectedType: let expected, foundType: let found) where location == .type:

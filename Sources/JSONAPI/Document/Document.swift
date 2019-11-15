@@ -494,6 +494,10 @@ extension Document {
         public static func ==(lhs: Document, rhs: ErrorDocument) -> Bool {
             return lhs == rhs.document
         }
+
+        public static func ==(lhs: ErrorDocument, rhs: Document) -> Bool {
+            return lhs.document == rhs
+        }
     }
 
     /// A Document that only supports success bodies. This is useful if you wish to pass around a
@@ -534,7 +538,7 @@ extension Document {
         /// `nil` if the Document is an error response. Otherwise,
         /// a structure containing the primary resource, any included
         /// resources, metadata, and links.
-        var data: BodyData? {
+        public var data: BodyData? {
             return document.body.data
         }
 
@@ -545,7 +549,7 @@ extension Document {
         /// resources dependening on the `PrimaryResourceBody` type.
         ///
         /// See `SingleResourceBody` and `ManyResourceBody`.
-        var primaryResource: PrimaryResourceBody? {
+        public var primaryResource: PrimaryResourceBody? {
             return document.body.primaryResource
         }
 
@@ -553,24 +557,28 @@ extension Document {
         ///
         /// `nil` if the Document is an error document. Otherwise,
         /// zero or more includes.
-        var includes: Includes<IncludeType>? {
+        public var includes: Includes<IncludeType>? {
             return document.body.includes
         }
 
         /// The metadata for the error or data document or `nil` if
         /// no metadata is found.
-        var meta: MetaType? {
+        public var meta: MetaType? {
             return document.body.meta
         }
 
         /// The links for the error or data document or `nil` if
         /// no links are found.
-        var links: LinksType? {
+        public var links: LinksType? {
             return document.body.links
         }
 
         public static func ==(lhs: Document, rhs: SuccessDocument) -> Bool {
             return lhs == rhs.document
+        }
+
+        public static func ==(lhs: SuccessDocument, rhs: Document) -> Bool {
+            return lhs.document == rhs
         }
     }
 }
