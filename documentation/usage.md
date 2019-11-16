@@ -280,7 +280,7 @@ A JSON API Document is guaranteed by the **SPEC** to be "data", "metadata", or "
 
 #### `ResourceBody`
 
-The first generic type of a `JSONAPIDocument` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `ResourceObject`. These `Poly` types work in the same way as the `Include` types described below.
+The first generic type of a `JSONAPI.Document` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `ResourceObject`. These `Poly` types work in the same way as the `Include` types described below.
 
 If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
 
@@ -292,7 +292,7 @@ You cannot, however, use an optional `PrimaryResource` with a `ManyResourceBody`
 
 #### `MetaType`
 
-The second generic type of a `JSONAPIDocument` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
+The second generic type of a `JSONAPI.Document` is a `Meta`. This `Meta` follows the same rules as `Meta` at any other part of a JSON API Document. It is described below in its own section, but as an example, the JSON API document could contain the following pagination info in its meta entry:
 ```json
 {
 	"meta": {
@@ -316,21 +316,21 @@ You can always use `NoMetadata` if this JSON API feature is not needed.
 
 #### `LinksType`
 
-The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are described in their own section [below](#jsonapilinks).
+The third generic type of a `JSONAPI.Document` is a `Links` struct. `Links` are described in their own section [below](#jsonapilinks).
 
 #### `IncludeType`
 
-The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to 10 types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
+The fourth generic type of a `JSONAPI.Document` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to 10 types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included resource objects, it indicates a number of _types_ of included resource objects. `Include1` can be used to decode any number of included resource objects as long as all the resource objects are of the same _type_.
 
 Decoding a JSON:API Document will fail if you specify an `IncludeType` that does not cover all of the types of includes you expect a response to contain.
 
-To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<Person>` instead of `NoIncludes`.
+To specify that we expect friends of a person to be included in the above example `JSONAPI.Document`, we would use `Include1<Person>` instead of `NoIncludes`.
 
 #### `APIDescriptionType`
 
-The fifth generic type of a `JSONAPIDocument` is an `APIDescription`. The type represents the "JSON:API Object" described by the **SPEC**. This type describes the highest version of the **SPEC** supported and can carry additional metadata to describe the API.
+The fifth generic type of a `JSONAPI.Document` is an `APIDescription`. The type represents the "JSON:API Object" described by the **SPEC**. This type describes the highest version of the **SPEC** supported and can carry additional metadata to describe the API.
 
 You can specify this is not part of the document by using the `NoAPIDescription` type.
 
@@ -340,9 +340,9 @@ You can supply any `JSONAPI.Meta` type as the metadata type of the API descripti
 
 #### `Error`
 
-The final generic type of a `JSONAPIDocument` is the `Error`.
+The final generic type of a `JSONAPI.Document` is the `Error`.
 
-You can either create an error type that can handle all the errors you expect your `JSONAPIDocument` to be able to encode/decode or use an out-of-box error type described here. As prescribed by the **SPEC**, these errors will be found under the root document key `errors`.
+You can either create an error type that can handle all the errors you expect your `JSONAPI.Document` to be able to encode/decode or use an out-of-box error type described here. As prescribed by the **SPEC**, these errors will be found under the root document key `errors`.
 
 ##### `UnknownJSONAPIError`
 The `UnknownJSONAPIError` type will always succeed in parsing errors but it will not give you any information about what error occurred. You will generally get more bang for your buck out of the next error type described.
@@ -426,9 +426,9 @@ There is a sparse fieldsets example included with this repository as a Playgroun
 5. Initialize and encode a `Document` containing one or more sparse or full primary resource(s) and any number of sparse or full includes.
 
 #### Sparse Fieldset `typealias` comparisons
-You might have found a `typealias` like the following for encoding/decoding `JSONAPI.Document`s (note the primary resource body is a `JSONAPI.ResourceBody`):
+You might have found a `typealias` like the following for encoding/decoding `JSONAPI.Document`s (note the primary resource body is a `JSONAPI.CodableResourceBody`):
 ```swift
-typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
+typealias Document<PrimaryResourceBody: JSONAPI.CodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 ```
 
 In order to support sparse fieldsets (which are encode-only), the following companion `typealias` would be useful (note the primary resource body is a `JSONAPI.EncodableResourceBody`):
