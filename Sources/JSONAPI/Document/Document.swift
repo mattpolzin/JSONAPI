@@ -408,8 +408,6 @@ extension Document: Decodable, CodableJSONAPIDocument where PrimaryResourceBody:
             throw DocumentDecodingError(error)
         }
 
-        // TODO come back to this and make robust
-
         guard let metaVal = meta else {
             throw JSONAPICodingError.missingOrMalformedMetadata(path: decoder.codingPath)
         }

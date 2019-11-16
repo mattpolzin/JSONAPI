@@ -158,7 +158,7 @@ struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingContainer
                                                     forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
         guard shouldAllow(key: key) else {
             return KeyedEncodingContainer(
-                // TODO: not needed by JSONAPI library, but for completeness could
+                // NOTE: not needed by JSONAPI library, but for completeness could
                 //      add an EmptyObjectEncoder that can be returned here so that
                 //      at least nothing gets encoded within the nested container
                 SparseFieldKeyedEncodingContainer<NestedKey, SparseKey>(wrapping: wrappedContainer.nestedContainer(keyedBy: keyType,
@@ -176,7 +176,7 @@ struct SparseFieldKeyedEncodingContainer<Key, SparseKey>: KeyedEncodingContainer
 
     public mutating func nestedUnkeyedContainer(forKey key: Key) -> UnkeyedEncodingContainer {
         guard shouldAllow(key: key) else {
-            // TODO: not needed by JSONAPI library, but for completeness could
+            // NOTE: not needed by JSONAPI library, but for completeness could
             //      add an EmptyObjectEncoder that can be returned here so that
             //      at least nothing gets encoded within the nested container
             return wrappedContainer.nestedUnkeyedContainer(forKey: key)
