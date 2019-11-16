@@ -64,11 +64,11 @@ if case let .data(bodyData) = peopleResponse.body {
 
 // MARK: - Work in the abstract
 print("-----")
-func process<T: JSONAPIDocument>(document: T) {
-	guard case let .data(body) = document.body else {
+func process<T: CodableJSONAPIDocument>(document: T) {
+    guard let body = document.body.data else {
 		return
 	}
-	let x: T.Body.Data = body
+	let x: T.BodyData = body
 }
 process(document: peopleResponse)
 

@@ -64,6 +64,7 @@ final class GenericJSONAPIErrorTests: XCTestCase {
         let error = decoded(type: TestGenericJSONAPIError.self, data: data)
 
         XCTAssertEqual(error, .unknown)
+        XCTAssertEqual(String(describing: error), "unknown error")
     }
 
     func test_encode() {

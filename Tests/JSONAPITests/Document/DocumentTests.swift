@@ -12,7 +12,7 @@ import Poly
 class DocumentTests: XCTestCase {
 
     func test_genericDocFunc() {
-        func test<Doc: JSONAPIDocument>(_ doc: Doc) {
+        func test<Doc: CodableJSONAPIDocument>(_ doc: Doc) {
             let _ = encoded(value: doc)
 
             XCTAssert(Doc.PrimaryResourceBody.self == NoResourceBody.self)
@@ -1554,5 +1554,3 @@ extension DocumentTests {
 		}
 	}
 }
-
-extension String: JSONAPI.JSONAPIURL {}

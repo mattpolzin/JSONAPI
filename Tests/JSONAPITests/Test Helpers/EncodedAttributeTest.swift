@@ -33,12 +33,9 @@ func testEncodedPrimitive<Value: Equatable & Codable, Transform: Transformer>(at
 	let wrapperObject = try! JSONSerialization.jsonObject(with: encodedAttributeData, options: []) as! [String: Any]
 	let jsonObject = wrapperObject["x"]
 
-	guard let jsonAttribute = jsonObject as? Transform.From else {
-		XCTFail("Attribute did not encode to the correct type")
-		return
-	}
+    XCTAssert(jsonObject is Transform.From)
 
-	XCTAssertEqual(attribute.rawValue, jsonAttribute)
+	XCTAssertEqual(attribute.rawValue, jsonObject as? Transform.From)
 }
 
 /// This function attempts to just cast to the type, so it only works
@@ -48,10 +45,7 @@ func testEncodedPrimitive<Value: Equatable & Codable>(attribute: Attribute<Value
 	let wrapperObject = try! JSONSerialization.jsonObject(with: encodedAttributeData, options: []) as! [String: Any]
 	let jsonObject = wrapperObject["x"]
 
-	guard let jsonAttribute = jsonObject as? Value else {
-		XCTFail("Attribute did not encode to the correct type")
-		return
-	}
+    XCTAssert(jsonObject is Value)
 
-	XCTAssertEqual(attribute.value, jsonAttribute)
+	XCTAssertEqual(attribute.value, jsonObject as? Value)
 }

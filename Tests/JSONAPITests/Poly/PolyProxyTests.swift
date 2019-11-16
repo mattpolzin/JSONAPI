@@ -15,17 +15,30 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(User.jsonType, "users")
 	}
 
+    func test_CannotEncodeOrDecodePoly0() {
+        XCTAssertThrowsError(try testDecoder.decode(Poly0.self, from: poly_user_stub_1))
+
+        XCTAssertThrowsError(try testEncoder.encode(Poly0()))
+    }
+
 	func test_UserADecode() {
 		let polyUserA = decoded(type: User.self, data: poly_user_stub_1)
 		let userA = decoded(type: UserA.self, data: poly_user_stub_1)
 
 		XCTAssertEqual(polyUserA.userA, userA)
 		XCTAssertNil(polyUserA.userB)
-		XCTAssertEqual(polyUserA[\.name], "Ken Moore")
+        XCTAssertEqual(polyUserA.name, "Ken Moore")
 		XCTAssertEqual(polyUserA.id, "1")
 		XCTAssertEqual(polyUserA.relationships, .none)
         XCTAssertEqual(polyUserA[direct: \.x], .init(x: "y"))
 	}
+
+    @available(*, deprecated, message: "remove next major version")
+    func test_UserADecode_deprecated() {
+        let polyUserA = decoded(type: User.self, data: poly_user_stub_1)
+
+        XCTAssertEqual(polyUserA[\.name], "Ken Moore")
+    }
 
 	func test_UserAAndBEncodeEquality() {
 		test_DecodeEncodeEquality(type: User.self, data: poly_user_stub_1)
@@ -56,11 +69,18 @@ public class PolyProxyTests: XCTestCase {
 
 		XCTAssertEqual(polyUserB.userB, userB)
 		XCTAssertNil(polyUserB.userA)
-		XCTAssertEqual(polyUserB[\.name], "Ken Less")
+        XCTAssertEqual(polyUserB.name, "Ken Less")
 		XCTAssertEqual(polyUserB.id, "2")
 		XCTAssertEqual(polyUserB.relationships, .none)
         XCTAssertEqual(polyUserB[direct: \.x], .init(x: "y"))
 	}
+
+    @available(*, deprecated, message: "remove next major version")
+    func test_UserBDecode_deprecated() {
+        let polyUserB = decoded(type: User.self, data: poly_user_stub_2)
+
+        XCTAssertEqual(polyUserB[\.name], "Ken Less")
+    }
 }
 
 // MARK: - Test types
@@ -114,9 +134,9 @@ extension Poly2: ResourceObjectProxy, JSONTyped where A == PolyProxyTests.UserA,
 	public var attributes: SharedUserDescription.Attributes {
 		switch self {
 		case .a(let a):
-			return .init(name: .init(value: "\(a[\.firstName]) \(a[\.lastName])"), x: .init(x: "y"))
+			return .init(name: .init(value: "\(a.firstName) \(a.lastName)"), x: .init(x: "y"))
 		case .b(let b):
-			return .init(name: .init(value: b[\.name].joined(separator: " ")), x: .init(x: "y"))
+			return .init(name: .init(value: b.name.joined(separator: " ")), x: .init(x: "y"))
 		}
 	}
 

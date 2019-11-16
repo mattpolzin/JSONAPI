@@ -37,7 +37,7 @@ typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Ent
 // JSON:API Documents for this particular API to have Metadata, Links,
 // useful Errors, or an APIDescription (The *SPEC* calls this
 // "API Description" the "JSON:API Object").
-typealias Document<PrimaryResourceBody: JSONAPI.ResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
+typealias Document<PrimaryResourceBody: JSONAPI.CodableResourceBody, IncludeType: JSONAPI.Include> = JSONAPI.Document<PrimaryResourceBody, NoMetadata, NoLinks, IncludeType, NoAPIDescription, BasicJSONAPIError<String>>
 
 // MARK: Entity Definitions
 

@@ -10,121 +10,132 @@
 /// array should be used for no results).
 public protocol OptionalEncodablePrimaryResource: Equatable, Encodable {}
 
-/// An `EncodablePrimaryResource` is a `PrimaryResource` that only supports encoding.
-/// This is actually more restrictave than `PrimaryResource`, which supports both encoding and
-/// decoding.
+/// An `EncodablePrimaryResource` is a `CodablePrimaryResource` that only supports encoding.
 public protocol EncodablePrimaryResource: OptionalEncodablePrimaryResource {}
 
 /// This protocol allows for `SingleResourceBody` to contain a `null`
 /// data object where `ManyResourceBody` cannot (because an empty
 /// array should be used for no results).
-public protocol OptionalPrimaryResource: OptionalEncodablePrimaryResource, Decodable {}
+public protocol OptionalCodablePrimaryResource: OptionalEncodablePrimaryResource, Decodable {}
 
-/// A `PrimaryResource` is a type that can be used in the body of a JSON API
+/// A `CodablePrimaryResource` is a type that can be used in the body of a JSON API
 /// document as the primary resource.
-public protocol PrimaryResource: EncodablePrimaryResource, OptionalPrimaryResource {}
+public protocol CodablePrimaryResource: EncodablePrimaryResource, OptionalCodablePrimaryResource {}
 
 extension Optional: OptionalEncodablePrimaryResource where Wrapped: EncodablePrimaryResource {}
 
-extension Optional: OptionalPrimaryResource where Wrapped: PrimaryResource {}
+extension Optional: OptionalCodablePrimaryResource where Wrapped: CodablePrimaryResource {}
 
 /// An `EncodableResourceBody` is a `ResourceBody` that only supports being
 /// encoded. It is actually weaker than `ResourceBody`, which supports both encoding
 /// and decoding.
-public protocol EncodableResourceBody: Equatable, Encodable {}
+public protocol EncodableResourceBody: Equatable, Encodable {
+    associatedtype PrimaryResource
+}
 
-/// A ResourceBody is a representation of the body of the JSON API Document.
+/// A `CodableResourceBody` is a representation of the body of the JSON:API Document.
 /// It can either be one resource (which can be specified as optional or not)
 /// or it can contain many resources (and array with zero or more entries).
-public protocol ResourceBody: Decodable, EncodableResourceBody {}
+public protocol CodableResourceBody: Decodable, EncodableResourceBody {}
 
 /// A `ResourceBody` that has the ability to take on more primary
 /// resources by appending another similarly typed `ResourceBody`.
-public protocol Appendable {
-	func appending(_ other: Self) -> Self
+public protocol ResourceBodyAppendable {
+    func appending(_ other: Self) -> Self
 }
 
-public func +<R: Appendable>(_ left: R, right: R) -> R {
-	return left.appending(right)
+public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
+    return left.appending(right)
 }
 
 /// A type allowing for a document body containing 1 primary resource.
 /// If the `Entity` specialization is an `Optional` type, the body can contain
 /// 0 or 1 primary resources.
-public struct SingleResourceBody<Entity: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
-	public let value: Entity
+public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
+    public let value: PrimaryResource
 
-	public init(resourceObject: Entity) {
-		self.value = resourceObject
-	}
+    public init(resourceObject: PrimaryResource) {
+        self.value = resourceObject
+    }
 }
 
 /// A type allowing for a document body containing 0 or more primary resources.
-public struct ManyResourceBody<Entity: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, Appendable {
-	public let values: [Entity]
+public struct ManyResourceBody<PrimaryResource: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
+    public let values: [PrimaryResource]
 
-	public init(resourceObjects: [Entity]) {
-		values = resourceObjects
-	}
+    public init(resourceObjects: [PrimaryResource]) {
+        values = resourceObjects
+    }
 
-	public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
-		return ManyResourceBody(resourceObjects: values + other.values)
-	}
+    public func appending(_ other: ManyResourceBody) -> ManyResourceBody {
+        return ManyResourceBody(resourceObjects: values + other.values)
+    }
 }
 
 /// Use NoResourceBody to indicate you expect a JSON API document to not
 /// contain a "data" top-level key.
-public struct NoResourceBody: ResourceBody {
-	public static var none: NoResourceBody { return NoResourceBody() }
+public struct NoResourceBody: CodableResourceBody {
+    public typealias PrimaryResource = Void
+
+    public static var none: NoResourceBody { return NoResourceBody() }
 }
 
 // MARK: Codable
 extension SingleResourceBody {
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
 
         let anyNil: Any? = nil
-        let nilValue = anyNil as? Entity
+        let nilValue = anyNil as? PrimaryResource
         guard value != nilValue else {
             try container.encodeNil()
             return
         }
 
-		try container.encode(value)
-	}
+        try container.encode(value)
+    }
 }
 
-extension SingleResourceBody: Decodable, ResourceBody where Entity: OptionalPrimaryResource {
+extension SingleResourceBody: Decodable, CodableResourceBody where PrimaryResource: OptionalCodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         let anyNil: Any? = nil
         if container.decodeNil(),
-            let val = anyNil as? Entity {
+            let val = anyNil as? PrimaryResource {
             value = val
             return
         }
 
-        value = try container.decode(Entity.self)
+        value = try container.decode(PrimaryResource.self)
     }
 }
 
 extension ManyResourceBody {
-	public func encode(to encoder: Encoder) throws {
-		var container = encoder.unkeyedContainer()
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
 
-		for value in values {
-			try container.encode(value)
-		}
-	}
+        for value in values {
+            try container.encode(value)
+        }
+    }
 }
 
-extension ManyResourceBody: Decodable, ResourceBody where Entity: PrimaryResource {
+extension ManyResourceBody: Decodable, CodableResourceBody where PrimaryResource: CodablePrimaryResource {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        var valueAggregator = [Entity]()
+        var valueAggregator = [PrimaryResource]()
+        var idx = 0
         while !container.isAtEnd {
-            valueAggregator.append(try container.decode(Entity.self))
+            do {
+                valueAggregator.append(try container.decode(PrimaryResource.self))
+            } catch let error as ResourceObjectDecodingError {
+                throw ManyResourceBodyDecodingError(
+                    error: error,
+                    idx: idx
+                )
+            }
+            idx = idx + 1
         }
         values = valueAggregator
     }
@@ -133,13 +144,19 @@ extension ManyResourceBody: Decodable, ResourceBody where Entity: PrimaryResourc
 // MARK: CustomStringConvertible
 
 extension SingleResourceBody: CustomStringConvertible {
-	public var description: String {
-		return "PrimaryResourceBody(\(String(describing: value)))"
-	}
+    public var description: String {
+        return "PrimaryResourceBody(\(String(describing: value)))"
+    }
 }
 
 extension ManyResourceBody: CustomStringConvertible {
-	public var description: String {
-		return "PrimaryResourceBody(\(String(describing: values)))"
-	}
+    public var description: String {
+        return "PrimaryResourceBody(\(String(describing: values)))"
+    }
+}
+
+// MARK: - DecodingError
+public struct ManyResourceBodyDecodingError: Swift.Error, Equatable {
+    public let error: ResourceObjectDecodingError
+    public let idx: Int
 }

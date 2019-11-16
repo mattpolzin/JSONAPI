@@ -129,6 +129,10 @@ let four_different_type_includes = """
 			}
 		}
 	},
+    {
+        "type": "test_entity4",
+        "id": "364B3B69-4DF1-467F-B52E-B0C9E44F666E"
+    },
 	{
 		"type": "test_entity6",
 		"id": "11113B69-4DF1-467F-B52E-B0C9E44FC444",
@@ -140,10 +144,6 @@ let four_different_type_includes = """
 				}
 			}
 		}
-	},
-	{
-		"type": "test_entity4",
-		"id": "364B3B69-4DF1-467F-B52E-B0C9E44F666E"
 	}
 ]
 """.data(using: .utf8)!

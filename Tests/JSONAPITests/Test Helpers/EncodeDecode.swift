@@ -8,12 +8,15 @@
 import Foundation
 import XCTest
 
+let testDecoder = JSONDecoder()
+let testEncoder = JSONEncoder()
+
 func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
-	return try! JSONDecoder().decode(T.self, from: data)
+	return try! testDecoder.decode(T.self, from: data)
 }
 
 func encoded<T: Encodable>(value: T) -> Data {
-	return try! JSONEncoder().encode(value)
+	return try! testEncoder.encode(value)
 }
 
 /// A helper function that tests that decode() == decode().encode().decode().

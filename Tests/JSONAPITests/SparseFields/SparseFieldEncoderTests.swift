@@ -17,7 +17,6 @@ class SparseFieldEncoderTests: XCTestCase {
         do {
             let _ = try encoder.encode(Wrapper())
         } catch let err as Wrapper.OuterFail.FailError {
-            print(err.path)
             XCTAssertEqual(err.path.first as? Wrapper.OuterFail.CodingKeys, Wrapper.OuterFail.CodingKeys.inner)
         } catch {
             XCTFail("received unexpected error during test")
