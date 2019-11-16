@@ -50,8 +50,8 @@ In this documentation, in order to draw attention to the difference between the 
 A `ResourceObjectDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
 
 ```swift
-enum PersonDescription: IdentifiedResourceObjectDescription {
-	static var jsonType: String { return "people" }
+enum PersonDescription: ResourceObjectDescription {
+	static let jsonType: String = "people"
 
 	struct Attributes: JSONAPI.Attributes {
 		let name: Attribute<[String]>
@@ -145,7 +145,7 @@ typealias Person = ResourceObject<PersonDescription, NoMetadata, NoLinks>
 typealias NewPerson = NewResourceObject<PersonDescription, NoMetadata, NoLinks>
 ```
 
-Note that I am assuming an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
+Note that I am calling an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
 
 ### `JSONAPI.Relationships`
 
@@ -246,11 +246,12 @@ public var fullName: Attribute<String> {
 If your computed property is wrapped in a `AttributeType` then you can still use the default subscript operator to access it (as would be the case with the `person.fullName` example above). However, if you add a property to the `Attributes` `struct` that is not wrapped in an `AttributeType`, you must either access it from its full path (`person.attributes.newThing`) or with the "direct" subscript accessor (`person[direct: \.newThing]`). This keeps the subscript access unambiguous enough for the compiler to be helpful prior to explicitly casting, comparing, or storing the result.
 
 ### Copying/Mutating `ResourceObjects`
-`ResourceObject` is a value type, so copying is its default behavior. There are two common mutations you might want to make when copying a `ResourceObject`:
+`ResourceObject` is a value type, so copying is its default behavior. There are three common mutations you might want to make when copying a `ResourceObject`:
 1. Assigning a new `Identifier` to the copy of an identified `ResourceObject`.
 2. Assigning a new `Identifier` to the copy of an unidentified `ResourceObject`.
+3. Change attribute or relationship values.
 
-The above can be accomplished with code like the following:
+The first two can be accomplished with code like the following:
 
 ```swift
 // use case 1
@@ -261,6 +262,8 @@ let newlyIdentifiedPerson1 = unidentifiedPerson.identified(byType: String.self)
 
 let newlyIdentifiedPerson2 = unidentifiedPerson.identified(by: "2232")
 ```
+
+The third use-case is described in [Replacing and Tapping Attributes/Relationships](#replacing-and-tapping-attributesrelationships).
 
 ### `JSONAPI.Document`
 
@@ -320,6 +323,8 @@ The third generic type of a `JSONAPIDocument` is a `Links` struct. `Links` are d
 The fourth generic type of a `JSONAPIDocument` is an `Include`. This type controls which types of `ResourceObject` are looked for when decoding the "included" part of the JSON API document. If you do not expect any included resource objects to be in the document, `NoIncludes` is the way to go. The `JSONAPI` framework provides `Include`s for up to 10 types of included resource objects. These are named `Include1`, `Include2`, `Include3`, and so on.
 
 **IMPORTANT**: The number trailing "Include" in these type names does not indicate a number of included resource objects, it indicates a number of _types_ of included resource objects. `Include1` can be used to decode any number of included resource objects as long as all the resource objects are of the same _type_.
+
+Decoding a JSON:API Document will fail if you specify an `IncludeType` that does not cover all of the types of includes you expect a response to contain.
 
 To specify that we expect friends of a person to be included in the above example `JSONAPIDocument`, we would use `Include1<Person>` instead of `NoIncludes`.
 
