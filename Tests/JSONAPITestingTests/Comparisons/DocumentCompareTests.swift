@@ -21,6 +21,8 @@ final class DocumentCompareTests: XCTestCase {
         XCTAssertTrue(d8.compare(to: d8).differences.isEmpty)
         XCTAssertTrue(d9.compare(to: d9).differences.isEmpty)
         XCTAssertTrue(d10.compare(to: d10).differences.isEmpty)
+
+        XCTAssertEqual(String(describing: d1.compare(to: d1).body), "same")
     }
 
     func test_errorAndData() {

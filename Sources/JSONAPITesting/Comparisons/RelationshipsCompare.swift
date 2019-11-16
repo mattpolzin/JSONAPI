@@ -24,12 +24,16 @@ extension Relationships {
                 continue
             }
 
-            if (relationshipsEqual(child.value, otherChild.value)) {
-                comparisons[childLabel] = .same
-            } else {
-                let otherChildDescription = relationshipDescription(of: otherChild.value)
+            do {
+                if (try relationshipsEqual(child.value, otherChild.value)) {
+                    comparisons[childLabel] = .same
+                } else {
+                    let otherChildDescription = relationshipDescription(of: otherChild.value)
 
-                comparisons[childLabel] = .different(childDescription, otherChildDescription)
+                    comparisons[childLabel] = .different(childDescription, otherChildDescription)
+                }
+            } catch let error {
+                comparisons[childLabel] = .prebuilt(String(describing: error))
             }
         }
 
@@ -37,9 +41,20 @@ extension Relationships {
     }
 }
 
-fileprivate func relationshipsEqual(_ one: Any, _ two: Any) -> Bool {
+enum RelationshipCompareError: Swift.Error, CustomStringConvertible {
+    case nonRelationshipTypeProperty(String)
+
+    var description: String {
+        switch self {
+        case .nonRelationshipTypeProperty(let type):
+            return "comparison on non-JSON:API Relationship type (\(type)) not supported."
+        }
+    }
+}
+
+fileprivate func relationshipsEqual(_ one: Any, _ two: Any) throws -> Bool {
     guard let attr = one as? AbstractRelationship else {
-        return false
+        throw RelationshipCompareError.nonRelationshipTypeProperty(String(describing: type(of: one)))
     }
 
     return attr.equals(two)
@@ -53,6 +68,29 @@ protocol AbstractRelationship {
     var abstractDescription: String { get }
 
     func equals(_ other: Any) -> Bool
+}
+
+extension Optional: AbstractRelationship where Wrapped: AbstractRelationship {
+    var abstractDescription: String {
+        switch self {
+        case .none:
+            return "nil"
+        case .some(let rel):
+            return rel.abstractDescription
+        }
+    }
+
+    func equals(_ other: Any) -> Bool {
+        switch self {
+        case .none:
+            return (other as? _AbstractWrapper).map { $0.abstractSelf == nil } ?? false
+        case .some(let rel):
+            guard case let .some(otherVal) = (other as? _AbstractWrapper)?.abstractSelf else {
+                return rel.equals(other)
+            }
+            return rel.equals(otherVal)
+        }
+    }
 }
 
 extension ToOneRelationship: AbstractRelationship {

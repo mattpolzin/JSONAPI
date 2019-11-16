@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  AttributesCompare.swift
 //  
 //
 //  Created by Mathew Polzin on 11/3/19.
@@ -24,12 +24,16 @@ extension Attributes {
                 continue
             }
 
-            if (attributesEqual(child.value, otherChild.value)) {
-                comparisons[childLabel] = .same
-            } else {
-                let otherChildDescription = attributeDescription(of: otherChild.value)
+            do {
+                if (try attributesEqual(child.value, otherChild.value)) {
+                    comparisons[childLabel] = .same
+                } else {
+                    let otherChildDescription = attributeDescription(of: otherChild.value)
 
-                comparisons[childLabel] = .different(childDescription, otherChildDescription)
+                    comparisons[childLabel] = .different(childDescription, otherChildDescription)
+                }
+            } catch let error {
+                comparisons[childLabel] = .prebuilt(String(describing: error))
             }
         }
 
@@ -37,9 +41,20 @@ extension Attributes {
     }
 }
 
-fileprivate func attributesEqual(_ one: Any, _ two: Any) -> Bool {
+enum AttributeCompareError: Swift.Error, CustomStringConvertible {
+    case nonAttributeTypeProperty(String)
+
+    var description: String {
+        switch self {
+        case .nonAttributeTypeProperty(let type):
+            return "comparison on non-JSON:API Attribute type (\(type)) not supported."
+        }
+    }
+}
+
+fileprivate func attributesEqual(_ one: Any, _ two: Any) throws -> Bool {
     guard let attr = one as? AbstractAttribute else {
-        return false
+        throw AttributeCompareError.nonAttributeTypeProperty(String(describing: type(of: one)))
     }
 
     return attr.equals(two)
@@ -53,6 +68,29 @@ protocol AbstractAttribute {
     var abstractDescription: String { get }
 
     func equals(_ other: Any) -> Bool
+}
+
+extension Optional: AbstractAttribute where Wrapped: AbstractAttribute {
+    var abstractDescription: String {
+        switch self {
+        case .none:
+            return "nil"
+        case .some(let rel):
+            return rel.abstractDescription
+        }
+    }
+
+    func equals(_ other: Any) -> Bool {
+        switch self {
+        case .none:
+            return (other as? _AbstractWrapper).map { $0.abstractSelf == nil } ?? false
+        case .some(let rel):
+            guard case let .some(otherVal) = (other as? _AbstractWrapper)?.abstractSelf else {
+                return rel.equals(other)
+            }
+            return rel.equals(otherVal)
+        }
+    }
 }
 
 extension Attribute: AbstractAttribute {
