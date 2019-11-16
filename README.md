@@ -317,11 +317,13 @@ Literal expressibility for `Attribute`, `ToOneRelationship`, and `Id` are provid
 
 For example, you could create a mock `Author` (from the above example) as follows
 ```swift
-let author = Author(id: "1234", // You can just use a String directly as an Id
-										attributes: .init(name: "Janice Bluff"), // The name Attribute does not need to be initialized, you just use a String directly.
-										relationships: .none,
-										meta: .none,
-										links: .none)
+let author = Author(
+	id: "1234", // You can just use a String directly as an Id
+	attributes: .init(name: "Janice Bluff"), // The name Attribute does not need to be initialized, you just use a String directly.
+	relationships: .none,
+	meta: .none,
+	links: .none
+)
 ```
 
 ## Resource Object `check()`
