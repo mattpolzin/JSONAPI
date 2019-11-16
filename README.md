@@ -66,7 +66,7 @@ If you find something wrong with this library and it isn't already mentioned und
 ### Swift Package Manager
 Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
 ```
-	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "2.2.0"))
+	.package(url: "https://github.com/mattpolzin/JSONAPI.git", .upToNextMajor(from: "3.0.0"))
 ```
 
 ### Xcode project
