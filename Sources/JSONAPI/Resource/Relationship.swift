@@ -170,7 +170,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         // succeeds and then attempt to coerce nil to a Identifier
         // type at which point we can store nil in `id`.
         let anyNil: Any? = nil
-        if try container.decodeNil(forKey: .data) {
+        if try !container.contains(.data) || container.decodeNil(forKey: .data) {
             guard let val = anyNil as? Identifiable.Identifier else {
                 throw DecodingError.valueNotFound(
                     Self.self,
