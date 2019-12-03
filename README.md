@@ -309,6 +309,9 @@ print(response.article)
 print(response.author)
 ```
 
+## Deeper Dive
+See the [usage documentation](./documentation/usage.md).
+
 # JSONAPI+Testing
 The `JSONAPI` framework is packaged with a test library to help you test your `JSONAPI` integration. The test library is called `JSONAPITesting`. You can see `JSONAPITesting` in action in the Playground included with the `JSONAPI` repository.
 
