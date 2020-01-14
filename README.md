@@ -9,7 +9,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 
 ## Quick Start
 
-:warning: The following Google Colab examples have correct code, but there appears to be an bug in the branch of the Swift compiler currently being used by the Google Colab Swift notebooks such that the `JSONAPI` package cannot be pulled in and you cannot run the examples in-browser.
+:warning: The following Google Colab examples have correct code, but from time to time the Google Colab Swift compiler may be buggy and produce incorrect or erroneous results. Just keep that in mind if you run the code as you read through the Colab examples.
 
 ### Clientside
 - [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te)
