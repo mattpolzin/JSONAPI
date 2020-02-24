@@ -356,7 +356,7 @@ func test_articleResponse() {
 ```
 
 # JSONAPI+Arbitrary
-The `JSONAPI+Arbitrary` library provides `SwiftCheck` `Arbitrary` conformance for many of teh `JSONAPI` types.
+The `JSONAPI+Arbitrary` library provides `SwiftCheck` `Arbitrary` conformance for many of the `JSONAPI` types.
 
 See https://github.com/mattpolzin/JSONAPI-Arbitrary for more information.
 
