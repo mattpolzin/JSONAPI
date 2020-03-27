@@ -43,7 +43,13 @@ class SparseFieldEncoderTests: XCTestCase {
         XCTAssertEqual(allThingsOnDeserialized["bool"] as? Bool, true)
         XCTAssertEqual(allThingsOnDeserialized["double"] as? Double, 10.5)
         XCTAssertEqual(allThingsOnDeserialized["string"] as? String, "hello")
+        #if os(Linux)
+        // There's some bug with Linux where it won't case the value to a float.
+        // It does exist and it is == 1.2
+        XCTAssertEqual(allThingsOnDeserialized["float"] as? Double, 1.2)
+        #else
         XCTAssertEqual(allThingsOnDeserialized["float"] as? Float, 1.2)
+        #endif
         XCTAssertEqual(allThingsOnDeserialized["int"] as? Int, 3)
         XCTAssertEqual(allThingsOnDeserialized["int8"] as? Int8, 4)
         XCTAssertEqual(allThingsOnDeserialized["int16"] as? Int16, 5)

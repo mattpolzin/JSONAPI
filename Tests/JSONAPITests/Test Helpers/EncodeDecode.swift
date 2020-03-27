@@ -9,7 +9,16 @@ import Foundation
 import XCTest
 
 let testDecoder = JSONDecoder()
-let testEncoder = JSONEncoder()
+let testEncoder: JSONEncoder = {
+    let encoder = JSONEncoder()
+    if #available(OSX 10.13, iOS 11.0, *) {
+        encoder.outputFormatting = .sortedKeys
+    }
+    #if os(Linux)
+    encoder.outputFormatting = .sortedKeys
+    #endif
+    return encoder
+}()
 
 func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
 	return try! testDecoder.decode(T.self, from: data)
