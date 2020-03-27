@@ -38,6 +38,8 @@ class SparseFieldEncoderTests: XCTestCase {
         let allThingsOnDeserialized = try! JSONSerialization.jsonObject(with: allThingsOn,
         options: []) as! [String: Any]
 
+        print(allThingsOnDeserialized)
+
         XCTAssertNil(allThingsOnDeserialized["omittable"])
         XCTAssertNotNil(allThingsOnDeserialized["nullable"] as? NSNull)
         XCTAssertEqual(allThingsOnDeserialized["bool"] as? Bool, true)
