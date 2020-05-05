@@ -23,12 +23,16 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
     public enum Location: String, Equatable {
         case attributes
         case relationships
+        case relationshipType
+        case relationshipId
         case type
 
         var singular: String {
             switch self {
             case .attributes: return "attribute"
             case .relationships: return "relationship"
+            case .relationshipType: return "relationship type"
+            case .relationshipId: return "relationship Id"
             case .type: return "type"
             }
         }
@@ -44,8 +48,19 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
             (location, subjectName) = Self.context(ctx)
             cause = .valueNotFound
         case .keyNotFound(let missingKey, let ctx):
-            (location, _) = Self.context(ctx)
-            subjectName = missingKey.stringValue
+            let (location, name) = Self.context(ctx)
+            let missingKeyString = missingKey.stringValue
+
+            if location == .relationships && missingKeyString == "type" {
+                self.location = .relationshipType
+                subjectName = name
+            } else if location == .relationships && missingKeyString == "id" {
+                self.location = .relationshipId
+                subjectName = name
+            } else {
+                self.location = location
+                subjectName = missingKey.stringValue
+            }
             cause = .keyNotFound
         default:
             return nil
@@ -106,6 +121,10 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
             return "\(location) object is required and missing."
         case .keyNotFound where location == .type:
             return "'type' (a.k.a. JSON:API type name) is required and missing."
+        case .keyNotFound where location == .relationshipType:
+            return "'\(subjectName)' relationship does not have a 'type'."
+        case .keyNotFound where location == .relationshipId:
+            return "'\(subjectName)' relationship does not have an 'id'."
         case .keyNotFound:
             return "'\(subjectName)' \(location.singular) is required and missing."
         case .valueNotFound where location == .type:

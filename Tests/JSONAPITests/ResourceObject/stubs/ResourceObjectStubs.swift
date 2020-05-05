@@ -415,6 +415,34 @@ let entity_nonNullable_relationship_is_null2 = """
 }
 """.data(using: .utf8)!
 
+let entity_required_relationship_no_id = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "type": "thirteenth_test_entities"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
+let entity_required_relationship_no_type = """
+{
+    "id": "1",
+    "type": "thirteenth_test_entities",
+    "relationships": {
+        "required": {
+            "data": {
+                "id": "10"
+            }
+        }
+    }
+}
+""".data(using: .utf8)!
+
 let entity_required_relationship_is_omitted = """
 {
     "id": "1",

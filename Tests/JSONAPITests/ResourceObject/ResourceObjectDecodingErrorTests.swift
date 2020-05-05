@@ -52,6 +52,48 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
         }
     }
 
+    func test_relationshipWithNoId() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity.self,
+            from: entity_required_relationship_no_id
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .keyNotFound,
+                    location: .relationshipId
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship does not have an 'id'."
+            )
+        }
+    }
+
+    func test_relationshipWithNoType() {
+        XCTAssertThrowsError(try testDecoder.decode(
+            TestEntity.self,
+            from: entity_required_relationship_no_type
+        )) { error in
+            XCTAssertEqual(
+                error as? ResourceObjectDecodingError,
+                ResourceObjectDecodingError(
+                    subjectName: "required",
+                    cause: .keyNotFound,
+                    location: .relationshipType
+                )
+            )
+
+            XCTAssertEqual(
+                (error as? ResourceObjectDecodingError)?.description,
+                "'required' relationship does not have a 'type'."
+            )
+        }
+    }
+
     func test_NonNullable_relationship() {
         XCTAssertThrowsError(try testDecoder.decode(
             TestEntity.self,
