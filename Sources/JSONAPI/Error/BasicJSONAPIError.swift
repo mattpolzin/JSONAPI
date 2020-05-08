@@ -61,7 +61,7 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
             detail.map { ("detail", $0) },
             source.flatMap { $0.pointer.map { ("pointer", $0) } },
             source.flatMap { $0.parameter.map { ("parameter", $0) } }
-            ].compactMap { $0 }
+        ].compactMap { $0 }
         return Dictionary(uniqueKeysWithValues: keysAndValues)
     }
 

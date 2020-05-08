@@ -30,7 +30,7 @@ class NonJSONAPIRelatableTests: XCTestCase {
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "hello")
 		XCTAssertEqual((entity ~> \.nullableMaybeOne)?.rawValue, "world")
 		XCTAssertEqual((entity ~> \.maybeOne)?.rawValue, "world")
-		XCTAssertEqual((entity ~> \.maybeMany)?.map { $0.rawValue }, ["world", "hello"])
+		XCTAssertEqual((entity ~> \.maybeMany)?.map(\.rawValue), ["world", "hello"])
 	}
 
 	func test_initialization2_all_relationships_missing() {

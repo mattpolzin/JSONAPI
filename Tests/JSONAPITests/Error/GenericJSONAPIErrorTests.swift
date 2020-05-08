@@ -140,7 +140,7 @@ private struct TestPayload: Codable, Equatable, ErrorDictType {
         let keysAndValues = [
             ("hello", hello),
             world.map { ("world", String($0)) }
-            ].compactMap { $0 }
+        ].compactMap { $0 }
         return Dictionary(uniqueKeysWithValues: keysAndValues)
     }
 }

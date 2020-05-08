@@ -121,7 +121,7 @@ public typealias NoIncludes = Include0
 public typealias Include1 = Poly1
 extension Includes where I: _Poly1 {
     public subscript(_ lookup: I.A.Type) -> [I.A] {
-        return values.compactMap { $0.a }
+        return values.compactMap(\.a)
     }
 }
 
@@ -129,7 +129,7 @@ extension Includes where I: _Poly1 {
 public typealias Include2 = Poly2
 extension Includes where I: _Poly2 {
     public subscript(_ lookup: I.B.Type) -> [I.B] {
-        return values.compactMap { $0.b }
+        return values.compactMap(\.b)
     }
 }
 
@@ -137,7 +137,7 @@ extension Includes where I: _Poly2 {
 public typealias Include3 = Poly3
 extension Includes where I: _Poly3 {
     public subscript(_ lookup: I.C.Type) -> [I.C] {
-        return values.compactMap { $0.c }
+        return values.compactMap(\.c)
     }
 }
 
@@ -145,7 +145,7 @@ extension Includes where I: _Poly3 {
 public typealias Include4 = Poly4
 extension Includes where I: _Poly4 {
     public subscript(_ lookup: I.D.Type) -> [I.D] {
-        return values.compactMap { $0.d }
+        return values.compactMap(\.d)
     }
 }
 
@@ -153,7 +153,7 @@ extension Includes where I: _Poly4 {
 public typealias Include5 = Poly5
 extension Includes where I: _Poly5 {
     public subscript(_ lookup: I.E.Type) -> [I.E] {
-        return values.compactMap { $0.e }
+        return values.compactMap(\.e)
     }
 }
 
@@ -161,7 +161,7 @@ extension Includes where I: _Poly5 {
 public typealias Include6 = Poly6
 extension Includes where I: _Poly6 {
     public subscript(_ lookup: I.F.Type) -> [I.F] {
-        return values.compactMap { $0.f }
+        return values.compactMap(\.f)
     }
 }
 
@@ -169,7 +169,7 @@ extension Includes where I: _Poly6 {
 public typealias Include7 = Poly7
 extension Includes where I: _Poly7 {
     public subscript(_ lookup: I.G.Type) -> [I.G] {
-        return values.compactMap { $0.g }
+        return values.compactMap(\.g)
     }
 }
 
@@ -177,7 +177,7 @@ extension Includes where I: _Poly7 {
 public typealias Include8 = Poly8
 extension Includes where I: _Poly8 {
     public subscript(_ lookup: I.H.Type) -> [I.H] {
-        return values.compactMap { $0.h }
+        return values.compactMap(\.h)
     }
 }
 
@@ -185,7 +185,7 @@ extension Includes where I: _Poly8 {
 public typealias Include9 = Poly9
 extension Includes where I: _Poly9 {
     public subscript(_ lookup: I.I.Type) -> [I.I] {
-        return values.compactMap { $0.i }
+        return values.compactMap(\.i)
     }
 }
 
@@ -193,7 +193,7 @@ extension Includes where I: _Poly9 {
 public typealias Include10 = Poly10
 extension Includes where I: _Poly10 {
     public subscript(_ lookup: I.J.Type) -> [I.J] {
-        return values.compactMap { $0.j }
+        return values.compactMap(\.j)
     }
 }
 
@@ -201,7 +201,7 @@ extension Includes where I: _Poly10 {
 public typealias Include11 = Poly11
 extension Includes where I: _Poly11 {
     public subscript(_ lookup: I.K.Type) -> [I.K] {
-        return values.compactMap { $0.k }
+        return values.compactMap(\.k)
     }
 }
 

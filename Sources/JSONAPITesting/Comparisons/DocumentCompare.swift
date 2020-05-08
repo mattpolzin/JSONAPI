@@ -50,7 +50,7 @@ public enum BodyComparison: Equatable, CustomStringConvertible {
             }
         ).map(BasicComparison.init)
             .filter { !$0.isSame }
-            .map { $0.rawValue }
+            .map(\.rawValue)
             .joined(separator: ", ")
 
         let errorComparisonString = errorComparisons.isEmpty

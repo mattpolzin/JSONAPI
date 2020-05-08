@@ -255,7 +255,7 @@ public extension ResourceObjectProxy {
     subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
         // Implementation Note: Handles Transform that returns optional
         // type.
-        return attributes[keyPath: path].flatMap { $0.value }
+        return attributes[keyPath: path].flatMap(\.value)
     }
 
     // MARK: Dynaminc Member Keypath Lookup
@@ -277,7 +277,7 @@ public extension ResourceObjectProxy {
     /// allows you to write `resourceObject[\.propertyName]` instead
     /// of `resourceObject.attributes.propertyName.value`.
     subscript<T: AttributeType, U>(dynamicMember path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
-        return attributes[keyPath: path].flatMap { $0.value }
+        return attributes[keyPath: path].flatMap(\.value)
     }
 
     // MARK: Direct Keypath Subscript Lookup

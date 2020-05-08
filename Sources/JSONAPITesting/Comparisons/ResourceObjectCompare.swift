@@ -43,7 +43,7 @@ public struct ResourceObjectComparison: Equatable, PropertyComparison {
                 uniquingKeysWith: { $1 }
         )
             .filter { $1 != .same }
-            .mapValues { $0.rawValue }
+            .mapValues(\.rawValue)
     }
 }
 

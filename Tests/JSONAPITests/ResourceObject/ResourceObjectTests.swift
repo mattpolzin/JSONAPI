@@ -188,7 +188,7 @@ extension ResourceObjectTests {
 
 		XCTAssert(type(of: entity.attributes) == NoAttributes.self)
 
-		XCTAssertEqual((entity ~> \.others).map { $0.rawValue }, ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
+		XCTAssertEqual((entity ~> \.others).map(\.rawValue), ["364B3B69-4DF1-467F-B52E-B0C9E44F666E"])
 		XCTAssertNoThrow(try TestEntity3.check(entity))
 
 		testEncoded(entity: entity)

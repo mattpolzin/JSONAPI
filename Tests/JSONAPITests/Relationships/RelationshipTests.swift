@@ -18,7 +18,7 @@ class RelationshipTests: XCTestCase {
 		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(resourceObjects: [entity1, entity2, entity3, entity4])
 
 		XCTAssertEqual(relationship.ids.count, 4)
-		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
+		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map(\.id))
 	}
 
 	func test_initToManyWithRelationships() {
@@ -29,7 +29,7 @@ class RelationshipTests: XCTestCase {
 		let relationship = ToManyRelationship<TestEntity1, NoMetadata, NoLinks>(pointers: [entity1.pointer, entity2.pointer, entity3.pointer, entity4.pointer])
 
 		XCTAssertEqual(relationship.ids.count, 4)
-		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map { $0.id })
+		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map(\.id))
 	}
 }
 
@@ -91,7 +91,7 @@ extension RelationshipTests {
 		let relationship = decoded(type: ToManyRelationship<TestEntity1, NoMetadata, NoLinks>.self,
 								   data: to_many_relationship)
 
-		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.ids.map(\.rawValue), ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 	}
 
 	func test_ToManyRelationship_encode() {
@@ -103,7 +103,7 @@ extension RelationshipTests {
 		let relationship = decoded(type: ToManyWithMeta.self,
 								   data: to_many_relationship_with_meta)
 
-		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.ids.map(\.rawValue), ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 		XCTAssertEqual(relationship.meta.a, "hello")
 	}
 
@@ -116,7 +116,7 @@ extension RelationshipTests {
 		let relationship = decoded(type: ToManyWithLinks.self,
 								   data: to_many_relationship_with_links)
 
-		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.ids.map(\.rawValue), ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 		XCTAssertEqual(relationship.links.b, .init(url: "world"))
 	}
 
@@ -129,7 +129,7 @@ extension RelationshipTests {
 		let relationship = decoded(type: ToManyWithMetaAndLinks.self,
 								   data: to_many_relationship_with_meta_and_links)
 
-		XCTAssertEqual(relationship.ids.map { $0.rawValue }, ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
+		XCTAssertEqual(relationship.ids.map(\.rawValue), ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
 		XCTAssertEqual(relationship.meta.a, "hello")
 		XCTAssertEqual(relationship.links.b, .init(url: "world"))
 	}

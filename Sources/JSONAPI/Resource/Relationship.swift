@@ -79,13 +79,13 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
     }
 
     public init<T: JSONAPI.Identifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.Identifier == Relatable.Identifier {
-        ids = pointers.map { $0.id }
+        ids = pointers.map(\.id)
         self.meta = meta
         self.links = links
     }
 
     public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.Id == Relatable.Identifier {
-        self.init(ids: resourceObjects.map { $0.id }, meta: meta, links: links)
+        self.init(ids: resourceObjects.map(\.id), meta: meta, links: links)
     }
 
     private init(meta: MetaType, links: LinksType) {

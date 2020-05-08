@@ -22,11 +22,11 @@ final class ArrayCompareTests: XCTestCase {
             [.same, .same, .same]
         )
 
-        XCTAssertEqual(comparison.map { $0.description }, ["same", "same", "same"])
+        XCTAssertEqual(comparison.map(\.description), ["same", "same", "same"])
 
         XCTAssertEqual(comparison.map(BasicComparison.init(reducing:)), [.same, .same, .same])
 
-        XCTAssertEqual(comparison.map(BasicComparison.init(reducing:)).map { $0.description }, ["same", "same", "same"])
+        XCTAssertEqual(comparison.map(BasicComparison.init(reducing:)).map(\.description), ["same", "same", "same"])
     }
 
     func test_differentLengths() {
@@ -42,7 +42,7 @@ final class ArrayCompareTests: XCTestCase {
             [.same, .same, .missing]
         )
 
-        XCTAssertEqual(comparison1.map { $0.description }, ["same", "same", "missing"])
+        XCTAssertEqual(comparison1.map(\.description), ["same", "same", "missing"])
 
         XCTAssertEqual(comparison1.map(BasicComparison.init(reducing:)), [.same, .same, .different("array length 1", "array length 2")])
 
@@ -55,7 +55,7 @@ final class ArrayCompareTests: XCTestCase {
             [.same, .same, .missing]
         )
 
-        XCTAssertEqual(comparison2.map { $0.description }, ["same", "same", "missing"])
+        XCTAssertEqual(comparison2.map(\.description), ["same", "same", "missing"])
 
         XCTAssertEqual(comparison2.map(BasicComparison.init(reducing:)), [.same, .same, .different("array length 1", "array length 2")])
     }
@@ -73,7 +73,7 @@ final class ArrayCompareTests: XCTestCase {
             [.differentValues("c", "a"), .same, .differentValues("a", "c")]
         )
 
-        XCTAssertEqual(comparison.map { $0.description }, ["c ≠ a", "same", "a ≠ c"])
+        XCTAssertEqual(comparison.map(\.description), ["c ≠ a", "same", "a ≠ c"])
     }
 
     func test_reducePrebuilt() {

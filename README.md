@@ -60,7 +60,7 @@ If you find something wrong with this library and it isn't already mentioned und
 
 ## Dev Environment
 ### Prerequisites
-1. Swift 5.1+
+1. Swift 5.2+
 2. Swift Package Manager, Xcode 11+, or Cocoapods
 
 ### Swift Package Manager
