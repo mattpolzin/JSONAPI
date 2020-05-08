@@ -502,21 +502,42 @@ extension Document {
     /// Document type but you wish to constrain it to success values.
     public struct SuccessDocument: EncodableJSONAPIDocument {
         public typealias BodyData = Document.BodyData
+        public typealias APIDescription = Document.APIDescription
+        public typealias Body = Document.Body
+        public typealias PrimaryResourceBody = Document.PrimaryResourceBody
+        public typealias Include = Document.Include
+        public typealias MetaType = Document.MetaType
+        public typealias LinksType = Document.LinksType
 
-        public var body: Document.Body { return document.body }
+        public let apiDescription: APIDescription
+        public let data: BodyData
+        public let body: Body
 
-        private let document: Document
+        public var document: Document {
+            Document(
+                apiDescription: apiDescription,
+                body: data.primary,
+                includes: data.includes,
+                meta: data.meta,
+                links: data.links
+            )
+        }
 
-        public init(apiDescription: APIDescription,
-                    body: PrimaryResourceBody,
-                    includes: Includes<Include>,
-                    meta: MetaType,
-                    links: LinksType) {
-            document = .init(apiDescription: apiDescription,
-                             body: body,
-                             includes: includes,
-                             meta: meta,
-                             links: links)
+        public init(
+            apiDescription: APIDescription,
+            body: PrimaryResourceBody,
+            includes: Includes<Include>,
+            meta: MetaType,
+            links: LinksType
+        ) {
+            self.apiDescription = apiDescription
+            data = .init(
+                primary: body,
+                includes: includes,
+                meta: meta,
+                links: links
+            )
+            self.body = .data(data)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -525,50 +546,32 @@ extension Document {
             try container.encode(document)
         }
 
-        /// The JSON API Spec calls this the JSON:API Object. It contains version
-        /// and metadata information about the API itself.
-        public var apiDescription: APIDescription {
-            return document.apiDescription
-        }
-
-        /// Get the document data
-        ///
-        /// `nil` if the Document is an error response. Otherwise,
-        /// a structure containing the primary resource, any included
-        /// resources, metadata, and links.
-        public var data: BodyData? {
-            return document.body.data
-        }
-
         /// Quick access to the `data`'s primary resource.
         ///
-        /// `nil` if the Document is an error document. Otherwise,
-        /// the primary resource body, which will contain zero/one, one/many
+        /// Guaranteed to exist for a `SuccessDocument`.
+        /// The primary resource body, which will contain zero/one, one/many
         /// resources dependening on the `PrimaryResourceBody` type.
         ///
         /// See `SingleResourceBody` and `ManyResourceBody`.
-        public var primaryResource: PrimaryResourceBody? {
-            return document.body.primaryResource
+        public var primaryResource: PrimaryResourceBody {
+            return data.primary
         }
 
         /// Quick access to the `data`'s includes.
         ///
-        /// `nil` if the Document is an error document. Otherwise,
-        /// zero or more includes.
-        public var includes: Includes<IncludeType>? {
-            return document.body.includes
+        /// Zero or more includes.
+        public var includes: Includes<IncludeType> {
+            return data.includes
         }
 
-        /// The metadata for the error or data document or `nil` if
-        /// no metadata is found.
-        public var meta: MetaType? {
-            return document.body.meta
+        /// The metadata for the data document.
+        public var meta: MetaType {
+            return data.meta
         }
 
-        /// The links for the error or data document or `nil` if
-        /// no links are found.
-        public var links: LinksType? {
-            return document.body.links
+        /// The links for the data document.
+        public var links: LinksType {
+            return data.links
         }
 
         public static func ==(lhs: Document, rhs: SuccessDocument) -> Bool {
@@ -599,11 +602,15 @@ extension Document.SuccessDocument: Decodable, CodableJSONAPIDocument
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
-        document = try container.decode(Document.self)
+        let document = try container.decode(Document.self)
 
-        guard !document.body.isError else {
+        guard case .data(let data) = document.body else {
             throw DocumentDecodingError.foundErrorDocumentWhenExpectingSuccess
         }
+
+        self.apiDescription = document.apiDescription
+        self.data = data
+        self.body = .data(data)
     }
 }
 
