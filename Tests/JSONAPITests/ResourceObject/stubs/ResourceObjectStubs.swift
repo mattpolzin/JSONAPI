@@ -233,6 +233,18 @@ let entity_optional_not_omitted_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
+        "optionalMeta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -260,6 +272,12 @@ let entity_optional_nullable_nulled_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -284,6 +302,12 @@ let entity_omitted_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -305,6 +329,12 @@ let entity_optional_to_many_relationship_not_omitted = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": {
 				"id": "3323",
@@ -334,6 +364,12 @@ let entity_nulled_relationship = """
 	"id": "1",
 	"type": "ninth_test_entities",
 	"relationships": {
+        "meta": {
+            "meta": {
+                "x": "world",
+                "y": 5
+            }
+        },
 		"nullableOne": {
 			"data": null
 		},

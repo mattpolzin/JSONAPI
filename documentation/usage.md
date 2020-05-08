@@ -580,6 +580,8 @@ let createdAt = user.createdAt
 This works because `createdAt` is defined in the form: `var {name}: ({ResourceObject}) -> {Value}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-attribute.
 
 ### Meta-Relationships
+**NOTE** this section describes an ability to create computed relationships, not to be confused with the similarly named `MetaRelationship` type which is used to create relationships that do not have an `id`/`type` (they only have `links` and/or `meta`).
+
 This advanced feature may not ever be useful, but if you find yourself in the situation of dealing with an API that does not 100% follow the **SPEC** then you might find meta-relationships are just the thing to make your resource objects more natural to work with.
 
 Similarly to Meta-Attributes, Meta-Relationships allow you to represent non-compliant relationships as computed relationship properties. In the following example, a relationship is created from some attributes on the JSON model.

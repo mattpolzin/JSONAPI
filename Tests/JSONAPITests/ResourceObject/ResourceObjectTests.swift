@@ -27,7 +27,7 @@ class ResourceObjectTests: XCTestCase {
 
 	func test_optional_relationship_operator_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalOne, Optional(entity1.id))
 		XCTAssertEqual((entity ~> \.optionalOne).rawValue, Optional(entity1.id.rawValue))
@@ -44,7 +44,7 @@ class ResourceObjectTests: XCTestCase {
 
 	func test_optionalToMany_relationship_opeartor_access() {
 		let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
-		let entity = TestEntity9(attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
+		let entity = TestEntity9(attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: .init(resourceObjects: [entity1, entity1], meta: .none, links: .none)), meta: .none, links: .none)
 
 		XCTAssertEqual(entity ~> \.optionalMany, [entity1.id, entity1.id])
 	}
@@ -84,13 +84,13 @@ class ResourceObjectTests: XCTestCase {
 		let _ = TestEntity6(id: .init(rawValue: "6"), attributes: .init(here: .init(value: "here"), maybeHere: nil, maybeNull: .init(value: nil)), relationships: .none, meta: .none, links: .none)
 		let _ = TestEntity7(id: .init(rawValue: "7"), attributes: .init(here: .init(value: "hello"), maybeHereMaybeNull: .init(value: "world")), relationships: .none, meta: .none, links: .none)
 		XCTAssertNoThrow(try TestEntity8(id: .init(rawValue: "8"), attributes: .init(string: .init(value: "hello"), int: .init(value: 10), stringFromInt: .init(rawValue: 20), plus: .init(rawValue: 30), doubleFromInt: .init(rawValue: 32), omitted: nil, nullToString: .init(rawValue: nil)), relationships: .none, meta: .none, links: .none))
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(id: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
-		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
+        let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: .init(meta: .init(x: "hello", y: 5), links: .none), one: entity1.pointer, nullableOne: .init(resourceObject: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(id: nil), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalOne: nil, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
+		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
 		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
@@ -356,6 +356,8 @@ extension ResourceObjectTests {
 		let entity = decoded(type: TestEntity9.self,
 								   data: entity_optional_not_omitted_relationship)
 
+        XCTAssertEqual(entity.relationships.meta.meta, TestEntityMeta(x: "world", y: 5))
+        XCTAssertEqual(entity.relationships.optionalMeta?.meta, TestEntityMeta(x: "world", y: 5))
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalOne)
@@ -391,6 +393,8 @@ extension ResourceObjectTests {
 		let entity = decoded(type: TestEntity9.self,
 							 data: entity_optional_nullable_nulled_relationship)
 
+        XCTAssertEqual(entity.relationships.meta.meta, TestEntityMeta(x: "world", y: 5))
+        XCTAssertNil(entity.relationships.optionalMeta)
 		XCTAssertEqual((entity ~> \.nullableOne)?.rawValue, "3323")
 		XCTAssertEqual((entity ~> \.one).rawValue, "4459")
 		XCTAssertNil(entity ~> \.optionalNullableOne)
@@ -786,6 +790,10 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
+            let meta: MetaRelationship<TestEntityMeta, NoLinks>
+
+            let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
+
 			let one: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>
 
 			let nullableOne: ToOneRelationship<TestEntity1?, NoMetadata, NoLinks>
@@ -835,10 +843,13 @@ extension ResourceObjectTests {
 
 		public struct Relationships: JSONAPI.Relationships {
 			public init() {
+                optionalMeta = nil
 				optionalOne = nil
 				optionalNullableOne = nil
 				optionalMany = nil
 			}
+
+            let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
 
 			let optionalOne: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>?
 
