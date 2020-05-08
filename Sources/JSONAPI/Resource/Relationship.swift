@@ -13,7 +13,25 @@ public protocol RelationshipType {
     var meta: MetaType { get }
 }
 
-/// An ResourceObject relationship that can be encoded to or decoded from
+/// A relationship with no `data` entry (it still must contain at least meta or links).
+/// A server might choose to expose certain relationships as just a link that can be
+/// used to retrieve the related resource(s) in some cases.
+///
+/// If the server is going to deliver one or more resource's `id`/`type` in a `data`
+/// entry, you want to use either the `ToOneRelationship` or the
+/// `ToManyRelationship` instead.
+public struct MetaRelationship<MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
+
+    public let meta: MetaType
+    public let links: LinksType
+
+    public init(meta: MetaType, links: LinksType) {
+        self.meta = meta
+        self.links = links
+    }
+}
+
+/// A `ResourceObject` relationship that can be encoded to or decoded from
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<ResourceObjectDescription>`
@@ -148,6 +166,36 @@ private enum ResourceIdentifierCodingKeys: String, CodingKey {
     case entityType = "type"
 }
 
+extension MetaRelationship: Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
+
+        if let noMeta = NoMetadata() as? MetaType {
+            meta = noMeta
+        } else {
+            meta = try container.decode(MetaType.self, forKey: .meta)
+        }
+
+        if let noLinks = NoLinks() as? LinksType {
+            links = noLinks
+        } else {
+            links = try container.decode(LinksType.self, forKey: .links)
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ResourceLinkageCodingKeys.self)
+
+        if MetaType.self != NoMetadata.self {
+            try container.encode(meta, forKey: .meta)
+        }
+
+        if LinksType.self != NoLinks.self {
+            try container.encode(links, forKey: .links)
+        }
+    }
+}
+
 extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
@@ -192,14 +240,20 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
                 type is _DictionaryType.Type else {
                 throw error
             }
-            throw JSONAPICodingError.quantityMismatch(expected: .one,
-                                                  path: context.codingPath)
+            throw JSONAPICodingError.quantityMismatch(
+                expected: .one,
+                path: context.codingPath
+            )
         }
 
         let type = try identifier.decode(String.self, forKey: .entityType)
 
         guard type == Identifiable.jsonType else {
-            throw JSONAPICodingError.typeMismatch(expected: Identifiable.jsonType, found: type, path: decoder.codingPath)
+            throw JSONAPICodingError.typeMismatch(
+                expected: Identifiable.jsonType,
+                found: type,
+                path: decoder.codingPath
+            )
         }
 
         id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
@@ -298,12 +352,16 @@ extension ToManyRelationship: Codable {
 }
 
 // MARK: CustomStringDescribable
+extension MetaRelationship: CustomStringConvertible {
+    public var description: String { "MetaRelationship" }
+}
+
 extension ToOneRelationship: CustomStringConvertible {
-    public var description: String { return "Relationship(\(String(describing: id)))" }
+    public var description: String { "Relationship(\(String(describing: id)))" }
 }
 
 extension ToManyRelationship: CustomStringConvertible {
-    public var description: String { return "Relationship([\(ids.map(String.init(describing:)).joined(separator: ", "))])" }
+    public var description: String { "Relationship([\(ids.map(String.init(describing:)).joined(separator: ", "))])" }
 }
 
 private protocol _DictionaryType {}

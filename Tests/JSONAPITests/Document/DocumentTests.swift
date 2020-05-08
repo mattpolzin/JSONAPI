@@ -1116,11 +1116,16 @@ extension DocumentTests {
 
 extension DocumentTests {
     func test_sparsePrimaryResource() {
-        let primaryResource = Book(attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: []),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: [],
+                collection: .init(meta: .none, links: .init(link: .init(url: "https://more.books.com"), link2: .init(url: "http://extra.com/books", meta: .init(hello: "world"))))
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [.pageCount])
 
         let document = Document<
@@ -1185,20 +1190,30 @@ extension DocumentTests {
     }
 
     func test_sparseIncludeFullPrimaryResource() {
-        let bookInclude = Book(id: "444",
-                               attributes: .init(pageCount: 113),
-                               relationships: .init(author: "1234",
-                                                    series: ["443"]),
-                               meta: .none,
-                               links: .none)
+        let bookInclude = Book(
+            id: "444",
+            attributes: .init(pageCount: 113),
+            relationships: .init(
+                author: "1234",
+                series: ["443"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
-        let primaryResource = Book(id: "443",
-                                   attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: ["444"]),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            id: "443",
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: ["444"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
 
         let document = Document<
             SingleResourceBody<Book>,
@@ -1254,20 +1269,30 @@ extension DocumentTests {
     }
 
     func test_sparseIncludeSparsePrimaryResource() {
-        let bookInclude = Book(id: "444",
-                               attributes: .init(pageCount: 113),
-                               relationships: .init(author: "1234",
-                                                    series: ["443"]),
-                               meta: .none,
-                               links: .none)
+        let bookInclude = Book(
+            id: "444",
+            attributes: .init(pageCount: 113),
+            relationships: .init(
+                author: "1234",
+                series: ["443"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
-        let primaryResource = Book(id: "443",
-                                   attributes: .init(pageCount: 100),
-                                   relationships: .init(author: "1234",
-                                                        series: ["444"]),
-                                   meta: .none,
-                                   links: .none)
+        let primaryResource = Book(
+            id: "443",
+            attributes: .init(pageCount: 100),
+            relationships: .init(
+                author: "1234",
+                series: ["444"],
+                collection: nil
+            ),
+            meta: .none,
+            links: .none
+        )
             .sparse(with: [])
 
         let document = Document<
@@ -1526,6 +1551,7 @@ extension DocumentTests {
         struct Relationships: JSONAPI.Relationships {
             let author: ToOneRelationship<Author, NoMetadata, NoLinks>
             let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+            let collection: MetaRelationship<NoMetadata, TestLinks>?
         }
     }
 

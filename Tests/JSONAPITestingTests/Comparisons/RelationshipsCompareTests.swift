@@ -15,7 +15,10 @@ final class RelationshipsCompareTests: XCTestCase {
             a: t1,
             b: t2,
             c: t3,
-            d: t4
+            d: t4,
+            e: t5,
+            f: t6,
+            g: t7
         )
         let r2 = r1
 
@@ -25,7 +28,10 @@ final class RelationshipsCompareTests: XCTestCase {
             a: t1_differentId,
             b: t2_differentLinks,
             c: t3_differentId,
-            d: t4_differentLinks
+            d: t4_differentLinks,
+            e: t5_differentLinks,
+            f: t6_differentMeta,
+            g: t7_differentMetaAndLinks
         )
         let r4 = r3
 
@@ -35,7 +41,10 @@ final class RelationshipsCompareTests: XCTestCase {
             a: nil,
             b: nil,
             c: nil,
-            d: nil
+            d: nil,
+            e: nil,
+            f: nil,
+            g: nil
         )
         let r6 = r5
 
@@ -47,21 +56,30 @@ final class RelationshipsCompareTests: XCTestCase {
             a: t1,
             b: nil,
             c: t3,
-            d: nil
+            d: nil,
+            e: nil,
+            f: nil,
+            g: nil
         )
 
         let r2 = TestRelationships(
             a: t1_differentId,
             b: nil,
             c: t3_differentId,
-            d: nil
+            d: nil,
+            e: nil,
+            f: nil,
+            g: nil
         )
 
         XCTAssertEqual(r1.compare(to: r2), [
             "a": .different("Id(123)", "Id(999)"),
             "b": .same,
             "c": .different("123, 456", "999, 1010"),
-            "d": .same
+            "d": .same,
+            "e": .same,
+            "f": .same,
+            "g": .same
         ])
     }
 
@@ -70,21 +88,30 @@ final class RelationshipsCompareTests: XCTestCase {
             a: nil,
             b: t2,
             c: nil,
-            d: t4
+            d: t4,
+            e: nil,
+            f: t6,
+            g: t7
         )
 
         let r2 = TestRelationships(
             a: nil,
             b: t2_differentMeta,
             c: nil,
-            d: t4_differentMeta
+            d: t4_differentMeta,
+            e: nil,
+            f: t6_differentMeta,
+            g: t7_differentMetaAndLinks
         )
 
         XCTAssertEqual(r1.compare(to: r2), [
             "a": .same,
             "b": .different(#"("Id(456)", "hello: world", "link: http://google.com")"#, #"("Id(456)", "hello: there", "link: http://google.com")"#),
             "c": .same,
-            "d": .different(#"("123, 456", "hello: world", "link: http://google.com")"#, #"("123, 456", "hello: there", "link: http://google.com")"#)
+            "d": .different(#"("123, 456", "hello: world", "link: http://google.com")"#, #"("123, 456", "hello: there", "link: http://google.com")"#),
+            "e": .same,
+            "f": .different(#"("hello: hi", "No Links")"#, #"("hello: there", "No Links")"#),
+            "g": .different(#"("hello: hi", "link: http://google.com")"#, #"("hello: there", "link: http://hi.com")"#)
         ])
     }
 
@@ -93,21 +120,30 @@ final class RelationshipsCompareTests: XCTestCase {
             a: nil,
             b: t2,
             c: nil,
-            d: t4
+            d: t4,
+            e: t5,
+            f: nil,
+            g: nil
         )
 
         let r2 = TestRelationships(
             a: nil,
             b: t2_differentLinks,
             c: nil,
-            d: t4_differentLinks
+            d: t4_differentLinks,
+            e: t5_differentLinks,
+            f: nil,
+            g: nil
         )
 
         XCTAssertEqual(r1.compare(to: r2), [
             "a": .same,
             "b": .different(#"("Id(456)", "hello: world", "link: http://google.com")"#, #"("Id(456)", "hello: world", "link: http://yahoo.com")"#),
             "c": .same,
-            "d": .different(#"("123, 456", "hello: world", "link: http://google.com")"#, #"("123, 456", "hello: world", "link: http://yahoo.com")"#)
+            "d": .different(#"("123, 456", "hello: world", "link: http://google.com")"#, #"("123, 456", "hello: world", "link: http://yahoo.com")"#),
+            "e": .different(#"("No Metadata", "link: http://google.com")"#, #"("No Metadata", "link: http://hi.com")"#),
+            "f": .same,
+            "g": .same
         ])
     }
 
@@ -131,6 +167,9 @@ final class RelationshipsCompareTests: XCTestCase {
     let t2 = ToOneRelationship<TestType, TestMeta, TestLinks>(id: "456", meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
     let t3 = ToManyRelationship<TestType, NoMetadata, NoLinks>(ids: ["123", "456"])
     let t4 = ToManyRelationship<TestType, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
+    let t5 = MetaRelationship<NoMetadata, TestLinks>(meta: .none, links: .init(link: .init(url: "http://google.com")))
+    let t6 = MetaRelationship<TestMeta, NoLinks>(meta: .init(hello: "hi"), links: .none)
+    let t7 = MetaRelationship<TestMeta, TestLinks>(meta: .init(hello: "hi"), links: .init(link: .init(url: "http://google.com")))
 
     let t1_differentId = ToOneRelationship<TestType, NoMetadata, NoLinks>(id: "999")
     let t3_differentId = ToManyRelationship<TestType, NoMetadata, NoLinks>(ids: ["999", "1010"])
@@ -140,6 +179,10 @@ final class RelationshipsCompareTests: XCTestCase {
 
     let t2_differentMeta = ToOneRelationship<TestType, TestMeta, TestLinks>(id: "456", meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
     let t4_differentMeta = ToManyRelationship<TestType, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
+
+    let t5_differentLinks = MetaRelationship<NoMetadata, TestLinks>(meta: .none, links: .init(link: .init(url: "http://hi.com")))
+    let t6_differentMeta = MetaRelationship<TestMeta, NoLinks>(meta: .init(hello: "there"), links: .none)
+    let t7_differentMetaAndLinks = MetaRelationship<TestMeta, TestLinks>(meta: .init(hello: "there"), links: .init(link: .init(url: "http://hi.com")))
 }
 
 // MARK: - Test Types
@@ -174,6 +217,9 @@ extension RelationshipsCompareTests {
         let b: ToOneRelationship<TestType, TestMeta, TestLinks>?
         let c: ToManyRelationship<TestType, NoMetadata, NoLinks>?
         let d: ToManyRelationship<TestType, TestMeta, TestLinks>?
+        let e: MetaRelationship<NoMetadata, TestLinks>?
+        let f: MetaRelationship<TestMeta, NoLinks>?
+        let g: MetaRelationship<TestMeta, TestLinks>?
     }
 
     struct TestNonRelationships: JSONAPI.Relationships {

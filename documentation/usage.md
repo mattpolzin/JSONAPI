@@ -149,11 +149,13 @@ Note that I am calling an unidentified person is a "new" person. I suspect that 
 
 ### `JSONAPI.Relationships`
 
-There are two types of `Relationships`: `ToOneRelationship` and `ToManyRelationship`. A `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of either of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of a `ResourceObjectDescription`.
+There are three types of `Relationships`: `MetaRelationship`, `ToOneRelationship` and `ToManyRelationship`. A `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of any of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of a `ResourceObjectDescription`.
 
 In addition to identifying resource objects by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
 
-To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+The `MetaRelationship` is special in that it represents a Relationship Object with no `data` (it must contain at least one of `meta` or `links`). The other two relationship types are Relationship Objects with either singular resource linkages (`ToOneRelationship`) or arrays of resource linkages (`ToManyRelationship`).
+
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
 ```swift
 let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
 ```

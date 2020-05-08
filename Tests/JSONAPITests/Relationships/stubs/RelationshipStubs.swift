@@ -5,6 +5,33 @@
 //  Created by Mathew Polzin on 11/12/18.
 //
 
+let meta_relationship_with_meta = """
+{
+    "meta": {
+        "a": "hello"
+    }
+}
+""".data(using: .utf8)!
+
+let meta_relationship_with_links = """
+{
+    "links": {
+        "b": "world"
+    }
+}
+""".data(using: .utf8)!
+
+let meta_relationship_with_meta_and_links = """
+{
+    "meta": {
+        "a": "hello"
+    },
+    "links": {
+        "b": "world"
+    }
+}
+""".data(using: .utf8)!
+
 let to_one_relationship = """
 {
 	"data": {

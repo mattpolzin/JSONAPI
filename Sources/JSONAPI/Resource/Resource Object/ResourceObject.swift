@@ -7,8 +7,8 @@
 
 
 /// A JSON API structure within an ResourceObject that contains
-/// named properties of types `ToOneRelationship` and
-/// `ToManyRelationship`.
+/// named properties of types `MetaRelationship`, `ToOneRelationship`
+/// and `ToManyRelationship`.
 public protocol Relationships: Codable & Equatable {}
 
 /// A JSON API structure within an ResourceObject that contains

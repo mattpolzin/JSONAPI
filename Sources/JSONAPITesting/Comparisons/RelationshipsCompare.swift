@@ -93,6 +93,24 @@ extension Optional: AbstractRelationship where Wrapped: AbstractRelationship {
     }
 }
 
+extension MetaRelationship: AbstractRelationship {
+    var abstractDescription: String {
+        return String(describing:
+            (
+                String(describing: meta),
+                String(describing: links)
+            )
+        )
+    }
+
+    func equals(_ other: Any) -> Bool {
+        guard let attributeB = other as? Self else {
+            return false
+        }
+        return abstractDescription == attributeB.abstractDescription
+    }
+}
+
 extension ToOneRelationship: AbstractRelationship {
     var abstractDescription: String {
         if meta is NoMetadata && links is NoLinks {

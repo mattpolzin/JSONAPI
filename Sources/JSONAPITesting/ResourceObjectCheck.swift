@@ -47,6 +47,7 @@ private protocol OptionalRelationshipType {}
 extension Optional: OptionalRelationshipType where Wrapped: RelationshipType {}
 
 private protocol _RelationshipType {}
+extension MetaRelationship: _RelationshipType {}
 extension ToOneRelationship: _RelationshipType {}
 extension ToManyRelationship: _RelationshipType {}
 

@@ -35,6 +35,57 @@ class RelationshipTests: XCTestCase {
 
 // MARK: - Encode/Decode
 extension RelationshipTests {
+    func test_MetaRelationshipWithMeta() {
+        let relationship = decoded(
+            type: MetaRelationship<TestMeta, NoLinks>.self,
+            data: meta_relationship_with_meta
+        )
+
+        XCTAssertEqual(relationship.meta, TestMeta(a: "hello"))
+        XCTAssertEqual(relationship.links, .none)
+    }
+
+    func test_MetaRelationshipWithMeta_encode() {
+        test_DecodeEncodeEquality(
+            type: MetaRelationship<TestMeta, NoLinks>.self,
+            data: meta_relationship_with_meta
+        )
+    }
+
+    func test_MetaRelationshipWithLinks() {
+        let relationship = decoded(
+            type: MetaRelationship<NoMetadata, TestLinks>.self,
+            data: meta_relationship_with_links
+        )
+
+        XCTAssertEqual(relationship.meta, .none)
+        XCTAssertEqual(relationship.links, TestLinks(b: .init(url: "world")))
+    }
+
+    func test_MetaRelationshipWithLinks_encode() {
+        test_DecodeEncodeEquality(
+            type: MetaRelationship<NoMetadata, TestLinks>.self,
+            data: meta_relationship_with_links
+        )
+    }
+
+    func test_MetaRelationshipWithMetaAndLinks() {
+        let relationship = decoded(
+            type: MetaRelationship<TestMeta, TestLinks>.self,
+            data: meta_relationship_with_meta_and_links
+        )
+
+        XCTAssertEqual(relationship.meta, TestMeta(a: "hello"))
+        XCTAssertEqual(relationship.links, TestLinks(b: .init(url: "world")))
+    }
+
+    func test_MetaRelationshipWithMetaAndLinks_encode() {
+        test_DecodeEncodeEquality(
+            type: MetaRelationship<TestMeta, TestLinks>.self,
+            data: meta_relationship_with_meta_and_links
+        )
+    }
+
 	func test_ToOneRelationship() {
 		let relationship = decoded(type: ToOneRelationship<TestEntity1, NoMetadata, NoLinks>.self,
 								   data: to_one_relationship)
