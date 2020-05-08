@@ -33,13 +33,6 @@ public class PolyProxyTests: XCTestCase {
         XCTAssertEqual(polyUserA[direct: \.x], .init(x: "y"))
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UserADecode_deprecated() {
-        let polyUserA = decoded(type: User.self, data: poly_user_stub_1)
-
-        XCTAssertEqual(polyUserA[\.name], "Ken Moore")
-    }
-
 	func test_UserAAndBEncodeEquality() {
 		test_DecodeEncodeEquality(type: User.self, data: poly_user_stub_1)
 		test_DecodeEncodeEquality(type: User.self, data: poly_user_stub_2)
@@ -74,13 +67,6 @@ public class PolyProxyTests: XCTestCase {
 		XCTAssertEqual(polyUserB.relationships, .none)
         XCTAssertEqual(polyUserB[direct: \.x], .init(x: "y"))
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_UserBDecode_deprecated() {
-        let polyUserB = decoded(type: User.self, data: poly_user_stub_2)
-
-        XCTAssertEqual(polyUserB[\.name], "Ken Less")
-    }
 }
 
 // MARK: - Test types

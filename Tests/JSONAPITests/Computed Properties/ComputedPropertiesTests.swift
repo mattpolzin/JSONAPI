@@ -19,13 +19,6 @@ class ComputedPropertiesTests: XCTestCase {
 		XCTAssertNoThrow(try TestType.check(entity))
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_DecodeIgnoresComputed_deprecated() {
-        let entity = decoded(type: TestType.self, data: computed_property_attribute)
-
-        XCTAssertEqual(entity[\.name], "Sarah")
-    }
-
 	func test_EncodeIgnoresComputed() {
 		test_DecodeEncodeEquality(type: TestType.self, data: computed_property_attribute)
 	}
@@ -36,13 +29,6 @@ class ComputedPropertiesTests: XCTestCase {
         XCTAssertEqual(entity.computed, "Sarah2")
         XCTAssertEqual(entity[direct: \.directSecretsOut], "shhhh")
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_ComputedAttributeAccess_deprecated() {
-        let entity = decoded(type: TestType.self, data: computed_property_attribute)
-
-        XCTAssertEqual(entity[\.computed], "Sarah2")
-    }
 
 	func test_ComputedNonAttributeAccess() {
 		let entity = decoded(type: TestType.self, data: computed_property_attribute)

@@ -72,13 +72,6 @@ class ResourceObjectTests: XCTestCase {
         XCTAssertEqual(entity.me, "hello")
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_unidentifiedEntityAttributeAccess_deprecated() {
-        let entity = UnidentifiedTestEntity(attributes: .init(me: "hello"), relationships: .none, meta: .none, links: .none)
-
-        XCTAssertEqual(entity[\.me], "hello")
-    }
-
 	func test_initialization() {
 		let entity1 = TestEntity1(id: .init(rawValue: "wow"), attributes: .none, relationships: .none, meta: .none, links: .none)
 		let entity2 = TestEntity2(id: .init(rawValue: "cool"), attributes: .none, relationships: .init(other: .init(resourceObject: entity1)), meta: .none, links: .none)
@@ -170,13 +163,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntityNoRelationshipsSomeAttributes_deprecated() {
-        let entity = decoded(type: TestEntity5.self,
-                             data: entity_no_relationships_some_attributes)
-        XCTAssertEqual(entity[\.floater], 123.321)
-    }
-
 	func test_EntityNoRelationshipsSomeAttributes_encode() {
 		test_DecodeEncodeEquality(type: TestEntity5.self,
 								   data: entity_no_relationships_some_attributes)
@@ -211,15 +197,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributes_deprecated() {
-        let entity = decoded(type: TestEntity4.self,
-                             data: entity_some_relationships_some_attributes)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
-
 	func test_EntitySomeRelationshipsSomeAttributes_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4.self,
 								   data: entity_some_relationships_some_attributes)
@@ -241,16 +218,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneOmittedAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_omitted_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHere])
-        XCTAssertEqual(entity[\.maybeNull], "World")
-    }
-
 	func test_entityOneOmittedAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_one_omitted_attribute)
@@ -267,16 +234,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneNullAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_null_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHere], "World")
-        XCTAssertNil(entity[\.maybeNull])
-    }
 
 	func test_entityOneNullAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
@@ -295,16 +252,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityAllAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_all_attributes)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHere], "World")
-        XCTAssertEqual(entity[\.maybeNull], "!")
-    }
-
 	func test_entityAllAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
 								   data: entity_all_attributes)
@@ -321,16 +268,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_entityOneNullAndOneOmittedAttribute_deprecated() {
-        let entity = decoded(type: TestEntity6.self,
-                             data: entity_one_null_and_one_missing_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHere])
-        XCTAssertNil(entity[\.maybeNull])
-    }
 
 	func test_entityOneNullAndOneOmittedAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity6.self,
@@ -353,15 +290,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_NullOptionalNullableAttribute_deprecated() {
-        let entity = decoded(type: TestEntity7.self,
-                             data: entity_null_optional_nullable_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertNil(entity[\.maybeHereMaybeNull])
-    }
-
 	func test_NullOptionalNullableAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
 								   data: entity_null_optional_nullable_attribute)
@@ -377,15 +305,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_NonNullOptionalNullableAttribute_deprecated() {
-        let entity = decoded(type: TestEntity7.self,
-                             data: entity_non_null_optional_nullable_attribute)
-
-        XCTAssertEqual(entity[\.here], "Hello")
-        XCTAssertEqual(entity[\.maybeHereMaybeNull], "World")
-    }
 
 	func test_NonNullOptionalNullableAttribute_encode() {
 		test_DecodeEncodeEquality(type: TestEntity7.self,
@@ -409,19 +328,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_IntToString_deprecated() {
-        let entity = decoded(type: TestEntity8.self,
-                             data: entity_int_to_string_attribute)
-
-        XCTAssertEqual(entity[\.string], "22")
-        XCTAssertEqual(entity[\.int], 22)
-        XCTAssertEqual(entity[\.stringFromInt], "22")
-        XCTAssertEqual(entity[\.plus], 122)
-        XCTAssertEqual(entity[\.doubleFromInt], 22.0)
-        XCTAssertEqual(entity[\.nullToString], "nil")
-    }
 
 	func test_IntToString_encode() {
 		test_DecodeEncodeEquality(type: TestEntity8.self,
@@ -578,14 +484,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntity_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntity.self,
-                             data: entity_unidentified)
-
-        XCTAssertNil(entity[\.me])
-    }
-
 	func test_UnidentifiedEntity_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
 								   data: entity_unidentified)
@@ -601,14 +499,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributes_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntity.self,
-                             data: entity_unidentified_with_attributes)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
 
 	func test_UnidentifiedEntityWithAttributes_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntity.self,
@@ -632,14 +522,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndMeta_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithMeta.self,
-                             data: entity_unidentified_with_attributes_and_meta)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
-
 	func test_UnidentifiedEntityWithAttributesAndMeta_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMeta.self,
 								  data: entity_unidentified_with_attributes_and_meta)
@@ -656,14 +538,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndLinks_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithLinks.self,
-                             data: entity_unidentified_with_attributes_and_links)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
 
 	func test_UnidentifiedEntityWithAttributesAndLinks_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithLinks.self,
@@ -684,14 +558,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_UnidentifiedEntityWithAttributesAndMetaAndLinks_deprecated() {
-        let entity = decoded(type: UnidentifiedTestEntityWithMetaAndLinks.self,
-                             data: entity_unidentified_with_attributes_and_meta_and_links)
-
-        XCTAssertEqual(entity[\.me], "unknown")
-    }
-
 	func test_UnidentifiedEntityWithAttributesAndMetaAndLinks_encode() {
 		test_DecodeEncodeEquality(type: UnidentifiedTestEntityWithMetaAndLinks.self,
 								  data: entity_unidentified_with_attributes_and_meta_and_links)
@@ -711,15 +577,6 @@ extension ResourceObjectTests {
 		testEncoded(entity: entity)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithMeta_deprecated() {
-        let entity = decoded(type: TestEntity4WithMeta.self,
-                             data: entity_some_relationships_some_attributes_with_meta)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
-
 	func test_EntitySomeRelationshipsSomeAttributesWithMeta_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithMeta.self,
 								  data: entity_some_relationships_some_attributes_with_meta)
@@ -737,15 +594,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithLinks_deprecated() {
-        let entity = decoded(type: TestEntity4WithLinks.self,
-                             data: entity_some_relationships_some_attributes_with_links)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
 
 	func test_EntitySomeRelationshipsSomeAttributesWithLinks_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithLinks.self,
@@ -766,15 +614,6 @@ extension ResourceObjectTests {
 
 		testEncoded(entity: entity)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_deprecated() {
-        let entity = decoded(type: TestEntity4WithMetaAndLinks.self,
-                             data: entity_some_relationships_some_attributes_with_meta_and_links)
-
-        XCTAssertEqual(entity[\.word], "coolio")
-        XCTAssertEqual(entity[\.number], 992299)
-    }
 
 	func test_EntitySomeRelationshipsSomeAttributesWithMetaAndLinks_encode() {
 		test_DecodeEncodeEquality(type: TestEntity4WithMetaAndLinks.self,
@@ -800,23 +639,6 @@ extension ResourceObjectTests {
         XCTAssertEqual(entity1.metaAttribute, true)
         XCTAssertEqual(entity2.metaAttribute, false)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_MetaEntityAttributeAccessWorks_deprecated() {
-        let entity1 = TestEntityWithMetaAttribute(id: "even",
-                                                  attributes: .init(),
-                                                  relationships: .none,
-                                                  meta: .none,
-                                                  links: .none)
-        let entity2 = TestEntityWithMetaAttribute(id: "odd",
-                                                  attributes: .init(),
-                                                  relationships: .none,
-                                                  meta: .none,
-                                                  links: .none)
-
-        XCTAssertEqual(entity1[\.metaAttribute], true)
-        XCTAssertEqual(entity2[\.metaAttribute], false)
-    }
 }
 
 // MARK: With a Meta Relationship

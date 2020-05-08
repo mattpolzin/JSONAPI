@@ -50,35 +50,6 @@ class SparseFieldsetTests: XCTestCase {
         XCTAssertNotNil(attributesDict?["optionalNullable"] as? NSNull)
     }
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_FullEncode_deprecated() {
-        let jsonEncoder = JSONEncoder()
-        let sparseWithEverything = SparseFieldset(testEverythingObject, fields: EverythingTest.Attributes.CodingKeys.allCases)
-
-        let encoded = try! jsonEncoder.encode(sparseWithEverything)
-
-        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
-                                                             options: [])
-
-        let outerDict = deserialized as? [String: Any]
-        let attributesDict = outerDict?["attributes"] as? [String: Any]
-
-        XCTAssertEqual(attributesDict?["bool"] as? Bool,
-                       testEverythingObject[\.bool])
-        XCTAssertEqual(attributesDict?["int"] as? Int,
-                       testEverythingObject[\.int])
-        XCTAssertEqual(attributesDict?["double"] as? Double,
-                       testEverythingObject[\.double])
-        XCTAssertEqual(attributesDict?["string"] as? String,
-                       testEverythingObject[\.string])
-        XCTAssertEqual((attributesDict?["nestedStruct"] as? [String: String])?["hello"],
-                       testEverythingObject[\.nestedStruct].hello)
-        XCTAssertEqual(attributesDict?["nestedEnum"] as? String,
-                       testEverythingObject[\.nestedEnum].rawValue)
-        XCTAssertEqual(attributesDict?["array"] as? [Bool],
-                       testEverythingObject[\.array])
-    }
-
     func test_PartialEncode() {
         let jsonEncoder = JSONEncoder()
         let sparseObject = SparseFieldset(testEverythingObject, fields: [.string, .bool, .array])
@@ -114,34 +85,6 @@ class SparseFieldsetTests: XCTestCase {
         XCTAssertNil(attributesDict?["optionalNullable"])
     }
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_PartialEncode_deprecated() {
-        let jsonEncoder = JSONEncoder()
-        let sparseObject = SparseFieldset(testEverythingObject, fields: [.string, .bool, .array])
-
-        let encoded = try! jsonEncoder.encode(sparseObject)
-
-        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
-                                                             options: [])
-
-        let outerDict = deserialized as? [String: Any]
-        let id = outerDict?["id"] as? String
-        let type = outerDict?["type"] as? String
-        let attributesDict = outerDict?["attributes"] as? [String: Any]
-        let relationships = outerDict?["relationships"]
-
-        XCTAssertEqual(id, testEverythingObject.id.rawValue)
-        XCTAssertEqual(type, EverythingTest.jsonType)
-        XCTAssertNil(relationships)
-
-        XCTAssertEqual(attributesDict?["bool"] as? Bool,
-                       testEverythingObject[\.bool])
-        XCTAssertEqual(attributesDict?["string"] as? String,
-                       testEverythingObject[\.string])
-        XCTAssertEqual(attributesDict?["array"] as? [Bool],
-                       testEverythingObject[\.array])
-    }
-
     func test_sparseFieldsMethod() {
         let jsonEncoder = JSONEncoder()
         let sparseObject = testEverythingObject.sparse(with: [.string, .bool, .array])
@@ -175,34 +118,6 @@ class SparseFieldsetTests: XCTestCase {
         XCTAssertNil(attributesDict?["optional"])
         XCTAssertNil(attributesDict?["nullable"])
         XCTAssertNil(attributesDict?["optionalNullable"])
-    }
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_sparseFieldsMethod_deprecated() {
-        let jsonEncoder = JSONEncoder()
-        let sparseObject = testEverythingObject.sparse(with: [.string, .bool, .array])
-
-        let encoded = try! jsonEncoder.encode(sparseObject)
-
-        let deserialized = try! JSONSerialization.jsonObject(with: encoded,
-                                                             options: [])
-
-        let outerDict = deserialized as? [String: Any]
-        let id = outerDict?["id"] as? String
-        let type = outerDict?["type"] as? String
-        let attributesDict = outerDict?["attributes"] as? [String: Any]
-        let relationships = outerDict?["relationships"]
-
-        XCTAssertEqual(id, testEverythingObject.id.rawValue)
-        XCTAssertEqual(type, EverythingTest.jsonType)
-        XCTAssertNil(relationships)
-
-        XCTAssertEqual(attributesDict?["bool"] as? Bool,
-                       testEverythingObject[\.bool])
-        XCTAssertEqual(attributesDict?["string"] as? String,
-                       testEverythingObject[\.string])
-        XCTAssertEqual(attributesDict?["array"] as? [Bool],
-                       testEverythingObject[\.array])
     }
 }
 

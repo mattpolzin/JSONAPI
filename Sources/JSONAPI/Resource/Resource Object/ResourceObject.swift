@@ -231,33 +231,6 @@ public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
 
 // MARK: - Attribute Access
 public extension ResourceObjectProxy {
-    // MARK: Keypath Subscript Lookup
-    /// Access the attribute at the given keypath. This just
-    /// allows you to write `resourceObject[\.propertyName]` instead
-    /// of `resourceObject.attributes.propertyName.value`.
-    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
-    subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T>) -> T.ValueType {
-        return attributes[keyPath: path].value
-    }
-
-    /// Access the attribute at the given keypath. This just
-    /// allows you to write `resourceObject[\.propertyName]` instead
-    /// of `resourceObject.attributes.propertyName.value`.
-    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
-    subscript<T: AttributeType>(_ path: KeyPath<Description.Attributes, T?>) -> T.ValueType? {
-        return attributes[keyPath: path]?.value
-    }
-
-    /// Access the attribute at the given keypath. This just
-    /// allows you to write `resourceObject[\.propertyName]` instead
-    /// of `resourceObject.attributes.propertyName.value`.
-    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
-    subscript<T: AttributeType, U>(_ path: KeyPath<Description.Attributes, T?>) -> U? where T.ValueType == U? {
-        // Implementation Note: Handles Transform that returns optional
-        // type.
-        return attributes[keyPath: path].flatMap(\.value)
-    }
-
     // MARK: Dynaminc Member Keypath Lookup
     /// Access the attribute at the given keypath. This just
     /// allows you to write `resourceObject[\.propertyName]` instead
@@ -296,14 +269,6 @@ public extension ResourceObjectProxy {
 
 // MARK: - Meta-Attribute Access
 public extension ResourceObjectProxy {
-    // MARK: Keypath Subscript Lookup
-    /// Access an attribute requiring a transformation on the RawValue _and_
-    /// a secondary transformation on this entity (self).
-    @available(*, deprecated, message: "This will be removed in a future version in favor of `resource.<attribute_name>` (dynamic member lookup)")
-    subscript<T>(_ path: KeyPath<Description.Attributes, (Self) -> T>) -> T {
-        return attributes[keyPath: path](self)
-    }
-
     // MARK: Dynamic Member Keypath Lookup
     /// Access an attribute requiring a transformation on the RawValue _and_
     /// a secondary transformation on this entity (self).

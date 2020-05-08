@@ -18,14 +18,6 @@ class CustomAttributesTests: XCTestCase {
 		XCTAssertNoThrow(try CustomAttributeEntity.check(entity))
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_customDecode_deprecated() {
-        let entity = decoded(type: CustomAttributeEntity.self, data: customAttributeEntityData)
-
-        XCTAssertEqual(entity[\.firstName], "Cool")
-        XCTAssertEqual(entity[\.name], "Cool Name")
-    }
-
 	func test_customEncode() {
 		test_DecodeEncodeEquality(type: CustomAttributeEntity.self,
 								  data: customAttributeEntityData)
@@ -38,14 +30,6 @@ class CustomAttributesTests: XCTestCase {
         XCTAssertEqual(entity.lastNameSilly, "Name")
 		XCTAssertNoThrow(try CustomKeysEntity.check(entity))
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_customKeysDecode_deprecated() {
-        let entity = decoded(type: CustomKeysEntity.self, data: customAttributeEntityData)
-
-        XCTAssertEqual(entity[\.firstNameSilly], "Cool")
-        XCTAssertEqual(entity[\.lastNameSilly], "Name")
-    }
 
 	func test_customKeysEncode() {
 		test_DecodeEncodeEquality(type: CustomKeysEntity.self,

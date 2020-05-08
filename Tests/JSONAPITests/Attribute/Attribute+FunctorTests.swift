@@ -19,13 +19,6 @@ class Attribute_FunctorTests: XCTestCase {
         XCTAssertEqual(entity?.computedString, "Frankie2")
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_mapGuaranteed_deprecated() {
-        let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)), relationships: .none, meta: .none, links: .none)
-
-        XCTAssertEqual(entity?[\.computedString], "Frankie2")
-    }
-
 	func test_mapOptionalSuccess() {
 		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)), relationships: .none, meta: .none, links: .none)
 
@@ -34,13 +27,6 @@ class Attribute_FunctorTests: XCTestCase {
         XCTAssertEqual(entity?.computedNumber, 22)
 	}
 
-    @available(*, deprecated, message: "remove next major version")
-    func test_mapOptionalSuccess_deprecated() {
-        let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.0)), relationships: .none, meta: .none, links: .none)
-
-        XCTAssertEqual(entity?[\.computedNumber], 22)
-    }
-
 	func test_mapOptionalFailure() {
 		let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.5)), relationships: .none, meta: .none, links: .none)
 
@@ -48,13 +34,6 @@ class Attribute_FunctorTests: XCTestCase {
 
         XCTAssertNil(entity?.computedNumber)
 	}
-
-    @available(*, deprecated, message: "remove next major version")
-    func test_mapOptionalFailure_deprecated() {
-        let entity = try? TestType(attributes: .init(name: "Frankie", number: .init(rawValue: 22.5)), relationships: .none, meta: .none, links: .none)
-
-        XCTAssertNil(entity?[\.computedNumber])
-    }
 }
 
 // MARK: Test types

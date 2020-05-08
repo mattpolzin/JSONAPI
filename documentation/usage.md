@@ -192,11 +192,6 @@ As of Swift 5.1, `Attributes` can be accessed via dynamic member keypath lookup 
 let favoriteColor: String = person.favoriteColor
 ```
 
-:warning:  `Attributes` can also be accessed via the older `subscript` operator, but this is a deprecated feature that will be removed in the next major version:
-```swift
-let favoriteColor: String = person[\.favoriteColor]
-```
-
 #### `Transformer`
 
 Sometimes you need to use a type that does not encode or decode itself in the way you need to represent it as a serialized JSON object. For example, the Swift `Foundation` type `Date` can encode/decode itself to `Double` out of the box, but you might want to represent dates as ISO 8601 compliant `String`s instead. The Foundation library `JSONDecoder` has a setting to make this adjustment, but for the sake of an example, you could create a `Transformer`.
