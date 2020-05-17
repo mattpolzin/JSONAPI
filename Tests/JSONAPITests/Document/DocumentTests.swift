@@ -39,6 +39,28 @@ class DocumentTests: XCTestCase {
                 links: .none
         ))
 
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                body: .none
+        ))
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >(
+                errors: []
+        ))
+
         // Document.SuccessDocument
         test(JSONAPI.Document<
             NoResourceBody,
@@ -55,6 +77,17 @@ class DocumentTests: XCTestCase {
                 links: .none
         ))
 
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >.SuccessDocument(
+                body: .none
+        ))
+
         // Document.ErrorDocument
         test(JSONAPI.Document<
             NoResourceBody,
@@ -65,6 +98,17 @@ class DocumentTests: XCTestCase {
             UnknownJSONAPIError
             >.ErrorDocument(
                 apiDescription: .none,
+                errors: []
+        ))
+
+        test(JSONAPI.Document<
+            NoResourceBody,
+            NoMetadata,
+            NoLinks,
+            NoIncludes,
+            NoAPIDescription,
+            UnknownJSONAPIError
+            >.ErrorDocument(
                 errors: []
         ))
     }
