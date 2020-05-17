@@ -655,3 +655,37 @@ extension Document.SuccessDocument where IncludeType: _Poly1 {
         }
     }
 }
+
+extension Document where MetaType == NoMetadata, LinksType == NoLinks, IncludeType == NoIncludes, APIDescription == NoAPIDescription {
+    public init(body: PrimaryResourceBody) {
+        self.init(
+            apiDescription: .none,
+            body: body,
+            includes: .none,
+            meta: .none,
+            links: .none
+        )
+    }
+
+    public init(errors: [Error]) {
+        self.init(apiDescription: .none, errors: errors)
+    }
+}
+
+extension Document.SuccessDocument where Document.MetaType == NoMetadata, Document.LinksType == NoLinks, Document.IncludeType == NoIncludes, Document.APIDescription == NoAPIDescription {
+    public init(body: PrimaryResourceBody) {
+        self.init(
+            apiDescription: .none,
+            body: body,
+            includes: .none,
+            meta: .none,
+            links: .none
+        )
+    }
+}
+
+extension Document.ErrorDocument where Document.MetaType == NoMetadata, Document.LinksType == NoLinks, Document.IncludeType == NoIncludes, Document.APIDescription == NoAPIDescription {
+    public init(errors: [Error]) {
+        self.init(apiDescription: .none, errors: errors)
+    }
+}
