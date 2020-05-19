@@ -48,10 +48,14 @@ public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
     return left.appending(right)
 }
 
+public protocol SingleResourceBodyProtocol: EncodableResourceBody {
+    var value: PrimaryResource { get }
+}
+
 /// A type allowing for a document body containing 1 primary resource.
 /// If the `Entity` specialization is an `Optional` type, the body can contain
 /// 0 or 1 primary resources.
-public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrimaryResource>: EncodableResourceBody {
+public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrimaryResource>: SingleResourceBodyProtocol {
     public let value: PrimaryResource
 
     public init(resourceObject: PrimaryResource) {
@@ -59,8 +63,12 @@ public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrima
     }
 }
 
+public protocol ManyResourceBodyProtocol: EncodableResourceBody {
+    var values: [PrimaryResource] { get }
+}
+
 /// A type allowing for a document body containing 0 or more primary resources.
-public struct ManyResourceBody<PrimaryResource: JSONAPI.EncodablePrimaryResource>: EncodableResourceBody, ResourceBodyAppendable {
+public struct ManyResourceBody<PrimaryResource: JSONAPI.EncodablePrimaryResource>: ManyResourceBodyProtocol, ResourceBodyAppendable {
     public let values: [PrimaryResource]
 
     public init(resourceObjects: [PrimaryResource]) {
