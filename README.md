@@ -355,14 +355,19 @@ func test_articleResponse() {
 }
 ```
 
-# JSONAPI+Arbitrary
-The `JSONAPI+Arbitrary` library provides `SwiftCheck` `Arbitrary` conformance for many of the `JSONAPI` types.
+# JSONAPI-Arbitrary
+The `JSONAPI-Arbitrary` library provides `SwiftCheck` `Arbitrary` conformance for many of the `JSONAPI` types.
 
 See https://github.com/mattpolzin/JSONAPI-Arbitrary for more information.
 
-# JSONAPI+OpenAPI
-The `JSONAPI+OpenAPI` library generates OpenAPI compliant JSON Schema for models built with the `JSONAPI` library. If your Swift code is your preferred source of truth for API information, this is an easy way to document the response schemas of your API.
+# JSONAPI-OpenAPI
+The `JSONAPI-OpenAPI` library generates OpenAPI compliant JSON Schema for models built with the `JSONAPI` library. If your Swift code is your preferred source of truth for API information, this is an easy way to document the response schemas of your API.
 
-`JSONAPI+OpenAPI` also has experimental support for generating `JSONAPI` Swift code from Open API documentation (this currently lives on the `feature/gen-swift` branch).
+`JSONAPI-OpenAPI` also has experimental support for generating `JSONAPI` Swift code from Open API documentation (this currently lives on the `feature/gen-swift` branch).
 
 See https://github.com/mattpolzin/JSONAPI-OpenAPI for more information.
+
+# JSONAPI-ResourceStorage
+The `JSONAPI-ResourceStorage` package has two _very_ early stage modules supporting storage and retrieval of `JSONAPI.ResourceObjects`. Please consider these modules to be more of examples of two directions you could head in than anything else.
+
+https://github.com/mattpolzin/JSONAPI-ResourceStorage
