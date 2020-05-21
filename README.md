@@ -41,9 +41,9 @@ This library works well when used by both the server responsible for serializati
 	- [Literal Expressibility](#literal-expressibility)
 	- [Resource Object `check()`](#resource-object-check)
 	- [Comparisons](#comparisons)
-- [JSONAPI-Arbitrary](#jsonapiarbitrary)
-- [JSONAPI-OpenAPI](#jsonapiopenapi)
-- [JSONAPI-ResourceStorage](#jsonapiresourcestorage)
+- [JSONAPI-Arbitrary](#jsonapi-arbitrary)
+- [JSONAPI-OpenAPI](#jsonapi-openapi)
+- [JSONAPI-ResourceStorage](#jsonapi-resourcestorage)
 
 ## Primary Goals
 
