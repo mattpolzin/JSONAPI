@@ -97,7 +97,14 @@ public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equa
     }
 }
 
-extension Id: Hashable, CustomStringConvertible, AbstractId, IdType where RawType: RawIdType {
+extension Id: Hashable where RawType: RawIdType {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(Self.self))
+        hasher.combine(rawValue)
+    }
+}
+
+extension Id: CustomStringConvertible, AbstractId, IdType where RawType: RawIdType {
     public static func id(from rawValue: RawType) -> Id<RawType, IdentifiableType> {
         return Id(rawValue: rawValue)
     }

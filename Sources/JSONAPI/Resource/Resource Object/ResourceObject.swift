@@ -151,6 +151,18 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
     }
 }
 
+// `ResourceObject` is hashable as an identifiable resource which semantically
+// means that two different resources with the same ID should yield the same
+// hash value.
+//
+// "equatability" in this context will determine if two resources have _all_ the same
+// properties, whereas hash value will determine if two resources have the same Id.
+extension ResourceObject: Hashable where EntityRawIdType: RawIdType {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
 extension ResourceObject: Identifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
     public typealias Identifier = ResourceObject.Id
 }

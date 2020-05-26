@@ -50,6 +50,8 @@ public func +<R: ResourceBodyAppendable>(_ left: R, right: R) -> R {
 
 public protocol SingleResourceBodyProtocol: EncodableResourceBody {
     var value: PrimaryResource { get }
+
+    init(resourceObject: PrimaryResource)
 }
 
 /// A type allowing for a document body containing 1 primary resource.
@@ -65,6 +67,8 @@ public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrima
 
 public protocol ManyResourceBodyProtocol: EncodableResourceBody {
     var values: [PrimaryResource] { get }
+
+    init(resourceObjects: [PrimaryResource])
 }
 
 /// A type allowing for a document body containing 0 or more primary resources.
