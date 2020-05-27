@@ -5,6 +5,16 @@
 //  Created by Mathew Polzin on 5/25/20.
 //
 
+public protocol CompoundResourceProtocol {
+    associatedtype JSONAPIModel: JSONAPI.ResourceObjectType
+    associatedtype JSONAPIIncludeType: JSONAPI.Include
+
+    var primary: JSONAPIModel { get }
+    var relatives: [JSONAPIIncludeType] { get }
+
+    func filteringRelatives(by filter: (JSONAPIIncludeType) -> Bool) -> Self
+}
+
 /// A Resource Object and any relevant related resources. This object
 /// is helpful in the context of constructing a Document.
 ///
@@ -16,13 +26,48 @@
 /// specialized for a single or batch document at the same time as you are
 /// resolving (i.e. materializing or decoding) one or more resources and its
 /// relatives.
-public struct CompoundResource<JSONAPIModel: JSONAPI.ResourceObjectType, JSONAPIIncludeType: JSONAPI.Include>: Equatable {
+///
+/// - Important: This type is not intended to guarantee
+///     that all `relationships` of the primary resource are available
+///     in the `relatives` array.
+public struct CompoundResource<JSONAPIModel: JSONAPI.ResourceObjectType, JSONAPIIncludeType: JSONAPI.Include>: Equatable, CompoundResourceProtocol {
     public let primary: JSONAPIModel
     public let relatives: [JSONAPIIncludeType]
 
     public init(primary: JSONAPIModel, relatives: [JSONAPIIncludeType]) {
         self.primary = primary
         self.relatives = relatives
+    }
+
+    /// Create a new Compound Resource having
+    /// filtered the relatives by the given closure (which
+    /// must return `true` for any relative that should
+    /// remain part of the `CompoundObject`).
+    ///
+    /// This does not remove relatives from the primary
+    /// resource's `relationships`, it just filters out
+    /// which relatives have complete resource objects
+    /// in the newly created `CompoundResource`.
+    public func filteringRelatives(by filter: (JSONAPIIncludeType) -> Bool) -> CompoundResource {
+        return .init(
+            primary: primary,
+            relatives: relatives.filter(filter)
+        )
+    }
+}
+
+extension Sequence where Element: CompoundResourceProtocol {
+    /// Create new Compound Resources having
+    /// filtered the relatives by the given closure (which
+    /// must return `true` for any relative that should
+    /// remain part of the `CompoundObject`).
+    ///
+    /// This does not remove relatives from the primary
+    /// resource's `relationships`, it just filters out
+    /// which relatives have complete resource objects
+    /// in the newly created `CompoundResource`.
+    public func filteringRelatives(by filter: (Element.JSONAPIIncludeType) -> Bool) -> [Element] {
+        return map { $0.filteringRelatives(by: filter) }
     }
 }
 
