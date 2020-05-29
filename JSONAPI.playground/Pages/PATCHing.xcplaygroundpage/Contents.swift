@@ -108,7 +108,7 @@ print("Received dog with owner: \(dog3 ~> \.owner)")
 
 // give the dog an owner
 let changedDog3 = dog3.replacingRelationships { _ in
-    return .init(owner: .init(id: Id(rawValue: "1")))
+    return .init(owner: .init(id: ID(rawValue: "1")))
 }
 
 // create a document to be used as a request body for a PATCH request

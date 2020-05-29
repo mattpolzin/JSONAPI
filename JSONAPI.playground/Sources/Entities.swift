@@ -25,7 +25,7 @@ extension String: CreatableRawIdType {
 
 // MARK: - typealiases for convenience
 public typealias ExampleEntity<Description: ResourceObjectDescription> = ResourceObject<Description, NoMetadata, NoLinks, String>
-public typealias ToOne<E: Identifiable> = ToOneRelationship<E, NoMetadata, NoLinks>
+public typealias ToOne<E: JSONAPIIdentifiable> = ToOneRelationship<E, NoMetadata, NoLinks>
 public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoMetadata, NoLinks>
 
 // MARK: - A few resource objects (entities)
@@ -63,8 +63,8 @@ public enum PersonDescription: ResourceObjectDescription {
 public typealias Person = ExampleEntity<PersonDescription>
 
 public extension ResourceObject where Description == PersonDescription, MetaType == NoMetadata, LinksType == NoLinks, EntityRawIdType == String {
-	init(id: Person.Id? = nil,name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
-		self = Person(id: id ?? Person.Id(), attributes: .init(name: .init(value: name), favoriteColor: .init(value: favoriteColor)), relationships: .init(friends: .init(resourceObjects: friends), dogs: .init(resourceObjects: dogs), home: .init(resourceObject: home)), meta: .none, links: .none)
+	init(id: Person.ID? = nil,name: [String], favoriteColor: String, friends: [Person], dogs: [Dog], home: House) throws {
+		self = Person(id: id ?? Person.ID(), attributes: .init(name: .init(value: name), favoriteColor: .init(value: favoriteColor)), relationships: .init(friends: .init(resourceObjects: friends), dogs: .init(resourceObjects: dogs), home: .init(resourceObject: home)), meta: .none, links: .none)
 	}
 }
 
@@ -147,7 +147,7 @@ public extension ResourceObject where Description == DogDescription, MetaType ==
 		self = Dog(attributes: .init(name: .init(value: name)), relationships: DogDescription.Relationships(owner: .init(resourceObject: owner)), meta: .none, links: .none)
 	}
 
-	init(name: String, owner: Person.Id) throws {
+	init(name: String, owner: Person.ID) throws {
 		self = Dog(attributes: .init(name: .init(value: name)), relationships: .init(owner: .init(id: owner)), meta: .none, links: .none)
 	}
 }
