@@ -73,7 +73,7 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
     associatedtype Description: ResourceObjectProxyDescription
     associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
-    typealias Id = JSONAPI.Id<EntityRawIdType, Self>
+    typealias ID = JSONAPI.Id<EntityRawIdType, Self>
 
     typealias Attributes = Description.Attributes
     typealias Relationships = Description.Relationships
@@ -82,7 +82,7 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
     /// this should be of a type conforming to `IdType`.
-    var id: Id { get }
+    var id: ID { get }
 
     /// The JSON API compliant attributes of this `Entity`.
     var attributes: Attributes { get }
@@ -121,6 +121,7 @@ public protocol IdentifiableResourceObjectType: ResourceObjectType, Relatable wh
 /// See https://jsonapi.org/format/#document-resource-objects
 public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
 
+    public typealias ID = JSONAPI.Id<EntityRawIdType, Self>
     public typealias Meta = MetaType
     public typealias Links = LinksType
 
@@ -128,7 +129,7 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
     /// this should be of a type conforming to `IdType`.
-    public let id: ResourceObject.Id
+    public let id: ID
 
     /// The JSON API compliant attributes of this `ResourceObject`.
     public let attributes: Description.Attributes
@@ -142,7 +143,7 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
     /// Links related to the entity.
     public let links: LinksType
 
-    public init(id: ResourceObject.Id, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
+    public init(id: ID, attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
         self.id = id
         self.attributes = attributes
         self.relationships = relationships
@@ -163,9 +164,7 @@ extension ResourceObject: Hashable where EntityRawIdType: RawIdType {
     }
 }
 
-extension ResourceObject: JSONAPIIdentifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
-    public typealias ID = ResourceObject.Id
-}
+extension ResourceObject: JSONAPIIdentifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {}
 
 @available(OSX 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension ResourceObject: Swift.Identifiable where EntityRawIdType: JSONAPI.RawIdType {}
@@ -179,7 +178,7 @@ extension ResourceObject: CustomStringConvertible {
 // MARK: - Convenience initializers
 extension ResourceObject where EntityRawIdType: CreatableRawIdType {
     public init(attributes: Description.Attributes, relationships: Description.Relationships, meta: MetaType, links: LinksType) {
-        self.id = ResourceObject.Id()
+        self.id = ResourceObject.ID()
         self.attributes = attributes
         self.relationships = relationships
         self.meta = meta
@@ -410,7 +409,7 @@ public extension ResourceObject {
         }
 
         let maybeUnidentified = Unidentified() as? EntityRawIdType
-        id = try maybeUnidentified.map { ResourceObject.Id(rawValue: $0) } ?? container.decode(ResourceObject.Id.self, forKey: .id)
+        id = try maybeUnidentified.map { ResourceObject.ID(rawValue: $0) } ?? container.decode(ResourceObject.ID.self, forKey: .id)
 
         do {
             attributes = try (NoAttributes() as? Description.Attributes)

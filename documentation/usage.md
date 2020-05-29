@@ -167,7 +167,7 @@ typealias Relationships = NoRelationships
 
 `Relationship` values boil down to `Ids` of other resource objects. To access the `Id` of a related `ResourceObject`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `ResourceObject` can be accessed as follows (type annotations for clarity):
 ```swift
-let friendIds: [Person.Identifier] = person ~> \.friends
+let friendIds: [Person.ID] = person ~> \.friends
 ```
 
 ### `JSONAPI.Attributes`
@@ -244,8 +244,8 @@ If your computed property is wrapped in a `AttributeType` then you can still use
 
 ### Copying/Mutating `ResourceObjects`
 `ResourceObject` is a value type, so copying is its default behavior. There are three common mutations you might want to make when copying a `ResourceObject`:
-1. Assigning a new `Identifier` to the copy of an identified `ResourceObject`.
-2. Assigning a new `Identifier` to the copy of an unidentified `ResourceObject`.
+1. Assigning a new `ID` to the copy of an identified `ResourceObject`.
+2. Assigning a new `ID` to the copy of an unidentified `ResourceObject`.
 3. Change attribute or relationship values.
 
 The first two can be accomplished with code like the following:
@@ -595,9 +595,9 @@ enum UserDescription: ResourceObjectDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		public var friend: (User) -> User.Identifier {
+		public var friend: (User) -> User.ID {
 			return { user in
-				return User.Identifier(rawValue: user.friend_id)
+				return User.ID(rawValue: user.friend_id)
 			}
 		}
 	}
@@ -612,4 +612,4 @@ Given a value `user` of the above resource object type, you can access the `frie
 let friendId = user ~> \.friend
 ```
 
-This works because `friend` is defined in the form: `var {name}: ({ResourceObject}) -> {Identifier}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-relationship.
+This works because `friend` is defined in the form: `var {name}: ({ResourceObject}) -> {ID}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-relationship.
