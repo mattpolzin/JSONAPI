@@ -73,8 +73,6 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
     associatedtype Description: ResourceObjectProxyDescription
     associatedtype EntityRawIdType: JSONAPI.MaybeRawId
 
-    typealias ID = JSONAPI.Id<EntityRawIdType, Self>
-
     typealias Attributes = Description.Attributes
     typealias Relationships = Description.Relationships
 
@@ -82,13 +80,17 @@ public protocol ResourceObjectProxy: Equatable, JSONTyped {
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
     /// this should be of a type conforming to `IdType`.
-    var id: ID { get }
+    var id: JSONAPI.Id<EntityRawIdType, Self> { get }
 
     /// The JSON API compliant attributes of this `Entity`.
     var attributes: Attributes { get }
 
     /// The JSON API compliant relationships of this `Entity`.
     var relationships: Relationships { get }
+}
+
+extension ResourceObjectProxy {
+    public typealias ID = JSONAPI.Id<EntityRawIdType, Self>
 }
 
 extension ResourceObjectProxy {
@@ -121,7 +123,6 @@ public protocol IdentifiableResourceObjectType: ResourceObjectType, Relatable wh
 /// See https://jsonapi.org/format/#document-resource-objects
 public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links, EntityRawIdType: JSONAPI.MaybeRawId>: ResourceObjectType {
 
-    public typealias ID = JSONAPI.Id<EntityRawIdType, Self>
     public typealias Meta = MetaType
     public typealias Links = LinksType
 
