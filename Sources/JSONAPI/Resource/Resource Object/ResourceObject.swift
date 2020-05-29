@@ -163,9 +163,12 @@ extension ResourceObject: Hashable where EntityRawIdType: RawIdType {
     }
 }
 
-extension ResourceObject: Identifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
-    public typealias Identifier = ResourceObject.Id
+extension ResourceObject: JSONAPIIdentifiable, IdentifiableResourceObjectType, Relatable where EntityRawIdType: JSONAPI.RawIdType {
+    public typealias ID = ResourceObject.Id
 }
+
+@available(OSX 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension ResourceObject: Swift.Identifiable where EntityRawIdType: JSONAPI.RawIdType {}
 
 extension ResourceObject: CustomStringConvertible {
     public var description: String {
@@ -230,7 +233,7 @@ public extension ResourceObject where EntityRawIdType == Unidentified {
 
     /// Create a new `ResourceObject` from this one with the given Id.
     func identified<RawIdType: JSONAPI.RawIdType>(by id: RawIdType) -> ResourceObject<Description, MetaType, LinksType, RawIdType> {
-        return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.Identifier(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
+        return .init(id: ResourceObject<Description, MetaType, LinksType, RawIdType>.ID(rawValue: id), attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
 }
 
@@ -294,14 +297,14 @@ public extension ResourceObjectProxy {
     /// Access to an Id of a `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other.id`.
-    static func ~><OtherEntity: Identifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.Identifier {
+    static func ~><OtherEntity: JSONAPIIdentifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.ID {
         return entity.relationships[keyPath: path].id
     }
 
     /// Access to an Id of an optional `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other?.id`.
-    static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier {
+    static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.ID {
         // Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
         // whereas the one below applies to `ToOneRelationship<E, _, _>?`
         return entity.relationships[keyPath: path]?.id
@@ -310,7 +313,7 @@ public extension ResourceObjectProxy {
     /// Access to an Id of an optional `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other?.id`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.Identifier? {
+    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.ID? {
         // Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
         // whereas the one above applies to `ToOneRelationship<E?, _, _>?`
         return entity.relationships[keyPath: path]?.id
@@ -319,14 +322,14 @@ public extension ResourceObjectProxy {
     /// Access to all Ids of a `ToManyRelationship`.
     /// This allows you to write `resourceObject ~> \.others` instead
     /// of `resourceObject.relationships.others.ids`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.Identifier] {
+    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.ID] {
         return entity.relationships[keyPath: path].ids
     }
 
     /// Access to all Ids of an optional `ToManyRelationship`.
     /// This allows you to write `resourceObject ~> \.others` instead
     /// of `resourceObject.relationships.others?.ids`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.Identifier]? {
+    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.ID]? {
         return entity.relationships[keyPath: path]?.ids
     }
 }

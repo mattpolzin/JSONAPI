@@ -91,7 +91,7 @@ class ResourceObjectTests: XCTestCase {
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: entity1.pointer, optionalNullableOne: nil, optionalMany: nil), meta: .none, links: .none)
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: nil), meta: .none, links: .none)
 		let _ = TestEntity9(id: .init(rawValue: "9"), attributes: .none, relationships: .init(meta: .init(meta: .init(x: "hello", y: 5), links: .none), optionalMeta: nil, one: entity1.pointer, nullableOne: nil, optionalOne: nil, optionalNullableOne: .init(resourceObject: entity1, meta: .none, links: .none), optionalMany: .init(resourceObjects: [], meta: .none, links: .none)), meta: .none, links: .none)
-		let e10id1 = TestEntity10.Identifier(rawValue: "hello")
+		let e10id1 = TestEntity10.ID(rawValue: "hello")
 		let e10id2 = TestEntity10.Id(rawValue: "world")
 		let e10id3: TestEntity10.Id = "!"
 		let _ = TestEntity10(id: .init(rawValue: "10"), attributes: .none, relationships: .init(selfRef: .init(id: e10id1), selfRefs: .init(ids: [e10id2, e10id3])), meta: .none, links: .none)
@@ -901,15 +901,15 @@ extension ResourceObjectTests {
 		typealias Attributes = NoAttributes
 
 		struct Relationships: JSONAPI.Relationships {
-			var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.Identifier {
+			var metaRelationship: (TestEntityWithMetaRelationship) -> TestEntity1.ID {
 				return { entity in
-					return TestEntity1.Identifier(rawValue: "hello")
+					return TestEntity1.ID(rawValue: "hello")
 				}
 			}
 
-            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.Identifier] {
+            var toManyMetaRelationship: (TestEntityWithMetaRelationship) -> [TestEntity1.ID] {
                 return { entity in
-                    return [TestEntity1.Identifier.id(from: "hello")]
+                    return [TestEntity1.ID.id(from: "hello")]
                 }
             }
 		}

@@ -7,39 +7,39 @@
 
 import JSONAPI
 
-extension ToOneRelationship: ExpressibleByNilLiteral where Identifiable.Identifier: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByNilLiteral where Identifiable.ID: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
     public init(nilLiteral: ()) {
 
-        self.init(id: Identifiable.Identifier(nilLiteral: ()))
+        self.init(id: Identifiable.ID(nilLiteral: ()))
     }
 }
 
-extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiable.Identifier: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-    public typealias UnicodeScalarLiteralType =  Identifiable.Identifier.UnicodeScalarLiteralType
+extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiable.ID: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+    public typealias UnicodeScalarLiteralType =  Identifiable.ID.UnicodeScalarLiteralType
 
     public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
-        self.init(id: Identifiable.Identifier(unicodeScalarLiteral: value))
+        self.init(id: Identifiable.ID(unicodeScalarLiteral: value))
     }
 }
 
-extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Identifiable.Identifier: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-    public typealias ExtendedGraphemeClusterLiteralType =  Identifiable.Identifier.ExtendedGraphemeClusterLiteralType
+extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Identifiable.ID: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+    public typealias ExtendedGraphemeClusterLiteralType =  Identifiable.ID.ExtendedGraphemeClusterLiteralType
 
     public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.init(id: Identifiable.Identifier(extendedGraphemeClusterLiteral: value))
+        self.init(id: Identifiable.ID(extendedGraphemeClusterLiteral: value))
     }
 }
 
-extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.Identifier: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
-    public typealias StringLiteralType = Identifiable.Identifier.StringLiteralType
+extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.ID: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+    public typealias StringLiteralType = Identifiable.ID.StringLiteralType
 
     public init(stringLiteral value: StringLiteralType) {
-        self.init(id: Identifiable.Identifier(stringLiteral: value))
+        self.init(id: Identifiable.ID(stringLiteral: value))
     }
 }
 
 extension ToManyRelationship: ExpressibleByArrayLiteral where MetaType == NoMetadata, LinksType == NoLinks {
-    public typealias ArrayLiteralElement = Relatable.Identifier
+    public typealias ArrayLiteralElement = Relatable.ID
 
     public init(arrayLiteral elements: ArrayLiteralElement...) {
         self.init(ids: elements)

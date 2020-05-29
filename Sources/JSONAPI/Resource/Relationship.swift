@@ -35,14 +35,14 @@ public struct MetaRelationship<MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>
 /// a JSON API "Resource Linkage."
 /// See https://jsonapi.org/format/#document-resource-object-linkage
 /// A convenient typealias might make your code much more legible: `One<ResourceObjectDescription>`
-public struct ToOneRelationship<Identifiable: JSONAPI.Identifiable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
+public struct ToOneRelationship<Identifiable: JSONAPI.JSONAPIIdentifiable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
-    public let id: Identifiable.Identifier
+    public let id: Identifiable.ID
 
     public let meta: MetaType
     public let links: LinksType
 
-    public init(id: Identifiable.Identifier, meta: MetaType, links: LinksType) {
+    public init(id: Identifiable.ID, meta: MetaType, links: LinksType) {
         self.id = id
         self.meta = meta
         self.links = links
@@ -50,31 +50,31 @@ public struct ToOneRelationship<Identifiable: JSONAPI.Identifiable, MetaType: JS
 }
 
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-    public init(id: Identifiable.Identifier) {
+    public init(id: Identifiable.ID) {
         self.init(id: id, meta: .none, links: .none)
     }
 }
 
 extension ToOneRelationship {
-    public init<T: ResourceObjectType>(resourceObject: T, meta: MetaType, links: LinksType) where T.Id == Identifiable.Identifier {
+    public init<T: ResourceObjectType>(resourceObject: T, meta: MetaType, links: LinksType) where T.Id == Identifiable.ID {
         self.init(id: resourceObject.id, meta: meta, links: links)
     }
 }
 
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-    public init<T: ResourceObjectType>(resourceObject: T) where T.Id == Identifiable.Identifier {
+    public init<T: ResourceObjectType>(resourceObject: T) where T.Id == Identifiable.ID {
         self.init(id: resourceObject.id, meta: .none, links: .none)
     }
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable {
-    public init<T: ResourceObjectType>(resourceObject: T?, meta: MetaType, links: LinksType) where T.Id == Identifiable.Wrapped.Identifier {
+    public init<T: ResourceObjectType>(resourceObject: T?, meta: MetaType, links: LinksType) where T.Id == Identifiable.Wrapped.ID {
         self.init(id: resourceObject?.id, meta: meta, links: links)
     }
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == NoMetadata, LinksType == NoLinks {
-    public init<T: ResourceObjectType>(resourceObject: T?) where T.Id == Identifiable.Wrapped.Identifier {
+    public init<T: ResourceObjectType>(resourceObject: T?) where T.Id == Identifiable.Wrapped.ID {
         self.init(id: resourceObject?.id, meta: .none, links: .none)
     }
 }
@@ -85,24 +85,24 @@ extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == N
 /// A convenient typealias might make your code much more legible: `Many<ResourceObjectDescription>`
 public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI.Meta, LinksType: JSONAPI.Links>: RelationshipType, Equatable {
 
-    public let ids: [Relatable.Identifier]
+    public let ids: [Relatable.ID]
 
     public let meta: MetaType
     public let links: LinksType
 
-    public init(ids: [Relatable.Identifier], meta: MetaType, links: LinksType) {
+    public init(ids: [Relatable.ID], meta: MetaType, links: LinksType) {
         self.ids = ids
         self.meta = meta
         self.links = links
     }
 
-    public init<T: JSONAPI.Identifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.Identifier == Relatable.Identifier {
+    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
         ids = pointers.map(\.id)
         self.meta = meta
         self.links = links
     }
 
-    public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.Id == Relatable.Identifier {
+    public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.Id == Relatable.ID {
         self.init(ids: resourceObjects.map(\.id), meta: meta, links: links)
     }
 
@@ -117,11 +117,11 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
 
 extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks {
 
-    public init(ids: [Relatable.Identifier]) {
+    public init(ids: [Relatable.ID]) {
         self.init(ids: ids, meta: .none, links: .none)
     }
 
-    public init<T: JSONAPI.Identifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.Identifier == Relatable.Identifier {
+    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.ID == Relatable.ID {
         self.init(pointers: pointers, meta: .none, links: .none)
     }
 
@@ -129,28 +129,28 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
         return .none(withMeta: .none, links: .none)
     }
 
-    public init<T: ResourceObjectType>(resourceObjects: [T]) where T.Id == Relatable.Identifier {
+    public init<T: ResourceObjectType>(resourceObjects: [T]) where T.Id == Relatable.ID {
         self.init(resourceObjects: resourceObjects, meta: .none, links: .none)
     }
 }
 
-public protocol Identifiable: JSONTyped {
-    associatedtype Identifier: Equatable
+public protocol JSONAPIIdentifiable: JSONTyped {
+    associatedtype ID: Equatable
 }
 
 /// The Relatable protocol describes anything that
 /// has an IdType Identifier
-public protocol Relatable: Identifiable where Identifier: JSONAPI.IdType {
+public protocol Relatable: JSONAPIIdentifiable where ID: JSONAPI.IdType {
 }
 
 /// OptionalRelatable just describes an Optional
 /// with a Reltable Wrapped type.
-public protocol OptionalRelatable: Identifiable where Identifier == Wrapped.Identifier? {
+public protocol OptionalRelatable: JSONAPIIdentifiable where ID == Wrapped.ID? {
     associatedtype Wrapped: JSONAPI.Relatable
 }
 
-extension Optional: Identifiable, OptionalRelatable, JSONTyped where Wrapped: JSONAPI.Relatable {
-    public typealias Identifier = Wrapped.Identifier?
+extension Optional: JSONAPIIdentifiable, OptionalRelatable, JSONTyped where Wrapped: JSONAPI.Relatable {
+    public typealias ID = Wrapped.ID?
 
     public static var jsonType: String { return Wrapped.jsonType }
 }
@@ -196,7 +196,7 @@ extension MetaRelationship: Codable {
     }
 }
 
-extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
+extension ToOneRelationship: Codable where Identifiable.ID: OptionalId {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
 
@@ -219,7 +219,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         // type at which point we can store nil in `id`.
         let anyNil: Any? = nil
         if try container.decodeNil(forKey: .data) {
-            guard let val = anyNil as? Identifiable.Identifier else {
+            guard let val = anyNil as? Identifiable.ID else {
                 throw DecodingError.valueNotFound(
                     Self.self,
                     DecodingError.Context(
@@ -256,7 +256,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
             )
         }
 
-        id = Identifiable.Identifier(rawValue: try identifier.decode(Identifiable.Identifier.RawType.self, forKey: .id))
+        id = Identifiable.ID(rawValue: try identifier.decode(Identifiable.ID.RawType.self, forKey: .id))
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -273,7 +273,7 @@ extension ToOneRelationship: Codable where Identifiable.Identifier: OptionalId {
         // If id is nil, instead of {id: , type: } we will just
         // encode `null`
         let anyNil: Any? = nil
-        let nilId = anyNil as? Identifiable.Identifier
+        let nilId = anyNil as? Identifiable.ID
         guard id != nilId else {
             try container.encodeNil(forKey: .data)
             return
@@ -314,7 +314,7 @@ extension ToManyRelationship: Codable {
                                                   path: context.codingPath)
         }
 
-        var newIds = [Relatable.Identifier]()
+        var newIds = [Relatable.ID]()
         while !identifiers.isAtEnd {
             let identifier = try identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 
@@ -324,7 +324,7 @@ extension ToManyRelationship: Codable {
                 throw JSONAPICodingError.typeMismatch(expected: Relatable.jsonType, found: type, path: decoder.codingPath)
             }
 
-            newIds.append(Relatable.Identifier(rawValue: try identifier.decode(Relatable.Identifier.RawType.self, forKey: .id)))
+            newIds.append(Relatable.ID(rawValue: try identifier.decode(Relatable.ID.RawType.self, forKey: .id)))
         }
         ids = newIds
     }

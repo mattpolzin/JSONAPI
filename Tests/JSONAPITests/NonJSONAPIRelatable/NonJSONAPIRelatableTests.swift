@@ -83,7 +83,7 @@ extension NonJSONAPIRelatableTests {
 	struct NonJSONAPIEntity: Relatable, JSONTyped {
 		static var jsonType: String { return "other" }
 
-		typealias Identifier = NonJSONAPIEntity.Id
+		typealias ID = NonJSONAPIEntity.Id
 
 		let id: Id
 
