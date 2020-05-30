@@ -30,7 +30,7 @@ typealias UnidentifiedJSONEntity<Description: ResourceObjectDescription> = JSONA
 // Create relationship typealiases because we do not expect
 // JSON:API Relationships for this particular API to have
 // Metadata or Links associated with them.
-typealias ToOneRelationship<Entity: Identifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
+typealias ToOneRelationship<Entity: JSONAPIIdentifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
 typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Entity, NoMetadata, NoLinks>
 
 // Create a typealias for a Document because we do not expect
