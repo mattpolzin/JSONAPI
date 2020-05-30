@@ -30,7 +30,7 @@ typealias UnidentifiedJSONEntity<Description: ResourceObjectDescription> = JSONA
 // Create relationship typealiases because we do not expect
 // JSON:API Relationships for this particular API to have
 // Metadata or Links associated with them.
-typealias ToOneRelationship<Entity: JSONAPIIdentifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
+typealias ToOneRelationship<Entity: Identifiable> = JSONAPI.ToOneRelationship<Entity, NoMetadata, NoLinks>
 typealias ToManyRelationship<Entity: Relatable> = JSONAPI.ToManyRelationship<Entity, NoMetadata, NoLinks>
 
 // Create a typealias for a Document because we do not expect
@@ -86,7 +86,7 @@ typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoInclud
 func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, SingleArticleDocumentWithIncludes> {
     // Let's pretend all of this is coming from a database:
 
-    let authorId = Author.ID(rawValue: "1234")
+    let authorId = Author.Identifier(rawValue: "1234")
 
     let article = Article(id: .init(rawValue: "5678"),
                           attributes: .init(title: .init(value: "JSON:API in Swift"),

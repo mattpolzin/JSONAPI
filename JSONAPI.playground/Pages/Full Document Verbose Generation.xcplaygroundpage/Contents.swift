@@ -129,9 +129,9 @@ enum ArticleDocumentError: String, JSONAPIError, Codable {
 typealias SingleArticleDocument = JSONAPI.Document<SingleResourceBody<Article>, DocumentMetadata, SingleArticleDocumentLinks, Include1<Author>, APIDescription<APIDescriptionMetadata>, ArticleDocumentError>
 
 // MARK: - Instantiations
-let authorId1 = Author.ID()
-let authorId2 = Author.ID()
-let authorId3 = Author.ID()
+let authorId1 = Author.Identifier()
+let authorId2 = Author.Identifier()
+let authorId3 = Author.Identifier()
 
 let now = Date()
 let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now)!
@@ -155,7 +155,7 @@ let author1Links = EntityLinks(selfLink: .init(url: URL(string: "https://article
 											   meta: .init(expiry: tomorrow)))
 let author1 = Author(id: authorId1,
 					 attributes: .init(name: .init(value: "James Kinney")),
-					 relationships: .init(articles: .init(ids: [article.id, Article.ID(), Article.ID()],
+					 relationships: .init(articles: .init(ids: [article.id, Article.Identifier(), Article.Identifier()],
 														  meta: .init(pagination: .init(total: 3,
 																						limit: 50,
 																						offset: 0)),
@@ -167,7 +167,7 @@ let author2Links = EntityLinks(selfLink: .init(url: URL(string: "https://article
 											   meta: .init(expiry: tomorrow)))
 let author2 = Author(id: authorId2,
 					 attributes: .init(name: .init(value: "James Kinney")),
-					 relationships: .init(articles: .init(ids: [article.id, Article.ID()],
+					 relationships: .init(articles: .init(ids: [article.id, Article.Identifier()],
 														  meta: .init(pagination: .init(total: 2,
 																						limit: 50,
 																						offset: 0)),
