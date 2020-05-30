@@ -20,18 +20,18 @@ let singleDogData = try! JSONEncoder().encode(singleDogDocument)
 // MARK: - Parse a request or response body with one Dog in it
 let dogResponse = try! JSONDecoder().decode(SingleDogDocument.self, from: singleDogData)
 let dogFromData = dogResponse.body.primaryResource?.value
-let dogOwner: Person.Identifier? = dogFromData.flatMap { $0 ~> \.owner }
+let dogOwner: Person.Id? = dogFromData.flatMap { $0 ~> \.owner }
 
 
 // MARK: - Parse a request or response body with one Dog in it using an alternative model
 typealias AltSingleDogDocument = JSONAPI.Document<SingleResourceBody<AlternativeDog>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, BasicJSONAPIError<String>>
 let altDogResponse = try! JSONDecoder().decode(AltSingleDogDocument.self, from: singleDogData)
 let altDogFromData = altDogResponse.body.primaryResource?.value
-let altDogHuman: Person.Identifier? = altDogFromData.flatMap { $0 ~> \.human }
+let altDogHuman: Person.Id? = altDogFromData.flatMap { $0 ~> \.human }
 
 
 // MARK: - Create a request or response with multiple people and dogs and houses included
-let personIds = [Person.Identifier(), Person.Identifier()]
+let personIds = [Person.Id(), Person.Id()]
 let dogs = try! [Dog(name: "Buddy", owner: personIds[0]), Dog(name: "Joy", owner: personIds[0]), Dog(name: "Travis", owner: personIds[1])]
 let houses = [House(attributes: .none, relationships: .none, meta: .none, links: .none), House(attributes: .none, relationships: .none, meta: .none, links: .none)]
 let people = try! [Person(id: personIds[0], name: ["Gary", "Doe"], favoriteColor: "Orange-Red", friends: [], dogs: [dogs[0], dogs[1]], home: houses[0]), Person(id: personIds[1], name: ["Elise", "Joy"], favoriteColor: "Red", friends: [], dogs: [dogs[2]], home: houses[1])]

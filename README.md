@@ -151,7 +151,7 @@ extension String: CreatableRawIdType {
 
 // Create a typealias because we do not expect JSON:API Resource
 // Objects for this particular API to have Metadata or Links associated
-// with them. We also expect them to have String Identifiers.
+// with them. We also expect them to have String Ids.
 typealias JSONEntity<Description: ResourceObjectDescription> = JSONAPI.ResourceObject<Description, NoMetadata, NoLinks, String>
 
 // Similarly, create a typealias for unidentified entities. JSON:API
@@ -220,7 +220,7 @@ typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoInclud
 func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, SingleArticleDocumentWithIncludes> {
     // Let's pretend all of this is coming from a database:
 
-    let authorId = Author.Identifier(rawValue: "1234")
+    let authorId = Author.Id(rawValue: "1234")
 
     let article = Article(id: .init(rawValue: "5678"),
                           attributes: .init(title: .init(value: "JSON:API in Swift"),

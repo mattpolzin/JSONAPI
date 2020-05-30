@@ -86,7 +86,7 @@ typealias SingleArticleDocument = Document<SingleResourceBody<Article>, NoInclud
 func articleDocument(includeAuthor: Bool) -> Either<SingleArticleDocument, SingleArticleDocumentWithIncludes> {
     // Let's pretend all of this is coming from a database:
 
-    let authorId = Author.Identifier(rawValue: "1234")
+    let authorId = Author.Id(rawValue: "1234")
 
     let article = Article(id: .init(rawValue: "5678"),
                           attributes: .init(title: .init(value: "JSON:API in Swift"),
