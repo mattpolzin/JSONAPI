@@ -25,6 +25,19 @@ final class SwiftIdentifiableTests: XCTestCase {
         XCTAssertEqual(hash[t1.id], String(describing: t1.id))
         XCTAssertEqual(hash[t2.id], String(describing: t2.id))
     }
+
+    func test_Id_ID_equivalence() {
+        // it's not at all great to have both of these names for
+        // the Id type, but I could not do better than this and
+        // still have a typealias for the Id type on the
+        // ResourceObjectProxy protocol. One protocol's typealias
+        // will collide with anotehr protocol's associatedtype in
+        // very ugly ways.
+
+        XCTAssert(TestType.ID.self == TestType.Id.self)
+
+        XCTAssertEqual(TestType.ID(rawValue: "hello"), TestType.Id(rawValue: "hello"))
+    }
 }
 
 fileprivate enum TestDescription: JSONAPI.ResourceObjectDescription {
