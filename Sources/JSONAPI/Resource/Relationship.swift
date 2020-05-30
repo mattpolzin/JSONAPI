@@ -96,7 +96,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
         self.links = links
     }
 
-    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
+    public init<T: JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
         ids = pointers.map(\.id)
         self.meta = meta
         self.links = links
@@ -121,7 +121,7 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
         self.init(ids: ids, meta: .none, links: .none)
     }
 
-    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.ID == Relatable.ID {
+    public init<T: JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.ID == Relatable.ID {
         self.init(pointers: pointers, meta: .none, links: .none)
     }
 
