@@ -111,9 +111,9 @@ extension Poly2: ResourceObjectProxy, JSONTyped where A == PolyProxyTests.UserA,
 	public var id: Id<EntityRawIdType, PolyProxyTests.User> {
 		switch self {
 		case .a(let a):
-			return ID(rawValue: a.id.rawValue)
+			return Id(rawValue: a.id.rawValue)
 		case .b(let b):
-			return ID(rawValue: b.id.rawValue)
+			return Id(rawValue: b.id.rawValue)
 		}
 	}
 

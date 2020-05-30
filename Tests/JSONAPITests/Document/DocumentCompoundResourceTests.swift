@@ -114,9 +114,9 @@ final class DocumentCompoundResourceTests: XCTestCase {
         )
 
         let ids = [
-            DocumentTests.Book.ID(),
-            DocumentTests.Book.ID(),
-            DocumentTests.Book.ID()
+            DocumentTests.Book.Id(),
+            DocumentTests.Book.Id(),
+            DocumentTests.Book.Id()
         ]
 
         let book = DocumentTests.Book(

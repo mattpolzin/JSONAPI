@@ -56,25 +56,25 @@ extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
 }
 
 extension ToOneRelationship {
-    public init<T: ResourceObjectType>(resourceObject: T, meta: MetaType, links: LinksType) where T.ID == Identifiable.ID {
+    public init<T: ResourceObjectType>(resourceObject: T, meta: MetaType, links: LinksType) where T.Id == Identifiable.ID {
         self.init(id: resourceObject.id, meta: meta, links: links)
     }
 }
 
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-    public init<T: ResourceObjectType>(resourceObject: T) where T.ID == Identifiable.ID {
+    public init<T: ResourceObjectType>(resourceObject: T) where T.Id == Identifiable.ID {
         self.init(id: resourceObject.id, meta: .none, links: .none)
     }
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable {
-    public init<T: ResourceObjectType>(resourceObject: T?, meta: MetaType, links: LinksType) where T.ID == Identifiable.Wrapped.ID {
+    public init<T: ResourceObjectType>(resourceObject: T?, meta: MetaType, links: LinksType) where T.Id == Identifiable.Wrapped.ID {
         self.init(id: resourceObject?.id, meta: meta, links: links)
     }
 }
 
 extension ToOneRelationship where Identifiable: OptionalRelatable, MetaType == NoMetadata, LinksType == NoLinks {
-    public init<T: ResourceObjectType>(resourceObject: T?) where T.ID == Identifiable.Wrapped.ID {
+    public init<T: ResourceObjectType>(resourceObject: T?) where T.Id == Identifiable.Wrapped.ID {
         self.init(id: resourceObject?.id, meta: .none, links: .none)
     }
 }
@@ -96,13 +96,13 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, MetaType: JSONAPI
         self.links = links
     }
 
-    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
+    public init<T: JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
         ids = pointers.map(\.id)
         self.meta = meta
         self.links = links
     }
 
-    public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.ID == Relatable.ID {
+    public init<T: ResourceObjectType>(resourceObjects: [T], meta: MetaType, links: LinksType) where T.Id == Relatable.ID {
         self.init(ids: resourceObjects.map(\.id), meta: meta, links: links)
     }
 
@@ -121,7 +121,7 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
         self.init(ids: ids, meta: .none, links: .none)
     }
 
-    public init<T: JSONAPI.JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.ID == Relatable.ID {
+    public init<T: JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoMetadata, NoLinks>]) where T.ID == Relatable.ID {
         self.init(pointers: pointers, meta: .none, links: .none)
     }
 
@@ -129,7 +129,7 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
         return .none(withMeta: .none, links: .none)
     }
 
-    public init<T: ResourceObjectType>(resourceObjects: [T]) where T.ID == Relatable.ID {
+    public init<T: ResourceObjectType>(resourceObjects: [T]) where T.Id == Relatable.ID {
         self.init(resourceObjects: resourceObjects, meta: .none, links: .none)
     }
 }

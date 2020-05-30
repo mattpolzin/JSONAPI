@@ -167,7 +167,7 @@ typealias Relationships = NoRelationships
 
 `Relationship` values boil down to `Ids` of other resource objects. To access the `Id` of a related `ResourceObject`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `ResourceObject` can be accessed as follows (type annotations for clarity):
 ```swift
-let friendIds: [Person.ID] = person ~> \.friends
+let friendIds: [Person.Id] = person ~> \.friends
 ```
 
 ### `JSONAPI.Attributes`
@@ -595,9 +595,9 @@ enum UserDescription: ResourceObjectDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		public var friend: (User) -> User.ID {
+		public var friend: (User) -> User.Id {
 			return { user in
-				return User.ID(rawValue: user.friend_id)
+				return User.Id(rawValue: user.friend_id)
 			}
 		}
 	}
@@ -612,4 +612,4 @@ Given a value `user` of the above resource object type, you can access the `frie
 let friendId = user ~> \.friend
 ```
 
-This works because `friend` is defined in the form: `var {name}: ({ResourceObject}) -> {ID}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-relationship.
+This works because `friend` is defined in the form: `var {name}: ({ResourceObject}) -> {Id}` where `{ResourceObject}` is the `JSONAPI.ResourceObject` described by the `ResourceObjectDescription` containing the meta-relationship.
