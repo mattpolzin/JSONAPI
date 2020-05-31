@@ -1,9 +1,7 @@
 
-## Usage
+## Usage <!-- omit in toc -->
 
 In this documentation, in order to draw attention to the difference between the `JSONAPI` framework (this Swift library) and the **JSON API Spec** (the specification this library helps you follow), the specification will consistently be referred to below as simply the **SPEC**.
-
-<!-- TOC depthFrom:3 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [`JSONAPI.ResourceObjectDescription`](#jsonapiresourceobjectdescription)
 - [`JSONAPI.ResourceObject`](#jsonapiresourceobject)
@@ -29,6 +27,8 @@ In this documentation, in order to draw attention to the difference between the 
 		- [`UnknownJSONAPIError`](#unknownjsonapierror)
 		- [`BasicJSONAPIError`](#basicjsonapierror)
 		- [`GenericJSONAPIError`](#genericjsonapierror)
+	- [`SuccessDocument` and `ErrorDocument`](#successdocument-and-errordocument)
+- [`CompoundResource`](#compoundresource)
 - [`JSONAPI.Meta`](#jsonapimeta)
 - [`JSONAPI.Links`](#jsonapilinks)
 - [`JSONAPI.RawIdType`](#jsonapirawidtype)
@@ -43,11 +43,9 @@ In this documentation, in order to draw attention to the difference between the 
 - [Meta-Attributes](#meta-attributes)
 - [Meta-Relationships](#meta-relationships)
 
-<!-- /TOC -->
-
 ### `JSONAPI.ResourceObjectDescription`
 
-A `ResourceObjectDescription` is the `JSONAPI` framework's representation of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
+A `ResourceObjectDescription` is the `JSONAPI` framework's definition of the attributes and relationships of what the **SPEC** calls a *Resource Object*. You might create the following `ResourceObjectDescription` to represent a person in a network of friends:
 
 ```swift
 enum PersonDescription: ResourceObjectDescription {
@@ -65,11 +63,11 @@ enum PersonDescription: ResourceObjectDescription {
 ```
 
 The requirements of a `ResourceObjectDescription` are:
-1. A static `var` "jsonType" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
+1. A static `var` (or `let`) "jsonType" that matches the JSON type; The **SPEC** requires every *Resource Object* to have a "type".
 2. A `struct` of `Attributes` **- OR -** `typealias Attributes = NoAttributes`
 3. A `struct` of `Relationships` **- OR -** `typealias Relationships = NoRelationships`
 
-Note that an `enum` type is used here for the `ResourceObjectDescription`; it could have been a `struct`, but `ResourceObjectDescription`s do not ever need to be created so an `enum` with no `case`s is a nice fit for the job.
+Note that an `enum` type was used above for the `PersonDescription`; it could have been a `struct`, but `ResourceObjectDescriptions` do not ever need to be created so an `enum` with no `cases` is a nice fit for the job.
 
 This readme doesn't go into detail on the **SPEC**, but the following *Resource Object* would be described by the above `PersonDescription`:
 
@@ -103,7 +101,7 @@ This readme doesn't go into detail on the **SPEC**, but the following *Resource 
 
 ### `JSONAPI.ResourceObject`
 
-Once you have a `ResourceObjectDescription`, you _create_, _encode_, and _decode_ `ResourceObjects` that "fit the description". If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `ResourceObjects` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with resource objects.
+Once you have a `ResourceObjectDescription`, you _create_, _encode_, and _decode_ `ResourceObjects` that "fit the description." If you have a `CreatableRawIdType` (see the section on `RawIdType`s below) then you can create new `ResourceObjects` that will automatically be given unique Ids, but even without a `CreatableRawIdType` you can encode, decode and work with resource objects.
 
 The `ResourceObject` and `ResourceObjectDescription` together with a `JSONAPI.Meta` type and a `JSONAPI.Links` type embody the rules and properties of a JSON API *Resource Object*.
 
@@ -111,15 +109,15 @@ A `ResourceObject` needs to be specialized on four generic types. The first is t
 
 #### `Meta`
 
-The second generic specialization on `ResourceObject` is `Meta`. This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules. You can use `NoMetadata` if you do not need to package any metadata with the `ResourceObject`.
+This is described in its own section [below](#jsonapimeta). All `Meta` at any level of a JSON API Document follow the same rules. You can use `NoMetadata` if you do not need to package any metadata with the `ResourceObject`.
 
 #### `Links`
 
-The third generic specialization on `ResourceObject` is `Links`. This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document. You can use `NoLinks` if you do not need to package any links with the `ResourceObject`.
+This is described in its own section [below](#jsonnapilinks). All `Links` at any level of a JSON API Document follow the same rules, although the **SPEC** makes different suggestions as to what types of links might live on which parts of the Document. You can use `NoLinks` if you do not need to package any links with the `ResourceObject`.
 
 #### `MaybeRawId`
 
-The last generic specialization on `ResourceObject` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `ResourceObjects` or it is `Unidentified` which is used to indicate a `ResourceObject` does not have an `Id` (which is useful when a client is requesting that the server create a `ResourceObject` and assign it a new `Id`).
+The last generic specialization on `ResourceObject` is `MaybeRawId`. This is either a `RawIdType` that can be used to uniquely identify `ResourceObjects` or it is `Unidentified` which is used to indicate a `ResourceObject` does not have an `Id`; it is useful to create unidentified resources when a client is requesting that the server create a `ResourceObject` and assign it a new `Id`.
 
 ##### `RawIdType`
 
@@ -131,7 +129,7 @@ A `RawIdType` is the underlying type that uniquely identifies a `ResourceObject`
 
 #### Convenient `typealiases`
 
-Often you can use one `RawIdType` for many if not all of your `ResourceObjects`. That means you can save yourself some boilerplate by using `typealias`es like the following:
+Often you can use one `RawIdType` for many if not all of your `ResourceObjects`. That means you can save yourself some boilerplate by using `typealiases` like the following:
 ```swift
 public typealias ResourceObject<Description: JSONAPI.ResourceObjectDescription, Meta: JSONAPI.Meta, Links: JSONAPI.Links> = JSONAPI.ResourceObject<Description, Meta, Links, String>
 
@@ -145,20 +143,22 @@ typealias Person = ResourceObject<PersonDescription, NoMetadata, NoLinks>
 typealias NewPerson = NewResourceObject<PersonDescription, NoMetadata, NoLinks>
 ```
 
-Note that I am calling an unidentified person is a "new" person. I suspect that is generally an acceptable conflation because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
+Note that I am calling an unidentified person is a "new" person. This is generally an acceptable conflation in naming because the only time the **SPEC** allows a *Resource Object* to be encoded without an `Id` is when a client is requesting the given *Resource Object* be created by the server and the client wants the server to create the `Id` for that object.
 
 ### `JSONAPI.Relationships`
 
 There are three types of `Relationships`: `MetaRelationship`, `ToOneRelationship` and `ToManyRelationship`. A `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of any of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of a `ResourceObjectDescription`.
 
-In addition to identifying resource objects by Id and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON API Document.
+In addition to identifying resource objects by ID and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON:API Document.
 
 The `MetaRelationship` is special in that it represents a Relationship Object with no `data` (it must contain at least one of `meta` or `links`). The other two relationship types are Relationship Objects with either singular resource linkages (`ToOneRelationship`) or arrays of resource linkages (`ToManyRelationship`).
 
-To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. However, this is not recommended because you can also represent optional relationships as nullable which means the key is always present. A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` does not support nullability at all. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
 ```swift
 let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
 ```
+
+A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` do not support nullability.
 
 A `ResourceObject` that does not have relationships can be described by adding the following to a `ResourceObjectDescription`:
 ```swift
@@ -376,6 +376,66 @@ case .errors(let errors, let meta, let links):
 
 ##### `GenericJSONAPIError`
 This type makes it simple to use your own error payload structures as `JSONAPIError` types. Simply define a `Codable` and `Equatable` struct and then use `GenericJSONAPIError<YourType>` as the error type for a `Document`.
+
+#### `SuccessDocument` and `ErrorDocument`
+The `Document` type also supplies two nested types that guarantee either a successful data document or error an error document. 
+
+In general, if you want to encode or decode a document you will want the flexibility of representing either success or errors. When you know you will be working with one or the other in a particular context, `Document.SuccessDocument` and `Document.ErrorDocument` will provide additional convenience: they only expose relevant initializers (a success document cannot be initialized with errors), they only succeed to decode given the expected result, and success documents provide non-optional access to the `data` property that is normally optional on the `body`.
+
+For example:
+```swift
+typealias Response = JSONAPI.Document<...>
+
+let decoder = JSONDecoder()
+let document = try decoder.decode(Response.SuccessDocument.self, from: ...)
+
+// the following are non-optional because we know that if the document did not
+// contain a `data` body (i.e. if it was an error response) then it would have
+// failed to decode above.
+let primaryResource = document.primaryResource
+let includes = document.includes
+```
+
+### `CompoundResource`
+`CompoundResource` packages a primary resource with relatives (stored using the same `Include` types that `Document` uses). The `CompoundResource` type can be a convenient way to package a resource and its relatives to be later turned into a `Document`; A single resource body for a document is a straight forward representation of a `CompoundResource`, but `Document` will take an array of `CompoundResources` and create a batch ("many") resource body containing all the primary resources and uniquely including each relative as required by the **SPEC**.
+
+A single resource document:
+```swift
+typealias SinglePersonDocument = Document<SingleResourceBody<Person>, NoMetadata, NoLinks, Include1<Person>, NoAPIDescription, BasicJSONAPIError<String>>
+
+let person: Person = ...
+let friends: [Person] = ...
+let friendIncludes = friends.map(SinglePersonDocument.Include.init)
+
+let compoundResource = CompoundResource(primary: person, relatives: friendIncludes)
+
+let document = SinglePersonDocument(
+	apiDescription: .none,
+	resource: compoundResource,
+    meta: .none,
+    links: .none
+)
+```
+
+A batch resource document:
+```swift
+typealias ManyPersonDocument = Document<ManyResourceBody<Person>, NoMetadata, NoLinks, Include1<Person>, NoAPIDescription, BasicJSONAPIError<String>>
+
+let people: [Person] = ...
+let compoundResources = people.map { person in 
+	let friends: [Person] = ...
+	let friendIncludes = friends.map(SinglePersonDocument.Include.init)
+
+	return CompoundResource(primary: person, relatives: friendIncludes)
+}
+
+let document = ManyPersonDocument(
+	apiDescription: .none,
+	resources: compoundResources,
+    meta: .none,
+    links: .none
+)
+```
 
 ### `JSONAPI.Meta`
 
