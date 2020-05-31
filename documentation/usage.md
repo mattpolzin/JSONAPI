@@ -382,6 +382,20 @@ The `Document` type also supplies two nested types that guarantee either a succe
 
 In general, if you want to encode or decode a document you will want the flexibility of representing either success or errors. When you know you will be working with one or the other in a particular context, `Document.SuccessDocument` and `Document.ErrorDocument` will provide additional convenience: they only expose relevant initializers (a success document cannot be initialized with errors), they only succeed to decode given the expected result, and success documents provide non-optional access to the `data` property that is normally optional on the `body`.
 
+For example:
+```swift
+typealias Response = JSONAPI.Document<...>
+
+let decoder = JSONDecoder()
+let document = try decoder.decode(Response.SuccessDocument.self, from: ...)
+
+// the following are non-optional because we know that if the document did not
+// contain a `data` body (i.e. if it was an error response) then it would have
+// failed to decode above.
+let primaryResource = document.primaryResource
+let includes = document.includes
+```
+
 ### `CompoundResource`
 `CompoundResource` packages a primary resource with relatives (stored using the same `Include` types that `Document` uses). The `CompoundResource` type can be a convenient way to package a resource and its relatives to be later turned into a `Document`; A single resource body for a document is a straight forward representation of a `CompoundResource`, but `Document` will take an array of `CompoundResources` and create a batch ("many") resource body containing all the primary resources and uniquely including each relative as required by the **SPEC**.
 
