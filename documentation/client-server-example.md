@@ -1,20 +1,16 @@
-import Foundation
-import JSONAPI
-import Poly
+## Example
+The following serves as a sort of pseudo-example. It skips server/client implementation details not related to JSON:API but still gives a more complete picture of what an implementation using this framework might look like. You can play with this example code in the Playground provided with this repo.
 
-// MARK: - Preamble (setup)
-
-// Make String a CreatableRawIdType. This is actually done in
-// this Playground's Entities.swift file, so it is commented out here.
-/*
- var globalStringId: Int = 0
- extension String: CreatableRawIdType {
- public static func unique() -> String {
- globalStringId += 1
- return String(globalStringId)
- }
- }
- */
+### Preamble (Setup shared by server and client)
+```swift
+// Make String a CreatableRawIdType.
+var globalStringId: Int = 0
+extension String: CreatableRawIdType {
+	public static func unique() -> String {
+		globalStringId += 1
+		return String(globalStringId)
+	}
+}
 
 // Create a typealias because we do not expect JSON:API Resource
 // Objects for this particular API to have Metadata or Links associated
@@ -76,9 +72,10 @@ typealias SingleArticleDocument = Document<SingleResourceBody<Article>, Include1
 
 // ... and a typealias to represent a batch document containing any number of Articles
 typealias ManyArticleDocument = Document<ManyResourceBody<Article>, Include1<Author>>
+```
 
-// MARK: - Server Pseudo-example
-
+### Server Pseudo-example
+```swift
 // Skipping over all the API and database stuff, here's a chunk of code
 // that creates a document. Note that this document is the entirety
 // of a JSON:API response body.
@@ -148,9 +145,10 @@ let otherResponseBody = articleDocument(includeAuthor: false)
 let otherResponseData = try! encoder.encode(otherResponseBody)
 print("-----")
 print(String(data: otherResponseData, encoding: .utf8)!)
+```
 
-// MARK: - Client Pseudo-example
-
+### Client Pseudo-example
+```swift
 enum NetworkError: Swift.Error {
     case serverError
     case quantityMismatch
@@ -185,3 +183,4 @@ let response = try! docode(articleResponseData: responseData)
 print("-----")
 print(response.article)
 print(response.author)
+```
