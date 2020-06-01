@@ -15,7 +15,7 @@ See the JSON API Spec here: https://jsonapi.org/format/
 - [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr)
 - [Custom Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
 - [PATCH Example](https://colab.research.google.com/drive/16KY-0BoLQKiSUh9G7nYmHzB8b2vhXA2U)
-- [Resource Storage Example](https://colab.research.google.com/drive/196eCnBlf2xz8pT4lW--ur6eWSVAjpF6b?usp=sharing)
+- [Resource Storage Example](https://colab.research.google.com/drive/196eCnBlf2xz8pT4lW--ur6eWSVAjpF6b?usp=sharing) (using [JSONAPI-ResourceStorage](#jsonapi-resourcestorage)
 
 ### Serverside
 - [GET Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
