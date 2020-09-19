@@ -4,13 +4,14 @@
 //
 //  Created by Mathew Polzin on 10/20/19.
 //
+import Foundation
 
 public enum DocumentDecodingError: Swift.Error, Equatable {
     case primaryResource(error: ResourceObjectDecodingError, idx: Int?)
     case primaryResourceMissing
     case primaryResourcesMissing
 
-    case includes(error: IncludesDecodingError)
+    case includes(error: IncludesDecodingError, idx: Int?)
 
     case foundErrorDocumentWhenExpectingSuccess
     case foundSuccessDocumentWhenExpectingError
@@ -24,7 +25,7 @@ public enum DocumentDecodingError: Swift.Error, Equatable {
     }
 
     init(_ decodingError: IncludesDecodingError) {
-        self = .includes(error: decodingError)
+        self = .includes(error: decodingError, idx: decodingError.idx)
     }
 
     init?(_ decodingError: DecodingError) {
@@ -50,7 +51,7 @@ public enum DocumentDecodingError: Swift.Error, Equatable {
     }
 }
 
-extension DocumentDecodingError: CustomStringConvertible {
+extension DocumentDecodingError: LocalizedError, CustomStringConvertible {
     public var description: String {
         switch self {
         case .primaryResource(error: let error, idx: let idx):
@@ -60,14 +61,22 @@ extension DocumentDecodingError: CustomStringConvertible {
             return "Primary Resource missing."
         case .primaryResourcesMissing:
             return "Primary Resources array missing."
-
-        case .includes(error: let error):
+        case .includes(error: let error, let idx):
+            if let index = idx,
+               let documentError = error.error as? IncludeDecodingError,
+               documentError.failures.indices.contains(index-1) {
+                let failure = documentError.failures[index-1]
+                return "Include Resource\(index) failed to parse because of \(failure)"
+            }
             return "\(error)"
-
         case .foundErrorDocumentWhenExpectingSuccess:
             return "Expected a success document with a 'data' property but found an error document."
         case .foundSuccessDocumentWhenExpectingError:
             return "Expected an error document but found a success document with a 'data' property."
         }
+    }
+    //No localization support. But matches the error description
+    public var errorDescription: String? {
+       return description
     }
 }
