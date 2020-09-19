@@ -417,7 +417,7 @@ extension IncludedTests {
         public static var jsonType: String { return "test_entity2" }
 
         public struct Relationships: JSONAPI.Relationships {
-            let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+            let entity1: ToOneRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>
         }
 
         public struct Attributes: JSONAPI.SparsableAttributes {
@@ -440,8 +440,8 @@ extension IncludedTests {
 		public static var jsonType: String { return "test_entity3" }
 		
 		public struct Relationships: JSONAPI.Relationships {
-			let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
-			let entity2: ToManyRelationship<TestEntity2, NoMetadata, NoLinks>
+			let entity1: ToOneRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>
+			let entity2: ToManyRelationship<TestEntity2, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 
@@ -476,7 +476,7 @@ extension IncludedTests {
 		public static var jsonType: String { return "test_entity6" }
 
 		struct Relationships: JSONAPI.Relationships {
-			let entity4: ToOneRelationship<TestEntity4, NoMetadata, NoLinks>
+			let entity4: ToOneRelationship<TestEntity4, NoIdMetadata, NoMetadata, NoLinks>
 		}
 	}
 

@@ -67,7 +67,7 @@ extension IncludesDecodingErrorTests {
         public static var jsonType: String { return "test_entity2" }
 
         public struct Relationships: JSONAPI.Relationships {
-            let entity1: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
+            let entity1: ToOneRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>
         }
 
         public struct Attributes: JSONAPI.SparsableAttributes {
@@ -101,7 +101,7 @@ extension IncludesDecodingErrorTests {
         public static var jsonType: String { return "test_entity6" }
 
         struct Relationships: JSONAPI.Relationships {
-            let entity4: ToOneRelationship<TestEntity4, NoMetadata, NoLinks>
+            let entity4: ToOneRelationship<TestEntity4, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 

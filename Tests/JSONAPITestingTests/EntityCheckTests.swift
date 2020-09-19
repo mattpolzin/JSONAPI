@@ -115,7 +115,7 @@ extension EntityCheckTests {
 		public typealias Attributes = NoAttributes
 
 		public struct Relationships: JSONAPI.Relationships {
-			let x: ToOneRelationship<OkEntity, NoMetadata, NoLinks>
+			let x: ToOneRelationship<OkEntity, NoIdMetadata, NoMetadata, NoLinks>
 			let y: Id<String, OkEntity>
 		}
 	}
