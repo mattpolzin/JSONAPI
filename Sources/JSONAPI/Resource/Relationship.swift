@@ -52,13 +52,6 @@ public struct ToOneRelationship<Identifiable: JSONAPI.JSONAPIIdentifiable, IdMet
     public let meta: MetaType
     public let links: LinksType
 
-    public init(id: Identifiable.ID, meta: MetaType, links: LinksType) where IdMetaType == NoIdMetadata {
-        self.id = id
-        self.idMeta = .none
-        self.meta = meta
-        self.links = links
-    }
-
     public init(id: (Identifiable.ID, IdMetaType), meta: MetaType, links: LinksType) {
         self.id = id.0
         self.idMeta = id.1
@@ -67,12 +60,23 @@ public struct ToOneRelationship<Identifiable: JSONAPI.JSONAPIIdentifiable, IdMet
     }
 }
 
+extension ToOneRelationship where IdMetaType == NoIdMetadata {
+    public init(id: Identifiable.ID, meta: MetaType, links: LinksType) {
+        self.id = id
+        self.idMeta = .none
+        self.meta = meta
+        self.links = links
+    }
+}
+
 extension ToOneRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-    public init(id: Identifiable.ID) where IdMetaType == NoIdMetadata {
+    public init(id: (Identifiable.ID, IdMetaType)) {
         self.init(id: id, meta: .none, links: .none)
     }
+}
 
-    public init(id: (Identifiable.ID, IdMetaType)) {
+extension ToOneRelationship where IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
+    public init(id: Identifiable.ID) {
         self.init(id: id, meta: .none, links: .none)
     }
 }
@@ -138,13 +142,6 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
     public let meta: MetaType
     public let links: LinksType
 
-
-    public init(ids: [Relatable.ID], meta: MetaType, links: LinksType) where IdMetaType == NoIdMetadata {
-        self.metaIds = ids.map { .init(id: $0, meta: .none) }
-        self.meta = meta
-        self.links = links
-    }
-
     public init(idsWithMetadata ids: [(Relatable.ID, IdMetaType)], meta: MetaType, links: LinksType) {
         self.metaIds = ids.map(ID.init)
         self.meta = meta
@@ -170,11 +167,15 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
     }
 }
 
-extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks {
-
-    public init(ids: [Relatable.ID]) where IdMetaType == NoIdMetadata {
-        self.init(ids: ids, meta: .none, links: .none)
+extension ToManyRelationship where IdMetaType == NoIdMetadata {
+    public init(ids: [Relatable.ID], meta: MetaType, links: LinksType) {
+        self.metaIds = ids.map { .init(id: $0, meta: .none) }
+        self.meta = meta
+        self.links = links
     }
+}
+
+extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks {
 
     public init(idsWithMetadata ids: [(Relatable.ID, IdMetaType)]) {
         self.init(idsWithMetadata: ids, meta: .none, links: .none)
@@ -190,6 +191,12 @@ extension ToManyRelationship where MetaType == NoMetadata, LinksType == NoLinks 
 
     public init<T: ResourceObjectType>(resourceObjects: [T]) where T.Id == Relatable.ID, IdMetaType == NoIdMetadata {
         self.init(resourceObjects: resourceObjects, meta: .none, links: .none)
+    }
+}
+
+extension ToManyRelationship where IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
+    public init(ids: [Relatable.ID]) {
+        self.init(ids: ids, meta: .none, links: .none)
     }
 }
 
