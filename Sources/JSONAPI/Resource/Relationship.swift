@@ -143,7 +143,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
     public let links: LinksType
 
     public init(idsWithMetadata ids: [(Relatable.ID, IdMetaType)], meta: MetaType, links: LinksType) {
-        self.metaIds = ids.map(ID.init)
+        self.metaIds = ids.map { ID.init($0) }
         self.meta = meta
         self.links = links
     }
