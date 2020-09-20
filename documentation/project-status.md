@@ -22,6 +22,11 @@
 - [x] `links`
 - [x] `meta`
 
+##### Resource Identifier Object
+- [x] `id`
+- [x] `type`
+- [x] `meta`
+
 #### Links Object
 - [x] `href`
 - [x] `meta`

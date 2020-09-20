@@ -25,8 +25,8 @@ extension String: CreatableRawIdType {
 
 // MARK: - typealiases for convenience
 public typealias ExampleEntity<Description: ResourceObjectDescription> = ResourceObject<Description, NoMetadata, NoLinks, String>
-public typealias ToOne<E: JSONAPIIdentifiable> = ToOneRelationship<E, NoMetadata, NoLinks>
-public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoMetadata, NoLinks>
+public typealias ToOne<E: JSONAPIIdentifiable> = ToOneRelationship<E, NoIdMetadata, NoMetadata, NoLinks>
+public typealias ToMany<E: Relatable> = ToManyRelationship<E, NoIdMetadata, NoMetadata, NoLinks>
 
 // MARK: - A few resource objects (entities)
 public enum PersonDescription: ResourceObjectDescription {
