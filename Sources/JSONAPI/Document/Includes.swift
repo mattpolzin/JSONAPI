@@ -76,14 +76,15 @@ extension Includes: Decodable where I: Decodable {
                         }
                 }
                 guard errors.count == error.individualTypeFailures.count else {
-                    throw IncludesDecodingError(error: error, idx: idx)
+                    throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
                 }
                 throw IncludesDecodingError(
                     error: IncludeDecodingError(failures: errors),
-                    idx: idx
+                    idx: idx,
+                    totalIncludesCount: container.count ?? 0
                 )
             } catch let error {
-                throw IncludesDecodingError(error: error, idx: idx)
+                throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
             }
         }
 
@@ -208,7 +209,13 @@ extension Includes where I: _Poly11 {
 // MARK: - DecodingError
 public struct IncludesDecodingError: Swift.Error, Equatable {
     public let error: Swift.Error
+    /// The zero-based index of the include that failed to decode.
     public let idx: Int
+    /// The total count of includes in the document that failed to decode.
+    ///
+    /// In other words, "of `totalIncludesCount` includes, the `(idx + 1)`th
+    /// include failed to decode.
+    public let totalIncludesCount: Int
 
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.idx == rhs.idx
@@ -218,7 +225,25 @@ public struct IncludesDecodingError: Swift.Error, Equatable {
 
 extension IncludesDecodingError: CustomStringConvertible {
     public var description: String {
-        return "Include \(idx + 1) failed to parse: \(error)"
+        let ordinalSuffix: String
+        if (idx % 100) + 1 > 9 && (idx % 100) + 1 < 20 {
+            // the teens
+            ordinalSuffix = "th"
+        } else {
+            switch ((idx % 10) + 1) {
+            case 1:
+                ordinalSuffix = "st"
+            case 2:
+                ordinalSuffix = "nd"
+            case 3:
+                ordinalSuffix = "rd"
+            default:
+                ordinalSuffix = "th"
+            }
+        }
+        let ordinalDescription = "\(idx + 1)\(ordinalSuffix)"
+
+        return "Out of \(totalIncludesCount) includes, the \(ordinalDescription) one failed to parse: \(error)"
     }
 }
 
