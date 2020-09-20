@@ -254,7 +254,7 @@ public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConverti
         return failures
             .enumerated()
             .map {
-                "\nCould not have been Include Type \($0.offset + 1) because:\n\($0.element)"
+                "\nCould not have been Include Type `\($0.element.resourceObjectJsonAPIType)` because:\n\($0.element)"
         }.joined(separator: "\n")
     }
 }

@@ -6,6 +6,7 @@
 //
 
 public struct ResourceObjectDecodingError: Swift.Error, Equatable {
+    public let resourceObjectJsonAPIType: String
     public let subjectName: String
     public let cause: Cause
     public let location: Location
@@ -16,7 +17,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         case keyNotFound
         case valueNotFound
         case typeMismatch(expectedTypeName: String)
-        case jsonTypeMismatch(expectedType: String, foundType: String)
+        case jsonTypeMismatch(foundType: String)
         case quantityMismatch(expected: JSONAPICodingError.Quantity)
     }
 
@@ -38,7 +39,8 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
-    init?(_ decodingError: DecodingError) {
+    init?(_ decodingError: DecodingError, jsonAPIType: String) {
+        self.resourceObjectJsonAPIType = jsonAPIType
         switch decodingError {
         case .typeMismatch(let expectedType, let ctx):
             (location, subjectName) = Self.context(ctx)
@@ -67,11 +69,12 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
-    init?(_ jsonAPIError: JSONAPICodingError) {
+    init?(_ jsonAPIError: JSONAPICodingError, jsonAPIType: String) {
+        self.resourceObjectJsonAPIType = jsonAPIType
         switch jsonAPIError {
         case .typeMismatch(expected: let expected, found: let found, path: let path):
             (location, subjectName) = Self.context(path: path)
-            cause = .jsonTypeMismatch(expectedType: expected, foundType: found)
+            cause = .jsonTypeMismatch(foundType: found)
         case .quantityMismatch(expected: let expected, path: let path):
             (location, subjectName) = Self.context(path: path)
             cause = .quantityMismatch(expected: expected)
@@ -81,12 +84,14 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
     }
 
     init(expectedJSONAPIType: String, found: String) {
+        resourceObjectJsonAPIType = expectedJSONAPIType
         location = .type
         subjectName = "self"
-        cause = .jsonTypeMismatch(expectedType: expectedJSONAPIType, foundType: found)
+        cause = .jsonTypeMismatch(foundType: found)
     }
 
-    init(subjectName: String, cause: Cause, location: Location) {
+    init(subjectName: String, cause: Cause, location: Location, jsonAPIType: String) {
+        self.resourceObjectJsonAPIType = jsonAPIType
         self.subjectName = subjectName
         self.cause = cause
         self.location = location
@@ -135,10 +140,10 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
             return "'\(location.singular)' (a.k.a. the JSON:API type name) is not a \(expected) as expected."
         case .typeMismatch(expectedTypeName: let expected):
             return "'\(subjectName)' \(location.singular) is not a \(expected) as expected."
-        case .jsonTypeMismatch(expectedType: let expected, foundType: let found) where location == .type:
-            return "found JSON:API type \"\(found)\" but expected \"\(expected)\""
-        case .jsonTypeMismatch(expectedType: let expected, foundType: let found):
-            return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found)\" but it was expected to be \"\(expected)\""
+        case .jsonTypeMismatch(foundType: let found) where location == .type:
+            return "found JSON:API type \"\(found)\" but expected \"\(resourceObjectJsonAPIType)\""
+        case .jsonTypeMismatch(foundType: let found):
+            return "'\(subjectName)' \(location.singular) is of JSON:API type \"\(found)\" but it was expected to be \"\(resourceObjectJsonAPIType)\""
         case .quantityMismatch(expected: let expected):
             let expecation: String = {
                 switch expected {

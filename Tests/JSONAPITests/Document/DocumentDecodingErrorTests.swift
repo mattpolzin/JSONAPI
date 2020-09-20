@@ -114,10 +114,10 @@ final class DocumentDecodingErrorTests: XCTestCase {
                 String(describing: error),
                 #"""
                 Out of 3 includes, the 3rd one failed to parse: 
-                Could not have been Include Type 1 because:
+                Could not have been Include Type `articles` because:
                 found JSON:API type "not_an_author" but expected "articles"
 
-                Could not have been Include Type 2 because:
+                Could not have been Include Type `authors` because:
                 found JSON:API type "not_an_author" but expected "authors"
                 """#
             )
@@ -142,10 +142,10 @@ final class DocumentDecodingErrorTests: XCTestCase {
                 String(describing: error),
                 #"""
                 Out of 3 includes, the 2nd one failed to parse: 
-                Could not have been Include Type 1 because:
+                Could not have been Include Type `articles` because:
                 found JSON:API type "not_an_author" but expected "articles"
 
-                Could not have been Include Type 2 because:
+                Could not have been Include Type `authors` because:
                 found JSON:API type "not_an_author" but expected "authors"
                 """#
             )

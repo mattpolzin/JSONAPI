@@ -398,7 +398,7 @@ public extension ResourceObject {
         do {
             type = try container.decode(String.self, forKey: .type)
         } catch let error as DecodingError {
-            throw ResourceObjectDecodingError(error)
+            throw ResourceObjectDecodingError(error, jsonAPIType: Self.jsonType)
                 ?? error
         }
 
@@ -417,13 +417,14 @@ public extension ResourceObject {
                 ?? container.decodeIfPresent(Description.Attributes.self, forKey: .attributes)
                 ?? Description.Attributes(from: EmptyObjectDecoder())
         } catch let decodingError as DecodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch _ as EmptyObjectDecodingError {
             throw ResourceObjectDecodingError(
                 subjectName: ResourceObjectDecodingError.entireObject,
                 cause: .keyNotFound,
-                location: .attributes
+                location: .attributes,
+                jsonAPIType: Self.jsonType
             )
         }
 
@@ -432,16 +433,17 @@ public extension ResourceObject {
                 ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
                 ?? Description.Relationships(from: EmptyObjectDecoder())
         } catch let decodingError as DecodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch let decodingError as JSONAPICodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch _ as EmptyObjectDecodingError {
             throw ResourceObjectDecodingError(
                 subjectName: ResourceObjectDecodingError.entireObject,
                 cause: .keyNotFound,
-                location: .relationships
+                location: .relationships,
+                jsonAPIType: Self.jsonType
             )
         }
 
