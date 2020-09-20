@@ -41,6 +41,12 @@ let to_one_relationship = """
 }
 """.data(using: .utf8)!
 
+let to_one_relationship_nulled_out = """
+{
+    "data": null
+}
+""".data(using: .utf8)!
+
 let to_one_relationship_type_mismatch = """
 {
 	"data": {

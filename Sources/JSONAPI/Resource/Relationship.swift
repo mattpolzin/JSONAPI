@@ -133,23 +133,23 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
         }
     }
 
-    public let metaIds: [ID]
+    public let idsWithMeta: [ID]
 
     public var ids: [Relatable.ID] {
-        metaIds.map(\.id)
+        idsWithMeta.map(\.id)
     }
 
     public let meta: MetaType
     public let links: LinksType
 
     public init(idsWithMetadata ids: [(Relatable.ID, IdMetaType)], meta: MetaType, links: LinksType) {
-        self.metaIds = ids.map { ID.init($0) }
+        self.idsWithMeta = ids.map { ID.init($0) }
         self.meta = meta
         self.links = links
     }
 
     public init<T: JSONAPIIdentifiable>(pointers: [ToOneRelationship<T, NoIdMetadata, NoMetadata, NoLinks>], meta: MetaType, links: LinksType) where T.ID == Relatable.ID, IdMetaType == NoIdMetadata {
-        metaIds = pointers.map { .init(id: $0.id, meta: .none) }
+        idsWithMeta = pointers.map { .init(id: $0.id, meta: .none) }
         self.meta = meta
         self.links = links
     }
@@ -169,7 +169,7 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
 
 extension ToManyRelationship where IdMetaType == NoIdMetadata {
     public init(ids: [Relatable.ID], meta: MetaType, links: LinksType) {
-        self.metaIds = ids.map { .init(id: $0, meta: .none) }
+        self.idsWithMeta = ids.map { .init(id: $0, meta: .none) }
         self.meta = meta
         self.links = links
     }
@@ -263,6 +263,9 @@ extension MetaRelationship: Codable {
     }
 }
 
+fileprivate protocol _Optional {}
+extension Optional: _Optional {}
+
 extension ToOneRelationship: Codable where Identifiable.ID: OptionalId {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
@@ -295,7 +298,15 @@ extension ToOneRelationship: Codable where Identifiable.ID: OptionalId {
                     )
                 )
             }
-            guard let noIdMeta = NoIdMetadata() as? IdMetaType else {
+            // if we know we aren't getting any Resource Identifer Object at all
+            // (which we do inside this block) then we better either be expecting
+            // no Id Metadata or optional Id Metadata or else we will report an
+            // error.
+            if let noIdMeta = NoIdMetadata() as? IdMetaType {
+                idMeta = noIdMeta
+            } else if let nilMeta = anyNil as? IdMetaType {
+                idMeta = nilMeta
+            } else {
                 throw DecodingError.valueNotFound(
                     Self.self,
                     DecodingError.Context(
@@ -304,7 +315,6 @@ extension ToOneRelationship: Codable where Identifiable.ID: OptionalId {
                     )
                 )
             }
-            idMeta = noIdMeta
             id = val
             return
         }
@@ -425,7 +435,7 @@ extension ToManyRelationship: Codable {
 
             newIds.append(.init(id: Relatable.ID(rawValue: id), meta: idMeta) )
         }
-        metaIds = newIds
+        idsWithMeta = newIds
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -441,7 +451,7 @@ extension ToManyRelationship: Codable {
 
         var identifiers = container.nestedUnkeyedContainer(forKey: .data)
 
-        for id in metaIds {
+        for id in idsWithMeta {
             var identifier = identifiers.nestedContainer(keyedBy: ResourceIdentifierCodingKeys.self)
 
             try identifier.encode(id.id.rawValue, forKey: .id)

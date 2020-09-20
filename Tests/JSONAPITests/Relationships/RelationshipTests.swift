@@ -31,6 +31,26 @@ class RelationshipTests: XCTestCase {
 		XCTAssertEqual(relationship.ids.count, 4)
 		XCTAssertEqual(relationship.ids, [entity1, entity2, entity3, entity4].map(\.id))
 	}
+
+    func test_initToOneWithIdMeta() {
+        let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let relationship = ToOneWithMetaInIds(
+            id: (entity1.id, .init(a: "hello"))
+        )
+        XCTAssertEqual(relationship.id, entity1.id)
+        XCTAssertEqual(relationship.idMeta, .init(a: "hello"))
+    }
+
+    func test_initToManyWithIdMeta() {
+        let entity1 = TestEntity1(attributes: .none, relationships: .none, meta: .none, links: .none)
+        let relationship = ToManyWithMetaInIds(
+            idsWithMetadata: [
+                (entity1.id, .init(a: "hello"))
+            ]
+        )
+        XCTAssertEqual(relationship.ids, [entity1.id])
+        XCTAssertEqual(relationship.idsWithMeta, [.init(id: entity1.id, meta: .init(a: "hello"))])
+    }
 }
 
 // MARK: - Encode/Decode
@@ -181,7 +201,7 @@ extension RelationshipTests {
                                    data: to_many_relationship_with_meta_inside_identifier)
 
         XCTAssertEqual(relationship.ids.map(\.rawValue), ["2DF03B69-4B0A-467F-B52E-B0C9E44FCECF", "90F03B69-4DF1-467F-B52E-B0C9E44FC333", "2DF03B69-4B0A-467F-B52E-B0C9E44FCECF"])
-        XCTAssertEqual(relationship.metaIds[0].meta.a, "hello")
+        XCTAssertEqual(relationship.idsWithMeta[0].meta.a, "hello")
     }
 
     func test_ToManyRelationshipWithMetaInsideIdentifier_encode() {
@@ -234,6 +254,10 @@ extension RelationshipTests {
 
 		XCTAssertEqual(encoded(value: relationship1), encoded(value: relationship2))
 	}
+
+    func test_nullableIdMeta() {
+        let _ = decoded(type: ToOneRelationship<TestEntity1?, TestMeta?, NoMetadata, NoLinks>.self, data: to_one_relationship_nulled_out)
+    }
 }
 
 // MARK: Failure tests
@@ -245,6 +269,10 @@ extension RelationshipTests {
 	func test_ToOneTypeMismatch() {
 		XCTAssertThrowsError(try JSONDecoder().decode(ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>.self, from: to_one_relationship_type_mismatch))
 	}
+
+    func test_toOneNulledOutWithExpectedIdMetadata() {
+        XCTAssertThrowsError(try JSONDecoder().decode(ToOneRelationship<TestEntity1?, TestMeta, NoMetadata, NoLinks>.self, from: to_one_relationship_nulled_out))
+    }
 }
 
 // MARK: - Test types
