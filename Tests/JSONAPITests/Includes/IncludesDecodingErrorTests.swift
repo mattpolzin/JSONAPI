@@ -84,6 +84,29 @@ final class IncludesDecodingErrorTests: XCTestCase {
             )
         }
     }
+
+    func test_missingProperty() {
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
+                from: three_includes_one_missing_attributes
+            )
+        ) { (error: Error) -> Void in
+            XCTAssertEqual(
+                (error as? IncludesDecodingError).map(String.init(describing:)),
+                """
+                Out of 3 includes, the 3rd one failed to parse: \nCould not have been Include Type `test_entity1` because:
+                found JSON:API type "test_entity2" but expected "test_entity1"
+
+                Could not have been Include Type `test_entity2` because:
+                'foo' attribute is required and missing.
+
+                Could not have been Include Type `test_entity4` because:
+                found JSON:API type "test_entity2" but expected "test_entity4"
+                """
+            )
+        }
+    }
 }
 
 // MARK: - Test Types
