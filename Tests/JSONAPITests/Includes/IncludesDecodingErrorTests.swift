@@ -10,7 +10,6 @@ import JSONAPI
 
 final class IncludesDecodingErrorTests: XCTestCase {
     func test_unexpectedIncludeType() {
-        var error1: Error!
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: three_different_type_includes)) { (error: Error) -> Void in
             XCTAssertEqual(
                 (error as? IncludesDecodingError)?.idx,
@@ -19,23 +18,53 @@ final class IncludesDecodingErrorTests: XCTestCase {
 
             XCTAssertEqual(
                 (error as? IncludesDecodingError).map(String.init(describing:)),
-"""
-Include 3 failed to parse: \nCould not have been Include Type 1 because:
-found JSON:API type "test_entity4" but expected "test_entity1"
-
-Could not have been Include Type 2 because:
-found JSON:API type "test_entity4" but expected "test_entity2"
-"""
+                "Out of the 3 includes in the document, the 3rd one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
-
-            error1 = error
         }
 
-        // now test that we get the same error from a different test stub
+        // now test that we get the same error with a different total include count from a different test stub
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: four_different_type_includes)) { (error2: Error) -> Void in
             XCTAssertEqual(
-                error1 as? IncludesDecodingError,
-                error2 as? IncludesDecodingError
+                (error2 as? IncludesDecodingError).map(String.init(describing:)),
+                "Out of the 4 includes in the document, the 3rd one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
+            )
+        }
+
+        // and with six total includes
+        XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: six_includes_one_bad_type)) { (error2: Error) -> Void in
+            XCTAssertEqual(
+                (error2 as? IncludesDecodingError).map(String.init(describing:)),
+                "Out of the 6 includes in the document, the 5th one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
+            )
+        }
+
+        // and with a number of total includes between 10 and 19
+        XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: eleven_includes_one_bad_type)) { (error2: Error) -> Void in
+            XCTAssertEqual(
+                (error2 as? IncludesDecodingError).map(String.init(describing:)),
+                "Out of the 11 includes in the document, the 10th one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
+            )
+        }
+
+        // and finally with a larger number of total includes
+        XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: twenty_two_includes_one_bad_type)) { (error2: Error) -> Void in
+            XCTAssertEqual(
+                (error2 as? IncludesDecodingError).map(String.init(describing:)),
+                "Out of the 22 includes in the document, the 21st one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
+            )
+        }
+    }
+
+    func test_missingProperty() {
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Includes<Include3<TestEntity, TestEntity2, TestEntity4>>.self,
+                from: three_includes_one_missing_attributes
+            )
+        ) { (error: Error) -> Void in
+            XCTAssertEqual(
+                (error as? IncludesDecodingError).map(String.init(describing:)),
+                "Out of the 3 includes in the document, the 3rd one failed to parse: 'foo' attribute is required and missing."
             )
         }
     }
