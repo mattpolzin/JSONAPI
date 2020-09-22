@@ -243,7 +243,7 @@ extension IncludesDecodingError: CustomStringConvertible {
         }
         let ordinalDescription = "\(idx + 1)\(ordinalSuffix)"
 
-        return "Out of \(totalIncludesCount) includes, the \(ordinalDescription) one failed to parse: \(error)"
+        return "Out of the \(totalIncludesCount) includes in the document, the \(ordinalDescription) one failed to parse: \(error)"
     }
 }
 
@@ -251,6 +251,25 @@ public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConverti
     public let failures: [ResourceObjectDecodingError]
 
     public var description: String {
+        // concise error when all failures are mismatched JSON:API types:
+        if case let .jsonTypeMismatch(foundType: foundType)? = failures.first?.cause,
+           failures.allSatisfy({ $0.cause.isTypeMismatch }) {
+            let expectedTypes = failures
+                .compactMap { "'\($0.resourceObjectJsonAPIType)'" }
+                .joined(separator: ", ")
+
+            return "Found JSON:API type '\(foundType)' but expected one of \(expectedTypes)"
+        }
+
+        // concise error when all but failures but one are type mismatches because
+        // we can assume the correct type was found but there was some other error:
+        let nonTypeMismatches = failures.filter({ !$0.cause.isTypeMismatch})
+        if nonTypeMismatches.count == 1, let nonTypeMismatch = nonTypeMismatches.first {
+            return String(describing: nonTypeMismatch)
+        }
+
+        // fall back to just describing all of the reasons it could not have been any of the available
+        // types:
         return failures
             .enumerated()
             .map {

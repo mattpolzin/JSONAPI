@@ -18,13 +18,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
 
             XCTAssertEqual(
                 (error as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 3 includes, the 3rd one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity4" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                found JSON:API type "test_entity4" but expected "test_entity2"
-                """
+                "Out of the 3 includes in the document, the 3rd one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
         }
 
@@ -32,13 +26,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: four_different_type_includes)) { (error2: Error) -> Void in
             XCTAssertEqual(
                 (error2 as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 4 includes, the 3rd one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity4" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                found JSON:API type "test_entity4" but expected "test_entity2"
-                """
+                "Out of the 4 includes in the document, the 3rd one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
         }
 
@@ -46,13 +34,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: six_includes_one_bad_type)) { (error2: Error) -> Void in
             XCTAssertEqual(
                 (error2 as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 6 includes, the 5th one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity4" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                found JSON:API type "test_entity4" but expected "test_entity2"
-                """
+                "Out of the 6 includes in the document, the 5th one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
         }
 
@@ -60,13 +42,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: eleven_includes_one_bad_type)) { (error2: Error) -> Void in
             XCTAssertEqual(
                 (error2 as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 11 includes, the 10th one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity4" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                found JSON:API type "test_entity4" but expected "test_entity2"
-                """
+                "Out of the 11 includes in the document, the 10th one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
         }
 
@@ -74,13 +50,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
         XCTAssertThrowsError(try testDecoder.decode(Includes<Include2<TestEntity, TestEntity2>>.self, from: twenty_two_includes_one_bad_type)) { (error2: Error) -> Void in
             XCTAssertEqual(
                 (error2 as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 22 includes, the 21st one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity4" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                found JSON:API type "test_entity4" but expected "test_entity2"
-                """
+                "Out of the 22 includes in the document, the 21st one failed to parse: Found JSON:API type 'test_entity4' but expected one of 'test_entity1', 'test_entity2'"
             )
         }
     }
@@ -94,16 +64,7 @@ final class IncludesDecodingErrorTests: XCTestCase {
         ) { (error: Error) -> Void in
             XCTAssertEqual(
                 (error as? IncludesDecodingError).map(String.init(describing:)),
-                """
-                Out of 3 includes, the 3rd one failed to parse: \nCould not have been Include Type `test_entity1` because:
-                found JSON:API type "test_entity2" but expected "test_entity1"
-
-                Could not have been Include Type `test_entity2` because:
-                'foo' attribute is required and missing.
-
-                Could not have been Include Type `test_entity4` because:
-                found JSON:API type "test_entity2" but expected "test_entity4"
-                """
+                "Out of the 3 includes in the document, the 3rd one failed to parse: 'foo' attribute is required and missing."
             )
         }
     }

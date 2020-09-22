@@ -19,6 +19,11 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         case typeMismatch(expectedTypeName: String)
         case jsonTypeMismatch(foundType: String)
         case quantityMismatch(expected: JSONAPICodingError.Quantity)
+
+        internal var isTypeMismatch: Bool {
+            guard case .jsonTypeMismatch = self else { return false}
+            return true
+        }
     }
 
     public enum Location: String, Equatable {

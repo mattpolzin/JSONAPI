@@ -92,7 +92,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
                     return
             }
 
-            XCTAssertEqual(String(describing: error), #"Out of 3 includes, the 3rd one failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
+            XCTAssertEqual(String(describing: error), #"Out of the 3 includes in the document, the 3rd one failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
         }
     }
 
@@ -112,14 +112,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
 
             XCTAssertEqual(
                 String(describing: error),
-                #"""
-                Out of 3 includes, the 3rd one failed to parse: 
-                Could not have been Include Type `articles` because:
-                found JSON:API type "not_an_author" but expected "articles"
-
-                Could not have been Include Type `authors` because:
-                found JSON:API type "not_an_author" but expected "authors"
-                """#
+                "Out of the 3 includes in the document, the 3rd one failed to parse: Found JSON:API type 'not_an_author' but expected one of 'articles', 'authors'"
             )
         }
     }
@@ -140,14 +133,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
 
             XCTAssertEqual(
                 String(describing: error),
-                #"""
-                Out of 3 includes, the 2nd one failed to parse: 
-                Could not have been Include Type `articles` because:
-                found JSON:API type "not_an_author" but expected "articles"
-
-                Could not have been Include Type `authors` because:
-                found JSON:API type "not_an_author" but expected "authors"
-                """#
+                "Out of the 3 includes in the document, the 2nd one failed to parse: Found JSON:API type 'not_an_author' but expected one of 'articles', 'authors'"
             )
         }
     }
