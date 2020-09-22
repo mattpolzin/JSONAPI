@@ -161,7 +161,7 @@ extension DocumentDecodingErrorTests {
         typealias Attributes = NoAttributes
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 
@@ -179,8 +179,8 @@ extension DocumentDecodingErrorTests {
         }
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
-            let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
+            let series: ToManyRelationship<Book, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 

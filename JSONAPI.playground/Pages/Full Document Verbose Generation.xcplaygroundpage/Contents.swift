@@ -72,7 +72,7 @@ enum AuthorDescription: ResourceObjectDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		let articles: ToManyRelationship<Article, ToManyRelationshipMetadata, ToManyRelationshipLinks>
+		let articles: ToManyRelationship<Article, NoIdMetadata, ToManyRelationshipMetadata, ToManyRelationshipLinks>
 	}
 }
 
@@ -88,11 +88,11 @@ enum ArticleDescription: ResourceObjectDescription {
 
 	struct Relationships: JSONAPI.Relationships {
 		/// The primary attributed author of the article.
-		let primaryAuthor: ToOneRelationship<Author, NoMetadata, NoLinks>
+		let primaryAuthor: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
 		/// All authors excluding the primary author.
 		/// It is customary to print the primary author's
 		/// name first, followed by the other authors.
-		let otherAuthors: ToManyRelationship<Author, ToManyRelationshipMetadata, ToManyRelationshipLinks>
+		let otherAuthors: ToManyRelationship<Author, NoIdMetadata, ToManyRelationshipMetadata, ToManyRelationshipLinks>
 	}
 }
 

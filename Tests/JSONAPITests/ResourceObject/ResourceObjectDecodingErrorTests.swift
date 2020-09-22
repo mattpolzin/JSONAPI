@@ -457,8 +457,8 @@ extension ResourceObjectDecodingErrorTests {
 
         public struct Relationships: JSONAPI.Relationships {
 
-            let required: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
-            let omittable: ToManyRelationship<TestEntity, NoMetadata, NoLinks>?
+            let required: ToOneRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>
+            let omittable: ToManyRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>?
         }
     }
 

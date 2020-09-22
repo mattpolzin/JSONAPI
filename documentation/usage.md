@@ -57,7 +57,7 @@ enum PersonDescription: ResourceObjectDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		let friends: ToManyRelationship<Person>
+		let friends: ToManyRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>
 	}
 }
 ```
@@ -151,11 +151,53 @@ There are three types of `Relationships`: `MetaRelationship`, `ToOneRelationship
 
 In addition to identifying resource objects by ID and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON:API Document.
 
+Metadata can be specified both in the Relationship Object and in the Resource Identifier Object. You specify the two types of metadata differently. As always, you can use `NoMetadata` to indicate you do not intend the JSON:API relationship to contain metadata.
+
+```swift
+// No metadata in the Resource Identifer or the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people"
+//   }
+// }
+let relationship1: ToOneRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>
+
+// No metadata in the Resource Identifier but some metadata in the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people"
+//   },
+//   "meta": { ... }
+// }
+let relationship2: ToOneRelationship<Person, NoIdMetadata, RelMetadata, NoLinks>
+// ^ assumes `RelMetadata` is a `Codable` struct defined elsewhere
+
+// Metadata in the Resource Identifier but not the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people",
+//     "meta": { ... }
+//   }
+// }
+let relationship3: ToOneRelationship<Person, CoolMetadata, NoMetadata, NoLinks>
+// ^ assumes `CoolMetadata` is a `Codable` struct defined elsewhere
+```
+
 The `MetaRelationship` is special in that it represents a Relationship Object with no `data` (it must contain at least one of `meta` or `links`). The other two relationship types are Relationship Objects with either singular resource linkages (`ToOneRelationship`) or arrays of resource linkages (`ToManyRelationship`).
 
-To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. 
 ```swift
-let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
+// note the question mark at the very end of the line.
+let optionalRelative: ToOneRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>?
+```
+
+A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+```swift
+// note the question mark just after `Person`.
+let nullableRelative: ToOneRelationship<Person?, NoIdMetadata, NoMetadata, NoLinks>
 ```
 
 A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` do not support nullability.

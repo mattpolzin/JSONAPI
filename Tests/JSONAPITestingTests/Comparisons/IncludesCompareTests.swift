@@ -214,8 +214,8 @@ private enum TestDescription1: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        let bestFriend: ToOneRelationship<TestType1?, NoMetadata, NoLinks>
-        let parents: ToManyRelationship<TestType1, NoMetadata, NoLinks>
+        let bestFriend: ToOneRelationship<TestType1?, NoIdMetadata, NoMetadata, NoLinks>
+        let parents: ToManyRelationship<TestType1, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 
@@ -231,8 +231,8 @@ private enum TestDescription2: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        let bestFriend: ToOneRelationship<TestType2?, NoMetadata, NoLinks>
-        let parents: ToManyRelationship<TestType2, NoMetadata, NoLinks>
+        let bestFriend: ToOneRelationship<TestType2?, NoIdMetadata, NoMetadata, NoLinks>
+        let parents: ToManyRelationship<TestType2, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 

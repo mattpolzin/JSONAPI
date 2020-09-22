@@ -134,7 +134,7 @@ private enum MutableTestDescription: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        var other: ToOneRelationship<MutableTestType, NoMetadata, NoLinks>
+        var other: ToOneRelationship<MutableTestType, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 
@@ -148,7 +148,7 @@ private enum ImmutableTestDescription: JSONAPI.ResourceObjectDescription {
     }
 
     struct Relationships: JSONAPI.Relationships {
-        let other: ToOneRelationship<ImmutableTestType, NoMetadata, NoLinks>
+        let other: ToOneRelationship<ImmutableTestType, NoIdMetadata, NoMetadata, NoLinks>
     }
 }
 

@@ -7,14 +7,14 @@
 
 import JSONAPI
 
-extension ToOneRelationship: ExpressibleByNilLiteral where Identifiable.ID: ExpressibleByNilLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByNilLiteral where Identifiable.ID: ExpressibleByNilLiteral, IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
     public init(nilLiteral: ()) {
 
         self.init(id: Identifiable.ID(nilLiteral: ()))
     }
 }
 
-extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiable.ID: ExpressibleByUnicodeScalarLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiable.ID: ExpressibleByUnicodeScalarLiteral, IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
     public typealias UnicodeScalarLiteralType =  Identifiable.ID.UnicodeScalarLiteralType
 
     public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
@@ -22,7 +22,7 @@ extension ToOneRelationship: ExpressibleByUnicodeScalarLiteral where Identifiabl
     }
 }
 
-extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Identifiable.ID: ExpressibleByExtendedGraphemeClusterLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where Identifiable.ID: ExpressibleByExtendedGraphemeClusterLiteral, IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
     public typealias ExtendedGraphemeClusterLiteralType =  Identifiable.ID.ExtendedGraphemeClusterLiteralType
 
     public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
@@ -30,7 +30,7 @@ extension ToOneRelationship: ExpressibleByExtendedGraphemeClusterLiteral where I
     }
 }
 
-extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.ID: ExpressibleByStringLiteral, MetaType == NoMetadata, LinksType == NoLinks {
+extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.ID: ExpressibleByStringLiteral, IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
     public typealias StringLiteralType = Identifiable.ID.StringLiteralType
 
     public init(stringLiteral value: StringLiteralType) {
@@ -38,7 +38,7 @@ extension ToOneRelationship: ExpressibleByStringLiteral where Identifiable.ID: E
     }
 }
 
-extension ToManyRelationship: ExpressibleByArrayLiteral where MetaType == NoMetadata, LinksType == NoLinks {
+extension ToManyRelationship: ExpressibleByArrayLiteral where IdMetaType == NoIdMetadata, MetaType == NoMetadata, LinksType == NoLinks {
     public typealias ArrayLiteralElement = Relatable.ID
 
     public init(arrayLiteral elements: ArrayLiteralElement...) {
