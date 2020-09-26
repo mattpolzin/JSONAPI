@@ -66,9 +66,9 @@ extension ComputedPropertiesTests {
 		}
 
 		public struct Relationships: JSONAPI.Relationships {
-			public let other: ToOneRelationship<TestType, NoMetadata, NoLinks>
+			public let other: ToOneRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>
 
-			public var computed: ToOneRelationship<TestType, NoMetadata, NoLinks> {
+			public var computed: ToOneRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks> {
 				return other
 			}
 		}

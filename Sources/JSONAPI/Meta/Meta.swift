@@ -28,3 +28,10 @@ public struct NoMetadata: Meta, CustomStringConvertible {
 
     public var description: String { return "No Metadata" }
 }
+
+/// The type of metadata found in a Resource Identifier Object.
+///
+/// It is sometimes more legible to differentiate between types of metadata
+/// even when the underlying type is the same. This typealias is only here
+/// to make code more easily understandable.
+public typealias NoIdMetadata = NoMetadata

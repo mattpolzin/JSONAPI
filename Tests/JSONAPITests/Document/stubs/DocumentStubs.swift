@@ -289,6 +289,37 @@ let single_document_some_includes_wrong_type = """
 }
 """.data(using: .utf8)!
 
+let single_document_some_includes_wrong_type2 = """
+{
+    "data": {
+        "id": "1",
+        "type": "articles",
+        "relationships": {
+            "author": {
+                "data": {
+                    "type": "authors",
+                    "id": "33"
+                }
+            }
+        }
+    },
+    "included": [
+        {
+            "id": "30",
+            "type": "authors"
+        },
+        {
+            "id": "31",
+            "type": "not_an_author"
+        },
+        {
+            "id": "33",
+            "type": "authors"
+        }
+    ]
+}
+""".data(using: .utf8)!
+
 let single_document_some_includes_with_api_description = """
 {
 	"data": {

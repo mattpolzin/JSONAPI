@@ -79,6 +79,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
     }
 
     func test_include_failure() {
+        // test that if there is only one possible include, we just find out on one line what expecation failed.
         XCTAssertThrowsError(
             try testDecoder.decode(
                 Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include1<Author>, NoAPIDescription, UnknownJSONAPIError>.self,
@@ -91,11 +92,12 @@ final class DocumentDecodingErrorTests: XCTestCase {
                     return
             }
 
-            XCTAssertEqual(String(describing: error), #"Include 3 failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
+            XCTAssertEqual(String(describing: error), #"Out of the 3 includes in the document, the 3rd one failed to parse: found JSON:API type "not_an_author" but expected "authors""#)
         }
     }
 
     func test_include_failure2() {
+        // test that if there are two possiblie includes, we find out why each of them was not possible to decode.
         XCTAssertThrowsError(
             try testDecoder.decode(
                 Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include2<Article, Author>, NoAPIDescription, UnknownJSONAPIError>.self,
@@ -108,15 +110,30 @@ final class DocumentDecodingErrorTests: XCTestCase {
                     return
             }
 
-            XCTAssertEqual(String(describing: error),
-#"""
-Include 3 failed to parse: 
-Could not have been Include Type 1 because:
-found JSON:API type "not_an_author" but expected "articles"
+            XCTAssertEqual(
+                String(describing: error),
+                "Out of the 3 includes in the document, the 3rd one failed to parse: Found JSON:API type 'not_an_author' but expected one of 'articles', 'authors'"
+            )
+        }
+    }
 
-Could not have been Include Type 2 because:
-found JSON:API type "not_an_author" but expected "authors"
-"""#
+    func test_include_failure3() {
+        // test that if the failed include is at a different index, the other index is reported correctly.
+        XCTAssertThrowsError(
+            try testDecoder.decode(
+                Document<SingleResourceBody<Article>, NoMetadata, NoLinks, Include2<Article, Author>, NoAPIDescription, UnknownJSONAPIError>.self,
+                from: single_document_some_includes_wrong_type2
+            )
+        ) { error in
+            guard let docError = error as? DocumentDecodingError,
+                  case .includes = docError else {
+                XCTFail("Expected primary resource document error. Got \(error)")
+                return
+            }
+
+            XCTAssertEqual(
+                String(describing: error),
+                "Out of the 3 includes in the document, the 2nd one failed to parse: Found JSON:API type 'not_an_author' but expected one of 'articles', 'authors'"
             )
         }
     }
@@ -161,7 +178,7 @@ extension DocumentDecodingErrorTests {
         typealias Attributes = NoAttributes
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 
@@ -179,8 +196,8 @@ extension DocumentDecodingErrorTests {
         }
 
         struct Relationships: JSONAPI.Relationships {
-            let author: ToOneRelationship<Author, NoMetadata, NoLinks>
-            let series: ToManyRelationship<Book, NoMetadata, NoLinks>
+            let author: ToOneRelationship<Author, NoIdMetadata, NoMetadata, NoLinks>
+            let series: ToManyRelationship<Book, NoIdMetadata, NoMetadata, NoLinks>
         }
     }
 

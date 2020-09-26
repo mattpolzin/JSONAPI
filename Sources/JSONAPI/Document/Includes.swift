@@ -76,14 +76,15 @@ extension Includes: Decodable where I: Decodable {
                         }
                 }
                 guard errors.count == error.individualTypeFailures.count else {
-                    throw IncludesDecodingError(error: error, idx: idx)
+                    throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
                 }
                 throw IncludesDecodingError(
                     error: IncludeDecodingError(failures: errors),
-                    idx: idx
+                    idx: idx,
+                    totalIncludesCount: container.count ?? 0
                 )
             } catch let error {
-                throw IncludesDecodingError(error: error, idx: idx)
+                throw IncludesDecodingError(error: error, idx: idx, totalIncludesCount: container.count ?? 0)
             }
         }
 
@@ -208,7 +209,13 @@ extension Includes where I: _Poly11 {
 // MARK: - DecodingError
 public struct IncludesDecodingError: Swift.Error, Equatable {
     public let error: Swift.Error
+    /// The zero-based index of the include that failed to decode.
     public let idx: Int
+    /// The total count of includes in the document that failed to decode.
+    ///
+    /// In other words, "of `totalIncludesCount` includes, the `(idx + 1)`th
+    /// include failed to decode.
+    public let totalIncludesCount: Int
 
     public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.idx == rhs.idx
@@ -218,7 +225,25 @@ public struct IncludesDecodingError: Swift.Error, Equatable {
 
 extension IncludesDecodingError: CustomStringConvertible {
     public var description: String {
-        return "Include \(idx + 1) failed to parse: \(error)"
+        let ordinalSuffix: String
+        if (idx % 100) + 1 > 9 && (idx % 100) + 1 < 20 {
+            // the teens
+            ordinalSuffix = "th"
+        } else {
+            switch ((idx % 10) + 1) {
+            case 1:
+                ordinalSuffix = "st"
+            case 2:
+                ordinalSuffix = "nd"
+            case 3:
+                ordinalSuffix = "rd"
+            default:
+                ordinalSuffix = "th"
+            }
+        }
+        let ordinalDescription = "\(idx + 1)\(ordinalSuffix)"
+
+        return "Out of the \(totalIncludesCount) includes in the document, the \(ordinalDescription) one failed to parse: \(error)"
     }
 }
 
@@ -226,10 +251,29 @@ public struct IncludeDecodingError: Swift.Error, Equatable, CustomStringConverti
     public let failures: [ResourceObjectDecodingError]
 
     public var description: String {
+        // concise error when all failures are mismatched JSON:API types:
+        if case let .jsonTypeMismatch(foundType: foundType)? = failures.first?.cause,
+           failures.allSatisfy({ $0.cause.isTypeMismatch }) {
+            let expectedTypes = failures
+                .compactMap { "'\($0.resourceObjectJsonAPIType)'" }
+                .joined(separator: ", ")
+
+            return "Found JSON:API type '\(foundType)' but expected one of \(expectedTypes)"
+        }
+
+        // concise error when all but failures but one are type mismatches because
+        // we can assume the correct type was found but there was some other error:
+        let nonTypeMismatches = failures.filter({ !$0.cause.isTypeMismatch})
+        if nonTypeMismatches.count == 1, let nonTypeMismatch = nonTypeMismatches.first {
+            return String(describing: nonTypeMismatch)
+        }
+
+        // fall back to just describing all of the reasons it could not have been any of the available
+        // types:
         return failures
             .enumerated()
             .map {
-                "\nCould not have been Include Type \($0.offset + 1) because:\n\($0.element)"
+                "\nCould not have been Include Type `\($0.element.resourceObjectJsonAPIType)` because:\n\($0.element)"
         }.joined(separator: "\n")
     }
 }

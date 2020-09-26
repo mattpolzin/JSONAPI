@@ -11,6 +11,7 @@ In this documentation, in order to draw attention to the difference between the 
 		- [`RawIdType`](#rawidtype)
 	- [Convenient `typealiases`](#convenient-typealiases)
 - [`JSONAPI.Relationships`](#jsonapirelationships)
+	- [Relationship Metadata](#relationship-metadata)
 - [`JSONAPI.Attributes`](#jsonapiattributes)
 	- [`Transformer`](#transformer)
 	- [`Validator`](#validator)
@@ -57,7 +58,7 @@ enum PersonDescription: ResourceObjectDescription {
 	}
 
 	struct Relationships: JSONAPI.Relationships {
-		let friends: ToManyRelationship<Person>
+		let friends: ToManyRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>
 	}
 }
 ```
@@ -149,13 +150,18 @@ Note that I am calling an unidentified person is a "new" person. This is general
 
 There are three types of `Relationships`: `MetaRelationship`, `ToOneRelationship` and `ToManyRelationship`. A `ResourceObjectDescription`'s `Relationships` type can contain any number of `Relationship` properties of any of these types. Do not store anything other than `Relationship` properties in the `Relationships` struct of a `ResourceObjectDescription`.
 
-In addition to identifying resource objects by ID and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON:API Document.
-
 The `MetaRelationship` is special in that it represents a Relationship Object with no `data` (it must contain at least one of `meta` or `links`). The other two relationship types are Relationship Objects with either singular resource linkages (`ToOneRelationship`) or arrays of resource linkages (`ToManyRelationship`).
 
-To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+To describe a relationship that may be omitted (i.e. the key is not even present in the JSON object), you make the entire `MetaRelationship`, `ToOneRelationship` or `ToManyRelationship` optional. 
 ```swift
-let nullableRelative: ToOneRelationship<Person?, NoMetadata, NoLinks>
+// note the question mark at the very end of the line.
+let optionalRelative: ToOneRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>?
+```
+
+A `ToOneRelationship` can be marked as nullable (i.e. the value could be either `null` or a resource identifier) like this:
+```swift
+// note the question mark just after `Person`.
+let nullableRelative: ToOneRelationship<Person?, NoIdMetadata, NoMetadata, NoLinks>
 ```
 
 A `ToManyRelationship` can naturally represent the absence of related values with an empty array, so `ToManyRelationship` do not support nullability.
@@ -168,6 +174,58 @@ typealias Relationships = NoRelationships
 `Relationship` values boil down to `Ids` of other resource objects. To access the `Id` of a related `ResourceObject`, you can use the custom `~>` operator with the `KeyPath` of the `Relationship` from which you want the `Id`. The friends of the above `Person` `ResourceObject` can be accessed as follows (type annotations for clarity):
 ```swift
 let friendIds: [Person.Id] = person ~> \.friends
+```
+
+🗒You will likely find relationship types more ergonomic and easier to read if you create typealiases. For example, if your project never uses Relationship metadata or links, you can create a typealias like `typealias ToOne<T: JSONAPI.JSONAPIIdentifiable> = JSONAPI.ToOneRelationship<T, NoIdMetadata, NoMetadata, NoLinks>`.
+
+#### Relationship Metadata
+In addition to identifying resource objects by ID and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON:API Document.
+
+Metadata can be specified both in the Relationship Object and in the Resource Identifier Object. You specify the two types of metadata differently. As always, you can use `NoMetadata` to indicate you do not intend the JSON:API relationship to contain metadata.
+
+```swift
+// No metadata in the Resource Identifer or the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people"
+//   }
+// }
+let relationship1: ToOneRelationship<Person, NoIdMetadata, NoMetadata, NoLinks>
+
+// No metadata in the Resource Identifier but some metadata in the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people"
+//   },
+//   "meta": { ... }
+// }
+let relationship2: ToOneRelationship<Person, NoIdMetadata, RelMetadata, NoLinks>
+// ^ assumes `RelMetadata` is a `Codable` struct defined elsewhere
+
+// Metadata in the Resource Identifier but not the Relationship:
+// {
+//   "data" : {
+//     "id" : "1234",
+//     "type": "people",
+//     "meta": { ... }
+//   }
+// }
+let relationship3: ToOneRelationship<Person, CoolMetadata, NoMetadata, NoLinks>
+// ^ assumes `CoolMetadata` is a `Codable` struct defined elsewhere
+```
+
+When you need metadata out of a to-one relationship, you can access the Relationship Object metadata with the `meta` property and the Resource Identifer metadata with the `idMeta` property. When you need metadata out of a to-many relationship, you can access the Relationship Object metadata with the `meta` property (there is only one such metadata object) and you can access the Resource Identifier metadata (of which there is one per related resource) by asking each element of the `idsWithMeta` property for its `meta` property.
+
+```swift
+// to-one
+let relation = entity.relationships.home
+let idMeta = relation.idMeta
+
+// to-many
+let relations = entity.relationships.friends
+let idMeta = relations.idsWithMeta.map { $0.meta }
 ```
 
 ### `JSONAPI.Attributes`

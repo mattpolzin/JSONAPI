@@ -20,7 +20,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: ResourceObjectDecodingError.entireObject,
                     cause: .keyNotFound,
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -41,7 +42,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .keyNotFound,
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -62,7 +64,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .keyNotFound,
-                    location: .relationshipId
+                    location: .relationshipId,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -83,7 +86,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .keyNotFound,
-                    location: .relationshipType
+                    location: .relationshipType,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -104,7 +108,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .valueNotFound,
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -125,7 +130,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .valueNotFound,
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -145,8 +151,9 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 error as? ResourceObjectDecodingError,
                 ResourceObjectDecodingError(
                     subjectName: "required",
-                    cause: .jsonTypeMismatch(expectedType: "thirteenth_test_entities", foundType: "not_the_same"),
-                    location: .relationships
+                    cause: .jsonTypeMismatch(foundType: "not_the_same"),
+                    location: .relationships,
+                    jsonAPIType: "thirteenth_test_entities"
                 )
             )
 
@@ -168,7 +175,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .quantityMismatch(expected: .one),
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -187,7 +195,8 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
                 ResourceObjectDecodingError(
                     subjectName: "omittable",
                     cause: .quantityMismatch(expected: .many),
-                    location: .relationships
+                    location: .relationships,
+                    jsonAPIType: TestEntity.jsonType
                 )
             )
 
@@ -211,7 +220,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: ResourceObjectDecodingError.entireObject,
                     cause: .keyNotFound,
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -232,7 +242,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .keyNotFound,
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -253,7 +264,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .valueNotFound,
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -274,7 +286,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "required",
                     cause: .typeMismatch(expectedTypeName: String(describing: String.self)),
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -295,7 +308,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "other",
                     cause: .typeMismatch(expectedTypeName: String(describing: Int.self)),
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -316,7 +330,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "yetAnother",
                     cause: .typeMismatch(expectedTypeName: String(describing: Bool.self)),
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -337,7 +352,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "transformed",
                     cause: .typeMismatch(expectedTypeName: String(describing: Int.self)),
-                    location: .attributes
+                    location: .attributes,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -372,8 +388,9 @@ extension ResourceObjectDecodingErrorTests {
                 error as? ResourceObjectDecodingError,
                 ResourceObjectDecodingError(
                     subjectName: "self",
-                    cause: .jsonTypeMismatch(expectedType: "fourteenth_test_entities", foundType: "not_correct_type"),
-                    location: .type
+                    cause: .jsonTypeMismatch(foundType: "not_correct_type"),
+                    location: .type,
+                    jsonAPIType: "fourteenth_test_entities"
                 )
             )
 
@@ -394,7 +411,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "type",
                     cause: .typeMismatch(expectedTypeName: String(describing: String.self)),
-                    location: .type
+                    location: .type,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -415,7 +433,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "type",
                     cause: .keyNotFound,
-                    location: .type
+                    location: .type,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -436,7 +455,8 @@ extension ResourceObjectDecodingErrorTests {
                 ResourceObjectDecodingError(
                     subjectName: "type",
                     cause: .valueNotFound,
-                    location: .type
+                    location: .type,
+                    jsonAPIType: TestEntity2.jsonType
                 )
             )
 
@@ -457,8 +477,8 @@ extension ResourceObjectDecodingErrorTests {
 
         public struct Relationships: JSONAPI.Relationships {
 
-            let required: ToOneRelationship<TestEntity, NoMetadata, NoLinks>
-            let omittable: ToManyRelationship<TestEntity, NoMetadata, NoLinks>?
+            let required: ToOneRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>
+            let omittable: ToManyRelationship<TestEntity, NoIdMetadata, NoMetadata, NoLinks>?
         }
     }
 

@@ -203,12 +203,12 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
     /// A `ResourceObject.Pointer` is a `ToOneRelationship` with no metadata or links.
     /// This is just a convenient way to reference a `ResourceObject` so that
     /// other ResourceObjects' Relationships can be built up from it.
-    typealias Pointer = ToOneRelationship<ResourceObject, NoMetadata, NoLinks>
+    typealias Pointer = ToOneRelationship<ResourceObject, NoIdMetadata, NoMetadata, NoLinks>
 
     /// `ResourceObject.Pointers` is a `ToManyRelationship` with no metadata or links.
     /// This is just a convenient way to reference a bunch of ResourceObjects so
     /// that other ResourceObjects' Relationships can be built up from them.
-    typealias Pointers = ToManyRelationship<ResourceObject, NoMetadata, NoLinks>
+    typealias Pointers = ToManyRelationship<ResourceObject, NoIdMetadata, NoMetadata, NoLinks>
 
     /// Get a pointer to this resource object that can be used as a
     /// relationship to another resource object.
@@ -218,7 +218,7 @@ public extension ResourceObject where EntityRawIdType: JSONAPI.RawIdType {
 
     /// Get a pointer (i.e. `ToOneRelationship`) to this resource
     /// object with the given metadata and links attached.
-    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, MType, LType> {
+    func pointer<MType: JSONAPI.Meta, LType: JSONAPI.Links>(withMeta meta: MType, links: LType) -> ToOneRelationship<ResourceObject, NoIdMetadata, MType, LType> {
         return ToOneRelationship(resourceObject: self, meta: meta, links: links)
     }
 }
@@ -297,14 +297,14 @@ public extension ResourceObjectProxy {
     /// Access to an Id of a `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other.id`.
-    static func ~><OtherEntity: JSONAPIIdentifiable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>>) -> OtherEntity.ID {
+    static func ~><OtherEntity: JSONAPIIdentifiable, IdMType: JSONAPI.Meta, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, IdMType, MType, LType>>) -> OtherEntity.ID {
         return entity.relationships[keyPath: path].id
     }
 
     /// Access to an Id of an optional `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other?.id`.
-    static func ~><OtherEntity: OptionalRelatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.ID {
+    static func ~><OtherEntity: OptionalRelatable, IdMType: JSONAPI.Meta, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, IdMType, MType, LType>?>) -> OtherEntity.ID {
         // Implementation Note: This signature applies to `ToOneRelationship<E?, _, _>?`
         // whereas the one below applies to `ToOneRelationship<E, _, _>?`
         return entity.relationships[keyPath: path]?.id
@@ -313,7 +313,7 @@ public extension ResourceObjectProxy {
     /// Access to an Id of an optional `ToOneRelationship`.
     /// This allows you to write `resourceObject ~> \.other` instead
     /// of `resourceObject.relationships.other?.id`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, MType, LType>?>) -> OtherEntity.ID? {
+    static func ~><OtherEntity: Relatable, IdMType: JSONAPI.Meta, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToOneRelationship<OtherEntity, IdMType, MType, LType>?>) -> OtherEntity.ID? {
         // Implementation Note: This signature applies to `ToOneRelationship<E, _, _>?`
         // whereas the one above applies to `ToOneRelationship<E?, _, _>?`
         return entity.relationships[keyPath: path]?.id
@@ -322,14 +322,14 @@ public extension ResourceObjectProxy {
     /// Access to all Ids of a `ToManyRelationship`.
     /// This allows you to write `resourceObject ~> \.others` instead
     /// of `resourceObject.relationships.others.ids`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>>) -> [OtherEntity.ID] {
+    static func ~><OtherEntity: Relatable, IdMType: JSONAPI.Meta, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, IdMType, MType, LType>>) -> [OtherEntity.ID] {
         return entity.relationships[keyPath: path].ids
     }
 
     /// Access to all Ids of an optional `ToManyRelationship`.
     /// This allows you to write `resourceObject ~> \.others` instead
     /// of `resourceObject.relationships.others?.ids`.
-    static func ~><OtherEntity: Relatable, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, MType, LType>?>) -> [OtherEntity.ID]? {
+    static func ~><OtherEntity: Relatable, IdMType: JSONAPI.Meta, MType: JSONAPI.Meta, LType: JSONAPI.Links>(entity: Self, path: KeyPath<Description.Relationships, ToManyRelationship<OtherEntity, IdMType, MType, LType>?>) -> [OtherEntity.ID]? {
         return entity.relationships[keyPath: path]?.ids
     }
 }
@@ -398,7 +398,7 @@ public extension ResourceObject {
         do {
             type = try container.decode(String.self, forKey: .type)
         } catch let error as DecodingError {
-            throw ResourceObjectDecodingError(error)
+            throw ResourceObjectDecodingError(error, jsonAPIType: Self.jsonType)
                 ?? error
         }
 
@@ -417,13 +417,14 @@ public extension ResourceObject {
                 ?? container.decodeIfPresent(Description.Attributes.self, forKey: .attributes)
                 ?? Description.Attributes(from: EmptyObjectDecoder())
         } catch let decodingError as DecodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch _ as EmptyObjectDecodingError {
             throw ResourceObjectDecodingError(
                 subjectName: ResourceObjectDecodingError.entireObject,
                 cause: .keyNotFound,
-                location: .attributes
+                location: .attributes,
+                jsonAPIType: Self.jsonType
             )
         }
 
@@ -432,16 +433,17 @@ public extension ResourceObject {
                 ?? container.decodeIfPresent(Description.Relationships.self, forKey: .relationships)
                 ?? Description.Relationships(from: EmptyObjectDecoder())
         } catch let decodingError as DecodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch let decodingError as JSONAPICodingError {
-            throw ResourceObjectDecodingError(decodingError)
+            throw ResourceObjectDecodingError(decodingError, jsonAPIType: Self.jsonType)
                 ?? decodingError
         } catch _ as EmptyObjectDecodingError {
             throw ResourceObjectDecodingError(
                 subjectName: ResourceObjectDecodingError.entireObject,
                 cause: .keyNotFound,
-                location: .relationships
+                location: .relationships,
+                jsonAPIType: Self.jsonType
             )
         }
 

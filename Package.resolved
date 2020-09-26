@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "Poly",
-        "repositoryURL": "https://github.com/mattpolzin/Poly",
+        "repositoryURL": "https://github.com/mattpolzin/Poly.git",
         "state": {
           "branch": null,
           "revision": "36ba3f624bffa34f5f9b9c7648eab3cfdcab4748",

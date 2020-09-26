@@ -163,22 +163,22 @@ final class RelationshipsCompareTests: XCTestCase {
         ])
     }
 
-    let t1 = ToOneRelationship<TestType, NoMetadata, NoLinks>(id: "123")
-    let t2 = ToOneRelationship<TestType, TestMeta, TestLinks>(id: "456", meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
-    let t3 = ToManyRelationship<TestType, NoMetadata, NoLinks>(ids: ["123", "456"])
-    let t4 = ToManyRelationship<TestType, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
+    let t1 = ToOneRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>(id: "123")
+    let t2 = ToOneRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(id: "456", meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
+    let t3 = ToManyRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>(ids: ["123", "456"])
+    let t4 = ToManyRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "world"), links: .init(link: .init(url: "http://google.com")))
     let t5 = MetaRelationship<NoMetadata, TestLinks>(meta: .none, links: .init(link: .init(url: "http://google.com")))
     let t6 = MetaRelationship<TestMeta, NoLinks>(meta: .init(hello: "hi"), links: .none)
     let t7 = MetaRelationship<TestMeta, TestLinks>(meta: .init(hello: "hi"), links: .init(link: .init(url: "http://google.com")))
 
-    let t1_differentId = ToOneRelationship<TestType, NoMetadata, NoLinks>(id: "999")
-    let t3_differentId = ToManyRelationship<TestType, NoMetadata, NoLinks>(ids: ["999", "1010"])
+    let t1_differentId = ToOneRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>(id: "999")
+    let t3_differentId = ToManyRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>(ids: ["999", "1010"])
 
-    let t2_differentLinks = ToOneRelationship<TestType, TestMeta, TestLinks>(id: "456", meta: .init(hello: "world"), links: .init(link: .init(url: "http://yahoo.com")))
-    let t4_differentLinks = ToManyRelationship<TestType, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "world"), links: .init(link: .init(url: "http://yahoo.com")))
+    let t2_differentLinks = ToOneRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(id: "456", meta: .init(hello: "world"), links: .init(link: .init(url: "http://yahoo.com")))
+    let t4_differentLinks = ToManyRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "world"), links: .init(link: .init(url: "http://yahoo.com")))
 
-    let t2_differentMeta = ToOneRelationship<TestType, TestMeta, TestLinks>(id: "456", meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
-    let t4_differentMeta = ToManyRelationship<TestType, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
+    let t2_differentMeta = ToOneRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(id: "456", meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
+    let t4_differentMeta = ToManyRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>(ids: ["123", "456"], meta: .init(hello: "there"), links: .init(link: .init(url: "http://google.com")))
 
     let t5_differentLinks = MetaRelationship<NoMetadata, TestLinks>(meta: .none, links: .init(link: .init(url: "http://hi.com")))
     let t6_differentMeta = MetaRelationship<TestMeta, NoLinks>(meta: .init(hello: "there"), links: .none)
@@ -213,10 +213,10 @@ extension RelationshipsCompareTests {
     }
 
     struct TestRelationships: JSONAPI.Relationships {
-        let a: ToOneRelationship<TestType, NoMetadata, NoLinks>?
-        let b: ToOneRelationship<TestType, TestMeta, TestLinks>?
-        let c: ToManyRelationship<TestType, NoMetadata, NoLinks>?
-        let d: ToManyRelationship<TestType, TestMeta, TestLinks>?
+        let a: ToOneRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>?
+        let b: ToOneRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>?
+        let c: ToManyRelationship<TestType, NoIdMetadata, NoMetadata, NoLinks>?
+        let d: ToManyRelationship<TestType, NoIdMetadata, TestMeta, TestLinks>?
         let e: MetaRelationship<NoMetadata, TestLinks>?
         let f: MetaRelationship<TestMeta, NoLinks>?
         let g: MetaRelationship<TestMeta, TestLinks>?

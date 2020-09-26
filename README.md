@@ -1,5 +1,5 @@
 # JSONAPI
-[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 5.2](http://img.shields.io/badge/Swift-5.2-blue.svg)](https://swift.org) [![Build Status](https://app.bitrise.io/app/c8295b9589aa401e/status.svg?token=vzcyqWD5bQ4xqQfZsaVzNw&branch=master)](https://app.bitrise.io/app/c8295b9589aa401e)
+[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 5.2+](http://img.shields.io/badge/Swift-5.2/5.3-blue.svg)](https://swift.org) [![Build Status](https://app.bitrise.io/app/c8295b9589aa401e/status.svg?token=vzcyqWD5bQ4xqQfZsaVzNw&branch=master)](https://app.bitrise.io/app/c8295b9589aa401e)
 
 A Swift package for encoding to- and decoding from **JSON API** compliant requests and responses.
 
@@ -66,7 +66,7 @@ If you find something wrong with this library and it isn't already mentioned und
 ### Swift Package Manager
 Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
 ```swift
-.package(url: "https://github.com/mattpolzin/JSONAPI.git", from: "4.0.0")
+.package(url: "https://github.com/mattpolzin/JSONAPI.git", from: "5.0.0")
 ```
 
 ### Xcode project
