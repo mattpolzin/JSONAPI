@@ -176,6 +176,8 @@ typealias Relationships = NoRelationships
 let friendIds: [Person.Id] = person ~> \.friends
 ```
 
+🗒You will likely find relationship types more ergonomic and easier to read if you create typealiases. For example, if your project never uses Relationship metadata or links, you can create a typealias like `typealias ToOne<T: JSONAPI.JSONAPIIdentifiable> = JSONAPI.ToOneRelationship<T, NoIdMetadata, NoMetadata, NoLinks>`.
+
 #### Relationship Metadata
 In addition to identifying resource objects by ID and type, `Relationships` can contain `Meta` or `Links` that follow the same rules as [`Meta`](#jsonapimeta) and [`Links`](#jsonapilinks) elsewhere in the JSON:API Document.
 
