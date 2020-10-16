@@ -509,6 +509,71 @@ A `Links` struct must contain only `Link` properties. Each `Link` property can e
 
 You can specify `NoLinks` if the part of the document being described should not contain any `Links`.
 
+**IMPORTANT:** The URL type used in links is a type conforming to `JSONAPIURL`. Any type that is both `Codable` and `Equatable` is eligible, but it must be conformed explicitly.
+
+For example,
+```swift
+extension Foundation.URL: JSONAPIURL {}
+extension String: JSONAPIURL {}
+```
+
+Here's an example of an "article" resource with some links object and some JSON it would be capable of parsing:
+```swift
+struct PersonStubDescription: JSONAPI.ResourceObjectDescription {
+	// this is just a pretend model to be used in a relationship below.
+    static let jsonType: String = "people"
+
+    typealias Attributes = NoAttributes
+    typealias Relationships = NoRelationships
+}
+
+typealias Person = JSONAPI.ResourceObject<PersonStubDescription, NoMetadata, NoLinks, String>
+
+struct ArticleAuthorRelationshipLinks: JSONAPI.Links {
+    let `self`: JSONAPI.Link<URL, NoMetadata>
+    let related: JSONAPI.Link<URL, NoMetadata>
+}
+
+struct ArticleLinks: JSONAPI.Links {
+    let `self`: JSONAPI.Link<URL, NoMetadata>
+}
+
+struct ArticleDescription: JSONAPI.ResourceObjectDescription {
+    static let jsonType: String = "articles"
+
+    struct Attributes: JSONAPI.Attributes {
+        let title: Attribute<String>
+    }
+
+    struct Relationships: JSONAPI.Relationships {
+        let author: ToOneRelationship<Person, NoIdMetadata, NoMetadata, ArticleAuthorRelationshipLinks>
+    }
+}
+
+typealias Article = JSONAPI.ResourceObject<ArticleDescription, NoMetadata, ArticleLinks, String>
+```
+```json
+{
+    "type": "articles",
+    "id": "1",
+    "attributes": {
+        "title": "Rails is Omakase"
+    },
+    "relationships": {
+        "author": {
+            "links": {
+                "self": "http://example.com/articles/1/relationships/author",
+                "related": "http://example.com/articles/1/author"
+            },
+            "data": { "type": "people", "id": "9" }
+        }
+    },
+    "links": {
+        "self": "http://example.com/articles/1"
+    }
+}
+```
+
 ### `JSONAPI.RawIdType`
 
 If you want to create new `JSONAPI.ResourceObject` values and assign them Ids then you will need to conform at least one type to `CreatableRawIdType`. Doing so is easy; here are two example conformances for `UUID` and `String` (via `UUID`):

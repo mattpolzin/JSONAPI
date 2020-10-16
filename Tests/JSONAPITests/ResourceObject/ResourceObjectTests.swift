@@ -623,6 +623,24 @@ extension ResourceObjectTests {
 		test_DecodeEncodeEquality(type: TestEntity4WithMetaAndLinks.self,
 								  data: entity_some_relationships_some_attributes_with_meta_and_links)
 	}
+
+    func test_fullLinksExample() {
+        let entity = decoded(
+            type: ResourceObjectLinksTest.Article.self,
+            data: ResourceObjectLinksTest.json.data(using: .utf8)!
+        )
+
+        XCTAssertEqual(entity.links.`self`.url.absoluteString, "http://example.com/articles/1")
+        XCTAssertEqual(entity.relationships.author.links.`self`.url.absoluteString, "http://example.com/articles/1/relationships/author")
+        XCTAssertEqual(entity.relationships.author.links.related.url.absoluteString, "http://example.com/articles/1/author")
+    }
+
+    func test_fullLinksExample_encode() {
+        test_DecodeEncodeEquality(
+            type: ResourceObjectLinksTest.Article.self,
+            data: ResourceObjectLinksTest.json.data(using: .utf8)!
+        )
+    }
 }
 
 // MARK: With a Meta Attribute
@@ -962,4 +980,62 @@ extension ResourceObjectTests {
 	struct TestEntityLinks: JSONAPI.Links {
 		let link1: Link<String, NoMetadata>
 	}
+}
+
+extension Foundation.URL : JSONAPIURL {}
+
+enum ResourceObjectLinksTest {
+    struct PersonStubDescription: JSONAPI.ResourceObjectDescription {
+        static let jsonType: String = "people"
+
+        typealias Attributes = NoAttributes
+        typealias Relationships = NoRelationships
+    }
+
+    typealias Person = JSONAPI.ResourceObject<PersonStubDescription, NoMetadata, NoLinks, String>
+
+    struct ArticleAuthorRelationshipLinks: JSONAPI.Links {
+        let `self`: JSONAPI.Link<URL, NoMetadata>
+        let related: JSONAPI.Link<URL, NoMetadata>
+    }
+
+    struct ArticleLinks: JSONAPI.Links {
+        let `self`: JSONAPI.Link<URL, NoMetadata>
+    }
+
+    struct ArticleDescription: JSONAPI.ResourceObjectDescription {
+        static let jsonType: String = "articles"
+
+        struct Attributes: JSONAPI.Attributes {
+            let title: Attribute<String>
+        }
+
+        struct Relationships: JSONAPI.Relationships {
+            let author: ToOneRelationship<Person, NoIdMetadata, NoMetadata, ArticleAuthorRelationshipLinks>
+        }
+    }
+
+    typealias Article = JSONAPI.ResourceObject<ArticleDescription, NoMetadata, ArticleLinks, String>
+
+    static let json = """
+    {
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+            "title": "Rails is Omakase"
+        },
+        "relationships": {
+            "author": {
+                "links": {
+                    "self": "http://example.com/articles/1/relationships/author",
+                    "related": "http://example.com/articles/1/author"
+                },
+                "data": { "type": "people", "id": "9" }
+            }
+        },
+        "links": {
+            "self": "http://example.com/articles/1"
+        }
+    }
+    """
 }
