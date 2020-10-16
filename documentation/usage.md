@@ -517,7 +517,7 @@ extension Foundation.URL: JSONAPIURL {}
 extension String: JSONAPIURL {}
 ```
 
-Here's an example of an "article" resource with some links object and some JSON it would be capable of parsing:
+Here's an example of an "article" resource object with some links and the JSON it would be capable of parsing:
 ```swift
 struct PersonStubDescription: JSONAPI.ResourceObjectDescription {
 	// this is just a pretend model to be used in a relationship below.
