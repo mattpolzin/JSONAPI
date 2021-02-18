@@ -77,7 +77,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
     init?(_ jsonAPIError: JSONAPICodingError, jsonAPIType: String) {
         self.resourceObjectJsonAPIType = jsonAPIType
         switch jsonAPIError {
-        case .typeMismatch(expected: let expected, found: let found, path: let path):
+        case .typeMismatch(expected: _, found: let found, path: let path):
             (location, subjectName) = Self.context(path: path)
             cause = .jsonTypeMismatch(foundType: found)
         case .quantityMismatch(expected: let expected, path: let path):
