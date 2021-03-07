@@ -15,7 +15,7 @@ public extension JSONAPI.ResourceObject {
     /// - parameters:
     ///     - replacement: A function that takes the existing `attributes` and returns the replacement.
     func replacingAttributes(_ replacement: (Description.Attributes) -> Description.Attributes) -> Self {
-        return ResourceObject(id: id,
+        return Self(id: id,
                     attributes: replacement(attributes),
                     relationships: relationships,
                     meta: meta,
