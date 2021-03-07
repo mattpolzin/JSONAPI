@@ -79,6 +79,11 @@ pod 'Poly', :git => 'https://github.com/mattpolzin/Poly.git'
 pod 'MP-JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
 ```
 
+### Carthage
+This library does not support the Carthage package manager. This is intentional to avoid an additional dependency on Xcode and the Xcode's project files as their format changes throughout versions (in addition to the complexity of maintaining different shared schemes for each supported operating system). 
+
+The difference between supporting and not supporting Carthage is the difference between maintaining an Xcode project with at least one shared build scheme; I encourage those that need Carthage support to fork this repository and add support to their fork by committing an Xcode project (you can generate one as described in the [Xcode project](#xcode-project) section above). Once an Xcode project is generated, you need to mark at least one scheme as [shared](https://github.com/Carthage/Carthage#share-your-xcode-schemes).
+
 ### Running the Playground
 To run the included Playground files, create an Xcode project using Swift Package Manager, then create an Xcode Workspace in the root of the repository and add both the generated Xcode project and the playground to the Workspace.
 
