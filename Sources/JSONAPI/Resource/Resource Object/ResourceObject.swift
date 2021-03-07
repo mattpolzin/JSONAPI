@@ -167,8 +167,8 @@ extension ResourceObject: JSONAPIIdentifiable, IdentifiableResourceObjectType, R
     public typealias ID = ResourceObject.Id
 }
 
-//@available(OSX 10.15, iOS 13, tvOS 13, watchOS 6, *)
-//extension ResourceObject: Swift.Identifiable where EntityRawIdType: JSONAPI.RawIdType {}
+@available(OSX 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension ResourceObject: Swift.Identifiable where EntityRawIdType: JSONAPI.RawIdType {}
 
 extension ResourceObject: CustomStringConvertible {
     public var description: String {
