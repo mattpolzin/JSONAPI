@@ -128,7 +128,7 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
     /// the entity is being created clientside and the
     /// server is being asked to create a unique Id. Otherwise,
     /// this should be of a type conforming to `IdType`.
-    public let id: ResourceObject.Id
+    public let id: JSONAPI.Id<EntityRawIdType, Self>
 
     /// The JSON API compliant attributes of this `ResourceObject`.
     public let attributes: Description.Attributes
