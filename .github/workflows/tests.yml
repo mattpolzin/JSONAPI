@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   linux:
@@ -23,7 +23,11 @@ jobs:
           - swift:5.3-focal
           - swift:5.3-centos8
           - swift:5.3-amazonlinux2
-          - swiftlang/swift:nightly-5.4-focal
+          - swift:5.4-xenial
+          - swift:5.4-bionic
+          - swift:5.4-focal
+          - swift:5.4-centos8
+          - swift:5.4-amazonlinux2
     container: ${{ matrix.image }}
     steps:
     - name: Checkout code
