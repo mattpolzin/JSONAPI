@@ -335,9 +335,18 @@ A JSON API Document is guaranteed by the **SPEC** to be "data", "metadata", or "
 
 #### `ResourceBody`
 
-The first generic type of a `JSONAPI.Document` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly6`) to specify that a `ResourceBody` will be one of a few different types of `ResourceObject`. These `Poly` types work in the same way as the `Include` types described below.
+The first generic type of a `JSONAPI.Document` is a `ResourceBody`. This can either be a `SingleResourceBody<PrimaryResource>` or a `ManyResourceBody<PrimaryResource>`. You will find zero or one `PrimaryResource` values in a JSON API document that has a `SingleResourceBody` and you will find zero or more `PrimaryResource` values in a JSON API document that has a `ManyResourceBody`. You can use the `Poly` types (`Poly1` through `Poly11`) to specify that a `ResourceBody` will be one of a few different types of `ResourceObject`. These `Poly` types work in the same way as the `Include` types described below.
 
 If you expect a response to not have a "data" top-level key at all, then use `NoResourceBody` instead.
+
+Examples:
+```swift
+typealias SingleDog = JSONAPI.Document<SingleResourceBody<Dog>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError<String>>
+
+typealias ManyCats = JSONAPI.Document<ManyResourceBody<Cat>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError<String>>
+
+typealias ManyDogsOrCats = JSONAPI.Document<ManyResourceBody<Poly2<Dog, Cat>>, NoMetadata, NoLinks, NoIncludes, BasicJSONAPIError<String>>
+```
 
 ##### nullable `PrimaryResource`
 
