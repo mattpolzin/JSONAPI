@@ -33,6 +33,8 @@ public enum DocumentDecodingError: Swift.Error, Equatable {
             self = .primaryResourceMissing
         case .valueNotFound(let type, let context) where Location(context) == .data && type == UnkeyedDecodingContainer.self:
             self = .primaryResourcesMissing
+        case .typeMismatch(_, let context) where context.debugDescription.hasSuffix("but found null instead."):
+            self = .primaryResourcesMissing
         default:
             return nil
         }
