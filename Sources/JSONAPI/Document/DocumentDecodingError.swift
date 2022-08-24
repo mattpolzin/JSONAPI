@@ -33,7 +33,7 @@ public enum DocumentDecodingError: Swift.Error, Equatable {
             self = .primaryResourceMissing
         case .valueNotFound(let type, let context) where Location(context) == .data && type == UnkeyedDecodingContainer.self:
             self = .primaryResourcesMissing
-        case .typeMismatch(let type, let context) where Location(context) == .data && type == UnkeyedDecodingContainer.self && context.debugDescription.hasSuffix("but found null instead."):
+        case .typeMismatch(let type, let context) where Location(context) == .data && type is _ArrayType.Type && context.debugDescription.hasSuffix("but found null instead."):
             self = .primaryResourcesMissing
         case .typeMismatch(_, let context) where Location(context) == .data && context.debugDescription.hasSuffix("but found null instead."):
             self = .primaryResourceMissing
@@ -75,3 +75,6 @@ extension DocumentDecodingError: CustomStringConvertible {
         }
     }
 }
+
+private protocol _ArrayType {}
+extension Array: _ArrayType {}
