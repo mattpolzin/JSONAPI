@@ -137,7 +137,7 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
         case .keyNotFound where subjectName == ResourceObjectDecodingError.entireObject:
             return "\(location) object is required and missing."
         case .keyNotFound where location == .type:
-            return "'type' (a.k.a. JSON:API type name) is required and missing."
+            return "'type' (a.k.a. the JSON:API type name) is required and missing."
         case .keyNotFound where location == .relationshipType:
             return "'\(subjectName)' relationship does not have a 'type'."
         case .keyNotFound where location == .relationshipId:
@@ -145,7 +145,7 @@ extension ResourceObjectDecodingError: CustomStringConvertible {
         case .keyNotFound:
             return "'\(subjectName)' \(location.singular) is required and missing."
         case .valueNotFound where location == .type:
-            return "'\(location.singular)' (a.k.a. JSON:API type name) is not nullable but null was found."
+            return "'\(location.singular)' (a.k.a. the JSON:API type name) is not nullable but null was found."
         case .valueNotFound:
             return "'\(subjectName)' \(location.singular) is not nullable but null was found."
         case .typeMismatch(expectedTypeName: let expected) where location == .type:

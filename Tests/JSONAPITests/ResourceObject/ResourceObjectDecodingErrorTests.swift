@@ -488,7 +488,7 @@ extension ResourceObjectDecodingErrorTests {
 
             XCTAssertEqual(
                 (error as? ResourceObjectDecodingError)?.description,
-                #"'type' (a.k.a. JSON:API type name) is required and missing."#
+                #"'type' (a.k.a. the JSON:API type name) is required and missing."#
             )
         }
     }
@@ -518,7 +518,7 @@ extension ResourceObjectDecodingErrorTests {
 
                 XCTAssertEqual(
                     specialError?.description,
-                    "'type' (a.k.a. JSON:API type name) is not nullable but null was found."
+                    "'type' (a.k.a. the JSON:API type name) is not nullable but null was found."
                 )
             } else {
                 XCTAssertEqual(
@@ -533,7 +533,7 @@ extension ResourceObjectDecodingErrorTests {
 
                 XCTAssertEqual(
                     specialError?.description,
-                    "'type' (a.k.a. JSON:API type name) is not a String as expected."
+                    "'type' (a.k.a. the JSON:API type name) is not a String as expected."
                 )
             }
         }
