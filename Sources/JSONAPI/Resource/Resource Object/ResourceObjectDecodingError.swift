@@ -117,9 +117,16 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
             location = .type
         }
 
+        let subjectPath: [CodingKey]
+        if location == .relationships && path.last?.stringValue == "data" {
+            subjectPath =  path.dropLast()
+        } else {
+            subjectPath = path
+        }
+
         return (
             location,
-            name: path.last?.stringValue ?? "unnamed"
+            name: subjectPath.last?.stringValue ?? "unnamed"
         )
     }
 }
