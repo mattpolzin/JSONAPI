@@ -162,3 +162,67 @@ extension Poly11: CodablePrimaryResource, OptionalCodablePrimaryResource
         I: CodablePolyWrapped,
         J: CodablePolyWrapped,
         K: CodablePolyWrapped {}
+
+// MARK: - 12 types
+extension Poly12: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+where
+A: EncodablePolyWrapped,
+B: EncodablePolyWrapped,
+C: EncodablePolyWrapped,
+D: EncodablePolyWrapped,
+E: EncodablePolyWrapped,
+F: EncodablePolyWrapped,
+G: EncodablePolyWrapped,
+H: EncodablePolyWrapped,
+I: EncodablePolyWrapped,
+J: EncodablePolyWrapped,
+K: EncodablePolyWrapped,
+L: EncodablePolyWrapped {}
+
+extension Poly12: CodablePrimaryResource, OptionalCodablePrimaryResource
+where
+A: CodablePolyWrapped,
+B: CodablePolyWrapped,
+C: CodablePolyWrapped,
+D: CodablePolyWrapped,
+E: CodablePolyWrapped,
+F: CodablePolyWrapped,
+G: CodablePolyWrapped,
+H: CodablePolyWrapped,
+I: CodablePolyWrapped,
+J: CodablePolyWrapped,
+K: CodablePolyWrapped,
+L: CodablePolyWrapped {}
+
+// MARK: - 13 types
+extension Poly13: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+where
+A: EncodablePolyWrapped,
+B: EncodablePolyWrapped,
+C: EncodablePolyWrapped,
+D: EncodablePolyWrapped,
+E: EncodablePolyWrapped,
+F: EncodablePolyWrapped,
+G: EncodablePolyWrapped,
+H: EncodablePolyWrapped,
+I: EncodablePolyWrapped,
+J: EncodablePolyWrapped,
+K: EncodablePolyWrapped,
+L: EncodablePolyWrapped,
+M: EncodablePolyWrapped {}
+
+extension Poly13: CodablePrimaryResource, OptionalCodablePrimaryResource
+where
+A: CodablePolyWrapped,
+B: CodablePolyWrapped,
+C: CodablePolyWrapped,
+D: CodablePolyWrapped,
+E: CodablePolyWrapped,
+F: CodablePolyWrapped,
+G: CodablePolyWrapped,
+H: CodablePolyWrapped,
+I: CodablePolyWrapped,
+J: CodablePolyWrapped,
+K: CodablePolyWrapped,
+L: CodablePolyWrapped,
+M: CodablePolyWrapped {}
