@@ -71,7 +71,7 @@ extension Sequence where Element: CompoundResourceProtocol {
     }
 }
 
-extension EncodableJSONAPIDocument where PrimaryResourceBody: EncodableResourceBody, PrimaryResourceBody.PrimaryResource: ResourceObjectType {
+extension EncodableJSONAPIDocument where PrimaryResourceBody.PrimaryResource: ResourceObjectType {
     public typealias CompoundResource = JSONAPI.CompoundResource<PrimaryResourceBody.PrimaryResource, IncludeType>
 }
 

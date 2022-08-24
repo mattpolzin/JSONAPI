@@ -53,7 +53,7 @@ final class DocumentDecodingErrorTests: XCTestCase {
         ) { error in
             guard let docError = error as? DocumentDecodingError,
                 case .primaryResourcesMissing = docError else {
-                    XCTFail("Expected primary resource missing error. Got \(error)")
+                    XCTFail("Expected primary resources missing error. Got \(error)")
                     return
             }
 

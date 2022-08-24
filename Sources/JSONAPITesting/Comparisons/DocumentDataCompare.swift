@@ -86,7 +86,7 @@ public struct ManyResourceObjectComparison: Equatable, PropertyComparison {
     }
 }
 
-extension TestableResourceBody where TestablePrimaryResourceType: ResourceObjectType {
+extension TestableResourceBody {
     public func compare(to other: Self) -> PrimaryResourceBodyComparison {
         guard let one = testableResourceObject,
             let two = other.testableResourceObject else {
