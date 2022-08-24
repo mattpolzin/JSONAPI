@@ -103,20 +103,44 @@ final class ResourceObjectDecodingErrorTests: XCTestCase {
             TestEntity.self,
             from: entity_nonNullable_relationship_is_null
         )) { error in
-            XCTAssertEqual(
-                error as? ResourceObjectDecodingError,
-                ResourceObjectDecodingError(
-                    subjectName: "required",
-                    cause: .valueNotFound,
-                    location: .relationships,
-                    jsonAPIType: TestEntity.jsonType
-                )
-            )
+            let specialError = error as? ResourceObjectDecodingError
 
-            XCTAssertEqual(
-                (error as? ResourceObjectDecodingError)?.description,
-                "'required' relationship is not nullable but null was found."
-            )
+            XCTAssertNotNil(specialError)
+
+            // later Linux versions of Swift will catch that the value is not
+            // a string rather than calling null "not found." The errors are both
+            // effective, so we check that one of the two is the result:
+            if specialError?.cause == .valueNotFound {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "required",
+                        cause: .valueNotFound,
+                        location: .relationships,
+                        jsonAPIType: TestEntity.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'required' relationship is not nullable but null was found."
+                )
+            } else {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "required",
+                        cause: .typeMismatch(expectedTypeName: "Dictionary<String, JSONValue>"),
+                        location: .relationships,
+                        jsonAPIType: TestEntity.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'required' relationship is not a Dictionary<String, JSONValue> as expected."
+                )
+            }
         }
     }
 
@@ -259,20 +283,44 @@ extension ResourceObjectDecodingErrorTests {
             TestEntity2.self,
             from: entity_nonNullable_attribute_is_null
         )) { error in
-            XCTAssertEqual(
-                error as? ResourceObjectDecodingError,
-                ResourceObjectDecodingError(
-                    subjectName: "required",
-                    cause: .valueNotFound,
-                    location: .attributes,
-                    jsonAPIType: TestEntity2.jsonType
-                )
-            )
+            let specialError = error as? ResourceObjectDecodingError
 
-            XCTAssertEqual(
-                (error as? ResourceObjectDecodingError)?.description,
-                "'required' attribute is not nullable but null was found."
-            )
+            XCTAssertNotNil(specialError)
+
+            // later Linux versions of Swift will catch that the value is not
+            // a string rather than calling null "not found." The errors are both
+            // effective, so we check that one of the two is the result:
+            if specialError?.cause == .valueNotFound {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "required",
+                        cause: .valueNotFound,
+                        location: .attributes,
+                        jsonAPIType: TestEntity2.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'required' attribute is not nullable but null was found."
+                )
+            } else {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "required",
+                        cause: .typeMismatch(expectedTypeName: "String"),
+                        location: .attributes,
+                        jsonAPIType: TestEntity2.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'required' attribute is not a String as expected."
+                )
+            }
         }
     }
 
