@@ -498,20 +498,44 @@ extension ResourceObjectDecodingErrorTests {
             TestEntity2.self,
             from: entity_type_is_null
         )) { error in
-            XCTAssertEqual(
-                error as? ResourceObjectDecodingError,
-                ResourceObjectDecodingError(
-                    subjectName: "type",
-                    cause: .valueNotFound,
-                    location: .type,
-                    jsonAPIType: TestEntity2.jsonType
-                )
-            )
+            let specialError = error as? ResourceObjectDecodingError
 
-            XCTAssertEqual(
-                (error as? ResourceObjectDecodingError)?.description,
-                #"'type' (a.k.a. JSON:API type name) is not nullable but null was found."#
-            )
+            XCTAssertNotNil(specialError)
+
+            // later Linux versions of Swift will catch that the value is not
+            // a string rather than calling null "not found." The errors are both
+            // effective, so we check that one of the two is the result:
+            if specialError?.cause == .valueNotFound {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "type",
+                        cause: .valueNotFound,
+                        location: .type,
+                        jsonAPIType: TestEntity2.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'type' (a.k.a. JSON:API type name) is not nullable but null was found."
+                )
+            } else {
+                XCTAssertEqual(
+                    specialError,
+                    ResourceObjectDecodingError(
+                        subjectName: "type",
+                        cause: .typeMismatch(expectedTypeName: "String"),
+                        location: .type,
+                        jsonAPIType: TestEntity2.jsonType
+                    )
+                )
+
+                XCTAssertEqual(
+                    specialError?.description,
+                    "'type' (a.k.a. JSON:API type name) is not a String as expected."
+                )
+            }
         }
     }
 }
