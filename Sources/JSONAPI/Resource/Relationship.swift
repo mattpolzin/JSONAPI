@@ -401,6 +401,11 @@ extension ToManyRelationship: Codable {
             links = try container.decode(LinksType.self, forKey: .links)
         }
 
+        guard container.contains(.data) else {
+          idsWithMeta = []
+          return
+        }
+
         var identifiers: UnkeyedDecodingContainer
         do {
             identifiers = try container.nestedUnkeyedContainer(forKey: .data)

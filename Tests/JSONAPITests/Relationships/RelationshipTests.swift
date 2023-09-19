@@ -235,6 +235,14 @@ extension RelationshipTests {
 		test_DecodeEncodeEquality(type: ToManyWithMetaAndLinks.self,
 								  data: to_many_relationship_with_meta_and_links)
 	}
+
+  func test_ToManyRelationshipWithMetaNoData() {
+    let relationship = decoded(type: ToManyWithMeta.self,
+                               data: to_many_relationship_with_meta_no_data)
+
+    XCTAssertEqual(relationship.ids, [])
+    XCTAssertEqual(relationship.meta.a, "hello")
+  }
 }
 
 // MARK: Nullable
