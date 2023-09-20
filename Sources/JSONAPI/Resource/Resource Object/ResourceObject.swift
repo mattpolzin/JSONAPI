@@ -58,6 +58,20 @@ public protocol ResourceObjectProxyDescription: JSONTyped {
     associatedtype Relationships: Equatable
 }
 
+/// A flagging protocol for `ResourceObjectProxyDescription` objects.
+/// Indicates an object with varying behavior when it's being decoded from resources and the `data` key is missing.
+public protocol ResourceObjectWithOptionalDataInRelationships {
+    /// A Boolean flag indicating that instances while decoding from relationships can be decoded without `data`
+    /// key and have only links and meta information.
+    ///
+    /// Default value: `false`.
+    static var canHaveNoDataInRelationships: Bool { get }
+}
+
+extension ResourceObjectWithOptionalDataInRelationships {
+    public static var canHaveNoDataInRelationships: Bool { false }
+}
+
 /// A `ResourceObjectDescription` describes a JSON API
 /// Resource Object. The Resource Object
 /// itself is encoded and decoded as an
@@ -242,6 +256,12 @@ public extension ResourceObject where EntityRawIdType: CreatableRawIdType {
     func withNewIdentifier() -> ResourceObject {
         return ResourceObject(attributes: attributes, relationships: relationships, meta: meta, links: links)
     }
+}
+
+// Conformance to the protocol so we can access the `canHaveNoDataInRelationships` flag from
+// `ToManyRelationship` in type-erasured `Relatable`.
+extension ResourceObject: ResourceObjectWithOptionalDataInRelationships where Description: ResourceObjectWithOptionalDataInRelationships {
+    public static var canHaveNoDataInRelationships: Bool { Description.canHaveNoDataInRelationships }
 }
 
 // MARK: - Attribute Access

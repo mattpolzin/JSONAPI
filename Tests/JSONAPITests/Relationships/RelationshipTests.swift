@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import JSONAPI
+@testable import JSONAPI
 
 class RelationshipTests: XCTestCase {
 
@@ -236,12 +236,35 @@ extension RelationshipTests {
 								  data: to_many_relationship_with_meta_and_links)
 	}
 
-  func test_ToManyRelationshipWithMetaNoData() {
+  func test_ToManyRelationshipWithMetaNoDataOmittable() {
+    TestEntityType1.canHaveNoDataInRelationships = true
+    
     let relationship = decoded(type: ToManyWithMeta.self,
                                data: to_many_relationship_with_meta_no_data)
 
     XCTAssertEqual(relationship.ids, [])
     XCTAssertEqual(relationship.meta.a, "hello")
+
+    TestEntityType1.canHaveNoDataInRelationships = false
+  }
+
+  func test_ToManyRelationshipWithMetaNoDataNotOmittable() {
+    TestEntityType1.canHaveNoDataInRelationships = false
+
+    do {
+        _ = try decodedThrows(type: ToManyWithMeta.self,
+                              data: to_many_relationship_with_meta_no_data)
+        XCTFail("Expected decoding to fail.")
+    } catch let error as DecodingError {
+      switch error {
+      case .keyNotFound(ResourceLinkageCodingKeys.data, _):
+        break
+      default:
+        XCTFail("Expected error to be DecodingError.keyNotFound(.data), but got \(error)")
+      }
+    } catch {
+      XCTFail("Expected to have DecodingError.keyNotFound(.data), but got \(error)")
+    }
   }
 }
 
@@ -285,12 +308,14 @@ extension RelationshipTests {
 
 // MARK: - Test types
 extension RelationshipTests {
-	enum TestEntityType1: ResourceObjectDescription {
+	enum TestEntityType1: ResourceObjectDescription, ResourceObjectWithOptionalDataInRelationships {
 		typealias Attributes = NoAttributes
 
 		typealias Relationships = NoRelationships
 
 		public static var jsonType: String { return "test_entity1" }
+
+    static var canHaveNoDataInRelationships: Bool = false
 	}
 
 	typealias TestEntity1 = BasicEntity<TestEntityType1>

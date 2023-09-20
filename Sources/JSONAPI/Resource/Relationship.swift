@@ -222,7 +222,7 @@ extension Optional: JSONAPIIdentifiable, OptionalRelatable, JSONTyped where Wrap
 }
 
 // MARK: Codable
-private enum ResourceLinkageCodingKeys: String, CodingKey {
+enum ResourceLinkageCodingKeys: String, CodingKey {
     case data = "data"
     case meta = "meta"
     case links = "links"
@@ -401,9 +401,14 @@ extension ToManyRelationship: Codable {
             links = try container.decode(LinksType.self, forKey: .links)
         }
 
-        guard container.contains(.data) else {
-          idsWithMeta = []
-          return
+        let hasData = container.contains(.data)
+        var canHaveNoDataInRelationships: Bool = false
+        if let relatableType = Relatable.self as? ResourceObjectWithOptionalDataInRelationships.Type {
+            canHaveNoDataInRelationships = relatableType.canHaveNoDataInRelationships
+        }
+        guard hasData || !canHaveNoDataInRelationships else {
+            idsWithMeta = []
+            return
         }
 
         var identifiers: UnkeyedDecodingContainer
