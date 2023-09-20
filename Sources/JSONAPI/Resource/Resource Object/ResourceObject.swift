@@ -53,7 +53,7 @@ public protocol JSONTyped {
 
 /// A `ResourceObjectProxyDescription` is an `ResourceObjectDescription`
 /// without Codable conformance.
-public protocol ResourceObjectProxyDescription: JSONTyped {
+public protocol ResourceObjectProxyDescription: JSONTyped, ResourceObjectWithOptionalDataInRelationships {
     associatedtype Attributes: Equatable
     associatedtype Relationships: Equatable
 }
