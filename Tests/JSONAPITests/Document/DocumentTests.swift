@@ -1528,6 +1528,23 @@ extension DocumentTests {
 		XCTAssertEqual(combined.primary.values, bodyData1.primary.values + bodyData2.primary.values)
 	}
 
+  public func test_MergeBodyDataMixedMetaLinksErrorAndAPI(){
+    let entity1 = Article(attributes: .none, relationships: .init(author: "2"), meta: .none, links: .none)
+    let entity2 = Article(attributes: .none, relationships: .init(author: "3"), meta: .none, links: .none)
+
+    let bodyData1 = Document<ManyResourceBody<Article>, NoMetadata, NoLinks, NoIncludes, NoAPIDescription, UnknownJSONAPIError>.Body.Data(primary: .init(resourceObjects: [entity1]),
+                                                                                                                                          includes: .none,
+                                                                                                                                          meta: .none,
+                                                                                                                                          links: .none)
+    let bodyData2 = Document<ManyResourceBody<Article>, TestPageMetadata, TestLinks, NoIncludes, TestAPIDescription, GenericJSONAPIError<String>>.Body.Data(primary: .init(resourceObjects: [entity2]),
+                                                                                                                                          includes: .none,
+                                                                                                                                                meta: .init(total: 5, limit: 2, offset: 2),
+                                                                                                                                                  links: .init(link: .init(url: "one"), link2: .init(url: .init(), meta: .init(hello: "world"))))
+    let combined = bodyData1.merging(bodyData2)
+
+    XCTAssertEqual(combined.primary.values, bodyData1.primary.values + bodyData2.primary.values)
+  }
+
 	public func test_MergeBodyDataWithMergeFunctions() {
 		let article1 = Article(attributes: .none, relationships: .init(author: "2"), meta: .none, links: .none)
 		let author1 = Author(id: "2", attributes: .none, relationships: .none, meta: .none, links: .none)
