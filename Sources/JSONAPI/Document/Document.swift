@@ -272,11 +272,11 @@ extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
 }
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable, MetaType == NoMetadata, LinksType == NoLinks {
-    public func merging<OtherMeta, OtherLinks, OtherDescription, OtherError>(_ other: Document<PrimaryResourceBody, OtherMeta, OtherLinks, IncludeType, OtherDescription, OtherError>.Body.Data) -> Document.Body.Data {
-        return Document.Body.Data(primary: primary.appending(other.primary),
-                                  includes: includes.appending(other.includes),
-                                  meta: meta,
-                                  links: links)
+    public func merging<OtherMeta, OtherLinks, OtherDescription, OtherError>(_ other: Document<PrimaryResourceBody, OtherMeta, OtherLinks, IncludeType, OtherDescription, OtherError>.Body.Data) -> Document<PrimaryResourceBody, OtherMeta, OtherLinks, IncludeType, APIDescription, Error>.Body.Data {
+        return .init(primary: primary.appending(other.primary),
+                     includes: includes.appending(other.includes),
+                     meta: other.meta,
+                     links: other.links)
     }
 }
 

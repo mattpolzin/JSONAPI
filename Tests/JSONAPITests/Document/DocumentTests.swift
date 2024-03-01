@@ -1543,6 +1543,8 @@ extension DocumentTests {
     let combined = bodyData1.merging(bodyData2)
 
     XCTAssertEqual(combined.primary.values, bodyData1.primary.values + bodyData2.primary.values)
+    XCTAssertEqual(combined.meta, bodyData2.meta)
+    XCTAssertEqual(combined.links, bodyData2.links)
   }
 
 	public func test_MergeBodyDataWithMergeFunctions() {
