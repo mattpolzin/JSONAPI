@@ -402,9 +402,11 @@ extension ToManyRelationship: Codable {
         }
 
         let hasData = container.contains(.data)
-        var canHaveNoDataInRelationships: Bool = false
+        let canHaveNoDataInRelationships: Bool
         if let relatableType = Relatable.self as? ResourceObjectWithOptionalDataInRelationships.Type {
             canHaveNoDataInRelationships = relatableType.canHaveNoDataInRelationships
+        } else {
+          canHaveNoDataInRelationships = false
         }
         guard hasData || !canHaveNoDataInRelationships else {
             idsWithMeta = []
