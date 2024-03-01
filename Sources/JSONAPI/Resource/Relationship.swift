@@ -222,7 +222,7 @@ extension Optional: JSONAPIIdentifiable, OptionalRelatable, JSONTyped where Wrap
 }
 
 // MARK: Codable
-enum ResourceLinkageCodingKeys: String, CodingKey {
+private enum ResourceLinkageCodingKeys: String, CodingKey {
     case data = "data"
     case meta = "meta"
     case links = "links"

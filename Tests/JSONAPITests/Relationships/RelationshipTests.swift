@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import JSONAPI
+import JSONAPI
 
 class RelationshipTests: XCTestCase {
 
@@ -251,19 +251,11 @@ extension RelationshipTests {
   func test_ToManyRelationshipWithMetaNoDataNotOmittable() {
     TestEntityType1.canHaveNoDataInRelationships = false
 
-    do {
-        _ = try decodedThrows(type: ToManyWithMeta.self,
-                              data: to_many_relationship_with_meta_no_data)
-        XCTFail("Expected decoding to fail.")
-    } catch let error as DecodingError {
-      switch error {
-      case .keyNotFound(ResourceLinkageCodingKeys.data, _):
-        break
-      default:
-        XCTFail("Expected error to be DecodingError.keyNotFound(.data), but got \(error)")
-      }
-    } catch {
-      XCTFail("Expected to have DecodingError.keyNotFound(.data), but got \(error)")
+    XCTAssertThrowsError(
+      try decodedThrows(type: ToManyWithMeta.self,
+                        data: to_many_relationship_with_meta_no_data)
+    ) { error in 
+      XCTAssertEqual(error.localizedDescription, "The data couldn’t be read because it is missing.")
     }
   }
 }
