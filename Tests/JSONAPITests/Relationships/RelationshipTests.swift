@@ -255,7 +255,14 @@ extension RelationshipTests {
       try decodedThrows(type: ToManyWithMeta.self,
                         data: to_many_relationship_with_meta_no_data)
     ) { error in 
-      XCTAssertEqual(error.localizedDescription, "The data couldn’t be read because it is missing.")
+      let oldLinuxFoundationMsg = "The operation could not be completed. (SwiftError error 0.)"
+      let newLinuxFoundationMsg = "The operation could not be completed. The data is missing."
+      let newDesirableMsg = "The data couldn’t be read because it is missing."
+      XCTAssert(
+        error.localizedDescription == newDesirableMsg
+        || error.localizedDescription == newLinuxFoundationMsg
+        || error.localizedDescription == oldLinuxFoundationMsg
+      )
     }
   }
 }
