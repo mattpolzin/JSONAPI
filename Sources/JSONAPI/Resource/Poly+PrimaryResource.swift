@@ -226,3 +226,38 @@ J: CodablePolyWrapped,
 K: CodablePolyWrapped,
 L: CodablePolyWrapped,
 M: CodablePolyWrapped {}
+
+// MARK: - 14 types
+extension Poly14: EncodablePrimaryResource, OptionalEncodablePrimaryResource
+where
+A: EncodablePolyWrapped,
+B: EncodablePolyWrapped,
+C: EncodablePolyWrapped,
+D: EncodablePolyWrapped,
+E: EncodablePolyWrapped,
+F: EncodablePolyWrapped,
+G: EncodablePolyWrapped,
+H: EncodablePolyWrapped,
+I: EncodablePolyWrapped,
+J: EncodablePolyWrapped,
+K: EncodablePolyWrapped,
+L: EncodablePolyWrapped,
+M: EncodablePolyWrapped,
+N: EncodablePolyWrapped {}
+
+extension Poly14: CodablePrimaryResource, OptionalCodablePrimaryResource
+where
+A: CodablePolyWrapped,
+B: CodablePolyWrapped,
+C: CodablePolyWrapped,
+D: CodablePolyWrapped,
+E: CodablePolyWrapped,
+F: CodablePolyWrapped,
+G: CodablePolyWrapped,
+H: CodablePolyWrapped,
+I: CodablePolyWrapped,
+J: CodablePolyWrapped,
+K: CodablePolyWrapped,
+L: CodablePolyWrapped,
+M: CodablePolyWrapped,
+N: CodablePolyWrapped {}
