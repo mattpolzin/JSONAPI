@@ -230,6 +230,14 @@ extension Includes where I: _Poly14 {
     }
 }
 
+// MARK: - 15 includes
+public typealias Include15 = Poly15
+extension Includes where I: _Poly15 {
+    public subscript(_ lookup: I.O.Type) -> [I.O] {
+        return values.compactMap(\.o)
+    }
+}
+
 // MARK: - DecodingError
 public struct IncludesDecodingError: Swift.Error, Equatable {
     public let error: Swift.Error

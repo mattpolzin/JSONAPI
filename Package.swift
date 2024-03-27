@@ -17,7 +17,7 @@ let package = Package(
             targets: ["JSONAPITesting"])
     ],
     dependencies: [
-        .package(url: "https://github.com/mattpolzin/Poly.git", .upToNextMajor(from: "2.7.0")),
+        .package(url: "https://github.com/mattpolzin/Poly.git", .upToNextMajor(from: "2.8.0")),
     ],
     targets: [
         .target(
