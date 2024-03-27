@@ -266,6 +266,31 @@ class IncludedTests: XCTestCase {
         test_DecodeEncodeEquality(type: Includes<Include13<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9, TestEntity10, TestEntity11, TestEntity12, TestEntity13>>.self,
                                   data: thirteen_different_type_includes)
     }
+
+    func test_FourteenDifferentIncludes() {
+        let includes = decoded(type: Includes<Include14<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9, TestEntity10, TestEntity11, TestEntity12, TestEntity13, TestEntity14>>.self,
+                               data: fourteen_different_type_includes)
+
+        XCTAssertEqual(includes[TestEntity.self].count, 1)
+        XCTAssertEqual(includes[TestEntity2.self].count, 1)
+        XCTAssertEqual(includes[TestEntity3.self].count, 1)
+        XCTAssertEqual(includes[TestEntity4.self].count, 1)
+        XCTAssertEqual(includes[TestEntity5.self].count, 1)
+        XCTAssertEqual(includes[TestEntity6.self].count, 1)
+        XCTAssertEqual(includes[TestEntity7.self].count, 1)
+        XCTAssertEqual(includes[TestEntity8.self].count, 1)
+        XCTAssertEqual(includes[TestEntity9.self].count, 1)
+        XCTAssertEqual(includes[TestEntity10.self].count, 1)
+        XCTAssertEqual(includes[TestEntity11.self].count, 1)
+        XCTAssertEqual(includes[TestEntity12.self].count, 1)
+        XCTAssertEqual(includes[TestEntity13.self].count, 1)
+        XCTAssertEqual(includes[TestEntity14.self].count, 1)
+    }
+
+    func test_FourteenDifferentIncludes_encode() {
+        test_DecodeEncodeEquality(type: Includes<Include14<TestEntity, TestEntity2, TestEntity3, TestEntity4, TestEntity5, TestEntity6, TestEntity7, TestEntity8, TestEntity9, TestEntity10, TestEntity11, TestEntity12, TestEntity13, TestEntity14>>.self,
+                                  data: fourteen_different_type_includes)
+    }
 }
 
 // MARK: - Appending
@@ -605,4 +630,15 @@ extension IncludedTests {
     }
 
     typealias TestEntity13 = BasicEntity<TestEntityType13>
+
+    enum TestEntityType14: ResourceObjectDescription {
+
+        typealias Attributes = NoAttributes
+
+        public static var jsonType: String { return "test_entity14" }
+
+        typealias Relationships = NoRelationships
+    }
+
+    typealias TestEntity14 = BasicEntity<TestEntityType14>
 }
