@@ -447,7 +447,17 @@ public extension ResourceObject {
             )
         }
 
-        meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+        do {
+            meta = try (NoMetadata() as? MetaType) ?? container.decode(MetaType.self, forKey: .meta)
+        } catch let decodingError as DecodingError {
+            let anyNil: Any? = nil
+
+            guard case .keyNotFound = decodingError,
+                  let omittedMeta = anyNil as? MetaType else {
+                throw decodingError
+            }
+            meta = omittedMeta
+        }
 
         links = try (NoLinks() as? LinksType) ?? container.decode(LinksType.self, forKey: .links)
     }

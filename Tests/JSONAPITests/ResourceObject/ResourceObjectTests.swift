@@ -151,6 +151,11 @@ extension ResourceObjectTests {
 								   data: entity_no_relationships_no_attributes)
 	}
 
+  func test_EntityNoMetaDecodesAsOptionalMeta() {
+      let _ = decoded(type: TestEntityOptionalMeta.self,
+                      data: entity_no_relationships_no_attributes)
+  }
+
 	func test_EntityNoRelationshipsSomeAttributes() {
 		let entity = decoded(type: TestEntity5.self,
 								   data: entity_no_relationships_some_attributes)
@@ -861,13 +866,13 @@ extension ResourceObjectTests {
 
 		public struct Relationships: JSONAPI.Relationships {
 			public init() {
-                optionalMeta = nil
+        optionalMeta = nil
 				optionalOne = nil
 				optionalNullableOne = nil
 				optionalMany = nil
 			}
 
-            let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
+      let optionalMeta: MetaRelationship<TestEntityMeta, NoLinks>?
 
 			let optionalOne: ToOneRelationship<TestEntity1, NoIdMetadata, NoMetadata, NoLinks>?
 
@@ -878,6 +883,19 @@ extension ResourceObjectTests {
 	}
 
 	typealias TestEntity12 = BasicEntity<TestEntityType12>
+
+  enum TestEntityOptionalMetaType: JSONAPI.ResourceObjectDescription {
+      public static var jsonType: String { return "test_entities" }
+
+      typealias Attributes = NoAttributes
+      typealias Relationships = NoRelationships
+  }
+
+  struct UnimportantMeta: JSONAPI.Meta {
+      let property1: String
+  }
+
+  typealias TestEntityOptionalMeta = JSONAPI.ResourceObject<TestEntityOptionalMetaType, UnimportantMeta?, NoLinks, String>
 
 	enum UnidentifiedTestEntityType: ResourceObjectDescription {
 		public static var jsonType: String { return "unidentified_test_entities" }
