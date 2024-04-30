@@ -263,9 +263,6 @@ extension MetaRelationship: Codable {
     }
 }
 
-fileprivate protocol _Optional {}
-extension Optional: _Optional {}
-
 extension ToOneRelationship: Codable where Identifiable.ID: OptionalId {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: ResourceLinkageCodingKeys.self)
