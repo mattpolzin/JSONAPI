@@ -235,6 +235,36 @@ extension RelationshipTests {
 		test_DecodeEncodeEquality(type: ToManyWithMetaAndLinks.self,
 								  data: to_many_relationship_with_meta_and_links)
 	}
+
+  func test_ToManyRelationshipWithMetaNoDataOmittable() {
+    TestEntityType1.canHaveNoDataInRelationships = true
+    
+    let relationship = decoded(type: ToManyWithMeta.self,
+                               data: to_many_relationship_with_meta_no_data)
+
+    XCTAssertEqual(relationship.ids, [])
+    XCTAssertEqual(relationship.meta.a, "hello")
+
+    TestEntityType1.canHaveNoDataInRelationships = false
+  }
+
+  func test_ToManyRelationshipWithMetaNoDataNotOmittable() {
+    TestEntityType1.canHaveNoDataInRelationships = false
+
+    XCTAssertThrowsError(
+      try decodedThrows(type: ToManyWithMeta.self,
+                        data: to_many_relationship_with_meta_no_data)
+    ) { error in 
+      let oldLinuxFoundationMsg = "The operation could not be completed. (SwiftError error 0.)"
+      let newLinuxFoundationMsg = "The operation could not be completed. The data is missing."
+      let newDesirableMsg = "The data couldn’t be read because it is missing."
+      XCTAssert(
+        error.localizedDescription == newDesirableMsg
+        || error.localizedDescription == newLinuxFoundationMsg
+        || error.localizedDescription == oldLinuxFoundationMsg
+      )
+    }
+  }
 }
 
 // MARK: Nullable
@@ -277,12 +307,14 @@ extension RelationshipTests {
 
 // MARK: - Test types
 extension RelationshipTests {
-	enum TestEntityType1: ResourceObjectDescription {
+	enum TestEntityType1: ResourceObjectDescription, ResourceObjectWithOptionalDataInRelationships {
 		typealias Attributes = NoAttributes
 
 		typealias Relationships = NoRelationships
 
 		public static var jsonType: String { return "test_entity1" }
+
+    static var canHaveNoDataInRelationships: Bool = false
 	}
 
 	typealias TestEntity1 = BasicEntity<TestEntityType1>
