@@ -72,6 +72,16 @@ class IncludedTests: XCTestCase {
 							   data: three_different_type_includes)
 	}
 
+    func test_OneKnownAndTwoGenericIncludes() {
+        let includes = decoded(type: Includes<Include2<TestEntity, TestEntityOther>>.self,
+                               data: three_different_type_includes)
+
+        XCTAssertEqual(includes[TestEntity.self].count, 1)
+        XCTAssertEqual(includes[TestEntityOther.self].count, 2)
+        XCTAssert(includes[TestEntityOther.self].contains { $0.type == "test_entity2"})
+        XCTAssert(includes[TestEntityOther.self].contains { $0.type == "test_entity4"})
+    }
+
 	func test_FourDifferentIncludes() {
 		let includes = decoded(type: Includes<Include4<TestEntity, TestEntity2, TestEntity4, TestEntity6>>.self,
 							   data: four_different_type_includes)
@@ -678,4 +688,50 @@ extension IncludedTests {
     }
 
     typealias TestEntity15 = BasicEntity<TestEntityType15>
+
+    enum TestEntityTypeOther: ResourceObjectProxyDescription {
+        public static var jsonType: String { return "_generic" }
+
+        typealias Attributes = NoAttributes
+        typealias Relationships = NoRelationships
+    }
+
+    struct TestEntityOther: ResourceObjectProxy, Codable {
+        typealias Description = TestEntityTypeOther
+        typealias EntityRawIdType = String
+
+        public let type : String
+        public let id : JSONAPI.Id<String, Self>
+
+        public let attributes = NoAttributes()
+        public let relationships = NoRelationships()
+
+        enum CodingKeys: CodingKey {
+            case id
+            case type
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            let type: String
+            do {
+                type = try container.decode(String.self, forKey: .type)
+            } catch let error as DecodingError {
+                throw ResourceObjectDecodingError(error, jsonAPIType: Self.jsonType)
+                ?? error
+            }
+
+            id = .init(rawValue: try container.decode(String.self, forKey: .id))
+            self.type = type
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            try container.encode(type, forKey: .type)
+
+            try container.encode(id, forKey: .id)
+        }
+    }
 }
