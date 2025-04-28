@@ -7,22 +7,20 @@ See the JSON API Spec here: https://jsonapi.org/format/
 
 ## Quick Start
 
-:warning: The following Google Colab examples have correct code, but from time to time the Google Colab Swift compiler may be buggy and claim it cannot build the JSONAPI library.
-
 ### Clientside
-- [Basic Example](https://colab.research.google.com/drive/1IS7lRSBGoiW02Vd1nN_rfdDbZvTDj6Te)
-- [Compound Example](https://colab.research.google.com/drive/1BdF0Kc7l2ixDfBZEL16FY6palweDszQU)
-- [Metadata Example](https://colab.research.google.com/drive/10dEESwiE9I3YoyfzVeOVwOKUTEgLT3qr)
-- [Custom Errors Example](https://colab.research.google.com/drive/1TIv6STzlHrkTf_-9Eu8sv8NoaxhZcFZH)
-- [PATCH Example](https://colab.research.google.com/drive/16KY-0BoLQKiSUh9G7nYmHzB8b2vhXA2U)
-- [Resource Storage Example](https://colab.research.google.com/drive/196eCnBlf2xz8pT4lW--ur6eWSVAjpF6b?usp=sharing) (using [JSONAPI-ResourceStorage](#jsonapi-resourcestorage))
+- [Basic Example](./documentation/examples/basic-example.md)
+- [Compound Example](./documentation/examples/compound-example.md)
+- [Metadata Example](./documentation/examples/metadata-example.md)
+- [Custom Errors Example](./documentation/examples/custom-errors-example.md)
+- [PATCH Example](./documentation/examples/patch-example.md)
+- [Resource Storage Example](./documentation/examples/resource-storage-example.md) (using [JSONAPI-ResourceStorage](#jsonapi-resourcestorage))
 
 ### Serverside
-- [GET Example](https://colab.research.google.com/drive/1krbhzSfz8mwkBTQQnKUZJLEtYsJKSfYX)
-- [POST Example](https://colab.research.google.com/drive/1z3n70LwRY7vLIgbsMghvnfHA67QiuqpQ)
+- [GET Example](./documentation/examples/serverside-get-example.md)
+- [POST Example](./documentation/examples/serverside-post-example.md)
 
 ### Client+Server
-This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](./documentation/client-server-example.md).
+This library works well when used by both the server responsible for serialization and the client responsible for deserialization. Check out the [example](./documentation/examples/client-server-example.md).
 
 ## Table of Contents
 - JSONAPI
@@ -34,7 +32,7 @@ This library works well when used by both the server responsible for serializati
 		- [CocoaPods](#cocoapods)
 		- [Running the Playground](#running-the-playground)
 	- [Project Status](./documentation/project-status.md)
-	- [Server & Client Example](./documentation/client-server-example.md)
+	- [Server & Client Example](./documentation/examples/client-server-example.md)
 	- [Usage](./documentation/usage.md)
 - [JSONAPI+Testing](#jsonapitesting)
 	- [Literal Expressibility](#literal-expressibility)
@@ -91,7 +89,7 @@ Note that Playground support for importing non-system Frameworks is still a bit 
 
 ## Deeper Dive
 - [Project Status](./documentation/project-status.md)
-- [Server & Client Example](./documentation/client-server-example.md)
+- [Server & Client Example](./documentation/examples/client-server-example.md)
 - [Usage Documentation](./documentation/usage.md)
 
 # JSONAPI+Testing
