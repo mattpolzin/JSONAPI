@@ -1,5 +1,5 @@
 # JSONAPI
-[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 5.2+](http://img.shields.io/badge/Swift-5.2/5.3/5.4-blue.svg)](https://swift.org) [![Build Status](https://app.bitrise.io/app/c8295b9589aa401e/status.svg?token=vzcyqWD5bQ4xqQfZsaVzNw&branch=main)](https://app.bitrise.io/app/c8295b9589aa401e)
+[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 5.2+](http://img.shields.io/badge/Swift-5.2+-blue.svg)](https://swift.org) [![Tests](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml/badge.svg)](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml)
 
 A Swift package for encoding to- and decoding from **JSON API** compliant requests and responses.
 
