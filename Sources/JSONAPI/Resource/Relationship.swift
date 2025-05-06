@@ -398,6 +398,18 @@ extension ToManyRelationship: Codable {
             links = try container.decode(LinksType.self, forKey: .links)
         }
 
+        let hasData = container.contains(.data)
+        let canHaveNoDataInRelationships: Bool
+        if let relatableType = Relatable.self as? ResourceObjectWithOptionalDataInRelationships.Type {
+            canHaveNoDataInRelationships = relatableType.canHaveNoDataInRelationships
+        } else {
+          canHaveNoDataInRelationships = false
+        }
+        guard hasData || !canHaveNoDataInRelationships else {
+            idsWithMeta = []
+            return
+        }
+
         var identifiers: UnkeyedDecodingContainer
         do {
             identifiers = try container.nestedUnkeyedContainer(forKey: .data)
