@@ -27,7 +27,7 @@ public protocol SparsableAttributes: Attributes {
 
 /// Can be used as `Relationships` Type for Entities that do not
 /// have any Relationships.
-public struct NoRelationships: Relationships {
+public struct NoRelationships: Relationships, Sendable {
     public static var none: NoRelationships { return .init() }
 }
 
@@ -37,7 +37,7 @@ extension NoRelationships: CustomStringConvertible {
 
 /// Can be used as `Attributes` Type for Entities that do not
 /// have any Attributes.
-public struct NoAttributes: Attributes {
+public struct NoAttributes: Attributes, Sendable {
     public static var none: NoAttributes { return .init() }
 }
 
@@ -150,6 +150,13 @@ public struct ResourceObject<Description: JSONAPI.ResourceObjectDescription, Met
         self.links = links
     }
 }
+
+extension ResourceObject: Sendable where 
+  EntityRawIdType: Sendable,
+  Description.Attributes: Sendable,
+  Description.Relationships: Sendable,
+  MetaType: Sendable,
+  LinksType: Sendable {}
 
 // `ResourceObject` is hashable as an identifiable resource which semantically
 // means that two different resources with the same ID should yield the same

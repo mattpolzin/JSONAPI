@@ -186,6 +186,10 @@ public struct Document<PrimaryResourceBody: JSONAPI.EncodableResourceBody, MetaT
     }
 }
 
+extension Document: Sendable where
+  APIDescription: Sendable,
+  Body: Sendable {}
+
 extension Document {
     public enum Body: DocumentBody, Equatable {
         case errors([Error], meta: MetaType?, links: LinksType?)
@@ -259,6 +263,17 @@ extension Document {
         }
     }
 }
+
+extension Document.Body: Sendable where
+  MetaType: Sendable,
+  LinksType: Sendable,
+  Data: Sendable {}
+
+extension Document.Body.Data: Sendable where
+  PrimaryResourceBody: Sendable,
+  IncludeType: Sendable,
+  MetaType: Sendable,
+  LinksType: Sendable {}
 
 extension Document.Body.Data where PrimaryResourceBody: ResourceBodyAppendable {
     public func merging<OtherDescription, OtherError>(_ other: Document<PrimaryResourceBody, MetaType, LinksType, IncludeType, OtherDescription, OtherError>.Body.Data,

@@ -97,6 +97,8 @@ public struct Id<RawType: MaybeRawId, IdentifiableType: JSONAPI.JSONTyped>: Equa
     }
 }
 
+extension Id: Sendable where RawType: Sendable {}
+
 extension Id: Hashable where RawType: RawIdType {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(Self.self))

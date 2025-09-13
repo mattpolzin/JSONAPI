@@ -21,6 +21,8 @@ public struct APIDescription<Meta: JSONAPI.Meta>: APIDescriptionType {
     }
 }
 
+extension APIDescription: Sendable where Meta: Sendable {}
+
 /// Can be used as `APIDescriptionType` for Documents that do not
 /// have any API Description (a.k.a. "JSON:API Object").
 public struct NoAPIDescription: APIDescriptionType, CustomStringConvertible {
@@ -32,6 +34,8 @@ public struct NoAPIDescription: APIDescriptionType, CustomStringConvertible {
 
     public var description: String { return "No JSON:API Object" }
 }
+
+extension NoAPIDescription: Sendable {}
 
 extension APIDescription {
     private enum CodingKeys: String, CodingKey {

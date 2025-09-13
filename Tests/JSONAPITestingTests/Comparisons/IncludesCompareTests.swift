@@ -224,13 +224,13 @@ private typealias TestType1 = ResourceObject<TestDescription1, NoMetadata, NoLin
 private enum TestDescription2: JSONAPI.ResourceObjectDescription {
     static let jsonType: String = "test_type2"
 
-    struct Attributes: JSONAPI.Attributes {
+    struct Attributes: JSONAPI.Attributes & Sendable {
         let name: Attribute<String>
         let age: Attribute<Int>
         let favoriteColor: Attribute<String?>
     }
 
-    struct Relationships: JSONAPI.Relationships {
+    struct Relationships: JSONAPI.Relationships & Sendable {
         let bestFriend: ToOneRelationship<TestType2?, NoIdMetadata, NoMetadata, NoLinks>
         let parents: ToManyRelationship<TestType2, NoIdMetadata, NoMetadata, NoLinks>
     }

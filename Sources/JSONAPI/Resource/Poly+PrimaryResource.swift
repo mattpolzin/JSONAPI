@@ -15,7 +15,7 @@ import Poly
 /// disparate types under one roof for
 /// the purposes of JSON API compliant
 /// encoding or decoding.
-public typealias EncodableJSONPoly = Poly & EncodablePrimaryResource & Sendable
+public typealias EncodableJSONPoly = Poly & EncodablePrimaryResource
 
 public typealias EncodablePolyWrapped = Encodable & Equatable
 public typealias CodablePolyWrapped = EncodablePolyWrapped & Decodable
