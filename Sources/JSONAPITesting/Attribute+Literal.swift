@@ -39,7 +39,7 @@ extension Attribute: ExpressibleByFloatLiteral where RawValue: ExpressibleByFloa
     }
 }
 
-extension Optional: ExpressibleByFloatLiteral where Wrapped: ExpressibleByFloatLiteral {
+extension Optional: @retroactive ExpressibleByFloatLiteral where Wrapped: ExpressibleByFloatLiteral {
     public typealias FloatLiteralType = Wrapped.FloatLiteralType
 
     public init(floatLiteral value: FloatLiteralType) {
@@ -55,7 +55,7 @@ extension Attribute: ExpressibleByBooleanLiteral where RawValue: ExpressibleByBo
     }
 }
 
-extension Optional: ExpressibleByBooleanLiteral where Wrapped: ExpressibleByBooleanLiteral {
+extension Optional: @retroactive ExpressibleByBooleanLiteral where Wrapped: ExpressibleByBooleanLiteral {
     public typealias BooleanLiteralType = Wrapped.BooleanLiteralType
 
     public init(booleanLiteral value: BooleanLiteralType) {
@@ -71,7 +71,7 @@ extension Attribute: ExpressibleByIntegerLiteral where RawValue: ExpressibleByIn
     }
 }
 
-extension Optional: ExpressibleByIntegerLiteral where Wrapped: ExpressibleByIntegerLiteral {
+extension Optional: @retroactive ExpressibleByIntegerLiteral where Wrapped: ExpressibleByIntegerLiteral {
     public typealias IntegerLiteralType = Wrapped.IntegerLiteralType
 
     public init(integerLiteral value: IntegerLiteralType) {
