@@ -31,7 +31,7 @@ extension String: RawIdType {}
 /// A type that can be used as the `MaybeRawId` for a `ResourceObject` that does not
 /// have an Id (most likely because it was created by a client and the server will be responsible
 /// for assigning it an Id).
-public struct Unidentified: MaybeRawId, CustomStringConvertible {
+public struct Unidentified: MaybeRawId, CustomStringConvertible, Sendable {
     public init() {}
 
     public var description: String { return "Unidentified" }

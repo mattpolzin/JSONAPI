@@ -39,7 +39,7 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
         self.source = source
     }
 
-    public struct Source: Codable, Equatable {
+    public struct Source: Codable, Equatable, Sendable {
         /// a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
         public let pointer: String?
         /// which URI query parameter caused the error
@@ -69,6 +69,8 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
         return definedFields.map { "\($0.key): \($0.value)" }.sorted().joined(separator: ", ")
     }
 }
+
+extension BasicJSONAPIErrorPayload: Sendable where IdType: Sendable {}
 
 /// `BasicJSONAPIError` optionally decodes many possible fields
 /// specified by the JSON:API 1.0 Spec. It gives no type-guarantees of what
@@ -100,4 +102,4 @@ public struct BasicJSONAPIErrorPayload<IdType: Codable & Equatable>: Codable, Eq
 ///     with non-nil values in a flattened way. There will be no `source` key
 ///     but there will be `pointer` and `parameter` keys (if those values
 ///     are non-nil).
-public typealias BasicJSONAPIError<IdType: Codable & Equatable> = GenericJSONAPIError<BasicJSONAPIErrorPayload<IdType>>
+public typealias BasicJSONAPIError<IdType: Codable & Equatable & Sendable> = GenericJSONAPIError<BasicJSONAPIErrorPayload<IdType>>

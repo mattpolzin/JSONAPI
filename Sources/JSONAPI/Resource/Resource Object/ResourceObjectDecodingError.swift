@@ -13,7 +13,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
 
     static let entireObject = "entire object"
 
-    public enum Cause: Equatable {
+    public enum Cause: Equatable, Sendable {
         case keyNotFound
         case valueNotFound
         case typeMismatch(expectedTypeName: String)
@@ -26,7 +26,7 @@ public struct ResourceObjectDecodingError: Swift.Error, Equatable {
         }
     }
 
-    public enum Location: String, Equatable {
+    public enum Location: String, Equatable, Sendable {
         case attributes
         case relationships
         case relationshipType
