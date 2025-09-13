@@ -143,7 +143,7 @@ fileprivate typealias TestType2 = ResourceObject<TestDescription2, NoMetadata, N
 
 fileprivate typealias SingleDocument = JSONAPI.Document<SingleResourceBody<TestType>, NoMetadata, NoLinks, Include2<TestType, TestType2>, NoAPIDescription, BasicJSONAPIError<String>>
 
-fileprivate struct TestMetadata: JSONAPI.Meta, CustomStringConvertible {
+fileprivate struct TestMetadata: JSONAPI.Meta, CustomStringConvertible, Sendable {
     let total: Int
 
     var description: String {
@@ -151,7 +151,7 @@ fileprivate struct TestMetadata: JSONAPI.Meta, CustomStringConvertible {
     }
 }
 
-fileprivate struct TestLinks: JSONAPI.Links {
+fileprivate struct TestLinks: JSONAPI.Links, Sendable {
     let link: Link<String, NoMetadata>
 }
 

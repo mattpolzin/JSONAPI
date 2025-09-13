@@ -224,7 +224,7 @@ extension DocumentDecodingErrorTests {
         case unknownError
         case basic(BasicError)
 
-        struct BasicError: Codable, Equatable {
+        struct BasicError: Codable, Equatable, Sendable {
             let code: Int
             let description: String
         }

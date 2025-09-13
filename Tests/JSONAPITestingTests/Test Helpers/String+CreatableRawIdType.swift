@@ -7,7 +7,7 @@
 
 import JSONAPI
 
-private var uniqueStringCounter = 0
+nonisolated(unsafe) private var uniqueStringCounter = 0
 
 extension String: CreatableRawIdType {
 	public static func unique() -> String {
