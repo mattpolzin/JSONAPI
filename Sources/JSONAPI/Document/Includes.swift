@@ -45,6 +45,8 @@ public struct Includes<I: Include>: Encodable, Equatable {
     }
 }
 
+extension Includes: Sendable where I: Sendable {}
+
 extension Includes: Decodable where I: Decodable {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()

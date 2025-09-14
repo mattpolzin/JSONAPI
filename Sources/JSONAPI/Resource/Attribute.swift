@@ -34,6 +34,8 @@ public struct TransformedAttribute<RawValue: Codable, Transformer: JSONAPI.Trans
     }
 }
 
+extension TransformedAttribute: Sendable where RawValue: Sendable, Transformer.To: Sendable {}
+
 extension TransformedAttribute where Transformer == IdentityTransformer<RawValue> {
     // If we are using the identity transform, we can skip the transform and guarantee no
     // error is thrown.
@@ -81,6 +83,8 @@ public struct Attribute<RawValue: Codable>: AttributeType {
         attribute = .init(value: value)
     }
 }
+
+extension Attribute: Sendable where RawValue: Sendable {}
 
 extension Attribute: CustomStringConvertible {
     public var description: String {

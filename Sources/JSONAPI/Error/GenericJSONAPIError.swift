@@ -8,7 +8,7 @@
 /// `GenericJSONAPIError` can be used to specify whatever error
 /// payload you expect to need to parse in responses and handle any
 /// other payload structure as `.unknownError`.
-public enum GenericJSONAPIError<ErrorPayload: Codable & Equatable>: JSONAPIError, CustomStringConvertible {
+public enum GenericJSONAPIError<ErrorPayload: Codable & Equatable & Sendable>: JSONAPIError, CustomStringConvertible {
     case unknownError
     case error(ErrorPayload)
 

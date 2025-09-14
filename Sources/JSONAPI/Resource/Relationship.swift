@@ -60,6 +60,12 @@ public struct ToOneRelationship<Identifiable: JSONAPI.JSONAPIIdentifiable, IdMet
     }
 }
 
+extension ToOneRelationship: Sendable where
+  Identifiable.ID: Sendable,
+  IdMetaType: Sendable,
+  MetaType: Sendable,
+  LinksType: Sendable {}
+
 extension ToOneRelationship where IdMetaType == NoIdMetadata {
     public init(id: Identifiable.ID, meta: MetaType, links: LinksType) {
         self.id = id
@@ -166,6 +172,15 @@ public struct ToManyRelationship<Relatable: JSONAPI.Relatable, IdMetaType: JSONA
         return ToManyRelationship(meta: meta, links: links)
     }
 }
+
+extension ToManyRelationship.ID: Sendable where
+  Relatable.ID: Sendable,
+  IdMetaType: Sendable {}
+
+extension ToManyRelationship: Sendable where
+  ID: Sendable,
+  MetaType: Sendable,
+  LinksType: Sendable {}
 
 extension ToManyRelationship where IdMetaType == NoIdMetadata {
     public init(ids: [Relatable.ID], meta: MetaType, links: LinksType) {

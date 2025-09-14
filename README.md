@@ -1,5 +1,5 @@
 # JSONAPI
-[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 5.2+](http://img.shields.io/badge/Swift-5.2+-blue.svg)](https://swift.org) [![Tests](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml/badge.svg)](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml)
+[![MIT license](http://img.shields.io/badge/license-MIT-lightgrey.svg)](http://opensource.org/licenses/MIT) [![Swift 6.0+](http://img.shields.io/badge/Swift-6.0+-blue.svg)](https://swift.org) [![Tests](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml/badge.svg)](https://github.com/mattpolzin/JSONAPI/actions/workflows/tests.yml)
 
 A Swift package for encoding to- and decoding from **JSON API** compliant requests and responses.
 
@@ -58,34 +58,14 @@ If you find something wrong with this library and it isn't already mentioned und
 
 ## Dev Environment
 ### Prerequisites
-1. Swift 5.2+
-2. Swift Package Manager, Xcode 11+, or Cocoapods
+1. Swift 6.0+
+2. Swift Package Manager
 
 ### Swift Package Manager
 Just include the following in your package's dependencies and add `JSONAPI` to the dependencies for any of your targets.
 ```swift
-.package(url: "https://github.com/mattpolzin/JSONAPI.git", from: "5.1.0")
+.package(url: "https://github.com/mattpolzin/JSONAPI.git", from: "6.0.0")
 ```
-
-### Xcode project
-With Xcode 11+, you can open the folder containing this repository. There is no need for an Xcode project, but you can generate one with `swift package generate-xcodeproj`.
-
-### CocoaPods
-To use this framework in your project via Cocoapods, add the following dependencies to your Podfile.
-```ruby
-pod 'Poly', :git => 'https://github.com/mattpolzin/Poly.git'
-pod 'MP-JSONAPI', :git => 'https://github.com/mattpolzin/JSONAPI.git'
-```
-
-### Carthage
-This library does not support the Carthage package manager. This is intentional to avoid an additional dependency on Xcode and the Xcode's project files as their format changes throughout versions (in addition to the complexity of maintaining different shared schemes for each supported operating system). 
-
-The difference between supporting and not supporting Carthage is the difference between maintaining an Xcode project with at least one shared build scheme; I encourage those that need Carthage support to fork this repository and add support to their fork by committing an Xcode project (you can generate one as described in the [Xcode project](#xcode-project) section above). Once an Xcode project is generated, you need to mark at least one scheme as [shared](https://github.com/Carthage/Carthage#share-your-xcode-schemes).
-
-### Running the Playground
-To run the included Playground files, create an Xcode project using Swift Package Manager, then create an Xcode Workspace in the root of the repository and add both the generated Xcode project and the playground to the Workspace.
-
-Note that Playground support for importing non-system Frameworks is still a bit touchy as of Swift 4.2. Sometimes building, cleaning and building, or commenting out and then uncommenting import statements (especially in the` Entities.swift` Playground Source file) can get things working for me when I am getting an error about `JSONAPI` not being found.
 
 ## Deeper Dive
 - [Project Status](./documentation/project-status.md)

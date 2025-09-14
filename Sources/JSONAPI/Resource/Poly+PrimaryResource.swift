@@ -20,7 +20,7 @@ public typealias EncodableJSONPoly = Poly & EncodablePrimaryResource
 public typealias EncodablePolyWrapped = Encodable & Equatable
 public typealias CodablePolyWrapped = EncodablePolyWrapped & Decodable
 
-extension Poly0: CodablePrimaryResource {
+extension Poly0: @retroactive Encodable, @retroactive Decodable {
     public init(from decoder: Decoder) throws {
         throw JSONAPICodingError.illegalDecoding("Attempted to decode Poly0, which should represent a thing that is not expected to be found in a document.", path: decoder.codingPath)
     }
@@ -29,6 +29,8 @@ extension Poly0: CodablePrimaryResource {
         throw JSONAPICodingError.illegalEncoding("Attempted to encode Poly0, which should represent a thing that is not expected to be found in a document.", path: encoder.codingPath)
     }
 }
+
+extension Poly0: CodablePrimaryResource {}
 
 // MARK: - 1 type
 extension Poly1: EncodablePrimaryResource, OptionalEncodablePrimaryResource

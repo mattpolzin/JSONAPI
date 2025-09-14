@@ -13,7 +13,7 @@ public enum JSONAPICodingError: Swift.Error {
     case missingOrMalformedMetadata(path: [CodingKey])
     case missingOrMalformedLinks(path: [CodingKey])
 
-    public enum Quantity: String, Equatable {
+    public enum Quantity: String, Equatable, Sendable {
         case one
         case many
 

@@ -65,6 +65,8 @@ public struct SingleResourceBody<PrimaryResource: JSONAPI.OptionalEncodablePrima
     }
 }
 
+extension SingleResourceBody: Sendable where PrimaryResource: Sendable {}
+
 public protocol ManyResourceBodyProtocol: EncodableResourceBody {
     var values: [PrimaryResource] { get }
 
@@ -84,6 +86,8 @@ public struct ManyResourceBody<PrimaryResource: JSONAPI.EncodablePrimaryResource
     }
 }
 
+extension ManyResourceBody: Sendable where PrimaryResource: Sendable {}
+
 /// Use NoResourceBody to indicate you expect a JSON API document to not
 /// contain a "data" top-level key.
 public struct NoResourceBody: CodableResourceBody {
@@ -91,6 +95,8 @@ public struct NoResourceBody: CodableResourceBody {
 
     public static var none: NoResourceBody { return NoResourceBody() }
 }
+
+extension NoResourceBody: Sendable {}
 
 // MARK: Codable
 extension SingleResourceBody {

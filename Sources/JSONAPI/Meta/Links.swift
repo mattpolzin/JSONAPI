@@ -9,7 +9,7 @@
 public protocol Links: Codable, Equatable {}
 
 /// Use NoLinks where no links should belong to a JSON API component
-public struct NoLinks: Links, CustomStringConvertible {
+public struct NoLinks: Links, CustomStringConvertible, Sendable {
     public static var none: NoLinks { return NoLinks() }
     public init() {}
     
@@ -27,6 +27,8 @@ public struct Link<URL: JSONAPI.JSONAPIURL, Meta: JSONAPI.Meta>: Equatable, Coda
         self.meta = meta
     }
 }
+
+extension Link: Sendable where Meta: Sendable, URL: Sendable {}
 
 extension Link where Meta == NoMetadata {
     public init(url: URL) {

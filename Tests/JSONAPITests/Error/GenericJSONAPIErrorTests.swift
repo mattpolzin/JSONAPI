@@ -132,7 +132,7 @@ final class GenericJSONAPIErrorTests: XCTestCase {
     }
 }
 
-private struct TestPayload: Codable, Equatable, ErrorDictType {
+private struct TestPayload: Codable, Equatable, ErrorDictType, Sendable {
     let hello: String
     let world: Int?
 

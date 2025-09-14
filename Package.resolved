@@ -1,16 +1,15 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Poly",
-        "repositoryURL": "https://github.com/mattpolzin/Poly.git",
-        "state": {
-          "branch": null,
-          "revision": "99e2e8b575620369be52fe348c0dd72028e3674c",
-          "version": "2.8.0"
-        }
+  "originHash" : "54aae326cbf0090b80ab7860957be502f5396744f5579cf522be7cb3ffa67caf",
+  "pins" : [
+    {
+      "identity" : "poly",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mattpolzin/Poly.git",
+      "state" : {
+        "revision" : "37c942daa23ab373ce05ef87f42103342e59cf3a",
+        "version" : "3.0.0"
       }
-    ]
-  },
-  "version": 1
+    }
+  ],
+  "version" : 3
 }
