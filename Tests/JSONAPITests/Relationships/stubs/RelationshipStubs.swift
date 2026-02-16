@@ -241,3 +241,11 @@ let to_many_relationship_type_mismatch = """
 	]
 }
 """.data(using: .utf8)!
+
+let to_many_relationship_with_meta_no_data = """
+{
+  "meta": {
+    "a": "hello"
+  }
+}
+""".data(using: .utf8)!

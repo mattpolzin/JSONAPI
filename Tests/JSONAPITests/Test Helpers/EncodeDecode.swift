@@ -24,6 +24,10 @@ func decoded<T: Decodable>(type: T.Type, data: Data) -> T {
 	return try! testDecoder.decode(T.self, from: data)
 }
 
+func decodedThrows<T: Decodable>(type: T.Type, data: Data) throws -> T {
+  return try testDecoder.decode(T.self, from: data)
+}
+
 func encoded<T: Encodable>(value: T) -> Data {
 	return try! testEncoder.encode(value)
 }
